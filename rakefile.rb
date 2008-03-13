@@ -29,7 +29,6 @@ PACKAGE_VERSION = '0.9.0'
 
 PACKAGE_FILES = FileList[
   'README',
-  'CHANGELOG',
   'MIT-LICENSE',
   '*.rb',
   'lib/**/*.rb',
@@ -71,10 +70,8 @@ gem_spec = Gem::Specification.new do |s|
  
   s.require_path = "lib"
   s.requirements << "none"
-  s.autorequire = "data_mapper"
-  s.executables = ["dm"]
-  s.bindir = "bin"
-  s.add_dependency("dm-core")
+  s.add_dependency("dm-core", '>=0.9.0')
+  s.add_dependency("data_objects", ">=0.9.0")
 
   s.has_rdoc = true 
   s.rdoc_options << "--line-numbers" << "--inline-source" << "--main" << "README"
