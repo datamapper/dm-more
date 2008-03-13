@@ -1,0 +1,10 @@
+
+== dm-more ==
+
+Extra non-essential parts for DataMapper.
+
+Including:
+
+ * Migrations
+
+
