@@ -1,5 +1,6 @@
 require 'benchmark'
-require 'datamapper'
+require 'data_mapper'
+require File.join(File.dirname(__FILE__), 'adapter_extensions', 'data_object_adapter_extension')
 
 module DataMapper
   class DuplicateMigrationNameError < StandardError
@@ -68,9 +69,7 @@ module DataMapper
     # execute raw SQL
     def execute(sql)
       say_with_time(sql) do
-        DataMapper.database(@options[:database] || :default) do
-          DataMapper::database.execute(sql)
-        end
+        @adapter.execute(sql)
       end
     end
 
@@ -136,7 +135,7 @@ module DataMapper
     def create_migration_info_table_if_needed
       save, @verbose = @verbose, false
       unless migration_info_table_exists?
-        execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} varchar)")
+        execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} TEXT UNIQUE)")
       end
       @verbose = save
     end
@@ -147,13 +146,13 @@ module DataMapper
     end
 
     def migration_info_table_exists?
-      DataMapper::database.adapter.table('migration_info').exists?
+      ! @adapter.table('migration_info').nil?
     end
 
     # Fetch the record for this migration out of the migration_info table
     def migration_record
       return [] unless migration_info_table_exists?
-      DataMapper::database.query("SELECT #{migration_name_column} FROM #{migration_info_table} WHERE #{migration_name_column} = #{quoted_name}")
+      @adapter.query("SELECT #{migration_name_column} FROM #{migration_info_table} WHERE #{migration_name_column} = #{quoted_name}")
     end
 
     # True if the migration needs to be run

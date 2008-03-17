@@ -1,5 +1,8 @@
-#require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/spec_helper'
+
 require File.dirname(__FILE__) + '/../lib/migration'
+
+DataMapper.setup(:default, "sqlite3:///#{Dir.pwd}/migration_test.db")
 
 describe DataMapper::Migration, 'interface' do
   before do
@@ -20,11 +23,11 @@ describe DataMapper::Migration, 'interface' do
 
   it "should have a :database option" do
     m = DataMapper::Migration.new(2, :create_dogs_table, :database => :other) {}
-    m.instance_variable_get(:@database).adapter.name.should == :other
+    m.instance_variable_get(:@database).name.should == :other
   end
 
   it "should use the default database by default" do
-    @migration.instance_variable_get(:@database).adapter.name.should == :default
+    @migration.instance_variable_get(:@database).name.should == :default
   end
 
   it "should have a verbose option" do
@@ -109,7 +112,7 @@ end
 
 describe DataMapper::Migration, "#create_table helper" do
   before do
-    @creator = DataMapper::Migration::TableCreator.new(database.adapter, :people) do
+    @creator = DataMapper::Migration::TableCreator.new(repository(:default).adapter, :people) do
                   column :name, :string
                end
   end
@@ -124,7 +127,7 @@ describe DataMapper::Migration, "#create_table helper" do
   end
 
   it "should have an adapter" do
-    @creator.instance_eval("@adapter").should == database.adapter
+    @creator.instance_eval("@adapter").should == repository(:default).adapter
   end
 
   it "should have an options hash" do
@@ -139,7 +142,7 @@ describe DataMapper::Migration, "#create_table helper" do
   end
 
   it "should quote the table name for the adapter" do
-    @creator.quoted_table_name.should == '"people"'
+    @creator.quoted_table_name.should == 'people'
   end
 
 
@@ -179,7 +182,7 @@ describe DataMapper::Migration, "version tracking" do
   end
 
   def insert_migration_record
-    database.execute("INSERT INTO migration_info (migration_name) VALUES ('create_people_table')")
+    DataMapper.repository.adapter.execute("INSERT INTO migration_info (migration_name) VALUES ('create_people_table')")
   end
 
   it "should know if the migration_info table exists" do
@@ -187,7 +190,7 @@ describe DataMapper::Migration, "version tracking" do
   end
 
   it "should know if the migration_info table does not exist" do
-    database.execute("DROP TABLE migration_info") rescue nil
+    repository.adapter.execute("DROP TABLE migration_info") rescue nil
     @migration.send(:migration_info_table_exists?).should be_false
   end
 
@@ -209,18 +212,18 @@ describe DataMapper::Migration, "version tracking" do
   end
 
   it "should properly quote the migration_info table for use in queries" do
-    @migration.send(:migration_info_table).should == database.adapter.quote_table_name('migration_info')
+    @migration.send(:migration_info_table).should == repository.adapter.quote_table_name('migration_info')
   end
 
   it "should properly quote the migration_info.migration_name column for use in queries" do
-    @migration.send(:migration_name_column).should == database.adapter.quote_column_name('migration_name')
+    @migration.send(:migration_name_column).should == repository.adapter.quote_column_name('migration_name')
   end 
 
   it "should properly quote the migration's name for use in queries"
   # TODO how to i call the adapter's #escape_sql method?
 
   it "should create the migration_info table if it doesn't exist" do
-    database.execute("DROP TABLE migration_info") rescue nil
+    repository.adapter.execute("DROP TABLE migration_info")
     @migration.send(:migration_info_table_exists?).should be_false
     @migration.send(:create_migration_info_table_if_needed)
     @migration.send(:migration_info_table_exists?).should be_true
@@ -249,6 +252,6 @@ describe DataMapper::Migration, "version tracking" do
   end
 
   after do
-    database.execute("DROP TABLE migration_info") rescue nil
+    repository.adapter.execute("DELETE FROM migration_info") rescue Sqlite3Error
   end
 end
