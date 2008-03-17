@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + '/spec_helper'
-
 require File.dirname(__FILE__) + '/../lib/migration'
 
 DataMapper.setup(:default, "sqlite3:///#{Dir.pwd}/migration_test.db")
