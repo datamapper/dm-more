@@ -6,5 +6,6 @@ Extra non-essential parts for DataMapper.
 Including:
 
  * Migrations
+ * Validations
 
 
