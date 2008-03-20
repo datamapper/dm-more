@@ -25,18 +25,15 @@ describe DataMapper::Validate, 'acting on a resource' do
   end
   
   it "should have a set of contextual validations on the class of the resource" do
-    #shamrock = Yacht.new
-    #shamrock.class.respond_to?(:validators).should == true
     Yacht.respond_to?(:validators).should == true
   end
   
   it "should execute all validators for a given context against the resource" do
-    #shamrock = Yacht.new
-    #shamrock.class.validators.respond_to?(:execute).should == true
     Yacht.validators.respond_to?(:execute).should == true        
   end
   
   it "should place a validator in the :default context if a named context is not provided" do
+    # from validates_presence_of :name 
     Yacht.validators.context(:default).length.should == 1  
   end
 
@@ -121,15 +118,13 @@ describe DataMapper::Validate, 'acting on a resource' do
       def owned?; false; end
     end
     
-    tubby = Dingy.new
-    tubby.valid?.should == true
+    Dingy.new().valid?.should == true
     
     class Dingy
       def owned?; true; end
     end
       
-    tubby = Dingy.new
-    tubby.valid?.should_not == true
+    Dingy.new().valid?.should_not == true
   end
   
   it "should execute a symbol or method name provided in an :if clause and run validation if the method returns true" do
@@ -140,17 +135,51 @@ describe DataMapper::Validate, 'acting on a resource' do
       def owned?; false; end      
     end
     
-    tubby = Dingy.new
-    tubby.valid?.should == true
+    Dingy.new().valid?.should == true
     
     class Dingy
       def owned?; true; end
     end
     
-    tubby = Dingy.new
-    tubby.valid?.should_not == true    
+    Dingy.new().valid?.should_not == true    
+  end
+  
+   
+  
+  it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
+    class RowBoat
+      include DataMapper::Resource
+      include DataMapper::Validate
+      validates_presence_of :salesman, :unless => Proc.new{|resource| resource.sold?()}     
+      
+      def sold?; false; end      
+    end    
+    
+    RowBoat.new().valid?.should_not == true
+    
+    class RowBoat
+      def sold?; true; end
+    end  
+    
+    RowBoat.new.valid?().should == true
   end
 
+  it "should execute a symbol or method name provided in an :unless clause and not run validation if the method returns true" do
+    class Dingy
+      validators.clear!
+      validates_presence_of :salesman, :unless => :sold?      
+      
+      def sold?; false; end      
+    end    
+    
+    Dingy.new().valid?.should_not == true  #not sold and no salesman
+    
+    class Dingy
+      def sold?; true; end
+    end  
+    
+    Dingy.new().valid?.should == true    # sold and no salesman
+  end
 end
 
 #-----------------------------------------------------------------------------
@@ -175,6 +204,31 @@ describe DataMapper::Validate::RequiredFieldValidator, 'on a resource field' do
     sting_ray.name = 'Sting Ray'
     sting_ray.valid?.should == true
     sting_ray.errors.full_messages.length.should == 0  
+  end
+  
+end
+
+
+#-----------------------------------------------------------------------------
+
+describe DataMapper::Validate::AbsentFieldValidator, 'on a resource field' do
+  before(:all) do
+    class Kayak
+      include DataMapper::Resource
+      include DataMapper::Validate
+      
+      property :salesman, String   
+            
+      validates_absence_of :salesman, :when => :sold    
+    end
+  end
+
+  it "should validate the absense of a value on an instance of a resource (absense = nil || '')" do
+    kayak = Kayak.new
+    kayak.valid_for_sold?.should == true
+    
+    kayak.salesman = 'Joe'
+    kayak.valid_for_sold?.should_not == true    
   end
   
 end
@@ -296,11 +350,8 @@ describe DataMapper::Validate::LengthValidator, 'on a resource field' do
   before(:all) do
     class MotorLaunch
       include DataMapper::Resource    
-      include DataMapper::Validate
-      
+      include DataMapper::Validate      
       property :name, String
-
-      
     end
   end
 
@@ -374,8 +425,78 @@ describe DataMapper::Validate::LengthValidator, 'on a resource field' do
     launch.name = 'Ride'
     launch.valid?.should == true      
   end  
-  
 end
 
+
+#-------------------------------------------------------------------------------
+describe DataMapper::Validate::WithinValidator, 'on a resource field' do
+  before(:all) do
+    class Telephone
+      include DataMapper::Resource    
+      include DataMapper::Validate
+      
+      property :type_of_number, String
+      validates_within :type_of_number, :set => ['Home','Work','Cell']   
+    end
+  end
+  
+  it "should validate a value on an instance of a resource within a predefined set of values" do
+    tel = Telephone.new
+    tel.valid?.should_not == true
+    tel.errors.full_messages.first.should == 'Type of number must be one of [Home, Work, Cell]'
+    
+    tel.type_of_number = 'Cell'
+    tel.valid?.should == true
+  end
+end  
+
+
+#-------------------------------------------------------------------------------
+describe DataMapper::Validate::NumericValidator, 'on a resource field' do
+  before(:all) do
+    class Bill
+      include DataMapper::Resource    
+      include DataMapper::Validate
+      
+      property :amount_1, String
+      property :amount_2, Float
+
+      
+      validates_numericalnes_of :amount_1, :amount_2      
+    end
+  end
+  
+  it "should validate a floating point value on the instance of a resource" do
+    b = Bill.new
+    b.valid?.should_not == true
+    b.amount_1 = 'ABC'
+    b.amount_2 = 27.343
+    b.valid?.should_not == true
+    b.amount_1 = '34.33'
+    b.valid?.should == true    
+  end
+  
+  it "should validate an integer value on the instance of a resource" do
+    class Bill
+      property :quantity_1, String
+      property :quantity_2, Fixnum    
+    
+      validators.clear!
+      validates_numericalnes_of :quantity_1, :quantity_2, :integer_only => true
+    end
+    b = Bill.new
+    b.valid?.should_not == true
+    b.quantity_1 = '12.334'
+    b.quantity_2 = 27.343
+    b.valid?.should_not == true
+    b.quantity_1 = '34.33'
+    b.quantity_2 = 22
+    b.valid?.should_not == true    
+    b.quantity_1 = '34'
+    b.valid?.should == true    
+    
+  end
+  
+end  
 
 

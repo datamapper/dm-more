@@ -3,14 +3,18 @@ require File.join(File.dirname(__FILE__),'validate','contextual_validators')
 
 require File.join(File.dirname(__FILE__),'validate','generic_validator')
 require File.join(File.dirname(__FILE__),'validate','required_field_validator')
+require File.join(File.dirname(__FILE__),'validate','absent_field_validator')
 require File.join(File.dirname(__FILE__),'validate','confirmation_validator')
 require File.join(File.dirname(__FILE__),'validate','format_validator')
 require File.join(File.dirname(__FILE__),'validate','length_validator')
-
+require File.join(File.dirname(__FILE__),'validate','within_validator')
+require File.join(File.dirname(__FILE__),'validate','numeric_validator')
 
 
 
 require File.join(File.dirname(__FILE__),'validate','support','object')
+
+
 
 
 module DataMapper
@@ -20,9 +24,12 @@ module DataMapper
         base.extend(ClassMethods)
         base.class_eval do
          include DataMapper::Validate::ValidatesPresenceOf
+         include DataMapper::Validate::ValidatesAbsenceOf
          include DataMapper::Validate::ValidatesConfirmationOf
          include DataMapper::Validate::ValidatesFormatOf
          include DataMapper::Validate::ValidatesLengthOf         
+         include DataMapper::Validate::ValidatesWithin
+         include DataMapper::Validate::ValidatesNumericalnesOf
         end
       end
       
@@ -48,11 +55,14 @@ module DataMapper
       
       # Check if a resource is valid in a given context
       #
-      # TODO Add chaining of ivars and associations for validation.
+      # 
       #
       def valid?(context = :default)
         self.class.validators.execute(context,self)        
       end
+      
+      # TODO Add #all_valid? which chains ivars
+      
       
       #def validate_excluding_association(associated, context = :general)
       #  return false unless self.class.callbacks.execute(:before_validation, self)
@@ -80,7 +90,7 @@ module DataMapper
         end
         
         # Clean up the argument list and return a opts hash, including the 
-        # merging of any default opts. Set the context to general if none is
+        # merging of any default opts. Set the context to default if none is
         # provided. Also allow :context to be aliased to :on, :when & group
         #
         def opts_from_validator_args(args, defaults = nil)
@@ -98,6 +108,9 @@ module DataMapper
         # Given a new context create an instance method of 
         # valid_for_<context>? which simply calls valid?(context)
         # if it does not already exist
+        # 
+        # TODO also create a all_valid_for<context>? the calls all_valid?(context)
+        # TODO rename to create_context_instance_methods
         #
         def create_context_instance_method(context)
           name = "valid_for_#{context.to_s}?"

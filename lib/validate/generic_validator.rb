@@ -8,11 +8,13 @@ module DataMapper
     class GenericValidator
       
       attr_accessor :if_clause
+      attr_accessor :unless_clause
       
       # Construct a validator. Capture the :if clause when one is present
       #
       def initialize(field, opts = {})
-        @if_clause = opts.has_key?(:if) ? opts[:if] : nil        
+        @if_clause = opts.has_key?(:if) ? opts[:if] : nil
+        @unless_clause = opts.has_key?(:unless) ? opts[:unless] : nil
       end
       
       # Add an error message to a target resource. If the error corrosponds
@@ -23,6 +25,9 @@ module DataMapper
       #   target<Object>::        the resource that has the error
       #   message<String>::       a string message to add 
       #   field_name<Symbol>      the name of the field that caused the error
+      #
+      # TODO - should the field_name for a general message be :default???
+      #
       def add_error(target, message, field_name = :general)
         target.errors.add(field_name,message)
       end
@@ -50,14 +55,24 @@ module DataMapper
       # <Boolean>:: TRUE if should be run otherwise FALSE
       #
       def execute?(target)
-        return true unless self.if_clause
-        if self.if_clause.is_a?(Symbol)
-          return target.send(self.if_clause)
-        elsif self.if_clause.respond_to?(:call)
-          return self.if_clause.call(target)
-        else
-          return true
+        return true if self.if_clause.nil? && self.unless_clause.nil?
+      
+        if self.unless_clause
+          if self.unless_clause.is_a?(Symbol)          
+            return false if target.send(self.unless_clause)
+          elsif self.unless_clause.respond_to?(:call)
+            return false if self.unless_clause.call(target)
+          end
         end
+        
+        if self.if_clause
+          if self.if_clause.is_a?(Symbol)
+            return target.send(self.if_clause)
+          elsif self.if_clause.respond_to?(:call)
+            return self.if_clause.call(target)
+          end
+        end
+        return true
       end      
       
     end        
