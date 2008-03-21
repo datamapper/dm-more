@@ -61,25 +61,31 @@ module DataMapper
         self.class.validators.execute(context,self)        
       end
       
-      # TODO Add #all_valid? which chains ivars
+      # Begin a recursive walk of the model checking validity
+      #
+      def all_valid?(context = :default)
+        recursive_valid?(self,context,true)
+      end
       
+      # Do recursive validity checking
+      #
+      def recursive_valid?(target, context, state)    
+        valid = state
+        target.instance_variables.each do |ivar|
+          ivar_value = target.instance_variable_get(ivar) 
+          if ivar_value.validatable?
+            valid = valid && recursive_valid?(ivar_value,context,valid)
+          elsif ivar_value.respond_to?(:each)
+            ivar_value.each do |item|
+              if item.validatable?
+                valid = valid && recursive_valid?(item,context,valid)
+              end
+            end          
+          end
+        end
+        return valid && target.valid?
+      end
       
-      #def validate_excluding_association(associated, context = :general)
-      #  return false unless self.class.callbacks.execute(:before_validation, self)
-      #  return false unless self.class.validations.execute(context, self)
-      #  if self.respond_to?(:loaded_associations)
-      #    return false unless self.loaded_associations.all? do |association|
-      #      if association != associated && association.respond_to?(:validate_excluding_association)
-      #        association.validate_excluding_association(self, context)
-      #      else
-      #        true
-      #      end
-      #    end
-      #  end
-
-      #  return false unless self.class.callbacks.execute(:after_validation, self)
-      #  return true
-      #end
       
       module ClassMethods
         
@@ -108,16 +114,22 @@ module DataMapper
         # Given a new context create an instance method of 
         # valid_for_<context>? which simply calls valid?(context)
         # if it does not already exist
-        # 
-        # TODO also create a all_valid_for<context>? the calls all_valid?(context)
-        # TODO rename to create_context_instance_methods
         #
-        def create_context_instance_method(context)
+        def create_context_instance_methods(context)
           name = "valid_for_#{context.to_s}?"
           if !self.instance_methods.include?(name)
             class_eval <<-EOS
               def #{name}
                 valid?('#{context.to_s}'.to_sym)
+              end
+            EOS
+          end
+          
+          all = "all_valid_for_#{context.to_s}?"
+          if !self.instance_methods.include?(all)
+            class_eval <<-EOS
+              def #{all}
+                all_valid?('#{context.to_s}'.to_sym)
               end
             EOS
           end
@@ -130,11 +142,11 @@ module DataMapper
           fields.each do |field|
             if opts[:context].is_a?(Symbol)
               validators.context(opts[:context]) << klazz.new(field, opts)
-              create_context_instance_method(opts[:context])
+              create_context_instance_methods(opts[:context])
             elsif opts[:context].is_a?(Array)
               opts[:context].each do |c| 
                 validators.context(c) << klazz.new(field, opts)
-                create_context_instance_method(c)
+                create_context_instance_methods(c)
               end
             end
           end        

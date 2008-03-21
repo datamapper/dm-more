@@ -83,6 +83,15 @@ describe DataMapper::Validate, 'acting on a resource' do
     cigaret.valid_for_power_boat?.should == true
   end
   
+  it "should add a method all_valid_for_<context_name>? for each context" do
+    class Yacht
+      property :mast_height, String
+      validates_presence_of :mast_height, :when => :sailing_vessel
+    end    
+    swift = Yacht.new
+    swift.respond_to?(:all_valid_for_sailing_vessel?).should == true    
+  end
+  
   it "should be able to translate the error message" # needs String::translations
   
   it "should be able to get the error message for a given field" do
@@ -142,9 +151,7 @@ describe DataMapper::Validate, 'acting on a resource' do
     end
     
     Dingy.new().valid?.should_not == true    
-  end
-  
-   
+  end   
   
   it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
     class RowBoat
@@ -180,6 +187,75 @@ describe DataMapper::Validate, 'acting on a resource' do
     
     Dingy.new().valid?.should == true    # sold and no salesman
   end
+  
+  
+  it "should perform automatic recursive validation #all_valid? checking all instance variables (and ivar.each items if valid)" do
+  
+    class Invoice
+      include DataMapper::Resource
+      include DataMapper::Validate
+      
+      property :customer, String
+      
+      validates_presence_of :customer
+      
+      def line_items
+        @line_items || @line_items = []
+      end
+      
+      def comment
+        @comment || nil
+      end
+      
+      def comment=(value)
+        @comment = value
+      end                
+    end
+    
+    class LineItem
+      include DataMapper::Resource
+      include DataMapper::Validate    
+      property :price, String
+      validates_numericalnes_of :price
+      
+      def initialize(price)
+        @price = price
+      end
+    end
+    
+    class Comment
+      include DataMapper::Resource
+      include DataMapper::Validate    
+      property :note, String
+      
+      validates_presence_of :note
+    end
+  
+    invoice = Invoice.new
+    invoice.customer = 'Billy Bob'
+    
+    invoice.valid?.should == true
+        
+    for i in 1..6 do 
+      invoice.line_items << LineItem.new(i.to_s)
+    end    
+    invoice.line_items[1].price = 'BAD VALUE'  
+    invoice.comment = Comment.new
+        
+    invoice.comment.valid?.should == false
+    invoice.line_items[1].valid?.should == false
+    
+    invoice.all_valid?.should == false
+    invoice.comment.note = 'This is a note'
+    
+    invoice.all_valid?.should == false
+    invoice.line_items[1].price = '23.44'
+    
+    invoice.all_valid?.should == true
+  
+  end 
+  
+  
 end
 
 #-----------------------------------------------------------------------------
@@ -210,7 +286,6 @@ end
 
 
 #-----------------------------------------------------------------------------
-
 describe DataMapper::Validate::AbsentFieldValidator, 'on a resource field' do
   before(:all) do
     class Kayak
@@ -223,7 +298,7 @@ describe DataMapper::Validate::AbsentFieldValidator, 'on a resource field' do
     end
   end
 
-  it "should validate the absense of a value on an instance of a resource (absense = nil || '')" do
+  it "should validate the absense of a value on an instance of a resource" do
     kayak = Kayak.new
     kayak.valid_for_sold?.should == true
     
@@ -426,7 +501,6 @@ describe DataMapper::Validate::LengthValidator, 'on a resource field' do
     launch.valid?.should == true      
   end  
 end
-
 
 #-------------------------------------------------------------------------------
 describe DataMapper::Validate::WithinValidator, 'on a resource field' do
