@@ -3,10 +3,6 @@ module DataMapper
     
     class ConfirmationValidator < GenericValidator
       
-      ERROR_MESSAGES = {
-        :confirmation => '#{field} does not match the confirmation'
-      }
-      
       def initialize(field_name, options = {})
         super
         @options = options
@@ -32,11 +28,9 @@ module DataMapper
         confirm_value = target.instance_variable_get("@#{@confirm_field_name}")
         field_value == confirm_value
       end
-      
+            
     end
-    
-    
-    
+
     
     module ValidatesConfirmationOf
       def self.included(base)

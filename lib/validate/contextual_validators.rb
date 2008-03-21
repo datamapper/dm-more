@@ -2,9 +2,6 @@ module DataMapper
   module Validate 
     class ContextualValidators
       
-      class UnknownContextError < StandardError; end
-      
-      
       def dump
         contexts.each_pair do |key,context|
           puts "Key=#{key} Context: #{context}"

@@ -9,7 +9,7 @@ module DataMapper
       
       # Seems to me that all this email garbage belongs somewhere else...  Where's the best
       # place to stick it?
-      #include DataMapper::Validations::Helpers::Email::RFC2822
+      # include DataMapper::Validations::Helpers::Email::RFC2822
       
       def initialize(field_name, options = {}, &b)
         super(field_name, options)
@@ -24,8 +24,10 @@ module DataMapper
         validation = (@options[:as] || @options[:with])
         error_message = nil
         
-        # Figure out what to use as the actual validator.  If a symbol is passed to :as, look up
+        # Figure out what to use as the actual validator.  
+        # If a symbol is passed to :as, look up
         # the canned validation in FORMATS.
+        #
         validator = if validation.is_a? Symbol
           if FORMATS[validation].is_a? Array
             error_message = FORMATS[validation][1]
@@ -66,18 +68,10 @@ module DataMapper
       end
       
       module ClassMethods
-        # No bueno?
-        #DEFAULT_OPTIONS = { :on => :save }
-        
         def validates_format_of(*fields)
-        
           opts = opts_from_validator_args(fields)
           add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
-                  
-          #opts = retrieve_options_from_arguments_for_validators([options], DEFAULT_OPTIONS)
-          #validations.context(opts[:context]) << Validations::FormatValidator.new(field, opts)
         end
-
       end
     end
     

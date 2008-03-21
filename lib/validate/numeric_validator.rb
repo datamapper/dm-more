@@ -9,8 +9,7 @@ module DataMapper
         @options[:integer_only] = false unless @options.has_key?(:integer_only)
       end
       
-      def call(target)
-      
+      def call(target)      
         value =  target.instance_variable_get("@#{@field_name}").to_s
         regex = @options[:integer_only] ? /\A[+-]?\d+\Z/ : /^\d*\.{0,1}\d+$/
         return true if not (value =~ regex).nil?
@@ -21,8 +20,6 @@ module DataMapper
         return false
       end      
     end
-    
-    
     
     module ValidatesNumericalnesOf
       def self.included(base)
