@@ -141,7 +141,7 @@ describe DataMapper::Migration, "#create_table helper" do
   end
 
   it "should quote the table name for the adapter" do
-    @creator.quoted_table_name.should == 'people'
+    @creator.quoted_table_name.should == '"people"'
   end
 
 
