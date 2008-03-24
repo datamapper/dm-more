@@ -1,15 +1,14 @@
-require File.dirname(__FILE__) + '/spec_helper'
-require File.dirname(__FILE__) + '/../lib/validate'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.parent.expand_path + 'lib/validate'
 
-
-describe DataMapper::Validate, 'acting on a resource' do  
+describe DataMapper::Validate do  
   before(:all) do
     class Yacht
       include DataMapper::Resource
       include DataMapper::Validate
-      
-      property :name, String   
-            
+      property :name, String, :auto_validation => false   
+                  
       validates_presence_of :name  
     end    
   end
@@ -21,15 +20,15 @@ describe DataMapper::Validate, 'acting on a resource' do
 
   it "should have a set of errors on the instance of the resource" do
     shamrock = Yacht.new
-    shamrock.respond_to?(:errors).should == true
+    shamrock.should respond_to(:errors)
   end
   
   it "should have a set of contextual validations on the class of the resource" do
-    Yacht.respond_to?(:validators).should == true
+    Yacht.should respond_to(:validators)
   end
   
   it "should execute all validators for a given context against the resource" do
-    Yacht.validators.respond_to?(:execute).should == true        
+    Yacht.validators.should respond_to(:execute)
   end
   
   it "should place a validator in the :default context if a named context is not provided" do
@@ -40,7 +39,7 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should allow multiple user defined contexts for a validator" do
     class Yacht
-      property :port, String   
+      property :port, String, :auto_validation => false      
       validates_presence_of :port, :context => [:at_sea, :in_harbor]     
     end
     Yacht.validators.context(:at_sea).length.should == 1
@@ -50,8 +49,8 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should alias :on and :when for :context" do
     class Yacht
-      property :owner, String
-      property :bosun, String
+      property :owner, String, :auto_validation => false   
+      property :bosun, String, :auto_validation => false   
       
       validates_presence_of :owner, :on => :owned_vessel
       validates_presence_of :bosun, :when => [:under_way]    
@@ -62,7 +61,7 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should alias :group for :context (backward compat with Validatable??)" do
     class Yacht
-      property :captain, String
+      property :captain, String, :auto_validation => false   
       validates_presence_of :captain, :group => [:captained_vessel]
     end
     Yacht.validators.context(:captained_vessel).length.should == 1    
@@ -70,13 +69,13 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should add a method valid_for_<context_name>? for each context" do
     class Yacht
-      property :engine_size, String
+      property :engine_size, String, :auto_validation => false   
       validates_presence_of :engine_size, :when => :power_boat
     end
     
     cigaret = Yacht.new
     cigaret.valid_for_default?.should_not == true
-    cigaret.respond_to?(:valid_for_power_boat?).should == true
+    cigaret.should respond_to(:valid_for_power_boat?)
     cigaret.valid_for_power_boat?.should_not == true
     
     cigaret.engine_size = '4 liter V8'
@@ -85,18 +84,18 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should add a method all_valid_for_<context_name>? for each context" do
     class Yacht
-      property :mast_height, String
+      property :mast_height, String, :auto_validation => false   
       validates_presence_of :mast_height, :when => :sailing_vessel
     end    
     swift = Yacht.new
-    swift.respond_to?(:all_valid_for_sailing_vessel?).should == true    
+    swift.should respond_to(:all_valid_for_sailing_vessel?)
   end
   
   it "should be able to translate the error message" # needs String::translations
   
   it "should be able to get the error message for a given field" do
     class Yacht
-      property :wood_type, String      
+      property :wood_type, String, :auto_validation => false        
       validates_presence_of :wood_type, :on => :wooden_boats
     end    
     fantasy = Yacht.new
@@ -108,7 +107,7 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   it "should be able to specify a custom error message" do
     class Yacht
-      property :year_built, String
+      property :year_built, String, :auto_validation => false   
       validates_presence_of :year_built, :when => :built, :message => 'Year built is a must enter field'
     end
     
@@ -121,8 +120,7 @@ describe DataMapper::Validate, 'acting on a resource' do
     class Dingy
       include DataMapper::Resource
       include DataMapper::Validate
-          
-      property :owner, String
+      property :owner, String, :auto_validation => false   
       validates_presence_of :owner, :if => Proc.new{|resource| resource.owned?()}      
       def owned?; false; end
     end
@@ -194,9 +192,7 @@ describe DataMapper::Validate, 'acting on a resource' do
     class Invoice
       include DataMapper::Resource
       include DataMapper::Validate
-      
-      property :customer, String
-      
+      property :customer, String, :auto_validation => false     
       validates_presence_of :customer
       
       def line_items
@@ -214,8 +210,8 @@ describe DataMapper::Validate, 'acting on a resource' do
     
     class LineItem
       include DataMapper::Resource
-      include DataMapper::Validate    
-      property :price, String
+      include DataMapper::Validate   
+      property :price, String, :auto_validation => false   
       validates_numericalnes_of :price
       
       def initialize(price)
@@ -226,14 +222,12 @@ describe DataMapper::Validate, 'acting on a resource' do
     class Comment
       include DataMapper::Resource
       include DataMapper::Validate    
-      property :note, String
+      property :note, String, :auto_validation => false   
       
       validates_presence_of :note
     end
   
-    invoice = Invoice.new
-    invoice.customer = 'Billy Bob'
-    
+    invoice = Invoice.new(:customer => 'Billy Bob')    
     invoice.valid?.should == true
         
     for i in 1..6 do 
@@ -255,19 +249,81 @@ describe DataMapper::Validate, 'acting on a resource' do
   
   end 
   
+  describe "Automatic Validation from Property Definition" do
+    before(:all) do
+      class SailBoat
+        include DataMapper::Resource
+        include DataMapper::Validate        
+        property :name, String, :nullable => false , :validation_context => :presence_test    
+        property :description, String, :length => 10, :validation_context => :length_test_1
+        property :notes, String, :length => 2..10, :validation_context => :length_test_2
+        property :no_validation, String, :auto_validation => false
+        property :salesman, String, :nullable => false, :validation_context => [:multi_context_1, :multi_context_2]
+        property :code, String, :format => Proc.new { |code| code =~ /A\d{4}/}, :validation_context => :format_test
+      end
+    end
   
+    it "should have a hook for adding auto validations called from DataMapper::Property#new" do
+      SailBoat.should respond_to(:auto_generate_validations_for_property)
+    end    
+    
+    it "should auto add a validates_presence_of when property has option :nullable => false" do
+      validator = SailBoat.validators.context(:presence_test).first
+      validator.is_a?(DataMapper::Validate::RequiredFieldValidator).should == true
+      validator.field_name.should == :name
+      
+      boat = SailBoat.new
+      boat.valid_for_presence_test?.should == false
+      boat.name = 'Float'
+      boat.valid_for_presence_test?.should == true      
+    end
+    
+    it "should auto add a validates_length_of for maximum size on :length or :size" do
+      # max length test max=10
+      boat = SailBoat.new
+      boat.valid_for_length_test_1?.should == true  #no minimum length
+      boat.description = 'ABCDEFGHIJK' #11
+      boat.valid_for_length_test_1?.should == false
+      boat.description = 'ABCDEFGHIJ' #10      
+      boat.valid_for_length_test_1?.should == true
+    end
+    
+    it "should auto add validates_length_of within a range when option :length or :size is a range" do
+      # Range test notes = 2..10
+      boat = SailBoat.new
+      boat.valid_for_length_test_2?.should == false 
+      boat.notes = 'AB' #2
+      boat.valid_for_length_test_2?.should == true 
+      boat.notes = 'ABCDEFGHIJK' #11
+      boat.valid_for_length_test_2?.should == false 
+      boat.notes = 'ABCDEFGHIJ' #10      
+      boat.valid_for_length_test_2?.should == true      
+    end
+    
+    it "should auto add a validates_format_of if the :format option is given" do
+      # format test - format = /A\d{4}/   on code
+      boat = SailBoat.new
+      boat.valid_for_format_test?.should == false
+      boat.code = 'A1234'
+      boat.valid_for_format_test?.should == true
+      boat.code = 'BAD CODE'
+      boat.valid_for_format_test?.should == false
+      
+    end
+    
+    it "should not auto add any validators if the option :auto_validation => false was given"
+        
+  end
 end
 
 #-----------------------------------------------------------------------------
 
-describe DataMapper::Validate::RequiredFieldValidator, 'on a resource field' do
+describe DataMapper::Validate::RequiredFieldValidator do
   before(:all) do
     class Boat
       include DataMapper::Resource
       include DataMapper::Validate
-      
-      property :name, String   
-            
+      property :name, String, :auto_validation => false                  
       validates_presence_of :name    
     end
   end
@@ -286,13 +342,12 @@ end
 
 
 #-----------------------------------------------------------------------------
-describe DataMapper::Validate::AbsentFieldValidator, 'on a resource field' do
+describe DataMapper::Validate::AbsentFieldValidator do
   before(:all) do
     class Kayak
       include DataMapper::Resource
       include DataMapper::Validate
-      
-      property :salesman, String   
+      property :salesman, String, :auto_validation => false      
             
       validates_absence_of :salesman, :when => :sold    
     end
@@ -309,11 +364,10 @@ describe DataMapper::Validate::AbsentFieldValidator, 'on a resource field' do
 end
 
 #-------------------------------------------------------------------------------
-describe DataMapper::Validate::ConfirmationValidator, 'on a resource field' do
+describe DataMapper::Validate::ConfirmationValidator do
   before(:all) do
     class Canoe
       include DataMapper::Validate
-      
       def name=(value)
         @name = value
       end
@@ -387,13 +441,12 @@ end
 
 
 #-------------------------------------------------------------------------------
-describe DataMapper::Validate::FormatValidator, 'on a resource field' do
+describe DataMapper::Validate::FormatValidator do
   before(:all) do
     class BillOfLading
       include DataMapper::Resource    
       include DataMapper::Validate
-      
-      property :doc_no, String
+      property :doc_no, String, :auto_validation => false   
 
       # this is a trivial example
       validates_format_of :doc_no, :with => lambda { |code|
@@ -421,12 +474,12 @@ end
 
 
 #-------------------------------------------------------------------------------
-describe DataMapper::Validate::LengthValidator, 'on a resource field' do
+describe DataMapper::Validate::LengthValidator do
   before(:all) do
     class MotorLaunch
       include DataMapper::Resource    
-      include DataMapper::Validate      
-      property :name, String
+      include DataMapper::Validate     
+      property :name, String, :auto_validation => false   
     end
   end
 
@@ -503,13 +556,12 @@ describe DataMapper::Validate::LengthValidator, 'on a resource field' do
 end
 
 #-------------------------------------------------------------------------------
-describe DataMapper::Validate::WithinValidator, 'on a resource field' do
+describe DataMapper::Validate::WithinValidator do
   before(:all) do
     class Telephone
       include DataMapper::Resource    
       include DataMapper::Validate
-      
-      property :type_of_number, String
+      property :type_of_number, String, :auto_validation => false   
       validates_within :type_of_number, :set => ['Home','Work','Cell']   
     end
   end
@@ -526,14 +578,13 @@ end
 
 
 #-------------------------------------------------------------------------------
-describe DataMapper::Validate::NumericValidator, 'on a resource field' do
+describe DataMapper::Validate::NumericValidator do
   before(:all) do
     class Bill
       include DataMapper::Resource    
       include DataMapper::Validate
-      
-      property :amount_1, String
-      property :amount_2, Float
+      property :amount_1, String, :auto_validation => false   
+      property :amount_2, Float, :auto_validation => false   
 
       
       validates_numericalnes_of :amount_1, :amount_2      
@@ -552,8 +603,8 @@ describe DataMapper::Validate::NumericValidator, 'on a resource field' do
   
   it "should validate an integer value on the instance of a resource" do
     class Bill
-      property :quantity_1, String
-      property :quantity_2, Fixnum    
+      property :quantity_1, String, :auto_validation => false   
+      property :quantity_2, Fixnum, :auto_validation => false      
     
       validators.clear!
       validates_numericalnes_of :quantity_1, :quantity_2, :integer_only => true

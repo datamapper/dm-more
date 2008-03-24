@@ -1,5 +1,7 @@
 require File.join(File.dirname(__FILE__),'validate','validation_errors')
 require File.join(File.dirname(__FILE__),'validate','contextual_validators')
+require File.join(File.dirname(__FILE__),'validate','auto_validate')
+
 
 require File.join(File.dirname(__FILE__),'validate','generic_validator')
 require File.join(File.dirname(__FILE__),'validate','required_field_validator')
@@ -9,6 +11,7 @@ require File.join(File.dirname(__FILE__),'validate','format_validator')
 require File.join(File.dirname(__FILE__),'validate','length_validator')
 require File.join(File.dirname(__FILE__),'validate','within_validator')
 require File.join(File.dirname(__FILE__),'validate','numeric_validator')
+
 
 
 
@@ -30,6 +33,7 @@ module DataMapper
          include DataMapper::Validate::ValidatesLengthOf         
          include DataMapper::Validate::ValidatesWithin
          include DataMapper::Validate::ValidatesNumericalnesOf
+         include DataMapper::Validate::AutoValidate
         end
       end
       
@@ -54,8 +58,6 @@ module DataMapper
       end
       
       # Check if a resource is valid in a given context
-      #
-      # 
       #
       def valid?(context = :default)
         self.class.validators.execute(context,self)        

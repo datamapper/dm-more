@@ -46,6 +46,10 @@ module DataMapper
       end
       
       
+      def field_name
+        @field_name
+      end
+      
       # Determine if this validator should be run against the target
       #
       # ==== Parameters

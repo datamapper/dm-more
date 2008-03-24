@@ -2,6 +2,7 @@ module DataMapper
   module Validate 
     class ContextualValidators
       
+      
       def dump
         contexts.each_pair do |key,context|
           puts "Key=#{key} Context: #{context}"
