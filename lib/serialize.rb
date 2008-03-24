@@ -3,7 +3,7 @@ require Pathname('rexml/document')
 begin
   require 'faster_csv'
 rescue LoadError
-  puts "Counld not load FASTER_CSV"
+  puts "Could not load FASTER_CSV"
   nil
 end
 
