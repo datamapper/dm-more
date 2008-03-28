@@ -11,18 +11,16 @@ require File.join(File.dirname(__FILE__),'validate','format_validator')
 require File.join(File.dirname(__FILE__),'validate','length_validator')
 require File.join(File.dirname(__FILE__),'validate','within_validator')
 require File.join(File.dirname(__FILE__),'validate','numeric_validator')
-
-
+require File.join(File.dirname(__FILE__),'validate','method_validator')
 
 
 require File.join(File.dirname(__FILE__),'validate','support','object')
 
 
 
-
 module DataMapper
   module Validate
-        
+      
       def self.included(base)
         base.extend(ClassMethods)
         base.class_eval do
@@ -33,7 +31,9 @@ module DataMapper
          include DataMapper::Validate::ValidatesLengthOf         
          include DataMapper::Validate::ValidatesWithin
          include DataMapper::Validate::ValidatesNumericalnesOf
+         include DataMapper::Validate::ValidatesWithMethod
          include DataMapper::Validate::AutoValidate
+         
         end
       end
       
@@ -153,12 +153,8 @@ module DataMapper
             end
           end        
         end
-        
-        
-             
-      end #module ClassMethods
       
-
+      end #module ClassMethods
     
   end
 end

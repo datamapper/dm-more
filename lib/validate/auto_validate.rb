@@ -1,5 +1,5 @@
-module DataMapper
-  module Validate
+module DataMapper 
+  module Validate 
     module AutoValidate
     
       def self.included(base)
@@ -19,9 +19,11 @@ module DataMapper
         #
         # :size => 20 or :length => 20
         #       Setting the option :size or :length causes a validates_length_of  
-        #       validator to be automatically created on the property
+        #       validator to be automatically created on the property. If the value
+        #       is a Fixnum the validation will set :maximum => value if the value
+        #       is a Range the validation will set :within => value
         #
-        # :format => :predefined of lambda
+        # :format => :predefined / lambda / Proc
         #       Setting the :format option causes a validates_format_of validatior
         #       to be automatically created on the property
         #   

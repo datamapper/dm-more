@@ -6,15 +6,7 @@
  * Add the canned RFC2822 email format to format_validator
  * Add a validates_acceptance_of validator
  * Add a validates_each validator
- * Add a validates_true validator ???
+ * Add a validates_true validator 
+ * Add a validates_with_method :method_name
 
- Spec TODO on a property_added hook of the resource
- ====================================================
- * it "should add a validates_presence_of for not-null properties" do
- * it "should add a validates_length_of for maximum size" do
- * it "should add a validates_length_of for a range" do
- * it "should add a validates_format_of if you pass a format option" do
- * it "should not add a validates_presence_of for not-null properties if auto valdations are disabled" do
- * it "should not add a validates_length_of if auto validations are disabled" do
- * it "should not add a validates_format_of if you pass a format option if auto validations are disabled" do
  
