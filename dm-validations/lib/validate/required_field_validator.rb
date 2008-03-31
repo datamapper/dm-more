@@ -12,7 +12,7 @@ module DataMapper
         field_value = !target.instance_variable_get("@#{@field_name}").blank?
         return true if field_value
         
-        error_message = @options[:message] || "%s must not be blank".t(Inflector.humanize(@field_name))
+        error_message = @options[:message] || "%s must not be blank".t(DataMapper::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
         
         return false

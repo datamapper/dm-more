@@ -1,5 +1,11 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+
+$:.unshift(File.join(File.dirname(__FILE__), '..', '..','..', 'dm-core', 'lib'))
+require 'data_mapper'
+
+DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/spec.db")
+
+#require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/validate'
 
 describe DataMapper::Validate do  

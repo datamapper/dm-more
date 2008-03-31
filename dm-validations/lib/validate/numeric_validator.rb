@@ -14,7 +14,7 @@ module DataMapper
         regex = @options[:integer_only] ? /\A[+-]?\d+\Z/ : /^\d*\.{0,1}\d+$/
         return true if not (value =~ regex).nil?
         
-        error_message = @options[:message] || "%s must be a number".t(Inflector.humanize(@field_name))
+        error_message = @options[:message] || "%s must be a number".t(DataMapper::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
         
         return false

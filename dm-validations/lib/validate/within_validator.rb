@@ -16,7 +16,7 @@ module DataMapper
         @options[:set].each {|item| s = s + "#{item}, "}
         s = '[' + s[0..(s.length-3)] + ']'
 
-        error_message = @options[:message] || "%s must be one of #{s}".t(Inflector.humanize(@field_name))
+        error_message = @options[:message] || "%s must be one of #{s}".t(DataMapper::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)        
         return false
       end      

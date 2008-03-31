@@ -46,7 +46,7 @@ module DataMapper
         end 
         
         unless valid
-          field = Inflector.humanize(@field_name)
+          field = DataMapper::Inflection.humanize(@field_name)
           value = field_value
           
           error_message = @options[:message] || error_message || '%s is invalid'.t(field)

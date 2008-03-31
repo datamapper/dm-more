@@ -24,7 +24,7 @@ module DataMapper
         return true if @options[:allow_nil] && field_value.nil?
         
         # HACK seems hacky to do this on every validation, probably should do this elsewhere?
-        field = Inflector.humanize(@field_name)
+        field = DataMapper::Inflection.humanize(@field_name)
         min = @range ? @range.min : @min
         max = @range ? @range.max : @max
         equal = @equal
