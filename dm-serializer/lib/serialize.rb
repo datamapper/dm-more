@@ -41,7 +41,7 @@ module DataMapper
     # name. This can be overloaded
     #
     def xml_element_name 
-      Inflector.underscore(self.class.name)
+      DataMapper::Inflection.underscore(self.class.name)
     end
     
     # Return a REXML::Document representing this resource
