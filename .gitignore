@@ -1,4 +1,14 @@
+test_log
+pkg
 pkg/*
-*.db
-coverage/*
-
+*/pkg/*
+*.log
+log
+!log*.rb
+*/log
+log/*
+*/log/*
+coverage
+*/coverage
+bundle
+lib/dm-more.rb
