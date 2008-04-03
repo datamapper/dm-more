@@ -36,28 +36,31 @@ module DataMapper
     # Its recommended that you stick with raw SQL for migrations that manipulate data. If 
     # you write a migration using a model, then later change the model, there's a 
     # possibility the migration will no longer work. Using SQL will always work.    
-    #
     def migration( number, name, opts = {}, &block )
-      @migrations ||= []
-      raise "Migration name conflict: '#{name}'" if @migrations.map(&:name).include?(name.to_s)
+      @@migrations ||= []
+      raise "Migration name conflict: '#{name}'" if @@migrations.map(&:name).include?(name.to_s)
 
-      @migrations << DataMapper::Migration.new( number, name.to_s, opts, &block )
+      @@migrations << DataMapper::Migration.new( number, name.to_s, opts, &block )
     end
 
     # Run all migrations that need to be run. In most cases, this would be called by a
     # rake task as part of a larger project, but this provides the ability to run them
     # in a script or test.
     def migrate_up!
-      @migrations.sort.each do |migration|
+      @@migrations.sort.each do |migration|
         migration.perform_up()
       end
     end
 
     # Run all the down steps for the migrations that have already been run.
     def migrate_down!
-      @migrations.sort.reverse.each do |migration|
+      @@migrations.sort.reverse.each do |migration|
         migration.perform_down()
       end
+    end
+
+    def migrations
+      @@migrations
     end
 
   end
