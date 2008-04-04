@@ -10,5 +10,5 @@ log/*
 */log/*
 coverage
 */coverage
-bundle
 lib/dm-more.rb
+*/*.db
