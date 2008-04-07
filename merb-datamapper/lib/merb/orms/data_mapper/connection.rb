@@ -48,7 +48,8 @@ module Merb
         # Database connects as soon as the gem is loaded
         def connect
           if File.exists?(config_file)
-            Merb.logger.info("Connecting to database...")
+            ::DataMapper.logger = Merb.logger
+            ::DataMapper.logger.info("Connecting to database...")
             ::DataMapper.setup(:default, connection_string)
           else
             copy_sample_config
