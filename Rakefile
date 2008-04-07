@@ -13,10 +13,10 @@ require 'fileutils'
 include FileUtils
 
 gems = %w[
-  dm-adapter-extensions
   dm-migrations
   dm-serializer
   dm-validations
+  merb-datamapper
 ]
 
 PROJECT = "dm-more"
