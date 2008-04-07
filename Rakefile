@@ -16,6 +16,7 @@ gems = %w[
   dm-migrations
   dm-serializer
   dm-validations
+  merb-datamapper
 ]
 
 PROJECT = "dm-more"
