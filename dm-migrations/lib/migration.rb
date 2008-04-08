@@ -13,7 +13,7 @@ module DataMapper
   class Migration 
     include SQL
 
-    attr_accessor :position, :name
+    attr_accessor :position, :name, :database, :adapter
 
     def initialize( position, name, opts = {}, &block )
       @position, @name = position, name
@@ -22,10 +22,11 @@ module DataMapper
       @database = DataMapper.repository(@options[:database] || :default)
       @adapter = @database.adapter
 
+      puts @adapter.class
       case @adapter.class.to_s
-      when /Sqlite3/  then extend(SQL::Sqlite3)
-      when /Mysql/    then extend(SQL::Mysql)
-      when /Postgres/ then extend(SQL::Postgres)
+      when /Sqlite3/  then @adapter.extend(SQL::Sqlite3)
+      when /Mysql/    then @adapter.extend(SQL::Mysql)
+      when /Postgres/ then @adapter.extend(SQL::Postgres)
       else
         raise "Unsupported Migration Adapter #{@adapter.class}"
       end
@@ -156,7 +157,7 @@ module DataMapper
     end
 
     def migration_info_table_exists?
-      table_exists?('migration_info')
+      adapter.table_exists?('migration_info')
     end
 
     # Fetch the record for this migration out of the migration_info table
