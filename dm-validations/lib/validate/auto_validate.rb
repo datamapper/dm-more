@@ -28,7 +28,7 @@ module DataMapper
         #       to be automatically created on the property
         #   
         #
-        def auto_generate_validations_for_property(property)
+        def auto_generate_validations(property)
           property.options[:auto_validation] = true unless property.options.has_key?(:auto_validation)
           return unless property.options[:auto_validation]
           
@@ -40,12 +40,18 @@ module DataMapper
             validates_presence_of property.name, opts
           end
           
+          
           # length
-          if property.options.has_key?(:length) || property.options.has_key?(:size)
-            len = property.options.has_key?(:length) ? property.options[:length] : property.options[:size]
-            opts[:within] = len if len.is_a?(Range)
-            opts[:maximum] = len unless len.is_a?(Range)
-            validates_length_of property.name, opts
+          if property.type == String
+            if property.options.has_key?(:length) || property.options.has_key?(:size)
+              len = property.options.has_key?(:length) ? property.options[:length] : property.options[:size]
+              opts[:within] = len if len.is_a?(Range)
+              opts[:maximum] = len unless len.is_a?(Range)
+              validates_length_of property.name, opts
+            else
+              opts[:maximum] = 50 #default string size
+              validates_length_of property.name, opts
+            end
           end
           
           #format
