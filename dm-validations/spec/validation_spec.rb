@@ -255,6 +255,7 @@ describe DataMapper::Validate do
   
   end 
   
+  #-------------------------------------------------------------------------------  
   describe "Automatic Validation from Property Definition" do
     before(:all) do
       class SailBoat
@@ -270,7 +271,7 @@ describe DataMapper::Validate do
     end
   
     it "should have a hook for adding auto validations called from DataMapper::Property#new" do
-      SailBoat.should respond_to(:auto_generate_validations_for_property)
+      SailBoat.should respond_to(:auto_generate_validations)
     end    
     
     it "should auto add a validates_presence_of when property has option :nullable => false" do
@@ -284,7 +285,7 @@ describe DataMapper::Validate do
       boat.valid_for_presence_test?.should == true      
     end
     
-    it "should auto add a validates_length_of for maximum size on :length or :size" do
+    it "should auto add a validates_length_of for maximum size on String properties" do
       # max length test max=10
       boat = SailBoat.new
       boat.valid_for_length_test_1?.should == true  #no minimum length
@@ -313,11 +314,30 @@ describe DataMapper::Validate do
       boat.code = 'A1234'
       boat.valid_for_format_test?.should == true
       boat.code = 'BAD CODE'
-      boat.valid_for_format_test?.should == false
-      
+      boat.valid_for_format_test?.should == false      
     end
     
-    it "should not auto add any validators if the option :auto_validation => false was given"
+    it "should auto validate all strings for max length" do
+      class Test
+        include DataMapper::Resource
+        include DataMapper::Validate        
+        property :name, String
+      end
+      Test.new().valid?().should == true
+      t = Test.new()
+      t.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
+      t.valid?().should == false
+      t.errors.full_messages.should include('Name must be less than 50 characters long')
+    end
+    
+    it "should not auto add any validators if the option :auto_validation => false was given" do
+      class Test
+        include DataMapper::Resource
+        include DataMapper::Validate        
+        property :name, String, :nullable => false, :auto_validation => false
+      end
+      Test.new().valid?().should == true
+    end
         
   end
 end
@@ -582,6 +602,7 @@ describe DataMapper::Validate::WithinValidator do
   end
 end  
 
+#-------------------------------------------------------------------------------
 describe DataMapper::Validate::MethodValidator do
   before(:all) do
     class Ship

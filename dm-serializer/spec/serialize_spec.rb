@@ -1,5 +1,10 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+
+$:.unshift(File.join(File.dirname(__FILE__), '..', '..','..', 'dm-core', 'lib'))
+require 'data_mapper'
+
+
+#require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/serialize'
 
 
