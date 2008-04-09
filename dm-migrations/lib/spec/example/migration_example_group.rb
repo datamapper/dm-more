@@ -1,6 +1,6 @@
 require 'spec'
 
-require File.dirname(__FILE__) + '/../lib/spec/matchers/migration_matchers'
+require File.dirname(__FILE__) + '/../matchers/migration_matchers'
 
 module Spec
   module Example
