@@ -1,3 +1,5 @@
+require 'data_mapper'
+
 require File.join(File.dirname(__FILE__),'validate','validation_errors')
 require File.join(File.dirname(__FILE__),'validate','contextual_validators')
 require File.join(File.dirname(__FILE__),'validate','auto_validate')
