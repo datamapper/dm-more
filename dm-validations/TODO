@@ -8,7 +8,6 @@
  * Add a validates_each validator
  * Add a validates_true validator 
 
- * Check on auto_validation => false 
  * Add to property definition :when => [context] in addition to :validation_context
 
 
