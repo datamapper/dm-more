@@ -1,5 +1,5 @@
 require 'fileutils'
-require 'data_mapper' unless $TESTING
+require 'data_mapper'
 
 module Merb
   module Orms
