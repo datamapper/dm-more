@@ -1,22 +1,22 @@
 require 'data_mapper'
 
-require File.join(File.dirname(__FILE__),'validate','validation_errors')
-require File.join(File.dirname(__FILE__),'validate','contextual_validators')
-require File.join(File.dirname(__FILE__),'validate','auto_validate')
+require File.join(File.dirname(__FILE__),'dm-validations','validation_errors')
+require File.join(File.dirname(__FILE__),'dm-validations','contextual_validators')
+require File.join(File.dirname(__FILE__),'dm-validations','auto_validate')
 
 
-require File.join(File.dirname(__FILE__),'validate','generic_validator')
-require File.join(File.dirname(__FILE__),'validate','required_field_validator')
-require File.join(File.dirname(__FILE__),'validate','absent_field_validator')
-require File.join(File.dirname(__FILE__),'validate','confirmation_validator')
-require File.join(File.dirname(__FILE__),'validate','format_validator')
-require File.join(File.dirname(__FILE__),'validate','length_validator')
-require File.join(File.dirname(__FILE__),'validate','within_validator')
-require File.join(File.dirname(__FILE__),'validate','numeric_validator')
-require File.join(File.dirname(__FILE__),'validate','method_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','generic_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','required_field_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','absent_field_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','confirmation_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','format_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','length_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
 
 
-require File.join(File.dirname(__FILE__),'validate','support','object')
+require File.join(File.dirname(__FILE__),'dm-validations','support','object')
 
 
 
