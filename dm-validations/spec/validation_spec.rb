@@ -260,12 +260,12 @@ describe DataMapper::Validate do
       class SailBoat
         include DataMapper::Resource
         include DataMapper::Validate        
-        property :name, String, :nullable => false , :validation_context => :presence_test    
-        property :description, String, :length => 10, :validation_context => :length_test_1
-        property :notes, String, :length => 2..10, :validation_context => :length_test_2
+        property :name, String, :nullable => false , :validates => :presence_test    
+        property :description, String, :length => 10, :validates => :length_test_1
+        property :notes, String, :length => 2..10, :validates => :length_test_2
         property :no_validation, String, :auto_validation => false
-        property :salesman, String, :nullable => false, :validation_context => [:multi_context_1, :multi_context_2]
-        property :code, String, :format => Proc.new { |code| code =~ /A\d{4}/}, :validation_context => :format_test
+        property :salesman, String, :nullable => false, :validates => [:multi_context_1, :multi_context_2]
+        property :code, String, :format => Proc.new { |code| code =~ /A\d{4}/}, :validates => :format_test
       end
     end
   
