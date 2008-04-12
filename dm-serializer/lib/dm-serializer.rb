@@ -85,17 +85,8 @@ module DataMapper
          row << self.send(property.name).to_s            
         end
         csv << row
-#        csv << self.class.properties(self.repository.name).each {|property| self.send(property.name).to_s}            
       end
     end
     
-    #def to_csv(writer = "")
-    #  FasterCSV.generate(writer) do |csv|
-    #    csv << database_context.table(self.class).columns.map { |column| get_value_for_column(column) }
-    #  end
-    #  return writer
-    #end
-
-
   end
 end # module DataMapper
