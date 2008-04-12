@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'data_mapper'
 
 require File.join(File.dirname(__FILE__),'dm-validations','validation_errors')
@@ -14,7 +15,7 @@ require File.join(File.dirname(__FILE__),'dm-validations','length_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
-
+require File.join(File.dirname(__FILE__),'dm-validations','uniqueness_validator')
 
 require File.join(File.dirname(__FILE__),'dm-validations','support','object')
 
@@ -34,6 +35,7 @@ module DataMapper
          include DataMapper::Validate::ValidatesWithin
          include DataMapper::Validate::ValidatesNumericalnesOf
          include DataMapper::Validate::ValidatesWithMethod
+         include DataMapper::Validate::ValidatesUniquenessOf
          include DataMapper::Validate::AutoValidate
          
         end
@@ -90,6 +92,24 @@ module DataMapper
         return valid && target.valid?
       end
       
+      
+      def validation_property_value(name)
+        return self.instance_variable_get("@#{name}") if self.class.properties(self.class.repository.name)[name]
+        return self.send(name) if self.respond_to?(name)
+        nil
+      end
+      
+      def validation_association_keys(name)
+        if self.class.relationships.has_key?(name)
+          result = []
+          relation = self.class.relationships[name]
+          relation.child_key.each do |key|
+            result << key.name
+          end
+          return result
+        end           
+        nil   
+      end  
       
       module ClassMethods
         
@@ -155,8 +175,7 @@ module DataMapper
             end
           end        
         end
-      
-      end #module ClassMethods
-    
+              
+      end #module ClassMethods    
   end
 end
