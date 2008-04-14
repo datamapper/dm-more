@@ -2,14 +2,13 @@
  =================
  * Add logic_validator -- validates(“You need more money!”) { |instance| instance.money < 1_000_000 }
  * Allow for the translation of strings in messages
- * Add validate_uniqueness_of validator -- waiting on CRUD/finders
  * Add the canned RFC2822 email format to format_validator
  * Add a validates_acceptance_of validator
  * Add a validates_each validator
  * Add a validates_true validator 
 
- * Check on auto_validation => false 
- * Add to property definition :when => [context] in addition to :validation_context
+ * Validators do not accept associations except validates_uniqueness_of - fix this
+ * Add auto validation on cardinality of associations
 
 
  

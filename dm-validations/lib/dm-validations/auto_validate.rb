@@ -33,7 +33,7 @@ module DataMapper
           return unless property.options[:auto_validation]
           
           opts = {}
-          opts[:context] = property.options[:validation_context] if property.options.has_key?(:validation_context)
+          opts[:context] = property.options[:validates] if property.options.has_key?(:validates)
           
           # presence
           if property.options.has_key?(:nullable) && !property.options[:nullable]

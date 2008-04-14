@@ -1,11 +1,8 @@
+require 'rubygems'
 require 'pathname'
-
-$:.unshift(File.join(File.dirname(__FILE__), '..', '..','..', 'dm-core', 'lib'))
 require 'data_mapper'
 
-
-#require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/serialize'
+require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-serializer'
 
 
 describe DataMapper::Serialize do

@@ -1,20 +1,23 @@
-require File.join(File.dirname(__FILE__),'validate','validation_errors')
-require File.join(File.dirname(__FILE__),'validate','contextual_validators')
-require File.join(File.dirname(__FILE__),'validate','auto_validate')
+require 'rubygems'
+require 'data_mapper'
+
+require File.join(File.dirname(__FILE__),'dm-validations','validation_errors')
+require File.join(File.dirname(__FILE__),'dm-validations','contextual_validators')
+require File.join(File.dirname(__FILE__),'dm-validations','auto_validate')
 
 
-require File.join(File.dirname(__FILE__),'validate','generic_validator')
-require File.join(File.dirname(__FILE__),'validate','required_field_validator')
-require File.join(File.dirname(__FILE__),'validate','absent_field_validator')
-require File.join(File.dirname(__FILE__),'validate','confirmation_validator')
-require File.join(File.dirname(__FILE__),'validate','format_validator')
-require File.join(File.dirname(__FILE__),'validate','length_validator')
-require File.join(File.dirname(__FILE__),'validate','within_validator')
-require File.join(File.dirname(__FILE__),'validate','numeric_validator')
-require File.join(File.dirname(__FILE__),'validate','method_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','generic_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','required_field_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','absent_field_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','confirmation_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','format_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','length_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','uniqueness_validator')
 
-
-require File.join(File.dirname(__FILE__),'validate','support','object')
+require File.join(File.dirname(__FILE__),'dm-validations','support','object')
 
 
 
@@ -32,6 +35,7 @@ module DataMapper
          include DataMapper::Validate::ValidatesWithin
          include DataMapper::Validate::ValidatesNumericalnesOf
          include DataMapper::Validate::ValidatesWithMethod
+         include DataMapper::Validate::ValidatesUniquenessOf
          include DataMapper::Validate::AutoValidate
          
         end
@@ -88,6 +92,24 @@ module DataMapper
         return valid && target.valid?
       end
       
+      
+      def validation_property_value(name)
+        return self.instance_variable_get("@#{name}") if self.class.properties(self.class.repository.name)[name]
+        return self.send(name) if self.respond_to?(name)
+        nil
+      end
+      
+      def validation_association_keys(name)
+        if self.class.relationships.has_key?(name)
+          result = []
+          relation = self.class.relationships[name]
+          relation.child_key.each do |key|
+            result << key.name
+          end
+          return result
+        end           
+        nil   
+      end  
       
       module ClassMethods
         
@@ -153,8 +175,7 @@ module DataMapper
             end
           end        
         end
-      
-      end #module ClassMethods
-    
+              
+      end #module ClassMethods    
   end
 end
