@@ -5,7 +5,7 @@ PLUGIN = "dm-serializer"
 NAME = "dm-serializer"
 VERSION = "0.9.0"
 AUTHOR = "Guy van den Berg"
-EMAIL = "change_this@email.com"
+EMAIL = "vandenberg.guy@gmail.com"
 HOMEPAGE = "http://github.com/sam/dm-more/tree/master/dm-serializer"
 SUMMARY = "DataMapper plugin for serializing DataMapper objects"
 
