@@ -73,6 +73,11 @@ module DataMapper
       self.class.properties(self.repository.name).each do |property|
         fields << "#{property.name.to_json}: #{self.send(property.name).to_json}"
       end
+      if self.class.respond_to?(:read_only_attributes)
+        self.class.read_only_attributes.each do |property|
+          fields << "#{property.to_json}: #{self.send(property).to_json}"
+        end
+      end
       result << fields.join(', ')      
       result << ' }'
       result
