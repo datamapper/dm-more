@@ -63,7 +63,7 @@ module DataMapper
           node = root.add_element(property.name.to_s)
           node << REXML::Text.new(value.to_s) unless value.nil?
         end          
-      end                     
+      end
       doc
     end
     
@@ -71,7 +71,7 @@ module DataMapper
       result = '{ '
       fields = []
       self.class.properties(self.repository.name).each do |property|
-        fields << "#{property.name.to_json}: #{self.send(property.name).to_json}"
+        fields << "#{property.name.to_json}: #{self.send(property.getter).to_json}"
       end
       if self.class.respond_to?(:read_only_attributes)
         self.class.read_only_attributes.each do |property|
