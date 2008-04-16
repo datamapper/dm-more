@@ -25,8 +25,10 @@ module Merb
             (full_config[Merb.environment.to_sym] || full_config[Merb.environment]).each do |k, v|
               if k == 'port'
                 config[k.to_sym] = v.to_i
-              else
-                config[k.to_sym] = v
+              elsif k == 'adapter' && v == 'postgresql'
+                config[k.to_sym] = 'postgres'
+	      else
+		config[k.to_sym] = v
               end
             end
             config
