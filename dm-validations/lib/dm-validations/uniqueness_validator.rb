@@ -18,7 +18,7 @@ module DataMapper
           scope.map do |item|
             if !target.class.properties(target.class.repository.name)[item].nil?
               opts[item] = target.validation_property_value(item) 
-            elsif target.class.relationships.include?(item)
+            elsif target.class.relationships.has_key?(item) #include?(item) #TODO I chaned this to has_key? check!!!!
               target.validation_association_keys(item).map do |key|
                 opts[key] = target.validation_property_value(key)
               end
