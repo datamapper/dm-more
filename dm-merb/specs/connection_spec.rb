@@ -5,22 +5,29 @@ describe 'Merb datamapper' do
   it "should read the configuration file" do
     
   end
-  
+
   it 'should return an option hash with symbol keys' do
     Merb.should_receive(:environment).twice.and_return('development')
     
     config = {
       'development' => {
         'adapter' => 'myadapter',
-        'more_stuff' => 'more_stuff'
+        'more_stuff' => 'more_stuff',
+	'repositories' => {
+	  'repo1' => {
+	    'adapter' => 'mysql'
+          }
+        }
       }
     }
     
     Merb::Orms::DataMapper.should_receive(:full_config).twice.and_return(config)
     Merb::Orms::DataMapper.config.should have_key(:adapter)
     Merb::Orms::DataMapper.config[:adapter].should == 'myadapter'
-    Merb::Orms::DataMapper.config.should have_key(:more_stuff)
-    Merb::Orms::DataMapper.config[:more_stuff].should == 'more_stuff'
+    Merb::Orms::DataMapper.config.should have_key(:repositories)
+    Merb::Orms::DataMapper.config[:repositories].should have_key(:repo1)
+    Merb::Orms::DataMapper.config[:repositories][:repo1].should have_key(:adapter)
+    Merb::Orms::DataMapper.config[:repositories][:repo1][:adapter].should == 'mysql'
   end
 
   it "should create a default repository" do
