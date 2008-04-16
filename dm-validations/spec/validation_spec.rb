@@ -276,6 +276,7 @@ begin
           property :no_validation, String, :auto_validation => false
           property :salesman, String, :nullable => false, :validates => [:multi_context_1, :multi_context_2]
           property :code, String, :format => Proc.new { |code| code =~ /A\d{4}/}, :validates => :format_test
+          property :allow_nil, String, :size => 5..10, :nullable => true, :validates => :nil_test
         end
       end
     
@@ -347,6 +348,24 @@ begin
         end
         Test.new().valid?().should == true
       end
+      
+      it 'It should auto add range checking the length of a string while still allowing null values' do
+        boat = SailBoat.new()
+        boat.allow_nil = 'ABC'
+        boat.should_not be_valid_for_nil_test
+        boat.errors.on(:allow_nil).should include('Allow nil must be between 5 and 10 characters long')
+        
+        boat.allow_nil = 'ABCDEFG'
+        boat.should be_valid_for_nil_test
+
+        boat.allow_nil = 'ABCDEFGHIJKLMNOP'
+        boat.should_not be_valid_for_nil_test
+        boat.errors.on(:allow_nil).should include('Allow nil must be between 5 and 10 characters long')
+        
+        boat.allow_nil = nil
+        boat.should be_valid_for_nil_test
+              
+      end
           
     end
   end
@@ -354,24 +373,63 @@ begin
   #-----------------------------------------------------------------------------
 
   describe DataMapper::Validate::RequiredFieldValidator do
-    before(:all) do
-      class Boat
+    after do
+      repository(:sqlite3).adapter.execute('DROP TABLE "landscapers"');
+      repository(:sqlite3).adapter.execute('DROP TABLE "gardens"');
+    end
+    
+    before do
+      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
+        CREATE TABLE "landscapers" (
+          "id" INTEGER PRIMARY KEY,
+          "name" VARCHAR(50)
+        )
+      EOS
+      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
+        CREATE TABLE "gardens" (
+          "id" INTEGER PRIMARY KEY,
+          "landscaper_id" INTEGER,
+          "name" VARCHAR(50)
+        )
+      EOS
+      
+      class Landscaper
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
+        property :name, String        
+      end
+      
+      class Garden
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :id, Fixnum, :key => true
+        property :landscaper_id, Fixnum
         property :name, String, :auto_validation => false                  
-        validates_presence_of :name    
+        
+        has :landscaper, 1..n
+        
+        validates_presence_of :name, :when => :property_test    
+        validates_presence_of :landscaper, :when => :association_test    
       end
     end
 
-    it "should validate the presence of a value on an instance of a resource" do
-      sting_ray = Boat.new
-      sting_ray.valid?.should_not == true
-      sting_ray.errors.full_messages.include?('Name must not be blank').should == true
+    it "should validate the presence of a property value on an instance of a resource" do
+      garden = Garden.new
+      garden.should_not be_valid_for_property_test
+      garden.errors.on(:name).should include('Name must not be blank')
       
-      sting_ray.name = 'Sting Ray'
-      sting_ray.valid?.should == true
-      sting_ray.errors.full_messages.length.should == 0  
+      garden.name = 'The Wilds'
+      garden.should be_valid_for_property_test
     end
+    
+    it "should validate the presence of an association value on an instance of a resource" 
+    #do
+    #  garden = Garden.new
+    #  landscaper = garden.landscaper
+    #  puts landscaper.children.length
+    #  #puts "Gardens landscaper is #{garden.landscaper.child_key}"
+    #end
     
   end
 

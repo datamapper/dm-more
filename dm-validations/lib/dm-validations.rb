@@ -94,7 +94,7 @@ module DataMapper
       
       
       def validation_property_value(name)
-        return self.instance_variable_get("@#{name}") if self.class.properties(self.class.repository.name)[name]
+        return self.instance_variable_get("@#{name}") if self.instance_variables.include?(name)
         return self.send(name) if self.respond_to?(name)
         nil
       end
