@@ -2,7 +2,7 @@
 # This is a sample database file for the DataMapper ORM
 development: &defaults
   # These are the settings for repository :default
-  adapter:  postgresql
+  adapter:  postgres
   database: sample_development
   username: the_user
   password: secrets

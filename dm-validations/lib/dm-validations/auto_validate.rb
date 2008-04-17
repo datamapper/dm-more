@@ -46,7 +46,8 @@ module DataMapper
             if property.options.has_key?(:length) || property.options.has_key?(:size)
               len = property.options.has_key?(:length) ? property.options[:length] : property.options[:size]
               opts[:within] = len if len.is_a?(Range)
-              opts[:maximum] = len unless len.is_a?(Range)
+              opts[:maximum] = len unless len.is_a?(Range)              
+              opts[:allow_nil] = property.options[:nullable] if property.options.has_key?(:nullable)              
               validates_length_of property.name, opts
             else
               opts[:maximum] = 50 #default string size

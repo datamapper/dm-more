@@ -12,3 +12,4 @@ coverage
 */coverage
 lib/dm-more.rb
 */*.db
+nbproject

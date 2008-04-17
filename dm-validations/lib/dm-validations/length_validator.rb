@@ -20,8 +20,10 @@ module DataMapper
       end
       
       def call(target)
-        field_value = target.instance_variable_get("@#{@field_name}").to_s
+        field_value = target.validation_property_value(@field_name) 
         return true if @options[:allow_nil] && field_value.nil?
+        
+        field_value = '' if field_value.nil?
         
         # HACK seems hacky to do this on every validation, probably should do this elsewhere?
         field = DataMapper::Inflection.humanize(@field_name)

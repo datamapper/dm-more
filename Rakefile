@@ -13,10 +13,10 @@ require 'fileutils'
 include FileUtils
 
 gems = %w[
+  dm-merb
   dm-migrations
   dm-serializer
   dm-validations
-  merb-datamapper
 ]
 
 PROJECT = "dm-more"
@@ -61,12 +61,12 @@ end
 desc "Build the dm-more gems"
 task :build_gems do
   gems.each do |dir|
-    Dir.chdir(dir){ sh "rake package" }
+    Dir.chdir(dir){ sh "rake gem" }
   end
 end
 
 desc "Install the dm-more gems"
-task :install_gems do
+task :install_gems => :build_gems do
   gems.each do |dir|
     Dir.chdir(dir){ sh "#{SUDO} rake install" }
   end
