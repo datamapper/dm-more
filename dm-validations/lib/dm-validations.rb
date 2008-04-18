@@ -16,6 +16,7 @@ require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
 require File.join(File.dirname(__FILE__),'dm-validations','uniqueness_validator')
+require File.join(File.dirname(__FILE__),'dm-validations','acceptance_validator')
 
 require File.join(File.dirname(__FILE__),'dm-validations','support','object')
 
@@ -30,6 +31,7 @@ module DataMapper
          include DataMapper::Validate::ValidatesPresenceOf
          include DataMapper::Validate::ValidatesAbsenceOf
          include DataMapper::Validate::ValidatesConfirmationOf
+         include DataMapper::Validate::ValidatesAcceptanceOf
          include DataMapper::Validate::ValidatesFormatOf
          include DataMapper::Validate::ValidatesLengthOf         
          include DataMapper::Validate::ValidatesWithin

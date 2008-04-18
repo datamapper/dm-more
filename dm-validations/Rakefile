@@ -1,5 +1,8 @@
 require 'rubygems'
+require 'spec'
+require 'spec/rake/spectask'
 require 'rake/gempackagetask'
+require 'pathname'
 
 PLUGIN = "dm-validations"
 NAME = "dm-validations"
@@ -34,3 +37,8 @@ task :install => [:package] do
   sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
+desc "Run specifications"
+Spec::Rake::SpecTask.new('spec') do |t|
+  t.spec_opts = ["--format", "specdoc", "--colour"]
+  t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent.join("spec").join("**").join("*_spec.rb"))
+end
