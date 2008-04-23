@@ -20,7 +20,7 @@ module Merb
         def config
           @config ||=
             Merb::Plugins.config[:merb_datamapper] = 
-	      (full_config[Merb.environment.to_sym] || symbolize_keys(full_config[Merb.environment]))
+            (full_config[Merb.environment.to_sym] || symbolize_keys(full_config[Merb.environment]))
         end
 
         # Database connects as soon as the gem is loaded
@@ -56,22 +56,22 @@ module Merb
             "Using DataMapper database sessions")
         end
 
-	def symbolize_keys(h)
-	  config = {}
+        def symbolize_keys(h)
+          config = {}
 
-	  h.each do |k, v|
-	    if k == 'port'
-	      config[k.to_sym] = v.to_i
-	    elsif k == 'adapter' && v == 'postgresql'
-	      config[k.to_sym] = 'postgres'
-	    elsif v.is_a?(Hash)
-	      config[k.to_sym] = symbolize_keys(v)
-	    else
-	      config[k.to_sym] = v
-	    end
-	  end
+          h.each do |k, v|
+            if k == 'port'
+              config[k.to_sym] = v.to_i
+            elsif k == 'adapter' && v == 'postgresql'
+              config[k.to_sym] = 'postgres'
+            elsif v.is_a?(Hash)
+              config[k.to_sym] = symbolize_keys(v)
+            else
+              config[k.to_sym] = v
+            end
+          end
 
-	  config
+          config
         end
       end
     end
