@@ -16,19 +16,26 @@ module DataMapper
         opts[@field_name] = target.validation_property_value(@field_name) 
         unless scope.nil?
           scope.map do |item|
-            if !target.class.properties(target.class.repository.name)[item].nil?
+            if !target.class.properties(target.repository.name)[item].nil?
               opts[item] = target.validation_property_value(item) 
-            elsif target.class.relationships.has_key?(item) #include?(item) #TODO I changed this to has_key? check!!!!
+            elsif target.class.relationships.has_key?(item)
               target.validation_association_keys(item).map do |key|
                 opts[key] = target.validation_property_value(key)
               end
             end          
           end
         end
-              
-        resource = target.class.first(opts)
-        return true if resource.nil? || resource == target
         
+        resource = nil
+        repository(target.repository.name) do                      
+          resource = target.class.first(opts)
+        end
+              
+              
+        return true if resource.nil?        
+        # is target and found resource identic? same instance... but not ==
+        return true if resource.class == target.class && resource.repository.name == target.repository.name && resource.key == target.key
+
         error_message = @options[:message] || "%s is already taken".t(DataMapper::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)        
         return false
