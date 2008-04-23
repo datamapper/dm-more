@@ -55,12 +55,25 @@ module DataMapper
             end
           end
           
-          #format
+          # format
           if property.options.has_key?(:format)
             opts[:with] = property.options[:format]
             validates_format_of property.name, opts
           end
       
+          # uniqueness validator
+          if property.options.has_key?(:unique)
+            value = property.options[:unique]
+            scope = []
+            scope.concat(value) if value.is_a?(Array)
+            scope << value if value.is_a?(Symbol)
+            opts = {}
+            opts[:scope] = scope if scope.length > 0
+            
+            if value.is_a?(TrueClass) || scope.length > 0
+              validates_uniqueness_of property.name, opts
+            end
+          end
 
         end
       end

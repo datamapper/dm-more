@@ -18,7 +18,7 @@ module DataMapper
           scope.map do |item|
             if !target.class.properties(target.class.repository.name)[item].nil?
               opts[item] = target.validation_property_value(item) 
-            elsif target.class.relationships.has_key?(item) #include?(item) #TODO I chaned this to has_key? check!!!!
+            elsif target.class.relationships.has_key?(item) #include?(item) #TODO I changed this to has_key? check!!!!
               target.validation_association_keys(item).map do |key|
                 opts[key] = target.validation_property_value(key)
               end
@@ -29,7 +29,7 @@ module DataMapper
         resource = target.class.first(opts)
         return true if resource.nil? || resource == target
         
-        error_message = @options[:message] || "%s is already taken.".t(DataMapper::Inflection.humanize(@field_name))
+        error_message = @options[:message] || "%s is already taken".t(DataMapper::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)        
         return false
       end      
