@@ -12,7 +12,7 @@ module DataMapper
         @options = options
         @field_name = field_name
         @options[:allow_nil] = true unless @options.include?(:allow_nil)
-        @options[:accept] ||= "1"
+        @options[:accept] ||= ["1",1,"true",true,"t"]
         @options[:accept] = Array(@options[:accept])
       end
       
