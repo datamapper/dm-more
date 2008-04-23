@@ -6,7 +6,7 @@ class ModelGenerator < Merb::GeneratorBase
     super
     @model_file_name =      args.shift.snake_case
     @model_class_name =     @model_file_name.to_const_string
-    @model_attributes =     Hash[*(args.map{|a| a.split(":") }.flatten)]
+    @model_attributes =     normalize_attributes(args)
     @model_file_name =      "#{@model_class_name.snake_case}"
 
   end
@@ -33,6 +33,14 @@ class ModelGenerator < Merb::GeneratorBase
 
       USAGE: #{spec.name}"
     EOS
+  end
+  
+  def normalize_attributes(attributes_input)
+    attributes = [] 
+    attributes_input.map do |a| 
+      name, type = a.split(":") 
+      [name.snake_case, type.to_const_string]
+    end
   end
 
 end
