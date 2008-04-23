@@ -1,5 +1,3 @@
-# TODO: move into dm-more
-
 require "yaml"
 require "irb"
 require Pathname('irb/completion')
