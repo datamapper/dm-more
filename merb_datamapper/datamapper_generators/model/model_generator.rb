@@ -36,7 +36,6 @@ class ModelGenerator < Merb::GeneratorBase
   end
   
   def normalize_attributes(attributes_input)
-    attributes = [] 
     attributes_input.map do |a| 
       name, type = a.split(":") 
       [name.snake_case, type.to_const_string]
