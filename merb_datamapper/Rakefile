@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 
-PLUGIN = "dm-merb"
-NAME = "dm-merb"
+PLUGIN = "merb_datamapper"
+NAME = "merb_datamapper"
 VERSION = "0.9.0"
 AUTHOR = "Jason Toy"
 EMAIL = "jtoy@rubynow.com"
