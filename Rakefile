@@ -13,7 +13,7 @@ require 'fileutils'
 include FileUtils
 
 gems = %w[
-  dm-merb
+  merb_datamapper
   dm-migrations
   dm-serializer
   dm-validations
