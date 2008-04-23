@@ -53,21 +53,20 @@ describe DataMapper::Migration, 'interface' do
   it "should extend with SQL::Sqlite3 when adapter is Sqlite3Adapter" do
     DataMapper.setup(:sqlite3, "sqlite3:///#{Dir.pwd}/migration_test.db")
     migration = DataMapper::Migration.new(1, :sqlite3_adapter_test, :database => :sqlite3) { }
-    (class << migration; self; end).included_modules.should include(SQL::Sqlite3)
+    (class << migration.adapter; self; end).included_modules.should include(SQL::Sqlite3)
   end
 
   it "should extend with SQL::Mysql when adapter is MysqlAdapter" do
     DataMapper.setup(:mysql, "mysql://localhost/migration_test")
     migration = DataMapper::Migration.new(1, :mysql_adapter_test, :database => :mysql) { }
-    (class << migration; self; end).included_modules.should include(SQL::Mysql)
+    (class << migration.adapter; self; end).included_modules.should include(SQL::Mysql)
   end
 
-  # TODO uncomment this, once someone unfucks do_postgres
-  # it "should extend with SQL::Postgres when adapter is PostgresAdapter" do
-  #   DataMapper.setup(:postgres, "postgresql://localhost/migration_test")
-  #   migration = DataMapper::Migration.new(1, :postgres_adapter_test, :database => :postgres) { }
-  #   (class << migration; self; end).included_modules.should include(SQL::Postgres)
-  # end
+  it "should extend with SQL::Postgres when adapter is PostgresAdapter" do
+    DataMapper.setup(:postgres, "postgres://localhost/migration_test")
+    migration = DataMapper::Migration.new(1, :postgres_adapter_test, :database => :postgres) { }
+    (class << migration.adapter; self; end).included_modules.should include(SQL::Postgresql)
+  end
 
 end
 

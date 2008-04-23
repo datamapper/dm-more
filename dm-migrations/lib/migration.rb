@@ -22,11 +22,10 @@ module DataMapper
       @database = DataMapper.repository(@options[:database] || :default)
       @adapter = @database.adapter
 
-      puts @adapter.class
       case @adapter.class.to_s
       when /Sqlite3/  then @adapter.extend(SQL::Sqlite3)
       when /Mysql/    then @adapter.extend(SQL::Mysql)
-      when /Postgres/ then @adapter.extend(SQL::Postgres)
+      when /Postgres/ then @adapter.extend(SQL::Postgresql)
       else
         raise "Unsupported Migration Adapter #{@adapter.class}"
       end
@@ -144,9 +143,9 @@ module DataMapper
     end
 
     def create_migration_info_table_if_needed
-      save, @verbose = @verbose, false
+      save, @verbose = @verbose, true # false
       unless migration_info_table_exists?
-        execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} TEXT UNIQUE)")
+        execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} VARCHAR(255) UNIQUE)")
       end
       @verbose = save
     end

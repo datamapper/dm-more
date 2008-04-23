@@ -92,6 +92,14 @@ module Spec
           column.primary_key
         end
 
+        def failure_message
+          %(expected #{column.name} to be PRIMARY KEY)
+        end
+
+        def negative_failure_message
+          %(expected #{column.name} to not be PRIMARY KEY)
+        end
+
       end
 
     end

@@ -6,13 +6,6 @@ module SQL
 
     attr_accessor :name, :columns
 
-    def initialize(adapter, table_name)
-      @columns = []
-      adapter.query_table(table_name).each do |col_struct|
-        @columns << SQL::Column.new(col_struct)
-      end      
-    end
-
     def to_s
       name
     end

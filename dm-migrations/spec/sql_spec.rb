@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 require File.dirname(__FILE__) + '/../lib/migration'
 
 DataMapper.setup(:default, "sqlite3:///#{Dir.pwd}/migration_test.db")
+DataMapper::Logger.new(nil, :debug)
 
 describe DataMapper::Migration, "#create_table helper" do
   before do

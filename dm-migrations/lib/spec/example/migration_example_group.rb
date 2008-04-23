@@ -28,14 +28,13 @@ module Spec
       end
 
       after(:all) do
-        this_migration.adapter.drop_database
+        this_migration.adapter.recreate_database
       end
 
       def run_prereq_migrations
         "running n-1 migrations"
         all_databases.each do |db|
-          db.adapter.drop_database
-          db.adapter.create_database
+          db.adapter.recreate_database
         end
         @@migrations.sort.each do |migration|
           break if migration.name.to_s == migration_name.to_s

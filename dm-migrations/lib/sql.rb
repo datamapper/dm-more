@@ -50,9 +50,9 @@ module SQL
   end
 
   class TableModifier
-    attr_accessor :table_name, :opts, :statements
+    attr_accessor :table_name, :opts, :statements, :adapter
 
-    def initialize(*args)
+    def initialize(adapter, table_name, opts = {}, &block)
       @adapter = adapter
       @table_name = table_name.to_s
       @opts = opts
