@@ -11,5 +11,5 @@ log/*
 coverage
 */coverage
 lib/dm-more.rb
-*/*.db
+*.db
 nbproject
