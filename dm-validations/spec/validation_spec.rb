@@ -407,7 +407,7 @@ begin
         property :landscaper_id, Fixnum
         property :name, String, :auto_validation => false                  
         
-        has :landscaper, 1..n
+        belongs_to :landscaper #has :landscaper, 1..n
         
         validates_presence_of :name, :when => :property_test    
         validates_presence_of :landscaper, :when => :association_test    
@@ -863,7 +863,7 @@ begin
         property :organisation_id, Fixnum
         property :user_name, String
         
-        has :organisation, n..1
+        belongs_to :organisation #has :organisation, n..1
         
         validates_uniqueness_of :user_name, :when => :testing_association, :scope => [:organisation]
         validates_uniqueness_of :user_name, :when => :testing_property, :scope => [:organisation_id]
@@ -886,7 +886,7 @@ begin
       
         o = Organisation.new(:id=>2,:name=>"Org Two", :domain=>"taken")        
         o.should_not be_valid
-        o.errors.on(:domain).should include('Domain is already taken.')
+        o.errors.on(:domain).should include('Domain is already taken')
         
         o = Organisation.new(:id=>2,:name=>"Org Two", :domain=>"not_taken") 
         o.should be_valid
