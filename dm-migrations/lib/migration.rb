@@ -1,6 +1,6 @@
-require 'benchmark'
+require 'rubygems'
 require 'data_mapper'
-
+require 'benchmark'
 require File.dirname(__FILE__) + '/sql'
 
 module DataMapper

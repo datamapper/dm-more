@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 require File.dirname(__FILE__) + '/../lib/migration'
 
-DataMapper.setup(:default, "sqlite3:///#{Dir.pwd}/migration_test.db")
+DataMapper.setup(:default, "sqlite3://#{DB_FILE}")
 
 describe DataMapper::Migration, 'interface' do
   before do
@@ -21,7 +21,7 @@ describe DataMapper::Migration, 'interface' do
   end
 
   it "should have a :database option" do
-    DataMapper.setup(:other, "sqlite3:///#{Dir.pwd}/migration_other.db")
+    DataMapper.setup(:other, "sqlite3://#{Dir.pwd}/migration_other.db")
 
     m = DataMapper::Migration.new(2, :create_dogs_table, :database => :other) {}
     m.instance_variable_get(:@database).name.should == :other
@@ -51,7 +51,7 @@ describe DataMapper::Migration, 'interface' do
   end
 
   it "should extend with SQL::Sqlite3 when adapter is Sqlite3Adapter" do
-    DataMapper.setup(:sqlite3, "sqlite3:///#{Dir.pwd}/migration_test.db")
+    DataMapper.setup(:sqlite3, "sqlite3://#{DB_FILE}")
     migration = DataMapper::Migration.new(1, :sqlite3_adapter_test, :database => :sqlite3) { }
     (class << migration.adapter; self; end).included_modules.should include(SQL::Sqlite3)
   end
