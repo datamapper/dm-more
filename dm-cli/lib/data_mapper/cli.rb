@@ -13,15 +13,15 @@ module DataMapper
       def usage
         "\nNote: If exactly one argument is given the CLI assumes it is a connection string.
         \n#{'='*80}\n= Examples\n#{'='*80}
-        
+
         1. Use a connection string to connect to the database
 
           $ dm mysql://root@localhost/test_development
-          
+
           Notes: The connection string has the format:
-          
+
             adapter://user:password@host:port/database
-          
+
           Where adapter is in: {mysql, pgsql, sqlite...}
 
         2. Load the database by specifying only cli options
@@ -122,7 +122,7 @@ module DataMapper
           end
 
           opt.on("-?", "-H", "--help", "Show this help message") do
-            puts opt 
+            puts opt
             exit
           end
 
