@@ -3,6 +3,8 @@ require 'rubygems'
 gem 'dm-core', '>= 0.9'
 require 'data_mapper'
 
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib', 'data_mapper', 'cli'))
+
 describe DataMapper::CLI do
 
   describe "connection string" do

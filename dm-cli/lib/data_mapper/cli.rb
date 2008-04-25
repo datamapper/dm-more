@@ -1,7 +1,6 @@
 require "yaml"
 require "irb"
 require Pathname('irb/completion')
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'data_mapper'))
 
 # TODO: error handling for:
 #   missing adapter, host or database
