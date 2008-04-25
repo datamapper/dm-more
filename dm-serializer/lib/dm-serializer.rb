@@ -52,7 +52,7 @@ module DataMapper
       keys = self.class.key(self.repository.name)
       keys.each do |key|
         value = self.send(key.name)
-        root.attributes[key.name.to_s] = value
+        root.attributes[key.name.to_s] = value.to_s
       end
       
       #TODO old code base was converting single quote to double quote on attribs

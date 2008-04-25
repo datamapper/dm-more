@@ -1,5 +1,8 @@
 require 'rubygems'
+require 'spec'
+require 'spec/rake/spectask'
 require 'rake/gempackagetask'
+require 'pathname'
 
 PLUGIN = "dm-serializer"
 NAME = "dm-serializer"
@@ -26,11 +29,19 @@ spec = Gem::Specification.new do |s|
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
 end
 
+task :default => :spec
+
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install #{NAME} #{VERSION}"
 task :install => [:package] do
   sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
+desc "Run specifications"
+Spec::Rake::SpecTask.new('spec') do |t|
+  t.spec_opts << '--format' << 'specdoc' << '--colour'
+  t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent + 'spec/**/*_spec.rb')
+end
