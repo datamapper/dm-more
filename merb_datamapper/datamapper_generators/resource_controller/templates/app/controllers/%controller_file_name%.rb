@@ -13,7 +13,7 @@
 <%= "  " * counter %>  end
 
 <%= "  " * counter %>  def show
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.first(params[:id])
+<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>[params[:id]]
 <%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
 <%= "  " * counter %>    display @<%= singular_model %>
 <%= "  " * counter %>  end
@@ -26,7 +26,7 @@
 
 <%= "  " * counter %>  def edit
 <%= "  " * counter %>    only_provides :html
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.first(params[:id])
+<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>[params[:id]]
 <%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
 <%= "  " * counter %>    render
 <%= "  " * counter %>  end
@@ -41,7 +41,7 @@
 <%= "  " * counter %>  end
 
 <%= "  " * counter %>  def update
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.first(params[:id])
+<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>[params[:id]]
 <%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
 <%= "  " * counter %>    if @<%= singular_model %>.update_attributes(params[:<%= singular_model %>])
 <%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
@@ -51,7 +51,7 @@
 <%= "  " * counter %>  end
 
 <%= "  " * counter %>  def destroy
-<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.first(params[:id])
+<%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>[params[:id]]
 <%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
 <%= "  " * counter %>    if @<%= singular_model %>.destroy!
 <%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>)
