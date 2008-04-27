@@ -9,8 +9,13 @@ namespace :dm do
 
   namespace :db do
     desc "Perform automigration"
-    task :automigrate => :merb_start do
-      DataMapper::Persistence.auto_migrate!
+    task :automigrate do
+      puts '='*70
+      puts "Sorry, Auto Migrations are not yet supported in DataMapper 0.9"
+      puts '-'*70
+      puts "They should be ready in the very near future,"
+      puts "in the meantime you'll need to create your tables by hand."
+      puts '='*70
     end
   end
 
