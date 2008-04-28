@@ -34,7 +34,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :install => [:package] do
-  sh %{sudo gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+  sh %{#{'sudo' unless ENV['SUDOLESS']} gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
 end
 
 desc "Run specifications"

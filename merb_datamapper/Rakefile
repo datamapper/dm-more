@@ -53,5 +53,5 @@ end
 desc "Run specifications"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts << '--format' << 'specdoc' << '--colour'
-  t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent + 'specs/**/*_spec.rb')
+  t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent + 'spec/**/*_spec.rb')
 end
