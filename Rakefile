@@ -16,6 +16,7 @@ gems = %w[
   merb_datamapper
   dm-migrations
   dm-serializer
+  dm-types
   dm-validations
 ]
 

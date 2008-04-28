@@ -13,3 +13,4 @@ coverage
 lib/dm-more.rb
 *.db
 nbproject
+.DS_Store
