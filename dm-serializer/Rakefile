@@ -26,7 +26,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('dm-core', '>= 0.9.0')
   s.require_path = 'lib'
   s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,specs}/**/*")
+  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
 
 task :default => :spec
