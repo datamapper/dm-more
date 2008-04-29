@@ -7,7 +7,8 @@ class ResourceControllerGenerator < Merb::GeneratorBase
               :model_class_name,
               :full_controller_const,
               :singular_model,
-              :plural_model
+              :plural_model,
+              :properties
 
   def initialize(args, runtime_args = {})
     @base =             File.dirname(__FILE__)
@@ -34,7 +35,13 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     @controller_class_name  = @controller_file_name.to_const_string.split("::").last
 
     @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
+    
+    # Gets the properties of the model
+    model_class = eval(@model_class_name)
+    @properties = model_class.properties if model_class && model_class.respond_to?(:properties)
   end
+
+
 
   def manifest
     record do |m|
@@ -54,7 +61,8 @@ class ResourceControllerGenerator < Merb::GeneratorBase
                     :full_controller_const      => full_controller_const,
                     :model_class_name           => model_class_name,
                     :singular_model             => singular_model,
-                    :plural_model               => plural_model
+                    :plural_model               => plural_model,
+                    :properties                 => properties
                   }
       copy_dirs
       copy_files
@@ -63,6 +71,27 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     end
   end
 
+  # methods used by the templates
+  
+  def field_from_type(type)
+    case type.name.to_sym
+    when :String
+      "text_control"
+    when :TrueClass
+      "checkbox_control"
+    when :"DataMapper::Types::Text"
+      "text_area_control"
+    else
+      "text_control"
+    end
+  end
+    
+  #returns the params needed for getting the object
+  def params_for_get
+    @params_for_get ||= properties.select{|p| p.key?}.map{|p| "params[:#{p.field}]"}.join(', ')
+  end
+  
+  
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")
