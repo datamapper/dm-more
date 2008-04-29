@@ -6,11 +6,16 @@ module DataMapper
   MORE_VERSION = "0.9.0"
 end
 
+require 'pathname'
 require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/contrib/rubyforgepublisher'
+require 'spec/rake/spectask'
+require 'rake/rdoctask'
 require 'fileutils'
 include FileUtils
+
+DIR = Pathname(__FILE__).dirname.expand_path.to_s
 
 gems = %w[
   merb_datamapper
@@ -18,6 +23,8 @@ gems = %w[
   dm-serializer
   dm-types
   dm-validations
+  dm-cli
+  dm-is-tree
 ]
 
 PROJECT = "dm-more"
@@ -56,7 +63,7 @@ SUDO = windows ? "" : "sudo"
 desc "Install it all"
 task :install => [:install_gems, :package] do
   sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::MORE_VERSION}.gem  --no-update-sources}
-  sh %{#{SUDO} gem install --local pkg/dm-#{DataMapper::MORE_VERSION}.gem --no-update-sources}
+#  sh %{#{SUDO} gem install --local pkg/dm-#{DataMapper::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Build the dm-more gems"
@@ -96,12 +103,69 @@ end
 desc "Bundle up all the dm-more gems"
 task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
-  cp "pkg/dm-#{DataMapper::MORE_VERSION}.gem", "bundle"
+#  cp "pkg/dm-#{DataMapper::MORE_VERSION}.gem", "bundle"
   cp "pkg/dm-more-#{DataMapper::MORE_VERSION}.gem", "bundle"
   gems.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
       rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
       sh %{cp #{gem}/pkg/#{gem}-#{$1}.gem bundle/}
+    end
+  end
+end
+
+namespace :ci do
+
+  gems.each do |gem_name|
+    task gem_name do
+      ENV['gem_name'] = gem_name
+
+      Rake::Task["ci:run_all"].invoke
+    end
+  end
+
+  task :run_all => [:spec, :install, :doc, :publish]
+
+  task :spec => :define_tasks do
+    Rake::Task["#{ENV['gem_name']}:spec"].invoke
+  end
+
+  task :doc => :define_tasks do
+    Rake::Task["#{ENV['gem_name']}:doc"].invoke
+  end
+
+  task :install do
+    sh %{cd #{ENV['gem_name']} && rake install}
+  end
+
+  task :publish do
+    out = ENV['CC_BUILD_ARTIFACTS'] || "out"
+    mkdir_p out unless File.directory? out if out
+
+    mv "rdoc", "#{out}/rdoc" if out
+    mv "coverage", "#{out}/coverage_report" if out && File.exists?("coverage")
+    mv "rspec_report.html", "#{out}/rspec_report.html" if out && File.exists?("rspec_report.html")
+  end
+
+  task :define_tasks do
+    gem_name = ENV['gem_name']
+
+    Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
+      t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
+      t.spec_files = Pathname.glob(ENV['FILES'] || DIR + "/#{gem_name}/spec/**/*_spec.rb")
+      unless ENV['NO_RCOV']
+        t.rcov = true
+        t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"
+        t.rcov_opts << '--text-summary'
+        t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
+        t.rcov_opts << '--only-uncovered'
+      end
+    end
+
+    Rake::RDocTask.new("#{gem_name}:doc") do |t|
+      t.rdoc_dir = 'rdoc'
+      t.title    = gem_name
+      t.options  = ['--line-numbers', '--inline-source', '--all']
+      t.rdoc_files.include("#{gem_name}/lib/**/*.rb", "#{gem_name}/ext/**/*.c")
     end
   end
 end
