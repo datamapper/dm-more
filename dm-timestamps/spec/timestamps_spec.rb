@@ -44,7 +44,8 @@ begin
         property :created_on, Date
         property :updated_at, DateTime
         property :updated_on, Date
-#        before :save :update_magic_properties
+        # TODO: get this hook out of here and into the module 
+        before :save, :update_magic_properties
       end    
     end
 
@@ -65,8 +66,8 @@ begin
         original_created_on = green_smoothie.created_on
         green_smoothie.name = 'Strawberry'
         green_smoothie.save
-        green_smoothie.created_at.should eql(original_created_at)
-#        green_smoothie.created_on.should sql(original_created_on)
+        green_smoothie.created_at.should eql(original_created_at)        
+        green_smoothie.created_on.should eql(original_created_on)
       end
     end
 
@@ -82,6 +83,8 @@ begin
         green_smoothie.name = 'Cranberry Mango'
         green_smoothie.save
         green_smoothie.updated_at.should_not eql(original_updated_at)
+        # TODO: test this somehow
+        green_smoothie.updated_at.should_not eql(original_updated_on)
       end
     end
 

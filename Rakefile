@@ -25,6 +25,7 @@ gems = %w[
   dm-validations
   dm-cli
   dm-is-tree
+  dm-timestamps
 ]
 
 PROJECT = "dm-more"
