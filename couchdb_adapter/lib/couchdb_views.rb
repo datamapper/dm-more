@@ -38,6 +38,16 @@ module DataMapper
 end
 
 module DataMapper
+  module Adapters
+    class AbstractAdapter
+      def view(repository, resource, proc_name)
+        raise NotImplementedError
+      end
+    end
+  end
+end
+
+module DataMapper
   class View
     
     attr_reader :model, :name
