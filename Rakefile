@@ -26,6 +26,7 @@ gems = %w[
   dm-cli
   dm-is-tree
   dm-timestamps
+  couchdb_adapter
 ]
 
 PROJECT = "dm-more"

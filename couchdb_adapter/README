@@ -1,0 +1,3 @@
+couchdb_adapter
+===============
+DataMapper adapter for CouchDB
