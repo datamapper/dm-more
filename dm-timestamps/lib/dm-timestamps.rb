@@ -19,7 +19,7 @@ module DataMapper
 
     module InstanceMethods
       def update_magic_properties
-        self.class.properties.slice(*MAGIC_PROPERTIES.keys).each do |property|
+        self.class.properties.find_all{ |property| MAGIC_PROPERTIES.has_key?(property.name) }.each do |property|
           MAGIC_PROPERTIES[property.name][self]
         end
       end  
