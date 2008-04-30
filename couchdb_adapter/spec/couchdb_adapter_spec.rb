@@ -18,6 +18,10 @@ class User
   property :wealth, Float
   property :created_at, DateTime
   property :created_on, Date
+  
+  # creates methods for accessing stored/indexed views in the CouchDB database
+  view :by_name
+  view :by_age
 
 end
 
@@ -26,7 +30,7 @@ describe "DataMapper::Adapters::CouchdbAdapter" do
     @uri = URI.parse("couchdb://localhost:5984")
     @adapter = DataMapper.setup(:couchdb, @uri)
     @adapter.send(:http_put, "/users/")
-    # create_procedures
+    create_procedures
   end
   
   after :all do
@@ -133,35 +137,26 @@ describe "DataMapper::Adapters::CouchdbAdapter" do
   end
   
   it "should be able to call stored views" do
-    pending
-    class User
-      view :by_name
-      view :by_age
-    end
-    repository(:couchdb) do
-      User.by_name.first.should == User.all(:order => [:name]).first
-      User.by_age.first.should == User.all(:order => [:age]).first
-    end
+    
+    User.by_name.first.should == User.all(:order => [:name]).first
+    User.by_age.first.should == User.all(:order => [:age]).first
     
   end
-
-  # 
-  # Still in progress, not included in this release
-  # 
-  # def create_procedures
-  #   view = Net::HTTP::Put.new("/users/_design/users")
-  #   view["content-type"] = "text/javascript"
-  #   view.body = { 
-  #     "language" => "text/javascript", 
-  #     "views" => { 
-  #       "by_name" => "function(doc) { if(doc._id.charAt(0) != '_') { map(doc.name, doc); } }",
-  #       "by_age"  => "function(doc) { if(doc._id.charAt(0) != '_') { map(doc.age, doc); } }"
-  #     }
-  #   }.to_json
-  #   @adapter.send(:request, false) do |http|
-  #     http.request(view)
-  #   end
-  # end
+  
+  def create_procedures
+    view = Net::HTTP::Put.new("/users/_design/users")
+    view["content-type"] = "text/javascript"
+    view.body = { 
+      "language" => "text/javascript", 
+      "views" => { 
+        "by_name" => "function(doc) { if(doc._id.charAt(0) != '_') { map(doc.name, doc); } }",
+        "by_age"  => "function(doc) { if(doc._id.charAt(0) != '_') { map(doc.age, doc); } }"
+      }
+    }.to_json
+    @adapter.send(:request, false) do |http|
+      http.request(view)
+    end
+  end
   
   def new_user(options = {})
     default_options = { :name => "Jamie", :age => 67, :wealth => 11.5 }

@@ -3,10 +3,26 @@ gem 'dm-core'
 require 'data_mapper'
 require 'net/http'
 require 'json'
+require Pathname(__FILE__).dirname + 'couchdb_views'
 
 class Time
   def to_json(*a)
     self.to_i.to_json(*a)
+  end
+end
+
+module DataMapper
+  module Resource
+    
+    def to_json(dirty = false)
+      
+      doc = (dirty ? self.dirty_attributes : self.class.properties).map do |property| 
+        [property.field, instance_variable_get(property.instance_variable_name)]
+      end
+
+      Hash[*doc.flatten].to_json
+
+    end
   end
 end
 
@@ -176,20 +192,6 @@ module DataMapper
         JSON.parse(res.body) if parse_result
       end
       
-    end
-  end
-end
-
-module DataMapper
-  module Resource
-    def to_json(dirty = false)
-
-      doc = (dirty ? self.dirty_attributes : self.class.properties).map do |property| 
-        [property.field, instance_variable_get(property.instance_variable_name)]
-      end
-
-      Hash[*doc.flatten].to_json
-
     end
   end
 end
