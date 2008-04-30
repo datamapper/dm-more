@@ -179,3 +179,17 @@ module DataMapper
     end
   end
 end
+
+module DataMapper
+  module Resource
+    def to_json(dirty = false)
+
+      doc = (dirty ? self.dirty_attributes : self.class.properties).map do |property| 
+        [property.field, instance_variable_get(property.instance_variable_name)]
+      end
+
+      Hash[*doc.flatten].to_json
+
+    end
+  end
+end

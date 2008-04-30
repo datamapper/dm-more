@@ -1,39 +1,31 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
+class User
+  include DataMapper::Resource
+  
+  def self.default_repository_name
+    :couchdb
+  end
+
+  # required for CouchDB
+  property :id, String, :key => true, :field => :_id
+  property :rev, String, :field => :_rev
+  
+  # regular properties
+  property :name, String
+  property :age, Fixnum
+  property :wealth, Float
+  property :created_at, DateTime
+  property :created_on, Date
+
+end
+
 describe "DataMapper::Adapters::CouchdbAdapter" do
   before :all do
     @uri = URI.parse("couchdb://localhost:5984")
     @adapter = DataMapper.setup(:couchdb, @uri)
     @adapter.send(:http_put, "/users/")
-    
-    class User
-      include DataMapper::Resource
-      
-      def self.default_repository_name
-        :couchdb
-      end
-
-      property :id, String, :key => true, :field => :_id
-      property :rev, String, :field => :_rev
-      property :name, String
-      property :age, Fixnum
-      property :wealth, Float
-      property :created_at, DateTime
-      property :created_on, Date
-
-      def to_json(dirty = false)
-
-        doc = (dirty ? self.dirty_attributes : self.class.properties).map do |property| 
-          [property.field, instance_variable_get(property.instance_variable_name)]
-        end
-
-        Hash[*doc.flatten].to_json
-
-      end
-
-    end
-    
     # create_procedures
   end
   
