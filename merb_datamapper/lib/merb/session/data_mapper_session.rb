@@ -24,7 +24,7 @@ module Merb
   class DataMapperSession
     include DataMapper::Resource
 
-    set_table_name "sessions"
+    storage_names[:default] = "sessions"
     property :session_id, String, :length => 255, :lazy => false, :key => true
     property :data,       Text, :lazy => false
     property :updated_at, DateTime
@@ -34,13 +34,16 @@ module Merb
     class << self
       # Generates a new session ID and creates a row for the new session in the database.
       def generate
-        create(:session_id => Merb::SessionMixin::rand_uuid, :data =>{})
+        new_session = self.new(:data =>{})
+        new_session.session_id = Merb::SessionMixin::rand_uuid
+        new_session.save
+        new_session
       end
 
       # Gets the existing session based on the <tt>session_id</tt> available in cookies.
       # If none is found, generates a new session.
       def persist(session_id)
-        if session_id
+        if !session_id.blank?
           session = self[session_id]
         end
         unless session
@@ -97,7 +100,7 @@ module Merb
 
   private
 
-    before_save :serialize_data
+    before :save, :serialize_data
 
     def serialize_data
       @data = self.class.marshal(self.data)
@@ -105,9 +108,9 @@ module Merb
   end
 
 
-  unless DataMapper.database.table_exists?(table_name)
-    puts "Warning: The database did not contain a '#{table_name}' table for sessions."
-    DataMapperSession.auto_migrate!
-    puts "Created sessions table."
-  end
+  # unless DataMapper.database.table_exists?(table_name)
+  #   puts "Warning: The database did not contain a '#{table_name}' table for sessions."
+  #   DataMapperSession.auto_migrate!
+  #   puts "Created sessions table."
+  # end
 end
