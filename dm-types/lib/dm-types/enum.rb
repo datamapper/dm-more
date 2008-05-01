@@ -25,12 +25,12 @@ module DataMapper
         new(*flags)
       end
   
-      def self.load(value)
+      def self.load(value, property)
         self.flag_map[value]
       end
   
-      def self.dump(flag)
-        self.flag_map.invert[flag]
+      def self.dump(value, property)
+        self.flag_map.invert[value]
       end
     end
   end

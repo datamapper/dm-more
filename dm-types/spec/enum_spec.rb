@@ -39,13 +39,13 @@ describe DataMapper::Types::Enum do
     end
     
     it "should return the key of the value match from the flag map" do
-      @enum.dump(:first).should == 1
-      @enum.dump(:second).should == 2
-      @enum.dump(:third).should == 3
+      @enum.dump(:first, :property).should == 1
+      @enum.dump(:second, :property).should == 2
+      @enum.dump(:third, :property).should == 3
     end
     
     it "should return nil if there is no match" do
-      @enum.dump(:zero).should be_nil
+      @enum.dump(:zero, :property).should be_nil
     end
   end
   
@@ -55,13 +55,13 @@ describe DataMapper::Types::Enum do
     end
     
     it "should return the value of the key match from the flag map" do
-      @enum.load(1).should == :uno
-      @enum.load(2).should == :dos
-      @enum.load(3).should == :tres
+      @enum.load(1, :property).should == :uno
+      @enum.load(2, :property).should == :dos
+      @enum.load(3, :property).should == :tres
     end
     
     it "should return nil if there is no key" do
-      @enum.load(-1).should be_nil
+      @enum.load(-1, :property).should be_nil
     end
   end
 end
