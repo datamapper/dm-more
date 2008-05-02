@@ -173,7 +173,7 @@ module DataMapper
 
         begin
           configure(argv)
-          DataMapper::Repository.setup options
+          DataMapper.setup(:default, options)
 
           load_models if config[:models]
 
