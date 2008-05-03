@@ -10,6 +10,12 @@ module SQL
     def table(table_name)
       SQL::Table.new(self, table_name)
     end
+    
+    def recreate_database
+      DataMapper.logger.info "Dropping #{@uri.path}"
+      system "rm #{@uri.path}"
+      # do nothing, sqlite will automatically create the database file
+    end
 
     class Table < SQL::Table
       def initialize(adapter, table_name)

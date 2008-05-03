@@ -8,6 +8,15 @@ module SQL
     def table(table_name)
       SQL::Postgresql::Table.new(self, table_name)
     end
+    
+    def drop_database
+    end
+ 
+    def recreate_database
+      execute "DROP SCHEMA IF EXISTS test CASCADE"
+      execute "CREATE SCHEMA test"
+      execute "SET search_path TO test"
+    end
 
     class Table < SQL::Table
       def initialize(adapter, table_name)
