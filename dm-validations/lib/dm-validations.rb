@@ -1,24 +1,45 @@
 require 'rubygems'
+require 'pathname'
 require 'data_mapper'
 
-require File.join(File.dirname(__FILE__),'dm-validations','validation_errors')
-require File.join(File.dirname(__FILE__),'dm-validations','contextual_validators')
-require File.join(File.dirname(__FILE__),'dm-validations','auto_validate')
 
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-validations'
 
-require File.join(File.dirname(__FILE__),'dm-validations','generic_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','required_field_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','absent_field_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','confirmation_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','format_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','length_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','uniqueness_validator')
-require File.join(File.dirname(__FILE__),'dm-validations','acceptance_validator')
+require dir / 'validation_errors'
+require dir / 'contextual_validators'
+require dir / 'auto_validate'
 
-require File.join(File.dirname(__FILE__),'dm-validations','support','object')
+require dir / 'generic_validator'
+require dir / 'required_field_validator'
+require dir / 'absent_field_validator'
+require dir / 'confirmation_validator'
+require dir / 'format_validator'
+require dir / 'length_validator'
+require dir / 'within_validator'
+require dir / 'numeric_validator'
+require dir / 'method_validator'
+require dir / 'uniqueness_validator'
+require dir / 'acceptance_validator'
+
+require dir / 'support' / 'object'
+
+#require File.join(File.dirname(__FILE__),'dm-validations','validation_errors')
+#require File.join(File.dirname(__FILE__),'dm-validations','contextual_validators')
+#require File.join(File.dirname(__FILE__),'dm-validations','auto_validate')
+
+#require File.join(File.dirname(__FILE__),'dm-validations','generic_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','required_field_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','absent_field_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','confirmation_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','format_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','length_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','within_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','numeric_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','method_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','uniqueness_validator')
+#require File.join(File.dirname(__FILE__),'dm-validations','acceptance_validator')
+
+#require File.join(File.dirname(__FILE__),'dm-validations','support','object')
 
 
 
