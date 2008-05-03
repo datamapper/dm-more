@@ -26,6 +26,7 @@ gems = %w[
   dm-cli
   dm-is-tree
   dm-timestamps
+  dm-aggregates
   couchdb_adapter
 ]
 
