@@ -126,6 +126,12 @@ namespace :ci do
   end
 
   task :run_all => [:spec, :install, :doc, :publish]
+  
+  task :spec_all => :define_tasks do
+    gems.each do |gem_name|
+      Rake::Task["#{gem_name}:spec"].invoke
+    end
+  end
 
   task :spec => :define_tasks do
     Rake::Task["#{ENV['gem_name']}:spec"].invoke
@@ -149,25 +155,27 @@ namespace :ci do
   end
 
   task :define_tasks do
-    gem_name = ENV['gem_name']
-
-    Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
-      t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
-      t.spec_files = Pathname.glob(ENV['FILES'] || DIR + "/#{gem_name}/spec/**/*_spec.rb")
-      unless ENV['NO_RCOV']
-        t.rcov = true
-        t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"
-        t.rcov_opts << '--text-summary'
-        t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
-        t.rcov_opts << '--only-uncovered'
+    gem_names = [(ENV['gem_name'] || gems)].flatten
+    gem_names.each do |gem_name|
+      Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
+        puts "#{gem_name}:spec"
+        t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
+        t.spec_files = Pathname.glob(ENV['FILES'] || DIR + "/#{gem_name}/spec/**/*_spec.rb")
+        unless ENV['NO_RCOV']
+          t.rcov = true
+          t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"
+          t.rcov_opts << '--text-summary'
+          t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
+          t.rcov_opts << '--only-uncovered'
+        end
       end
-    end
 
-    Rake::RDocTask.new("#{gem_name}:doc") do |t|
-      t.rdoc_dir = 'rdoc'
-      t.title    = gem_name
-      t.options  = ['--line-numbers', '--inline-source', '--all']
-      t.rdoc_files.include("#{gem_name}/lib/**/*.rb", "#{gem_name}/ext/**/*.c")
+      Rake::RDocTask.new("#{gem_name}:doc") do |t|
+        t.rdoc_dir = 'rdoc'
+        t.title    = gem_name
+        t.options  = ['--line-numbers', '--inline-source', '--all']
+        t.rdoc_files.include("#{gem_name}/lib/**/*.rb", "#{gem_name}/ext/**/*.c")
+      end
     end
   end
 end

@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'pathname'
+
+gem 'dm-core', '=0.9.0'
 require 'data_mapper'
 
 

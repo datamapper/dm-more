@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
-require "rubygems"
-require "data_mapper"
+require 'rubygems'
+
+gem 'dm-core', '>= 0.9'
+require 'data_mapper'
+
 require "pathname"
 require Pathname('data_mapper/cli')
 require "optparse"

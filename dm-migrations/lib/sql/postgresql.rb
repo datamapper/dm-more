@@ -1,28 +1,21 @@
 module SQL
   module Postgresql
-    def table_exists?(table_name)
-      query_table(table_name).size > 0
-    end
 
     def supports_schema_transactions?
       true
     end
 
+    def table(table_name)
+      SQL::Postgresql::Table.new(self, table_name)
+    end
+    
     def drop_database
     end
-
+ 
     def recreate_database
       execute "DROP SCHEMA IF EXISTS test CASCADE"
       execute "CREATE SCHEMA test"
       execute "SET search_path TO test"
-    end
-
-    def table(table_name)
-      SQL::Postgresql::Table.new(self, table_name)
-    end
-
-    def query_table(table_name)
-      query("SELECT * FROM information_schema.columns WHERE table_name='#{table_name}' AND table_schema=current_schema()")
     end
 
     class Table < SQL::Table
