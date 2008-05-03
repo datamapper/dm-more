@@ -1,4 +1,5 @@
 require 'rubygems'
+gem 'dm-core', '=0.9.0'
 require 'data_mapper'
 require 'benchmark'
 require File.dirname(__FILE__) + '/sql'
@@ -156,7 +157,7 @@ module DataMapper
     end
 
     def migration_info_table_exists?
-      adapter.table_exists?('migration_info')
+      adapter.exists?('migration_info')
     end
 
     # Fetch the record for this migration out of the migration_info table
