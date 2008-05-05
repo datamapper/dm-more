@@ -10,6 +10,7 @@ module DataMapper
         first(search_attributes) || create(search_attributes.merge(create_attributes))
       end
       
+      private
       def method_missing_with_find_by(method, *args, &block)
         if match = matches_dynamic_finder?(method)
           finder = determine_finder(match)
@@ -17,7 +18,7 @@ module DataMapper
 
           conditions = {}
           attribute_names.each {|key| conditions[key] = args.shift}
-
+          
           send(finder, conditions)
         else
           method_missing_without_find_by(method, *args, &block)

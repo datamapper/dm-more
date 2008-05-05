@@ -46,10 +46,22 @@ begin
       end
     end
     
-    it "should find_by_name" do
+    it "should use find_by and use the name attribute to find a record" do
       repository(:sqlite3) do
         green_smoothie = GreenSmoothie.create({:name => 'Banana'})
         green_smoothie.should == GreenSmoothie.find_by_name('Banana')
+      end
+    end
+    
+    it "should use find_all_by to find records using an attribute" do
+      repository(:sqlite3) do
+        green_smoothie = GreenSmoothie.create({:name => 'Banana'})
+        green_smoothie2 = GreenSmoothie.create({:name => 'Banana'})
+        found_records = GreenSmoothie.find_all_by_name('Banana')
+        found_records.length.should == 2
+        found_records.each do |found_record|
+          [green_smoothie, green_smoothie2].include?(found_record).should be_true
+        end
       end
     end
 
