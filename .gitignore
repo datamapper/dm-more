@@ -15,3 +15,4 @@ lib/dm-more.rb
 nbproject
 .DS_Store
 rspec_report.html
+*.swp
