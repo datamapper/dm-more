@@ -45,6 +45,13 @@ begin
         GreenSmoothie.find_or_create({:name => 'Strawberry'}).id.should eql(2)
       end
     end
+    
+    it "should find_by_name" do
+      repository(:sqlite3) do
+        green_smoothie = GreenSmoothie.create({:name => 'Banana'})
+        green_smoothie.should == GreenSmoothie.find_by_name('Banana')
+      end
+    end
 
   end
 
