@@ -32,7 +32,7 @@ module DataMapper
       end
 
       def determine_finder(match)
-        match.captures.first == 'all_by' ? :first : :all
+        match.captures.first == 'all_by' ? :all : :first
       end
 
       def extract_attribute_names_from_match(match)
