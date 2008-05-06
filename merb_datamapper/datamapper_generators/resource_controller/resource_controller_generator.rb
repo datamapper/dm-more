@@ -11,16 +11,17 @@ class ResourceControllerGenerator < Merb::GeneratorBase
               :properties
 
   def initialize(args, runtime_args = {})
-    @base =             File.dirname(__FILE__)
+    @base = File.dirname(__FILE__)
 
     super
+
     name = args.shift
-    nfp = name.snake_case.gsub("::", "/")
-    nfp = nfp.split("/")
+    nfp  = name.snake_case.gsub("::", "/").split("/")
+
     @model_class_name = nfp.pop.singularize.to_const_string
     @model_class_name = runtime_args[:model_class_name] if runtime_args[:model_class_name]
-    @singular_model         = @model_class_name.snake_case
-    @plural_model           = @singular_model.pluralize
+    @singular_model   = @model_class_name.snake_case
+    @plural_model     = @singular_model.pluralize
 
     nfp << @plural_model
 
@@ -28,20 +29,23 @@ class ResourceControllerGenerator < Merb::GeneratorBase
 
     # Need to setup the directories
     unless @controller_file_name == File.basename(@controller_file_name)
-      @controller_base_path   = controller_file_name.split("/")[0..-2].join("/")
+      @controller_base_path = controller_file_name.split("/")[0..-2].join("/")
     end
 
-    @controller_modules     = @controller_file_name.to_const_string.split("::")[0..-2]
-    @controller_class_name  = @controller_file_name.to_const_string.split("::").last
+    @controller_modules    = @controller_file_name.to_const_string.split("::")[0..-2]
+    @controller_class_name = @controller_file_name.to_const_string.split("::").last
 
     @full_controller_const = ((@controller_modules.dup || []) << @controller_class_name).join("::")
-    
+
     # Gets the properties of the model
-    model_class = eval(@model_class_name)
-    @properties = model_class.properties if model_class && model_class.respond_to?(:properties)
+    # FIXME: the model file needs to be required
+    @properties = if Object.const_defined?(@model_class_name)
+      model_class = Object.const_get(@model_class_name)
+      model_class.properties if model_class.respond_to?(:properties)
+    else
+      []
+    end
   end
-
-
 
   def manifest
     record do |m|
@@ -72,7 +76,7 @@ class ResourceControllerGenerator < Merb::GeneratorBase
   end
 
   # methods used by the templates
-  
+
   def field_from_type(type)
     case type.name.to_sym
     when :String
@@ -85,13 +89,13 @@ class ResourceControllerGenerator < Merb::GeneratorBase
       "text_control"
     end
   end
-    
+
   #returns the params needed for getting the object
   def params_for_get
     @params_for_get ||= properties.select{|p| p.key?}.map{|p| "params[:#{p.field}]"}.join(', ')
   end
-  
-  
+
+
   protected
   def banner
     <<-EOS.split("\n").map{|x| x.strip}.join("\n")

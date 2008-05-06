@@ -9,7 +9,7 @@ namespace :dm do
 
   namespace :db do
     desc "Perform automigration"
-    task :automigrate do
+    task :automigrate => :merb_start do
       ::DataMapper.repository.auto_migrate!
     end
   end
