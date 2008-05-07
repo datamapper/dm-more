@@ -19,7 +19,7 @@ module DataMapper
     private
 
     def update_timestamp_properties
-      self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).each do |property|
+      self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).compact.each do |property|
         TIMESTAMP_PROPERTIES[property.name][self]
       end
     end
