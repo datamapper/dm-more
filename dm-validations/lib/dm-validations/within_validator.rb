@@ -9,7 +9,7 @@ module DataMapper
       end
       
       def call(target)
-        includes = @options[:set].include?(target.instance_variable_get("@#{@field_name}"))
+        includes = @options[:set].include?(target.attribute_get(field_name))
         return true if includes    
         
         s = ''

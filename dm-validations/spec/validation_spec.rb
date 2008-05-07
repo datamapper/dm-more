@@ -823,6 +823,13 @@ end
         property :type_of_number, String, :auto_validation => false   
         validates_within :type_of_number, :set => ['Home','Work','Cell']   
       end
+      
+      class Reciever
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :holder, String, :auto_validation => false, :default => 'foo'
+        validates_within :holder, :set => ['foo', 'bar', 'bang']
+      end
     end
     
     it "should validate a value on an instance of a resource within a predefined set of values" do
@@ -832,6 +839,11 @@ end
       
       tel.type_of_number = 'Cell'
       tel.valid?.should == true
+    end
+    
+    it "should validate a value by it's default" do
+      tel = Reciever.new
+      tel.should be_valid
     end
   end  
 
