@@ -67,6 +67,13 @@ begin
         result.should eql(2)
       end
     end
+
+    it "should count with conditions with operators" do
+      repository(:sqlite3) do
+        result = Dragon.count(:toes_on_claw.gt => 3)
+        result.should eql(2)
+      end
+    end
   end
 
 rescue LoadError

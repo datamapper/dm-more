@@ -3,16 +3,13 @@ module DataMapper
     class DataObjectsAdapter
       def count(repository, query)
         parameters = []
-        parameters = query.conditions.collect do |prop,value|
-          case value
-            when Property then value.name
-            else value
-          end
-        end
+        parameters = query.conditions.collect { |condition| condition.last }
         row_count = query(count_statement(query),*parameters).first.to_i
       end
       module SQL
         def count_statement(query)
+          qualify = query.links.any?
+
           sql = "SELECT COUNT(*) as row_count"
 
           sql << " FROM " << quote_table_name(query.model_name)
