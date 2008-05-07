@@ -1,29 +1,27 @@
 require 'rubygems'
+
 gem 'dm-core', '=0.9.0'
 require 'data_mapper'
 
 module DataMapper
   module Timestamp
     def self.included(base)
-      base.class_eval do
-        include InstanceMethods
-        #before :save, :update_magic_properties
-      end
+      base.before(:save, :update_timestamp_properties)
     end
 
-    MAGIC_PROPERTIES = {
-      :updated_at => lambda { |i| i.updated_at = Time::now },
-      :updated_on => lambda { |i| i.updated_on = Date::today },
-      :created_at => lambda { |i| i.created_at ||= Time::now },
-      :created_on => lambda { |i| i.created_on ||= Date::today }
+    TIMESTAMP_PROPERTIES = {
+      :updated_at => lambda { |r| r.updated_at   = DateTime.now },
+      :updated_on => lambda { |r| r.updated_on   = Date.today   },
+      :created_at => lambda { |r| r.created_at ||= DateTime.now },
+      :created_on => lambda { |r| r.created_on ||= Date.today   },
     }
 
-    module InstanceMethods
-      def update_magic_properties
-        self.class.properties.find_all{ |property| MAGIC_PROPERTIES.has_key?(property.name) }.each do |property|
-          MAGIC_PROPERTIES[property.name][self]
-        end
-      end  
+    private
+
+    def update_timestamp_properties
+      self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).each do |property|
+        TIMESTAMP_PROPERTIES[property.name][self]
+      end
     end
   end
 end
