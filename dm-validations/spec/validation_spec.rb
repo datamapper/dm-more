@@ -1065,7 +1065,7 @@ end
 rescue LoadError
   describe 'do_sqlite3' do
     it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
+      fail "validation specs not run! Could not load do_sqlite3: #{$!}"
     end
   end
 end
