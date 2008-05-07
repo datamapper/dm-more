@@ -10,7 +10,7 @@ module DataMapper
       end
       
       def call(target)      
-        value =  target.instance_variable_get("@#{@field_name}").to_s
+        value =  target.attribute_get(field_name).to_s
         regex = @options[:integer_only] ? /\A[+-]?\d+\Z/ : /^\d*\.{0,1}\d+$/
         return true if not (value =~ regex).nil?
         

@@ -412,6 +412,14 @@ begin
         validates_presence_of :name, :when => :property_test    
         validates_presence_of :landscaper, :when => :association_test    
       end
+      
+      class Fertilizer
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :id, Fixnum, :serial => true
+        property :brand, String, :auto_validation => false, :default => 'Scotts'
+        validates_presence_of :brand, :when => :property_test
+      end
     end
 
     it "should validate the presence of a property value on an instance of a resource" do
@@ -431,6 +439,10 @@ begin
     #  #puts "Gardens landscaper is #{garden.landscaper.child_key}"
     #end
     
+    it "should pass when a default is available" do
+      fert = Fertilizer.new
+      fert.should be_valid_for_property_test
+    end
   end
 
 
@@ -444,6 +456,13 @@ begin
               
         validates_absence_of :salesman, :when => :sold    
       end
+      
+      class Pirogue
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :salesman, String, :default => 'Layfayette'
+        validates_absence_of :salesman, :when => :sold
+      end
     end
 
     it "should validate the absense of a value on an instance of a resource" do
@@ -452,6 +471,11 @@ begin
       
       kayak.salesman = 'Joe'
       kayak.valid_for_sold?.should_not == true    
+    end
+    
+    it "should validate the absense of a value and ensure defaults" do
+      pirogue = Pirogue.new
+      pirogue.should_not be_valid_for_sold
     end
     
   end
@@ -556,7 +580,7 @@ begin
       end
     end
     
-    it "should validate the confrimation of a value on an instance of a resource" do
+    it "should validate the confirmation of a value on an instance of a resource" do
       canoe = Canoe.new
       canoe.name = 'White Water'
       canoe.name_confirmation = 'Not confirmed'
@@ -567,7 +591,7 @@ begin
       canoe.valid?.should == true
     end
     
-    it "should default the name of the confirimation field to <field>_confirmation if one is not specified" do
+    it "should default the name of the confirmation field to <field>_confirmation if one is not specified" do
       canoe = Canoe.new
       canoe.name = 'White Water'
       canoe.name_confirmation = 'White Water'
@@ -740,6 +764,13 @@ end
         include DataMapper::Validate     
         property :name, String, :auto_validation => false   
       end
+      
+      class BoatDock
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :name, String, :auto_validation => false, :default => "I'm a long string"
+        validates_length_of :name, :min => 3
+      end
     end
 
     it 'should be able to set a minimum length of a string field' do
@@ -812,6 +843,11 @@ end
       launch.name = 'Ride'
       launch.valid?.should == true      
     end  
+    
+    it "should pass if a default fufills the requirements" do
+      doc = BoatDock.new
+      doc.should be_valid
+    end
   end
 
   #-------------------------------------------------------------------------------
@@ -890,6 +926,14 @@ end
         
         validates_numericalnes_of :amount_1, :amount_2      
       end
+      
+      class Hillary
+        include DataMapper::Resource
+        include DataMapper::Validate
+        property :amount_1, Float, :auto_validation => false, :default => 0.01
+        validates_numericalnes_of :amount_1
+        
+      end
     end
     
     it "should validate a floating point value on the instance of a resource" do
@@ -921,6 +965,11 @@ end
       b.quantity_1 = '34'
       b.valid?.should == true    
       
+    end
+    
+    it "should validate if a default fufills the requirements" do
+      h = Hillary.new
+      h.should be_valid
     end
     
   end  
