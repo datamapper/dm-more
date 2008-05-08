@@ -51,18 +51,17 @@ module DataMapper
       def self.included(base)
         base.extend(ClassMethods)
         base.class_eval do
-         include DataMapper::Validate::ValidatesPresenceOf
-         include DataMapper::Validate::ValidatesAbsenceOf
-         include DataMapper::Validate::ValidatesConfirmationOf
-         include DataMapper::Validate::ValidatesAcceptanceOf
-         include DataMapper::Validate::ValidatesFormatOf
-         include DataMapper::Validate::ValidatesLengthOf         
+         include DataMapper::Validate::ValidatesPresent
+         include DataMapper::Validate::ValidatesAbsent
+         include DataMapper::Validate::ValidatesIsConfirmed
+         include DataMapper::Validate::ValidatesIsAccepted
+         include DataMapper::Validate::ValidatesFormat
+         include DataMapper::Validate::ValidatesLength
          include DataMapper::Validate::ValidatesWithin
-         include DataMapper::Validate::ValidatesNumericalnesOf
+         include DataMapper::Validate::ValidatesIsNumber
          include DataMapper::Validate::ValidatesWithMethod
-         include DataMapper::Validate::ValidatesUniquenessOf
+         include DataMapper::Validate::ValidatesIsUnique
          include DataMapper::Validate::AutoValidate
-         
         end
       end
       

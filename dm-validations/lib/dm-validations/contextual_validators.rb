@@ -1,14 +1,13 @@
-module DataMapper 
-  module Validate 
+module DataMapper
+  module Validate
     class ContextualValidators
-      
-      
+
       def dump
         contexts.each_pair do |key,context|
           puts "Key=#{key} Context: #{context}"
         end
       end
-      
+
       # Get a hash of named context validators for the resource
       #
       # ==== Returns
@@ -17,15 +16,14 @@ module DataMapper
       def contexts
         @contexts ||= @contexts = {}
       end
-      
+
       # Return an array of validators for a named context
-      #      
+      #
       def context(name)
         contexts[name] = [] unless contexts.has_key?(name)
         contexts[name]
       end
-    
-      
+
       # Clear all named context validators off of the resource
       #
       def clear!
@@ -53,6 +51,6 @@ module DataMapper
         return result
       end
 
-    end
-  end
-end
+    end # module ContextualValidators
+  end # module Validate
+end # module DataMapper

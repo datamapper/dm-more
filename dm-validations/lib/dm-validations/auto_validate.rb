@@ -1,66 +1,65 @@
-module DataMapper 
-  module Validate 
+module DataMapper
+  module Validate
     module AutoValidate
-    
+
       def self.included(base)
         base.extend(ClassMethods)
       end
-      
-      module ClassMethods     
-        
-        # Auto generate validations for a given property. This will only occur
-        # if the option :auto_validations is true or undefined.
-        # 
+
+      module ClassMethods
+
+        # Auto-generate validations for a given property. This will only occur
+        # if the option :auto_validation is either true or left undefined.
+        #
         # ==== Triggers that generate validator creation
         #
-        # :nullable => false 
-        #       Setting the option :nullable to false causes a validates_presence_of 
-        #       validator to be automatically created on the property
+        # :nullable => false
+        #       Setting the option :nullable to false causes a
+        #       validates_presence_of validator to be automatically created on
+        #       the property
         #
         # :size => 20 or :length => 20
-        #       Setting the option :size or :length causes a validates_length_of  
-        #       validator to be automatically created on the property. If the value
-        #       is a Fixnum the validation will set :maximum => value if the value
-        #       is a Range the validation will set :within => value
+        #       Setting the option :size or :length causes a validates_length_of
+        #       validator to be automatically created on the property. If the
+        #       value is a Fixnum the validation will set :maximum => value if
+        #       the value is a Range the validation will set :within => value
         #
         # :format => :predefined / lambda / Proc
-        #       Setting the :format option causes a validates_format_of validatior
-        #       to be automatically created on the property
-        #   
+        #       Setting the :format option causes a validates_format_of
+        #       validator to be automatically created on the property
         #
         def auto_generate_validations(property)
           property.options[:auto_validation] = true unless property.options.has_key?(:auto_validation)
           return unless property.options[:auto_validation]
-          
+
           opts = {}
           opts[:context] = property.options[:validates] if property.options.has_key?(:validates)
-          
+
           # presence
           if property.options.has_key?(:nullable) && !property.options[:nullable]
-            validates_presence_of property.name, opts
+            validates_present property.name, opts
           end
-          
-          
+
           # length
           if property.type == String
             if property.options.has_key?(:length) || property.options.has_key?(:size)
               len = property.options.has_key?(:length) ? property.options[:length] : property.options[:size]
               opts[:within] = len if len.is_a?(Range)
-              opts[:maximum] = len unless len.is_a?(Range)              
-              opts[:allow_nil] = property.options[:nullable] if property.options.has_key?(:nullable)              
-              validates_length_of property.name, opts
+              opts[:maximum] = len unless len.is_a?(Range)
+              opts[:allow_nil] = property.options[:nullable] if property.options.has_key?(:nullable)
+              validates_length property.name, opts
             else
               opts[:maximum] = 50 #default string size
-              validates_length_of property.name, opts
+              validates_length property.name, opts
             end
           end
-          
+
           # format
           if property.options.has_key?(:format)
             opts[:with] = property.options[:format]
-            validates_format_of property.name, opts
+            validates_format property.name, opts
           end
-      
+
           # uniqueness validator
           if property.options.has_key?(:unique)
             value = property.options[:unique]
@@ -69,14 +68,15 @@ module DataMapper
             scope << value if value.is_a?(Symbol)
             opts = {}
             opts[:scope] = scope if scope.length > 0
-            
+
             if value.is_a?(TrueClass) || scope.length > 0
-              validates_uniqueness_of property.name, opts
+              validates_is_unique property.name, opts
             end
           end
 
         end
-      end
-    end
-  end
-end
+      end # module ClassMethods
+
+    end # module AutoValidate
+  end # module Validate
+end # module DataMapper

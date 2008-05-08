@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 begin
   gem 'do_sqlite3', '=0.9.0'
   require 'do_sqlite3'
-  
+
   DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
 
   describe DataMapper::Validate::AcceptanceValidator do
@@ -12,7 +12,7 @@ begin
       before :all do
         class SkimBat
           include DataMapper::Validate
-          validates_acceptance_of :sailyness
+          validates_is_accepted :sailyness
           attr_accessor :sailyness
         end
         @s = SkimBat.new
@@ -39,7 +39,7 @@ begin
       before :all do
         SkimBat.class_eval do
           validators.clear!
-          validates_acceptance_of :sailyness, :allow_nil => false
+          validates_is_accepted :sailyness, :allow_nil => false
         end
         @s = SkimBat.new
       end
@@ -52,7 +52,7 @@ begin
       before :all do
         SkimBat.class_eval do
           validators.clear!
-          validates_acceptance_of :sailyness, :accept => "true"
+          validates_is_accepted :sailyness, :accept => "true"
         end
         @s = SkimBat.new
       end
@@ -69,7 +69,7 @@ begin
       before :all do
         SkimBat.class_eval do
           validators.clear!
-          validates_acceptance_of :sailyness, :message => "hehu!"
+          validates_is_accepted :sailyness, :message => "hehu!"
         end
         @s = SkimBat.new
       end
