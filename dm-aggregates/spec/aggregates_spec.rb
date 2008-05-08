@@ -18,16 +18,6 @@ begin
 
   describe "Aggregates" do
     before(:all) do
-
-      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
-        DROP TABLE 'dragons';
-        CREATE TABLE 'dragons' (
-          "id" INT PRIMARY KEY,
-          "name" VARCHAR(30),
-          "is_fire_breathing" TINYINT,
-          "toes_on_claw" SMALLINT(3)
-        );
-      EOS
       
       class Dragon
         include DataMapper::Resource
@@ -36,9 +26,10 @@ begin
         property :is_fire_breathing, TrueClass
         property :toes_on_claw, Fixnum
       end
-     
+      
+      Dragon.auto_migrate!(:sqlite3)
 
-      repository(:sqlite3) do 
+      repository(:sqlite3) do
         Dragon.new(:name => 'George', :is_fire_breathing => false, :toes_on_claw => 3).save
         Dragon.new(:name => 'Puff', :is_fire_breathing => true, :toes_on_claw => 4).save
         Dragon.new(:name => 'Anzu', :is_fire_breathing => true, :toes_on_claw => 5).save
