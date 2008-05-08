@@ -28,6 +28,7 @@ gems = %w[
   dm-timestamps
   dm-aggregates
   couchdb_adapter
+  dm-ar-finders
 ]
 
 PROJECT = "dm-more"
