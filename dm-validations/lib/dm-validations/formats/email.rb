@@ -2,14 +2,14 @@ module DataMapper
   module Validate
     module Format
       module Email
-      
+
         def self.included(base)
           DataMapper::Validate::FormatValidator::FORMATS.merge!(
-            :email_address => [ EmailAddress, lambda { |field, value| '%s is not a valid email address'.t(value) }] 
+            :email_address => [ EmailAddress, lambda { |field, value| '%s is not a valid email address'.t(value) }]
           )
-        end      
-      
-      
+        end
+
+
         EmailAddress = begin
             alpha = "a-zA-Z"
             digit = "0-9"
@@ -25,7 +25,7 @@ module DataMapper
             word = "(?:#{atom}|#{quoted_string})"
             obs_local_part = "#{word}([.]#{word})*"
             local_part = "(?:#{dot_atom}|#{quoted_string}|#{obs_local_part})"
-            no_ws_ctl = "\\x01-\\x08\\x11\\x12\\x14-\\x1f\\x7f"    
+            no_ws_ctl = "\\x01-\\x08\\x11\\x12\\x14-\\x1f\\x7f"
             dtext = "[#{no_ws_ctl}\\x21-\\x5a\\x5e-\\x7e]"
             dcontent = "(?:#{dtext}|#{quoted_pair})"
             domain_literal = "\\[#{dcontent}+\\]"
@@ -34,10 +34,10 @@ module DataMapper
             addr_spec = "#{local_part}\@#{domain}"
             pattern = /^#{addr_spec}$/
         end
-     
-      
-      
-      
+
+
+
+
       end # module Email
     end # module Format
   end # module Validate

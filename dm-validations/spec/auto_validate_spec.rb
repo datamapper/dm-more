@@ -12,6 +12,7 @@ begin
       class SailBoat
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :name, String, :nullable => false , :validates => :presence_test
         property :description, String, :length => 10, :validates => :length_test_1
         property :notes, String, :length => 2..10, :validates => :length_test_2
@@ -73,6 +74,7 @@ begin
       class Test
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :name, String
       end
       Test.new().valid?().should == true
@@ -86,6 +88,7 @@ begin
       class Test
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :name, String, :nullable => false, :auto_validation => false
       end
       Test.new().valid?().should == true

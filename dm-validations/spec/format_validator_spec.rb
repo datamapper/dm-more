@@ -12,6 +12,7 @@ begin
       class BillOfLading
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :doc_no, String, :auto_validation => false
         property :email, String, :auto_validation => false
 
