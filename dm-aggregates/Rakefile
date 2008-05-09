@@ -42,3 +42,5 @@ Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_opts = ["--format", "specdoc", "--colour"]
   t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent.join("spec").join("**").join("*_spec.rb"))
 end
+
+task :default => 'spec'
