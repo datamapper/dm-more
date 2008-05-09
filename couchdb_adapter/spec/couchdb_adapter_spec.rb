@@ -27,7 +27,7 @@ end
 
 describe "DataMapper::Adapters::CouchdbAdapter" do
   before :all do
-    @uri = URI.parse("couchdb://localhost:5984")
+    @uri = Addressable::URI.parse("couchdb://localhost:5984")
     @adapter = DataMapper.setup(:couchdb, @uri)
     @adapter.send(:http_put, "/users/")
     create_procedures
