@@ -54,7 +54,7 @@ module DataMapper
       end
 
       module ClassMethods
-        
+
         # Validates the format of a field
         #
         def validates_format(*fields)
@@ -62,7 +62,7 @@ module DataMapper
           add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
         end
       end # module ClassMethods
-      
+
     end # module ValidatesFormat
   end # module Validate
 end # module DataMapper

@@ -65,7 +65,7 @@ module DataMapper
       end
 
       module ClassMethods
-        
+
         # Validates the length of a field
         #
         def validates_length(*fields)
@@ -73,7 +73,7 @@ module DataMapper
           add_validator_to_context(opts, fields, DataMapper::Validate::LengthValidator)
         end
       end # module ClassMethods
-      
+
     end # module ValidatesLength
   end # module Validate
 end # module DataMapper

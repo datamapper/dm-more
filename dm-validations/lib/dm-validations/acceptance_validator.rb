@@ -42,9 +42,9 @@ module DataMapper
       end
 
       module ClassMethods
-        
+
         # Validates a field where another field must be accepted
-        # 
+        #
         def validates_is_accepted(*fields)
           opts = opts_from_validator_args(fields)
           add_validator_to_context(opts, fields, DataMapper::Validate::AcceptanceValidator)

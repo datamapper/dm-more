@@ -13,6 +13,7 @@ begin
       class Yacht
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :name, String, :auto_validation => false
 
         validates_present :name
@@ -126,6 +127,7 @@ begin
       class Dingy
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :owner, String, :auto_validation => false
         validates_present :owner, :if => Proc.new{|resource| resource.owned?()}
         def owned?; false; end
@@ -161,6 +163,7 @@ begin
       class RowBoat
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         validates_present :salesman, :unless => Proc.new{|resource| resource.sold?()}
 
         def sold?; false; end
@@ -198,6 +201,7 @@ begin
       class Invoice
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :customer, String, :auto_validation => false
         validates_present :customer
 
@@ -217,6 +221,7 @@ begin
       class LineItem
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :price, String, :auto_validation => false
         validates_is_number :price
 
@@ -228,6 +233,7 @@ begin
       class Comment
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :note, String, :auto_validation => false
 
         validates_present :note

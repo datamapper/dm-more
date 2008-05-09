@@ -12,6 +12,7 @@ begin
       class Ship
         include DataMapper::Resource
         include DataMapper::Validate
+        property :id, Fixnum, :key => true
         property :name, String
 
         validates_with_method :fail_validation, :when => [:testing_failure]

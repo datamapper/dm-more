@@ -15,7 +15,7 @@ begin
 
   DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
 
-  describe DataMapper::Timestamp do
+  describe 'DataMapper::Timestamp' do
     before :all do
       class GreenSmoothie
         include DataMapper::Resource

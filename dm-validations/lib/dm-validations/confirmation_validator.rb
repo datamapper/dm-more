@@ -37,7 +37,7 @@ module DataMapper
       end
 
       module ClassMethods
-        
+
         # Validates a field when it is confirmed by another field with the same
         # value
         #

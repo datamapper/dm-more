@@ -67,7 +67,7 @@ module DataMapper
           #add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
         #end
       end # module ClassMethods
-      
+
     end # module ValidatesFormatOf
   end # module Validate
 end # module DataMapper
