@@ -1,6 +1,7 @@
 require 'rubygems'
 gem 'dm-core'
 require 'data_mapper'
+require 'pathname'
 require 'net/http'
 require 'json'
 require Pathname(__FILE__).dirname + 'couchdb_views'
