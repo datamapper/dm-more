@@ -3,27 +3,8 @@ require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 if HAS_SQLITE3
   describe DataMapper::Validate::UniquenessValidator do
-    after do
-      repository(:sqlite3).adapter.execute('DROP TABLE "organisations"');
-      repository(:sqlite3).adapter.execute('DROP TABLE "users"');
-    end
 
     before do
-      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
-        CREATE TABLE "organisations" (
-          "id" INTEGER PRIMARY KEY,
-          "name" VARCHAR(50),
-          "domain" VARCHAR(50)
-        )
-      EOS
-      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
-        CREATE TABLE "users" (
-          "id" INTEGER PRIMARY KEY,
-          "organisation_id" INTEGER,
-          "user_name" VARCHAR(50)
-        )
-      EOS
-
       class Organisation
         include DataMapper::Resource
         property :id, Fixnum, :key => true
@@ -43,8 +24,10 @@ if HAS_SQLITE3
 
         validates_is_unique :user_name, :when => :testing_association, :scope => [:organisation]
         validates_is_unique :user_name, :when => :testing_property, :scope => [:organisation_id]
-
       end
+
+      Organisation.auto_migrate!(:sqlite3)
+      User.auto_migrate!(:sqlite3)
 
       repository(:sqlite3) do
          Organisation.new(:id=>1, :name=>'Org One', :domain=>'taken').save

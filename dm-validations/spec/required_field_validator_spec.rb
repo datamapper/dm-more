@@ -3,26 +3,8 @@ require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 if HAS_SQLITE3
   describe DataMapper::Validate::RequiredFieldValidator do
-    after do
-      repository(:sqlite3).adapter.execute('DROP TABLE "landscapers"');
-      repository(:sqlite3).adapter.execute('DROP TABLE "gardens"');
-    end
 
     before do
-      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
-        CREATE TABLE "landscapers" (
-          "id" INTEGER PRIMARY KEY,
-          "name" VARCHAR(50)
-        )
-      EOS
-      repository(:sqlite3).adapter.execute(<<-EOS.compress_lines) rescue nil
-        CREATE TABLE "gardens" (
-          "id" INTEGER PRIMARY KEY,
-          "landscaper_id" INTEGER,
-          "name" VARCHAR(50)
-        )
-      EOS
-
       class Landscaper
         include DataMapper::Resource
         property :id, Fixnum, :key => true
@@ -47,9 +29,13 @@ if HAS_SQLITE3
         property :brand, String, :auto_validation => false, :default => 'Scotts'
         validates_present :brand, :when => :property_test
       end
+
+      Landscaper.auto_migrate!(:sqlite3)
+      Garden.auto_migrate!(:sqlite3)
+      Fertilizer.auto_migrate!(:sqlite3)
     end
 
-    it "should validate the presence of a property value on an instance of a 
+    it "should validate the presence of a property value on an instance of a
         resource" do
       garden = Garden.new
       garden.should_not be_valid_for_property_test
