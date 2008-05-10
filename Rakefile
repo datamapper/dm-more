@@ -17,7 +17,7 @@ include FileUtils
 
 DIR = Pathname(__FILE__).dirname.expand_path.to_s
 
-gems = %w[
+gem_paths = %w[
   merb_datamapper
   dm-migrations
   dm-serializer
@@ -28,8 +28,9 @@ gems = %w[
   dm-timestamps
   dm-aggregates
   dm-ar-finders
-  dm-couchdb-adapter
+  adapters/dm-couchdb-adapter
 ]
+gems = gem_paths.map { |p| File.basename(p) }
 
 PROJECT = "dm-more"
 
@@ -72,14 +73,14 @@ end
 
 desc "Build the dm-more gems"
 task :build_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir){ sh "rake gem" }
   end
 end
 
 desc "Install the dm-more gems"
 task :install_gems => :build_gems do
-  gems.each do |dir|
+  gem_paths.each do |dir|
     Dir.chdir(dir){ sh "#{SUDO} rake install" }
   end
 end
@@ -109,10 +110,10 @@ task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
 #  cp "pkg/dm-#{DataMapper::MORE_VERSION}.gem", "bundle"
   cp "pkg/dm-more-#{DataMapper::MORE_VERSION}.gem", "bundle"
-  gems.each do |gem|
+  gem_paths.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
       rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
-      sh %{cp #{gem}/pkg/#{gem}-#{$1}.gem bundle/}
+      sh %{cp #{gem}/pkg/#{File.basename(gem)}-#{$1}.gem bundle/}
     end
   end
 end
