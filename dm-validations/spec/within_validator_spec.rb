@@ -13,7 +13,7 @@ begin
       class Telephone
         include DataMapper::Resource
         include DataMapper::Validate
-        property :id, Fixnum, :key => true
+        property :id, Fixnum, :serial => true
         property :type_of_number, String, :auto_validation => false
         validates_within :type_of_number, :set => ['Home','Work','Cell']
       end
@@ -21,7 +21,7 @@ begin
       class Reciever
         include DataMapper::Resource
         include DataMapper::Validate
-        property :id, Fixnum, :key => true
+        property :id, Fixnum, :serial => true
         property :holder, String, :auto_validation => false, :default => 'foo'
         validates_within :holder, :set => ['foo', 'bar', 'bang']
       end

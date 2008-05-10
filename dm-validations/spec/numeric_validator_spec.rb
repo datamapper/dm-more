@@ -7,34 +7,32 @@ begin
 
   DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
 
+  class Bill
+    include DataMapper::Resource
+    include DataMapper::Validate
+    property :id, Fixnum, :serial => true
+    property :amount_1, String, :auto_validation => false
+    property :amount_2, Float, :auto_validation => false
+    validates_is_number :amount_1, :amount_2
+  end
+
+  class Hillary
+    include DataMapper::Resource
+    include DataMapper::Validate
+    property :id, Fixnum, :serial => true
+    property :amount_1, Float, :auto_validation => false, :default => 0.01
+    validates_is_number :amount_1
+  end
+
   describe DataMapper::Validate::NumericValidator do
-    before(:all) do
-      class Bill
-        include DataMapper::Resource
-        include DataMapper::Validate
-        property :id, Fixnum, :key => true
-        property :amount_1, String, :auto_validation => false
-        property :amount_2, Float, :auto_validation => false
-        validates_is_number :amount_1, :amount_2
-      end
-
-      class Hillary
-        include DataMapper::Resource
-        include DataMapper::Validate
-        property :id, Fixnum, :key => true
-        property :amount_1, Float, :auto_validation => false, :default => 0.01
-        validates_is_number :amount_1
-      end
-    end
-
     it "should validate a floating point value on the instance of a resource" do
       b = Bill.new
-      b.valid?.should_not == true
+      b.should_not be_valid
       b.amount_1 = 'ABC'
       b.amount_2 = 27.343
-      b.valid?.should_not == true
+      b.should_not be_valid
       b.amount_1 = '34.33'
-      b.valid?.should == true
+      b.should be_valid
     end
 
     it "should validate an integer value on the instance of a resource" do

@@ -10,12 +10,30 @@ module DataMapper
       end
 
       def call(target)
-        value =  target.attribute_get(field_name).to_s
-        regex = @options[:integer_only] ? /\A[+-]?\d+\Z/ : /^\d*\.{0,1}\d+$/
-        return true if not (value =~ regex).nil?
+        value = target.attribute_get(field_name)
+        return true if @options[:allow_nil] && value.nil?
 
-        error_message = @options[:message] || "%s must be a number".t(DataMapper::Inflection.humanize(@field_name))
-        add_error(target, error_message , @field_name)
+        value = value.kind_of?(BigDecimal) ? value.to_s('F') : value.to_s
+
+        error_message = @options[:message]
+        scale         = @options[:scale]
+        precision     = @options[:precision]
+
+        if @options[:integer_only]
+          return true if value =~ /\A[+-]?\d+\z/
+          error_message ||= '%s must be an integer'.t(DataMapper::Inflection.humanize(@field_name))
+        else
+          if scale && precision
+            return true if value =~ /\A(?:\d{1,#{scale - precision}}|\d{0,#{scale - precision}}\.\d{1,#{precision}})\z/
+          else
+            return true if value =~ /\A(?:\d+|\d*\.\d+)\z/
+          end
+          error_message ||= '%s must be a number'.t(DataMapper::Inflection.humanize(@field_name))
+        end
+
+        add_error(target, error_message, @field_name)
+
+        # TODO: check the gt, gte, lt, lte, and eq options
 
         return false
       end

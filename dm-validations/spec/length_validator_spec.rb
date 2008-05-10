@@ -12,14 +12,14 @@ begin
       class MotorLaunch
         include DataMapper::Resource
         include DataMapper::Validate
-        property :id, Fixnum, :key => true
+        property :id, Fixnum, :serial => true
         property :name, String, :auto_validation => false
       end
 
       class BoatDock
         include DataMapper::Resource
         include DataMapper::Validate
-        property :id, Fixnum, :key => true
+        property :id, Fixnum, :serial => true
         property :name, String, :auto_validation => false, :default => "I'm a long string"
         validates_length :name, :min => 3
       end

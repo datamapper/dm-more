@@ -28,30 +28,39 @@ module DataMapper
         #       Setting the :format option causes a validates_format_of
         #       validator to be automatically created on the property
         #
+        # Fixnum type
+        #       Using a Fixnum type causes a validates_is_number
+        #       validator to be created for the property.  integer_only
+        #       is set to true
+        #
+        # BigDecimal or Float type
+        #       Using a Fixnum type causes a validates_is_number
+        #       validator to be created for the property.  integer_only
+        #       is set to false, and precision/scale match the property
         def auto_generate_validations(property)
           property.options[:auto_validation] = true unless property.options.has_key?(:auto_validation)
           return unless property.options[:auto_validation]
 
-          opts = {}
+          # a serial property is allowed to be nil too, because the
+          # value is set by the storage system
+          opts = { :allow_nil => property.nullable? || property.serial? }
           opts[:context] = property.options[:validates] if property.options.has_key?(:validates)
 
           # presence
-          if property.options.has_key?(:nullable) && !property.options[:nullable]
+          unless opts[:allow_nil]
             validates_present property.name, opts
           end
 
           # length
           if property.type == String
-            if property.options.has_key?(:length) || property.options.has_key?(:size)
-              len = property.options.has_key?(:length) ? property.options[:length] : property.options[:size]
-              opts[:within] = len if len.is_a?(Range)
-              opts[:maximum] = len unless len.is_a?(Range)
-              opts[:allow_nil] = property.options[:nullable] if property.options.has_key?(:nullable)
-              validates_length property.name, opts
+            #len = property.length  # XXX: maybe length should always return a Range, with the min defaulting to 1
+            len = property.options.fetch(:length, property.options.fetch(:size, DataMapper::Property::DEFAULT_LENGTH))
+            if len.is_a?(Range)
+              opts[:within] = len
             else
-              opts[:maximum] = 50 #default string size
-              validates_length property.name, opts
+              opts[:maximum] = len
             end
+            validates_length property.name, opts
           end
 
           # format
@@ -74,6 +83,15 @@ module DataMapper
             end
           end
 
+          # numeric validator
+          if Fixnum == property.type
+            opts[:integer_only] = true
+            validates_is_number property.name, opts
+          elsif BigDecimal == property.type || Float == property.type
+            opts[:precision] = property.precision
+            opts[:scale]     = property.scale
+            validates_is_number property.name, opts
+          end
         end
       end # module ClassMethods
 
