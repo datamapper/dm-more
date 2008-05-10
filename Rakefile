@@ -27,8 +27,8 @@ gems = %w[
   dm-is-tree
   dm-timestamps
   dm-aggregates
-  couchdb_adapter
   dm-ar-finders
+  dm-couchdb-adapter
 ]
 
 PROJECT = "dm-more"
@@ -45,7 +45,7 @@ dm_more_spec = Gem::Specification.new do |s|
   s.rubyforge_project = PROJECT 
   s.homepage = "http://datamapper.org" 
  
-  s.files = %w[ MIT-LICENSE README Rakefile TODO ]
+  s.files = %w[ MIT-LICENSE README Rakefile TODO lib/dm-more.rb ]
   s.add_dependency("dm-core", ">= #{DataMapper::VERSION}")
   gems.each do |gem|
     s.add_dependency gem, [">= #{DataMapper::VERSION}"]
