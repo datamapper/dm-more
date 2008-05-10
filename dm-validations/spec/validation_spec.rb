@@ -12,7 +12,6 @@ begin
     before(:all) do
       class Yacht
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :name, String, :auto_validation => false
 
@@ -125,7 +124,6 @@ begin
     it "should execute a Proc when provided in an :if clause and run validation if the Proc returns true" do
       class Dingy
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :owner, String, :auto_validation => false
         validates_present :owner, :if => Proc.new{|resource| resource.owned?()}
@@ -161,7 +159,6 @@ begin
     it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
       class RowBoat
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         validates_present :salesman, :unless => Proc.new{|resource| resource.sold?()}
 
@@ -199,7 +196,6 @@ begin
 
       class Invoice
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :customer, String, :auto_validation => false
         validates_present :customer
@@ -219,7 +215,6 @@ begin
 
       class LineItem
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :price, String, :auto_validation => false
         validates_is_number :price
@@ -231,7 +226,6 @@ begin
 
       class Comment
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :note, String, :auto_validation => false
 

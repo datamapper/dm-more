@@ -10,22 +10,11 @@ begin
   describe DataMapper::Validate::ConfirmationValidator do
     before(:all) do
       class Canoe
-        include DataMapper::Validate
-        def name=(value)
-          @name = value
-        end
+        include DataMapper::Resource
 
-        def name
-          @name ||= nil
-        end
-
-        def name_confirmation=(value)
-          @name_confirmation = value
-        end
-
-        def name_confirmation
-          @name_confirmation ||= nil
-        end
+        property :id,                Fixnum, :serial => true
+        property :name,              String
+        property :name_confirmation, String
 
         validates_is_confirmed :name
       end

@@ -24,19 +24,13 @@ module DataMapper
     end # class RequiredFieldValidator
 
     module ValidatesPresent
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate the presence of a field
+      #
+      def validates_present(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::RequiredFieldValidator)
       end
-
-      module ClassMethods
-
-        # Validate the presence of a field
-        #
-        def validates_present(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::RequiredFieldValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesPresent
   end # module Validate

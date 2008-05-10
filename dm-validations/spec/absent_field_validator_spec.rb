@@ -11,7 +11,6 @@ begin
     before(:all) do
       class Kayak
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :salesman, String, :auto_validation => false
 
@@ -20,7 +19,6 @@ begin
 
       class Pirogue
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :salesman, String, :default => 'Layfayette'
         validates_absent :salesman, :when => :sold

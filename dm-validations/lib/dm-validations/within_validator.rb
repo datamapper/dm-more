@@ -23,19 +23,13 @@ module DataMapper
     end # class WithinValidator
 
     module ValidatesWithin
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate the absence of a field
+      #
+      def validates_within(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::WithinValidator)
       end
-
-      module ClassMethods
-
-        # Validate the absence of a field
-        #
-        def validates_within(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::WithinValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesWithin
   end # module Validate

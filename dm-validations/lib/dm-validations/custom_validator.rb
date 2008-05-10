@@ -57,16 +57,11 @@ module DataMapper
     end # class CustomValidator
 
     module ValidatesFormatOf
-      def self.included(base)
-        base.extend(ClassMethods)
-      end
 
-      module ClassMethods
-        #def validates_format_of(*fields)
-          #opts = opts_from_validator_args(fields)
-          #add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
-        #end
-      end # module ClassMethods
+      #def validates_format_of(*fields)
+        #opts = opts_from_validator_args(fields)
+        #add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
+      #end
 
     end # module ValidatesFormatOf
   end # module Validate

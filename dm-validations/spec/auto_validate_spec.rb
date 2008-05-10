@@ -9,7 +9,6 @@ begin
 
   class SailBoat
     include DataMapper::Resource
-    include DataMapper::Validate
     property :id,            Fixnum,     :key => true
     property :name,          String,                                :nullable => false,     :validates       => :presence_test
     property :description,   String,     :length => 10,                                     :validates       => :length_test_1
@@ -80,7 +79,6 @@ begin
     it "should auto validate all strings for max length" do
       klass = Class.new do
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :name, String
       end
@@ -94,7 +92,6 @@ begin
     it "should not auto add any validators if the option :auto_validation => false was given" do
       klass = Class.new do
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true, :auto_validation => false
         property :name, String, :nullable => false, :auto_validation => false
       end

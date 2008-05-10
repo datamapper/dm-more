@@ -40,19 +40,13 @@ module DataMapper
     end # class NumericValidator
 
     module ValidatesIsNumber
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate whether a field is numeric
+      #
+      def validates_is_number(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
       end
-
-      module ClassMethods
-
-        # Validate whether a field is numeric
-        #
-        def validates_is_number(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesIsNumber
   end # module Validate

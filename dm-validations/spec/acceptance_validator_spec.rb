@@ -11,9 +11,10 @@ begin
     describe "with standard options" do
       before :all do
         class SkimBat
-          include DataMapper::Validate
+          include DataMapper::Resource
+          property :id,        Fixnum, :serial => true
+          property :sailyness, Boolean
           validates_is_accepted :sailyness
-          attr_accessor :sailyness
         end
         @s = SkimBat.new
       end

@@ -20,19 +20,13 @@ module DataMapper
     end # class AbsentFieldValidator
 
     module ValidatesAbsent
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate the absence of a field
+      #
+      def validates_absent(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::AbsentFieldValidator)
       end
-
-      module ClassMethods
-
-        # Validate the absence of a field
-        #
-        def validates_absent(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::AbsentFieldValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesAbsent
   end # module Validate

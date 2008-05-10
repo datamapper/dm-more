@@ -11,7 +11,6 @@ begin
     before(:all) do
       class Ship
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :name, String
 

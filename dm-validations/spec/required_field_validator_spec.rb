@@ -30,14 +30,12 @@ begin
 
       class Landscaper
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :name, String
       end
 
       class Garden
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :landscaper_id, Fixnum
         property :name, String, :auto_validation => false
@@ -50,7 +48,6 @@ begin
 
       class Fertilizer
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :serial => true
         property :brand, String, :auto_validation => false, :default => 'Scotts'
         validates_present :brand, :when => :property_test

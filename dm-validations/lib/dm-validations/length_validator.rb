@@ -60,19 +60,13 @@ module DataMapper
     end # class LengthValidator
 
     module ValidatesLength
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validates the length of a field
+      #
+      def validates_length(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::LengthValidator)
       end
-
-      module ClassMethods
-
-        # Validates the length of a field
-        #
-        def validates_length(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::LengthValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesLength
   end # module Validate

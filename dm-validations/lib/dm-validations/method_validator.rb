@@ -17,20 +17,14 @@ module DataMapper
     end # class MethodValidator
 
     module ValidatesWithMethod
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate using a method. The method signiture needs to be
+      # method_name() result::<Boolean>, Error Message::<String>
+      #
+      def validates_with_method(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::MethodValidator)
       end
-
-      module ClassMethods
-
-        # Validate using a method. The method signiture needs to be
-        # method_name() result::<Boolean>, Error Message::<String>
-        #
-        def validates_with_method(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::MethodValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesWithMethod
   end # module Validate

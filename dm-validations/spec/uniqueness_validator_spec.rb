@@ -31,7 +31,6 @@ begin
 
       class Organisation
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :name, String
         property :domain, String #, :unique => true
@@ -41,7 +40,6 @@ begin
 
       class User
         include DataMapper::Resource
-        include DataMapper::Validate
         property :id, Fixnum, :key => true
         property :organisation_id, Fixnum
         property :user_name, String

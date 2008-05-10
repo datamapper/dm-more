@@ -49,19 +49,13 @@ module DataMapper
     end # class FormatValidator
 
     module ValidatesFormat
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validates the format of a field
+      #
+      def validates_format(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
       end
-
-      module ClassMethods
-
-        # Validates the format of a field
-        #
-        def validates_format(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesFormat
   end # module Validate

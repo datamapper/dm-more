@@ -32,20 +32,14 @@ module DataMapper
     end # class ConfirmationValidator
 
     module ValidatesIsConfirmed
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validates a field when it is confirmed by another field with the same
+      # value
+      #
+      def validates_is_confirmed(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)
       end
-
-      module ClassMethods
-
-        # Validates a field when it is confirmed by another field with the same
-        # value
-        #
-        def validates_is_confirmed(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesIsConfirmed
   end # module Validate

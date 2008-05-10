@@ -42,19 +42,13 @@ module DataMapper
     end # class UniquenessValidator
 
     module ValidatesIsUnique
-      def self.included(base)
-        base.extend(ClassMethods)
+
+      # Validate the uniqueness of a field
+      #
+      def validates_is_unique(*fields)
+        opts = opts_from_validator_args(fields)
+        add_validator_to_context(opts, fields, DataMapper::Validate::UniquenessValidator)
       end
-
-      module ClassMethods
-
-        # Validate the uniqueness of a field
-        #
-        def validates_is_unique(*fields)
-          opts = opts_from_validator_args(fields)
-          add_validator_to_context(opts, fields, DataMapper::Validate::UniquenessValidator)
-        end
-      end # module ClassMethods
 
     end # module ValidatesIsUnique
   end # module Validate

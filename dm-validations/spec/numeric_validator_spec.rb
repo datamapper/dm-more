@@ -9,7 +9,6 @@ begin
 
   class Bill
     include DataMapper::Resource
-    include DataMapper::Validate
     property :id, Fixnum, :serial => true
     property :amount_1, String, :auto_validation => false
     property :amount_2, Float, :auto_validation => false
@@ -18,7 +17,6 @@ begin
 
   class Hillary
     include DataMapper::Resource
-    include DataMapper::Validate
     property :id, Fixnum, :serial => true
     property :amount_1, Float, :auto_validation => false, :default => 0.01
     validates_is_number :amount_1
