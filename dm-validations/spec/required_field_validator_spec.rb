@@ -1,12 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe DataMapper::Validate::RequiredFieldValidator do
     after do
       repository(:sqlite3).adapter.execute('DROP TABLE "landscapers"');
@@ -54,7 +49,8 @@ begin
       end
     end
 
-    it "should validate the presence of a property value on an instance of a resource" do
+    it "should validate the presence of a property value on an instance of a 
+        resource" do
       garden = Garden.new
       garden.should_not be_valid_for_property_test
       garden.errors.on(:name).should include('Name must not be blank')
@@ -63,7 +59,8 @@ begin
       garden.should be_valid_for_property_test
     end
 
-    it "should validate the presence of an association value on an instance of a resource when dirty"
+    it "should validate the presence of an association value on an instance of a
+        resource when dirty"
     #do
     #  garden = Garden.new
     #  landscaper = garden.landscaper
@@ -74,13 +71,6 @@ begin
     it "should pass when a default is available" do
       fert = Fertilizer.new
       fert.should be_valid_for_property_test
-    end
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
     end
   end
 end

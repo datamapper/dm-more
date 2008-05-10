@@ -1,12 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   class SailBoat
     include DataMapper::Resource
     property :id,            Fixnum,     :key => true
@@ -29,11 +24,13 @@ begin
   end
 
   describe "Automatic Validation from Property Definition" do
-    it "should have a hook for adding auto validations called from DataMapper::Property#new" do
+    it "should have a hook for adding auto validations called from 
+        DataMapper::Property#new" do
       SailBoat.should respond_to(:auto_generate_validations)
     end
 
-    it "should auto add a validates_presence_of when property has option :nullable => false" do
+    it "should auto add a validates_is_present when property has option 
+        :nullable => false" do
       validator = SailBoat.validators.context(:presence_test).first
       validator.should be_kind_of(DataMapper::Validate::RequiredFieldValidator)
       validator.field_name.should == :name
@@ -44,7 +41,7 @@ begin
       boat.valid_for_presence_test?.should == true
     end
 
-    it "should auto add a validates_length_of for maximum size on String properties" do
+    it "should auto add a validates_length for maximum size on String properties" do
       # max length test max=10
       boat = SailBoat.new
       boat.valid_for_length_test_1?.should == true  #no minimum length
@@ -54,7 +51,8 @@ begin
       boat.valid_for_length_test_1?.should == true
     end
 
-    it "should auto add validates_length_of within a range when option :length or :size is a range" do
+    it "should auto add validates_length within a range when option :length 
+        or :size is a range" do
       # Range test notes = 2..10
       boat = SailBoat.new
       boat.should be_valid_for_length_test_2
@@ -66,7 +64,7 @@ begin
       boat.should be_valid_for_length_test_2
     end
 
-    it "should auto add a validates_format_of if the :format option is given" do
+    it "should auto add a validates_format if the :format option is given" do
       # format test - format = /A\d{4}\z/   on code
       boat = SailBoat.new
       boat.should be_valid_for_format_test
@@ -89,7 +87,8 @@ begin
       t.errors.full_messages.should include('Name must be less than 50 characters long')
     end
 
-    it "should not auto add any validators if the option :auto_validation => false was given" do
+    it "should not auto add any validators if the option 
+        :auto_validation => false was given" do
       klass = Class.new do
         include DataMapper::Resource
         property :id, Fixnum, :serial => true, :auto_validation => false
@@ -98,7 +97,8 @@ begin
       klass.new.valid?.should == true
     end
 
-    it 'should auto add range checking the length of a string while still allowing null values' do
+    it 'should auto add range checking the length of a string while still 
+        allowing null values' do
       boat = SailBoat.new
       boat.allow_nil = 'ABC'
       boat.should_not be_valid_for_nil_test
@@ -159,13 +159,6 @@ begin
           @boat.should be_valid
         end
       end
-    end
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
     end
   end
 end

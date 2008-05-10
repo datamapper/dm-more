@@ -1,18 +1,11 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
-  # do something
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
+if HAS_SQLITE3
+  describe DataMapper::Validate::ContextualValidators do
+    it "should have specs" do
+      pending
+      # FIXME do something, add specs
     end
   end
 end

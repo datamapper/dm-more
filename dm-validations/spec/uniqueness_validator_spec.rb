@@ -1,12 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe DataMapper::Validate::UniquenessValidator do
     after do
       repository(:sqlite3).adapter.execute('DROP TABLE "organisations"');
@@ -84,13 +79,6 @@ begin
         u.should be_valid_for_testing_property
         u.should be_valid_for_testing_association
       end
-    end
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
     end
   end
 end

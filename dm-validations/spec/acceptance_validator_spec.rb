@@ -1,12 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe DataMapper::Validate::AcceptanceValidator do
     describe "with standard options" do
       before :all do
@@ -18,11 +13,11 @@ begin
         end
         @s = SkimBat.new
       end
-      it "should validate if a resource instance has accepted" do
+      it "should validate if a resource instance has been accepted" do
         @s.sailyness = "1"
         @s.valid?.should == true
       end
-      it "should not validate if a resource instance has not accepted" do
+      it "should not validate if a resource instance has not been accepted" do
         @s.sailyness = "0"
         @s.valid?.should == false
       end
@@ -57,11 +52,11 @@ begin
         end
         @s = SkimBat.new
       end
-      it "should validate if a resource instance has accepted" do
+      it "should validate if a resource instance has been accepted" do
         @s.sailyness = "true"
         @s.valid?.should == true
       end
-      it "should not validate if a resource instance has not accepted" do
+      it "should not validate if a resource instance has not been accepted" do
         @s.sailyness = "false"
         @s.valid?.should == false
       end
@@ -79,13 +74,6 @@ begin
         @s.valid?.should == false
         @s.errors.full_messages.join(" ").should =~ /hehu!/
       end
-    end
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
     end
   end
 end

@@ -1,27 +1,22 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
+class Bill
+  include DataMapper::Resource
+  property :id, Fixnum, :serial => true
+  property :amount_1, String, :auto_validation => false
+  property :amount_2, Float, :auto_validation => false
+  validates_is_number :amount_1, :amount_2
+end
 
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
+class Hillary
+  include DataMapper::Resource
+  property :id, Fixnum, :serial => true
+  property :amount_1, Float, :auto_validation => false, :default => 0.01
+  validates_is_number :amount_1
+end
 
-  class Bill
-    include DataMapper::Resource
-    property :id, Fixnum, :serial => true
-    property :amount_1, String, :auto_validation => false
-    property :amount_2, Float, :auto_validation => false
-    validates_is_number :amount_1, :amount_2
-  end
-
-  class Hillary
-    include DataMapper::Resource
-    property :id, Fixnum, :serial => true
-    property :amount_1, Float, :auto_validation => false, :default => 0.01
-    validates_is_number :amount_1
-  end
-
+if HAS_SQLITE3
   describe DataMapper::Validate::NumericValidator do
     it "should validate a floating point value on the instance of a resource" do
       b = Bill.new
@@ -59,12 +54,5 @@ begin
       h.should be_valid
     end
 
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
-    end
   end
 end

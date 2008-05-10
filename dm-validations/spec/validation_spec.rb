@@ -1,13 +1,7 @@
-require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe DataMapper::Validate do
     before(:all) do
       class Yacht
@@ -37,7 +31,8 @@ begin
       Yacht.validators.should respond_to(:execute)
     end
 
-    it "should place a validator in the :default context if a named context is not provided" do
+    it "should place a validator in the :default context if a named context is 
+        not provided" do
       Yacht.validators.context(:default).length.should == 2
     end
 
@@ -121,7 +116,8 @@ begin
       sea.errors.full_messages.first.should == 'Year built is a must enter field'
     end
 
-    it "should execute a Proc when provided in an :if clause and run validation if the Proc returns true" do
+    it "should execute a Proc when provided in an :if clause and run validation
+        if the Proc returns true" do
       class Dingy
         include DataMapper::Resource
         property :id, Fixnum, :serial => true
@@ -139,7 +135,8 @@ begin
       Dingy.new().valid?.should_not == true
     end
 
-    it "should execute a symbol or method name provided in an :if clause and run validation if the method returns true" do
+    it "should execute a symbol or method name provided in an :if clause and run
+        validation if the method returns true" do
       class Dingy
         validators.clear!
         validates_present :owner, :if => :owned?
@@ -156,7 +153,8 @@ begin
       Dingy.new().valid?.should_not == true
     end
 
-    it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
+    it "should execute a Proc when provided in an :unless clause and not run
+        validation if the Proc returns true" do
       class RowBoat
         include DataMapper::Resource
         property :id, Fixnum, :serial => true
@@ -174,7 +172,8 @@ begin
       RowBoat.new.valid?().should == true
     end
 
-    it "should execute a symbol or method name provided in an :unless clause and not run validation if the method returns true" do
+    it "should execute a symbol or method name provided in an :unless clause and
+        not run validation if the method returns true" do
       class Dingy
         validators.clear!
         validates_present :salesman, :unless => :sold?
@@ -192,8 +191,8 @@ begin
     end
 
 
-    it "should perform automatic recursive validation #all_valid? checking all instance variables (and ivar.each items if valid)" do
-
+    it "should perform automatic recursive validation #all_valid? checking all
+        instance variables (and ivar.each items if valid)" do
       class Invoice
         include DataMapper::Resource
         property :id, Fixnum, :serial => true
@@ -254,12 +253,5 @@ begin
 
     end
 
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
-    end
   end
 end

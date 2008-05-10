@@ -1,12 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe DataMapper::Validate::ConfirmationValidator do
     before(:all) do
       class Canoe
@@ -31,7 +26,8 @@ begin
       canoe.valid?.should == true
     end
 
-    it "should default the name of the confirmation field to <field>_confirmation if one is not specified" do
+    it "should default the name of the confirmation field to 
+        <field>_confirmation if one is not specified" do
       canoe = Canoe.new
       canoe.name = 'White Water'
       canoe.name_confirmation = 'White Water'
@@ -69,12 +65,5 @@ begin
 
     end
 
-  end
-
-rescue LoadError => e
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
-    end
   end
 end
