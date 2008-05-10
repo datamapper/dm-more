@@ -9,7 +9,6 @@ module DataMapper
           )
         end
 
-
         EmailAddress = begin
             alpha = "a-zA-Z"
             digit = "0-9"
@@ -34,9 +33,6 @@ module DataMapper
             addr_spec = "#{local_part}\@#{domain}"
             pattern = /^#{addr_spec}$/
         end
-
-
-
 
       end # module Email
     end # module Format

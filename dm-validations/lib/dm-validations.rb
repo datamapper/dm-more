@@ -21,6 +21,7 @@ require dir / 'numeric_validator'
 require dir / 'method_validator'
 require dir / 'uniqueness_validator'
 require dir / 'acceptance_validator'
+require dir / 'custom_validator'
 
 require dir / 'support' / 'object'
 

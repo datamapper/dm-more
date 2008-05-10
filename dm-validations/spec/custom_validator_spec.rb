@@ -2,10 +2,10 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 if HAS_SQLITE3
-  #describe DataMapper::Validate::CustomValidator do
-    #it "should have specs" do
-      #pending
+  describe DataMapper::Validate::CustomValidator do
+    it "should have specs" do
+      pending
       # FIXME do something, add specs
-    #end
-  #end
+    end
+  end
 end
