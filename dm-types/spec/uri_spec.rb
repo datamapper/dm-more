@@ -10,7 +10,7 @@ describe DataMapper::Types::Uri do
     @uri = Addressable::URI.parse(@uri_str)
   end
   
-  describe "#dump" do
+  describe ".dump" do
     it "should return the url as string" do
       Uri.dump(@uri, :property).should == @uri_str
     end
@@ -24,7 +24,7 @@ describe DataMapper::Types::Uri do
     end
   end
   
-  describe "#load" do    
+  describe ".load" do    
     it "should return the url as Addressable" do
       Uri.load(@uri_str, :property).should == @uri
     end

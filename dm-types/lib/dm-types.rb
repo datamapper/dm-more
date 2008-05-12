@@ -6,5 +6,7 @@ require File.join(File.dirname(__FILE__),'dm-types','csv')
 require File.join(File.dirname(__FILE__),'dm-types','enum')
 require File.join(File.dirname(__FILE__),'dm-types','epoch_time')
 require File.join(File.dirname(__FILE__),'dm-types','flag')
-require File.join(File.dirname(__FILE__),'dm-types','yaml')
+require File.join(File.dirname(__FILE__),'dm-types','ip_address')
 require File.join(File.dirname(__FILE__),'dm-types','uri')
+require File.join(File.dirname(__FILE__),'dm-types','yaml')
+
