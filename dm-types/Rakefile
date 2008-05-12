@@ -13,7 +13,7 @@ spec = Gem::Specification.new do |s|
   s.platform         = Gem::Platform::RUBY
   s.has_rdoc         = true
   s.extra_rdoc_files = %w[ README LICENSE TODO ]
-  s.summary          = 'DataMapper plugin for extra datatypes'
+  s.summary          = 'DataMapper plugin providing extra data types'
   s.description      = s.summary
   s.author           = 'Sam Smoot'
   s.email            = 'ssmoot@gmail.com'
@@ -23,7 +23,7 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('dm-core', '= 0.9.0')
 end
 
-task :default => :spec
+task :default => [ :spec ]
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec

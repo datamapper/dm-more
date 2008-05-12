@@ -19,15 +19,15 @@ DIR = Pathname(__FILE__).dirname.expand_path.to_s
 
 gem_paths = %w[
   merb_datamapper
-  dm-migrations
-  dm-serializer
-  dm-types
-  dm-validations
-  dm-cli
-  dm-is-tree
-  dm-timestamps
   dm-aggregates
   dm-ar-finders
+  dm-cli
+  dm-is-tree
+  dm-migrations
+  dm-serializer
+  dm-timestamps
+  dm-types
+  dm-validations
   adapters/dm-couchdb-adapter
 ]
 gems = gem_paths.map { |p| File.basename(p) }
@@ -35,17 +35,17 @@ gems = gem_paths.map { |p| File.basename(p) }
 PROJECT = "dm-more"
 
 dm_more_spec = Gem::Specification.new do |s|
-  s.platform = Gem::Platform::RUBY 
-  s.name = PROJECT 
+  s.platform = Gem::Platform::RUBY
+  s.name = PROJECT
   s.summary = "An Object/Relational Mapper for Ruby"
   s.description = "Faster, Better, Simpler."
   s.version = DataMapper::MORE_VERSION
- 
+
   s.authors = "Sam Smoot"
   s.email = "ssmoot@gmail.com"
-  s.rubyforge_project = PROJECT 
-  s.homepage = "http://datamapper.org" 
- 
+  s.rubyforge_project = PROJECT
+  s.homepage = "http://datamapper.org"
+
   s.files = %w[ MIT-LICENSE README Rakefile TODO lib/dm-more.rb ]
   s.add_dependency("dm-core", ">= #{DataMapper::VERSION}")
   gems.each do |gem|
@@ -129,7 +129,7 @@ namespace :ci do
   end
 
   task :run_all => [:spec, :install, :doc, :publish]
-  
+
   task :spec_all => :define_tasks do
     gems.each do |gem_name|
       Rake::Task["#{gem_name}:spec"].invoke

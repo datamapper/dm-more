@@ -23,10 +23,13 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('dm-core', '= 0.9.0')
 end
 
+task :default => [ :spec ]
+
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
+desc "Install #{spec.name} #{spec.version}"
 task :install => [ :package ] do
   sh "#{'sudo' unless ENV['SUDOLESS']} gem install pkg/#{spec.name}-#{spec.version}", :verbose => false
 end

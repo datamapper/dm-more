@@ -1,44 +1,41 @@
 require 'rubygems'
 require 'spec'
-require 'spec/rake/spectask'
+require 'rake/clean'
 require 'rake/gempackagetask'
+require 'spec/rake/spectask'
 require 'pathname'
 
-PLUGIN = "dm-ar-finders"
-NAME = "dm-ar-finders"
-VERSION = "0.9.0"
-AUTHOR = "John W Higgins"
-EMAIL = "john@wishVPS.com"
-HOMEPAGE = "http://github.com/sam/dm-more/tree/master/dm-ar-finders"
-SUMMARY = "DataMapper plugin for ActiveRecord style finders"
+CLEAN.include '{log,pkg}/'
 
 spec = Gem::Specification.new do |s|
-  s.name = NAME
-  s.version = VERSION
-  s.platform = Gem::Platform::RUBY
-  s.has_rdoc = true
-  s.extra_rdoc_files = ["README", "LICENSE", "TODO"]
-  s.summary = SUMMARY
-  s.description = s.summary
-  s.author = AUTHOR
-  s.email = EMAIL
-  s.homepage = HOMEPAGE
+  s.name             = 'dm-ar-finders'
+  s.version          = '0.9.0'
+  s.platform         = Gem::Platform::RUBY
+  s.has_rdoc         = true
+  s.extra_rdoc_files = %w[ README LICENSE TODO ]
+  s.summary          = 'DataMapper plugin providing ActiveRecord-style finders'
+  s.description      = s.summary
+  s.author           = 'John W Higgins'
+  s.email            = 'john@wishVPS.com'
+  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-ar-finders'
+  s.require_path     = 'lib'
+  s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
   s.add_dependency('dm-core', '>= 0.9.0')
-  s.require_path = 'lib'
-  s.autorequire = PLUGIN
-  s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
 end
+
+task :default => [ :spec ]
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-task :install => [:package] do
-  sh %{#{'sudo' unless ENV['SUDOLESS']} gem install pkg/#{NAME}-#{VERSION} --no-update-sources}
+desc "Install #{spec.name} #{spec.version}"
+task :install => [ :package ] do
+  sh "#{'sudo' unless ENV['SUDOLESS']} gem install pkg/#{spec.name}-#{spec.version}", :verbose => false
 end
 
-desc "Run specifications"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_opts = ["--format", "specdoc", "--colour"]
-  t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent.join("spec").join("**").join("*_spec.rb"))
+desc 'Run specifications'
+Spec::Rake::SpecTask.new(:spec) do |t|
+  t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
+  t.spec_files = Pathname.glob(Pathname.new(__FILE__).dirname + 'spec/**/*_spec.rb')
 end
