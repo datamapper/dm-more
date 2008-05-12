@@ -1,13 +1,10 @@
-require 'rubygems'
 require 'pathname'
-gem 'dm-core', '=0.9.0'
-require 'data_mapper'
-
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-types'
+require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 include DataMapper::Types
 
 describe DataMapper::Types::Uri do
+  
   before(:each) do
     @uri_str = "http://example.com/path/to/resource/"
     @uri = Addressable::URI.parse(@uri_str)
