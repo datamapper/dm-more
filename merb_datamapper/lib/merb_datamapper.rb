@@ -5,7 +5,7 @@ if defined?(Merb::Plugins)
 
   class Merb::Orms::DataMapper::Connect < Merb::BootLoader
 
-    after BeforeAppRuns
+    after BeforeAppLoads
 
     def self.run
       Merb::Orms::DataMapper.connect
