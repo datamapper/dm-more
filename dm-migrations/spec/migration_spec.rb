@@ -34,7 +34,7 @@ describe DataMapper::Migration, 'interface' do
   it "should have a verbose option" do
     m = DataMapper::Migration.new(2, :create_dogs_table, :verbose => false) {}
     m.instance_variable_get(:@verbose).should == false
-  end 
+  end
 
   it "should be verbose by default" do
     m = DataMapper::Migration.new(2, :create_dogs_table) {}
@@ -129,4 +129,3 @@ describe DataMapper::Migration, "output" do
   end
 
 end
-

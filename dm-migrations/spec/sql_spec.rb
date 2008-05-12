@@ -111,7 +111,7 @@ describe DataMapper::Migration, "version tracking" do
 
   it "should properly quote the migration_info.migration_name column for use in queries" do
     @migration.send(:migration_name_column).should == repository.adapter.quote_column_name('migration_name')
-  end 
+  end
 
   it "should properly quote the migration's name for use in queries"
   # TODO how to i call the adapter's #escape_sql method?

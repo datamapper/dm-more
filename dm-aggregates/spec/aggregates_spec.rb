@@ -18,7 +18,7 @@ begin
 
   describe "Aggregates" do
     before(:all) do
-      
+
       class Dragon
         include DataMapper::Resource
         property :id, Fixnum, :serial => true
@@ -26,7 +26,7 @@ begin
         property :is_fire_breathing, TrueClass
         property :toes_on_claw, Fixnum
       end
-      
+
       Dragon.auto_migrate!(:sqlite3)
 
       repository(:sqlite3) do

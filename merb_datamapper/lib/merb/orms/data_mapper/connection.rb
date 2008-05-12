@@ -13,21 +13,21 @@ module Merb
         def copy_sample_config
           FileUtils.cp sample_source, sample_dest unless File.exists?(sample_dest)
         end
-        
+
         def full_config
           @full_config ||= Erubis.load_yaml_file(config_file)
         end
-        
+
         def config
           @config ||=
-            Merb::Plugins.config[:merb_datamapper] = 
+            Merb::Plugins.config[:merb_datamapper] =
             (full_config[Merb.environment.to_sym] || symbolize_keys(full_config[Merb.environment]))
         end
 
         # Database connects as soon as the gem is loaded
         def connect
           if File.exists?(config_file)
-            start_logging            
+            start_logging
             setup_connections
           else
             copy_sample_config
@@ -36,12 +36,12 @@ module Merb
             exit(1)
           end
         end
-        
+
         def start_logging
           ::DataMapper.logger = Merb.logger
           ::DataMapper.logger.info("Connecting to database...")
         end
-        
+
         def setup_connections
           conf = config.dup
           repositories = conf.delete(:repositories)

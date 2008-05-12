@@ -11,7 +11,7 @@ module DataMapper
     end
   end
 
-  class Migration 
+  class Migration
     include SQL
 
     attr_accessor :position, :name, :database, :adapter
@@ -53,7 +53,7 @@ module DataMapper
     def perform_up
       res = nil
       if needs_up?
-        # DataMapper.database.adapter.transaction do 
+        # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Up Migration ##{position}: #{name}", 0 do
           res = @up_action.call
         end
@@ -67,7 +67,7 @@ module DataMapper
     def perform_down
       res = nil
       if needs_down?
-        # DataMapper.database.adapter.transaction do 
+        # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Down Migration ##{position}: #{name}", 0 do
           res = @down_action.call
         end
@@ -98,7 +98,7 @@ module DataMapper
       end
     end
 
-    # Orders migrations by position, so we know what order to run them in. 
+    # Orders migrations by position, so we know what order to run them in.
     # First order by postition, then by name, so at least the order is predictable.
     def <=> other
       if self.position == other.position
@@ -190,5 +190,3 @@ module DataMapper
 
   end
 end
-
-

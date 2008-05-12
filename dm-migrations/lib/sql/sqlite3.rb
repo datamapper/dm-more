@@ -2,15 +2,15 @@ require File.dirname(__FILE__) + '/table'
 
 module SQL
   module Sqlite3
-    
+
     def supports_schema_transactions?
       true
     end
-    
+
     def table(table_name)
       SQL::Table.new(self, table_name)
     end
-    
+
     def recreate_database
       DataMapper.logger.info "Dropping #{@uri.path}"
       system "rm #{@uri.path}"
@@ -22,7 +22,7 @@ module SQL
         @columns = []
         adapter.query_table(table_name).each do |col_struct|
           @columns << SQL::Sqlite3::Column.new(col_struct)
-        end      
+        end
       end
     end
 

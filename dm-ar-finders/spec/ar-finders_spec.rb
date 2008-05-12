@@ -9,15 +9,15 @@ begin
 
   DB_PATH = Pathname(__FILE__).dirname.expand_path.to_s + '/integration_test.db'
   FileUtils.touch DB_PATH
-  
+
   LOG_PATH = Pathname(__FILE__).dirname.expand_path.to_s + '/sql.log'
   FileUtils.touch LOG_PATH
   DataMapper::Logger.new(LOG_PATH, 0)
   at_exit { DataMapper.logger.close }
-  
+
   DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-  
-  describe "DataMapper::Resource" do  
+
+  describe "DataMapper::Resource" do
     after do
      repository(:sqlite3).adapter.execute('DELETE from green_smoothies');
     end
@@ -34,9 +34,9 @@ begin
         include DataMapper::Resource
         property :id, Fixnum, :serial => true
         property :name, String
-      end    
+      end
     end
-      
+
     it "should find/create using find_or_create" do
       repository(:sqlite3) do
         green_smoothie = GreenSmoothie.new(:name => 'Banana')
@@ -45,14 +45,14 @@ begin
         GreenSmoothie.find_or_create({:name => 'Strawberry'}).id.should eql(2)
       end
     end
-    
+
     it "should use find_by and use the name attribute to find a record" do
       repository(:sqlite3) do
         green_smoothie = GreenSmoothie.create({:name => 'Banana'})
         green_smoothie.should == GreenSmoothie.find_by_name('Banana')
       end
     end
-    
+
     it "should use find_all_by to find records using an attribute" do
       repository(:sqlite3) do
         green_smoothie = GreenSmoothie.create({:name => 'Banana'})

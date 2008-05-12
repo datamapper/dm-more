@@ -3,24 +3,24 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'merb', 'orms', 'data_map
 
 describe 'Merb datamapper' do
   it "should read the configuration file" do
-    
+
   end
 
   it 'should return an option hash with symbol keys' do
     Merb.should_receive(:environment).twice.and_return('development')
-    
+
     config = {
       'development' => {
         'adapter' => 'myadapter',
         'more_stuff' => 'more_stuff',
-	'repositories' => {
-	  'repo1' => {
-	    'adapter' => 'mysql'
+ 'repositories' => {
+   'repo1' => {
+     'adapter' => 'mysql'
           }
         }
       }
     }
-    
+
     Merb::Orms::DataMapper.should_receive(:full_config).twice.and_return(config)
     Merb::Orms::DataMapper.config.should have_key(:adapter)
     Merb::Orms::DataMapper.config[:adapter].should == 'myadapter'
@@ -38,10 +38,10 @@ describe 'Merb datamapper' do
 
     Merb::Orms::DataMapper.should_receive(:config).and_return(config)
     DataMapper.should_receive(:setup).with(:default, config)
-    
+
     Merb::Orms::DataMapper.setup_connections
   end
-  
+
   it "should create additional repositories" do
     conf_mysql = {
       :adapter => "mysql",
@@ -54,15 +54,14 @@ describe 'Merb datamapper' do
     config = {
       :repositories => {
         :repo1 => conf_mysql,
-        :repo2 => conf_postgres 
+        :repo2 => conf_postgres
       }
-    }    
+    }
 
     Merb::Orms::DataMapper.should_receive(:config).and_return(config)
     DataMapper.should_receive(:setup).with(:repo1, conf_mysql)
     DataMapper.should_receive(:setup).with(:repo2, conf_postgres)
-    
+
     Merb::Orms::DataMapper.setup_connections
   end
 end
-
