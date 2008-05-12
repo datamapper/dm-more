@@ -1,3 +1,5 @@
 dm-cli
 ======
-a plugin to allow cli access to your models
+
+DataMapper plugin allowing interaction with models through a Command-Line
+Interface (CLI).

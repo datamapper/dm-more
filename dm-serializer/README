@@ -1,3 +1,4 @@
-dm-validations
-==================
-a plugin to perform validations
+dm-serializer
+=============
+
+DataMapper plugin for serializing DataMapper objects.

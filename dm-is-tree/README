@@ -1,3 +1,4 @@
 dm-is-tree
 ==========
-Allow the creation of tree structures from your models
+
+DataMapper plugin allowing the creation of tree structures from data models.

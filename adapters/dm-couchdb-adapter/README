@@ -1,3 +1,4 @@
-couchdb_adapter
-===============
-DataMapper adapter for CouchDB
+dm-couchdb-adapter
+==================
+
+A DataMapper adapter for CouchDB

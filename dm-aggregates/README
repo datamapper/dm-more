@@ -1,3 +1,7 @@
 dm-aggregates
 =============
-For now all we can do is count.
+
+DataMapper plugin providing support for aggregates, functions on collections and
+datasets.
+
+Currently, only count support is provided.

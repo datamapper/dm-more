@@ -1,3 +1,4 @@
 dm-ar-finders
 =============
-Home to ActiveRecord stype finders
+
+DataMapper plugin providing support for ActiveRecord-style finders.
