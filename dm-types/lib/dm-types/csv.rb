@@ -21,8 +21,8 @@ module DataMapper
           end
         when String then value
         else nil
-        end  
+        end
       end
     end # class Csv
-  end # module Types  
+  end # module Types
 end # module DataMapper

@@ -27,5 +27,5 @@ module DataMapper
         end
       end
     end # class Yaml
-  end # module Types  
+  end # module Types
 end # module DataMapper
