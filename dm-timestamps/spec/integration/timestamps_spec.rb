@@ -1,25 +1,11 @@
-require 'rubygems'
 require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-timestamps'
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-begin
-  gem 'do_sqlite3', '=0.9.0'
-  require 'do_sqlite3'
-
-  DB_PATH = Pathname(__FILE__).dirname.expand_path + 'integration_test.db'
-  FileUtils.touch DB_PATH unless DB_PATH.exist?
-
-  LOG_PATH = Pathname(__FILE__).dirname.expand_path + 'sql.log'
-  DataMapper::Logger.new(LOG_PATH, 0)
-  at_exit { DataMapper.logger.close }
-
-  DataMapper.setup(:sqlite3, "sqlite3://#{DB_PATH}")
-
+if HAS_SQLITE3
   describe 'DataMapper::Timestamp' do
     before :all do
       class GreenSmoothie
         include DataMapper::Resource
-        include DataMapper::Timestamp
 
         property :id, Fixnum, :serial => true
         property :name, String
@@ -80,14 +66,6 @@ begin
         green_smoothie.updated_at.should_not eql(original_updated_at)
         green_smoothie.updated_on.should_not eql(original_updated_on)
       end
-    end
-
-  end
-
-rescue LoadError
-  describe 'do_sqlite3' do
-    it 'should be required' do
-      fail "validation specs not run! Could not load do_sqlite3: #{e}"
     end
   end
 end
