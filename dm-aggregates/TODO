@@ -2,7 +2,6 @@ TODO
 ====
 
 - Add the following methods: (query is an optional parameter)
-  - count(property_name) - return the number of results where the property_name is not nil
   - min(property_name)   - return the lowest value of this property        (numeric properties only)
   - max(property_name)   - return the highest value of this property       (numeric properties only)
   - avg(property_name)   - return the average value of this property       (numeric properties only)

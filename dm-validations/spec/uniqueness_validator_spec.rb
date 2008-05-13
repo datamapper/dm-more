@@ -7,7 +7,7 @@ if HAS_SQLITE3
     before do
       class Organisation
         include DataMapper::Resource
-        property :id, Fixnum, :key => true
+        property :id, Integer, :key => true
         property :name, String
         property :domain, String #, :unique => true
 
@@ -16,8 +16,8 @@ if HAS_SQLITE3
 
       class User
         include DataMapper::Resource
-        property :id, Fixnum, :key => true
-        property :organisation_id, Fixnum
+        property :id, Integer, :key => true
+        property :organisation_id, Integer
         property :user_name, String
 
         belongs_to :organisation #has :organisation, n..1

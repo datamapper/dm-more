@@ -1,5 +1,5 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 include DataMapper::Types
 

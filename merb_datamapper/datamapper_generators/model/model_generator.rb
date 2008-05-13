@@ -34,10 +34,10 @@ class ModelGenerator < Merb::GeneratorBase
       USAGE: #{spec.name}"
     EOS
   end
-  
+
   def normalize_attributes(attributes_input)
-    attributes_input.map do |a| 
-      name, type = a.split(":") 
+    attributes_input.map do |a|
+      name, type = a.split(":")
       [name.snake_case, type.to_const_string]
     end
   end

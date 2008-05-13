@@ -5,11 +5,11 @@ require 'data_mapper'
 module DataMapper
   module Resource
     module ClassMethods
-      
+
       def find_or_create(search_attributes, create_attributes = {})
         first(search_attributes) || create(search_attributes.merge(create_attributes))
       end
-      
+
       private
       def method_missing_with_find_by(method, *args, &block)
         if match = matches_dynamic_finder?(method)
@@ -18,7 +18,7 @@ module DataMapper
 
           conditions = {}
           attribute_names.each {|key| conditions[key] = args.shift}
-          
+
           send(finder, conditions)
         else
           method_missing_without_find_by(method, *args, &block)
@@ -39,7 +39,7 @@ module DataMapper
       def extract_attribute_names_from_match(match)
         match.captures.last.split('_and_')
       end
-          
+
     end
   end
 end

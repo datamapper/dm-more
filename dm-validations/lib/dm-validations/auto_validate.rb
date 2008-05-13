@@ -15,20 +15,20 @@ module DataMapper
       # :size => 20 or :length => 20
       #       Setting the option :size or :length causes a validates_length_of
       #       validator to be automatically created on the property. If the
-      #       value is a Fixnum the validation will set :maximum => value if
+      #       value is a Integer the validation will set :maximum => value if
       #       the value is a Range the validation will set :within => value
       #
       # :format => :predefined / lambda / Proc
       #       Setting the :format option causes a validates_format_of
       #       validator to be automatically created on the property
       #
-      # Fixnum type
-      #       Using a Fixnum type causes a validates_is_number
+      # Integer type
+      #       Using a Integer type causes a validates_is_number
       #       validator to be created for the property.  integer_only
       #       is set to true
       #
       # BigDecimal or Float type
-      #       Using a Fixnum type causes a validates_is_number
+      #       Using a Integer type causes a validates_is_number
       #       validator to be created for the property.  integer_only
       #       is set to false, and precision/scale match the property
       def auto_generate_validations(property)

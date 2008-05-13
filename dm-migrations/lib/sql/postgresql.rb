@@ -8,10 +8,10 @@ module SQL
     def table(table_name)
       SQL::Postgresql::Table.new(self, table_name)
     end
-    
+
     def drop_database
     end
- 
+
     def recreate_database
       execute "DROP SCHEMA IF EXISTS test CASCADE"
       execute "CREATE SCHEMA test"
@@ -23,7 +23,7 @@ module SQL
         @columns = []
         adapter.query_table(table_name).each do |col_struct|
           @columns << SQL::Postgresql::Column.new(col_struct)
-        end      
+        end
 
         puts "+=+++++++++++++++++++++++++++++++++++++++"
         # detect column constraints
@@ -59,4 +59,3 @@ module SQL
 
   end
 end
-

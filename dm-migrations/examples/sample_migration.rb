@@ -9,7 +9,7 @@ DataMapper.logger.debug( "Starting Migration" )
 
 migration 1, :create_people_table do
   up do
-    create_table :people do 
+    create_table :people do
       column :id,     "integer"
       column :name,   "varchar(255)"
       column :age,    "integer"
@@ -31,7 +31,7 @@ migration 2, :add_dob_to_people do
     modify_table :people do
       drop_column :dob
     end
-  end    
+  end
 end
 
 if $0 == __FILE__
@@ -41,4 +41,3 @@ if $0 == __FILE__
     migrate_up!
   end
 end
-  

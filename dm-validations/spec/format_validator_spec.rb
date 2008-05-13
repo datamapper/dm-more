@@ -5,7 +5,7 @@ describe DataMapper::Validate::FormatValidator do
   before(:all) do
     class BillOfLading
       include DataMapper::Resource
-      property :id, Fixnum, :key => true
+      property :id, Integer, :key => true
       property :doc_no, String, :auto_validation => false
       property :email, String, :auto_validation => false
 

@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 class SailBoat
   include DataMapper::Resource
-  property :id,            Fixnum,     :key => true
+  property :id,            Integer,     :key => true
   property :name,          String,                                :nullable => false,     :validates       => :presence_test
   property :description,   String,     :length => 10,                                     :validates       => :length_test_1
   property :notes,         String,     :length => 2..10,                                  :validates       => :length_test_2
@@ -76,7 +76,7 @@ describe "Automatic Validation from Property Definition" do
   it "should auto validate all strings for max length" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :name, String
     end
     t = klass.new(:id => 1)
@@ -90,7 +90,7 @@ describe "Automatic Validation from Property Definition" do
       was given" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true, :auto_validation => false
+      property :id, Integer, :serial => true, :auto_validation => false
       property :name, String, :nullable => false, :auto_validation => false
     end
     klass.new.valid?.should == true
@@ -114,7 +114,7 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_nil_test
   end
 
-  describe 'for Fixnum properties' do
+  describe 'for Integer properties' do
     before do
       @boat = SailBoat.new
     end

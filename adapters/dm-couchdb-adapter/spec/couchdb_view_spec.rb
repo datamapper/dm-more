@@ -10,21 +10,21 @@ describe "DataMapper::View" do
       property :open, TrueClass
     end
   end
-  
+
   it "should have a view method" do
     Zoo.should respond_to(:view)
   end
-  
+
   it "should store a view when called" do
     Zoo.view :by_name
     Zoo.views.keys.should include(:by_name)
   end
-  
+
   it "should initialize a new Procedure instance" do
     proc = Zoo.view :by_name_desc
     proc.should be_an_instance_of(DataMapper::View)
   end
-  
+
   it "should create a getter method" do
     Zoo.view :open
     Zoo.should respond_to(:open)

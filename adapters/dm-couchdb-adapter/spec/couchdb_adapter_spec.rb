@@ -1,4 +1,5 @@
 require 'pathname'
+require 'socket'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
 class User
@@ -44,15 +45,25 @@ describe DataMapper::Adapters::CouchdbAdapter do
   before :all do
     @uri = Addressable::URI.parse("couchdb://localhost:5984/test_cdb_adapter")
     @adapter = DataMapper.setup(:couchdb, @uri)
-    @adapter.send(:http_put, "/#{@adapter.escaped_db_name}")
-    create_procedures
+    @no_connection = false
+    unless @no_connection
+      begin
+        @adapter.send(:http_put, "/#{@adapter.escaped_db_name}")
+        create_procedures
+      rescue Errno::ECONNREFUSED
+        @no_connection = true
+      end
+    end
   end
   
   after :all do
-    @adapter.send(:http_delete, "/#{@adapter.escaped_db_name}")
+    unless @no_connection
+      @adapter.send(:http_delete, "/#{@adapter.escaped_db_name}")
+    end
   end
   
   it "should create a record" do
+    pending("No CouchDB connection.") if @no_connection
     user = new_user
     user.save.should == true
     user.id.should_not == nil
@@ -63,6 +74,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should get a record" do
+    pending("No CouchDB connection.") if @no_connection
     created_user = new_user
     created_user.save
     user = User[created_user.id]
@@ -72,6 +84,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should update a record" do
+    pending("No CouchDB connection.") if @no_connection
     created_user = new_user
     created_user.save
     user = User[created_user.id]
@@ -84,16 +97,19 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should destroy a record" do
+    pending("No CouchDB connection.") if @no_connection
     created_user = new_user
     created_user.save
     created_user.destroy.should == true
   end
   
   it "should get all records" do
+    pending("No CouchDB connection.") if @no_connection
     User.all.size.should == 3
   end
   
   it "should get records by eql matcher" do
+    pending("No CouchDB connection.") if @no_connection
     new_user(:name => "John", :age => 50).save
     User.all(:name => "John").size.should == 1
     User.all(:age => 50).size.should == 1
@@ -101,26 +117,32 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should get records by not matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:age.not => 50).size.should == 3
   end
   
   it "should get records by gt matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:age.gt => 50).size.should == 3
   end
 
   it "should get records by gte matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:age.gte => 50).size.should == 4
   end
   
   it "should get records by lt matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:age.lt => 50).size.should == 0
   end
   
   it "should get records by lte matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:age.lte => 50).size.should == 1
   end
   
   it "should get records by the like matcher" do
+    pending("No CouchDB connection.") if @no_connection
     User.all(:name.like => "Jo").size.should == 0
     User.all(:name.like => "Jo%").size.should == 1
     User.all(:name.like => "%J%t%").size.should == 1
@@ -128,11 +150,13 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should get records with multiple matchers" do
+    pending("No CouchDB connection.") if @no_connection
     new_user(:name => "John", :age => 30).save
     User.all(:name => "John", :age.lt => 50).size.should == 1
   end
   
   it "should order records" do
+    pending("No CouchDB connection.") if @no_connection
     new_user(:name => "Aaron", :age => 30).save
     new_user(:name => "Aaron").save
     users = User.all(:order => [:age])
@@ -143,6 +167,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should handle DateTime" do
+    pending("No CouchDB connection.") if @no_connection
     user = new_user
     user.save
     time = user.created_at
@@ -150,6 +175,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should handle Date" do
+    pending("No CouchDB connection.") if @no_connection
     user = new_user
     user.save
     date = user.created_on
@@ -157,6 +183,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
   
   it "should be able to call stored views" do
+    pending("No CouchDB connection.") if @no_connection
     User.by_name.first.should == User.all(:order => [:name]).first
     User.by_age.first.should == User.all(:order => [:age]).first
   end

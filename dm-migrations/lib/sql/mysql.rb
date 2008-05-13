@@ -10,7 +10,7 @@ module SQL
     def table(table_name)
       SQL::Mysql::Table.new(self, table_name)
     end
-    
+
     def recreate_database
       execute "DROP DATABASE #{db_name}"
       execute "CREATE DATABASE #{db_name}"
@@ -22,7 +22,7 @@ module SQL
         @columns = []
         adapter.query_table(table_name).each do |col_struct|
           @columns << SQL::Mysql::Column.new(col_struct)
-        end      
+        end
       end
     end
 

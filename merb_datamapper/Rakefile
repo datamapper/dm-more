@@ -36,7 +36,7 @@ end
 
 desc "Install #{spec.name} #{spec.version}"
 task :install => [ :package ] do
-  sh "#{'sudo' unless ENV['SUDOLESS']} gem install pkg/#{spec.name}-#{spec.version}", :verbose => false
+  sh "#{SUDO unless ENV['SUDOLESS']} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
 end
 
 desc 'Release the current version on rubyforge'

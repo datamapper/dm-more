@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
 class Bill
   include DataMapper::Resource
-  property :id, Fixnum, :serial => true
+  property :id, Integer, :serial => true
   property :amount_1, String, :auto_validation => false
   property :amount_2, Float, :auto_validation => false
   validates_is_number :amount_1, :amount_2
@@ -11,7 +11,7 @@ end
 
 class Hillary
   include DataMapper::Resource
-  property :id, Fixnum, :serial => true
+  property :id, Integer, :serial => true
   property :amount_1, Float, :auto_validation => false, :default => 0.01
   validates_is_number :amount_1
 end
@@ -30,7 +30,7 @@ describe DataMapper::Validate::NumericValidator do
   it "should validate an integer value on the instance of a resource" do
     class Bill
       property :quantity_1, String, :auto_validation => false
-      property :quantity_2, Fixnum, :auto_validation => false
+      property :quantity_2, Integer, :auto_validation => false
 
       validators.clear!
       validates_is_number :quantity_1, :quantity_2, :integer_only => true

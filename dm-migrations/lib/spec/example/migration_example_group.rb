@@ -45,7 +45,7 @@ module Spec
       def run_migration
         this_migration.perform_up
       end
-      
+
       def migration_name
         @migration_name ||= self.class.instance_variable_get("@description_text").to_s
       end
@@ -71,4 +71,3 @@ module Spec
     end
   end
 end
-

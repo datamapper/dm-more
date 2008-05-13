@@ -5,14 +5,14 @@ describe DataMapper::Validate::AbsentFieldValidator do
   before(:all) do
     class Kayak
       include DataMapper::Resource
-      property :id, Fixnum, :key => true
+      property :id, Integer, :key => true
       property :salesman, String, :auto_validation => false
       validates_absent :salesman, :when => :sold
     end
 
     class Pirogue
       include DataMapper::Resource
-      property :id, Fixnum, :key => true
+      property :id, Integer, :key => true
       property :salesman, String, :default => 'Layfayette'
       validates_absent :salesman, :when => :sold
     end

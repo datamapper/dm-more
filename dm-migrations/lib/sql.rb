@@ -67,7 +67,7 @@ module SQL
     end
 
     def drop_column(name)
-      # raise NotImplemented for SQLite3. Can't ALTER TABLE, need to copy table. 
+      # raise NotImplemented for SQLite3. Can't ALTER TABLE, need to copy table.
       # We'd have to inspect it, and we can't, since we aren't executing any queries yet.
       # Just write the sql yourself.
       if name.is_a?(Array)

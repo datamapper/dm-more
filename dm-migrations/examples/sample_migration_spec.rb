@@ -16,7 +16,7 @@ describe :create_people_table, :type => :migration do
     table(:people).column(:id).type.should == 'integer'
     #table(:people).column(:id).should be_primary_key
   end
-  
+
   it 'should have a name column as a string' do
     table(:people).should have_column(:name)
     table(:people).column(:name).type.should == 'character varying'

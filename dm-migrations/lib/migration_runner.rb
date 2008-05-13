@@ -4,7 +4,7 @@ module DataMapper
   module MigrationRunner
 
     # Creates a new migration, and adds it to the list of migrations to be run.
-    # Migrations can be defined in any order, they will be sorted and run in the 
+    # Migrations can be defined in any order, they will be sorted and run in the
     # correct order.
     #
     # The order that migrations are run in is set by the first argument. It is not
@@ -17,7 +17,7 @@ module DataMapper
     #
     # Addtionally, it accepts a number of options:
     # * <tt>:database</tt> If you defined several DataMapper::database instances use this
-    #   to choose which one to run the migration gagainst. Defaults to <tt>:default</tt>. 
+    #   to choose which one to run the migration gagainst. Defaults to <tt>:default</tt>.
     #   Migrations are tracked individually per database.
     # * <tt>:verbose</tt> true/false, defaults to true. Determines if the migration should
     #   output its status messages when it runs.
@@ -33,9 +33,9 @@ module DataMapper
     #     end
     #   end
     #
-    # Its recommended that you stick with raw SQL for migrations that manipulate data. If 
-    # you write a migration using a model, then later change the model, there's a 
-    # possibility the migration will no longer work. Using SQL will always work.    
+    # Its recommended that you stick with raw SQL for migrations that manipulate data. If
+    # you write a migration using a model, then later change the model, there's a
+    # possibility the migration will no longer work. Using SQL will always work.
     def migration( number, name, opts = {}, &block )
       @@migrations ||= []
       raise "Migration name conflict: '#{name}'" if @@migrations.map(&:name).include?(name.to_s)

@@ -7,5 +7,3 @@ module SQL
   end
 
 end
-
-

@@ -1,29 +1,29 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-if HAS_SQLITE3
+if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Timestamp' do
     before :all do
       class GreenSmoothie
         include DataMapper::Resource
 
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :name, String
         property :created_at, DateTime
         property :created_on, Date
         property :updated_at, DateTime
         property :updated_on, Date
 
-        auto_migrate!(:sqlite3)
+        auto_migrate!(:default)
       end
     end
 
     after do
-     repository(:sqlite3).adapter.execute('DELETE from green_smoothies');
+     repository(:default).adapter.execute('DELETE from green_smoothies');
     end
 
     it "should set the created_at/on fields on creation" do
-      repository(:sqlite3) do
+      repository(:default) do
         green_smoothie = GreenSmoothie.new(:name => 'Banana')
         green_smoothie.created_at.should be_nil
         green_smoothie.created_on.should be_nil
@@ -34,7 +34,7 @@ if HAS_SQLITE3
     end
 
     it "should not alter the create_at/on fields on model updates" do
-      repository(:sqlite3) do
+      repository(:default) do
         green_smoothie = GreenSmoothie.new(:id => 2, :name => 'Berry')
         green_smoothie.created_at.should be_nil
         green_smoothie.created_on.should be_nil
@@ -49,7 +49,7 @@ if HAS_SQLITE3
     end
 
     it "should set the updated_at/on fields on creation and on update" do
-      repository(:sqlite3) do
+      repository(:default) do
         green_smoothie = GreenSmoothie.new(:name => 'Mango')
         green_smoothie.updated_at.should be_nil
         green_smoothie.updated_on.should be_nil
