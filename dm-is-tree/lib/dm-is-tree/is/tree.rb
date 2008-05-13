@@ -58,14 +58,12 @@ module DataMapper
         # Configuration options are:
         #
         # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
-        # * <tt>order</tt> - makes it possible to sort the children according to this SQL snippet.
-        # * <tt>counter_cache</tt> - keeps a count in a +children_count+ column if set to +true+ (default: +false+).
         def is_a_tree(options = {})
-          configuration = { :child_key => "parent_id" }
+          configuration = { :child_key => :parent_id }
           configuration.update(options) if Hash === options
 
-          belongs_to :parent, :class_name => name, :child_key => configuration[:child_key], :counter_cache => configuration[:counter_cache]
-          has n, :children, :class_name => name, :child_key => configuration[:child_key], :order => configuration[:order]
+          many_to_one :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
+          has n, :children, :class_name => name, :child_key => [ configuration[:child_key] ]
 
           include DataMapper::Is::Tree::InstanceMethods
 
