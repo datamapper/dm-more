@@ -186,8 +186,17 @@ end
 namespace :dm do
 desc 'Run specifications'
   Spec::Rake::SpecTask.new(:spec) do |t|
-    t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
-    t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent.join("**").join("spec").join("**").join("*_spec.rb").to_s)
+    Dir["**/Rakefile"].each do |rakefile|
+      unless rakefile == "Rakefile"
+        current_dir = Dir.getwd
+        Dir.chdir(File.dirname(rakefile))
+        begin
+          raise "Broken specs in #{path}" unless system 'rake'
+        ensure        
+          Dir.chdir current_dir
+        end
+      end
+    end
   end
 end
 
