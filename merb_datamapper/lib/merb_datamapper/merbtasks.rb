@@ -12,6 +12,10 @@ namespace :dm do
     task :automigrate => :merb_start do
       ::DataMapper.repository.auto_migrate!
     end
+    desc "Perform non destructive automigration"
+    task :autoupgrade => :merb_start do
+      ::DataMapper.repository.auto_upgrade!
+    end
   end
 
   namespace :sessions do
