@@ -49,7 +49,6 @@ end
 
 module DataMapper
   class View
-    
     attr_reader :model, :name
     
     def initialize(model, name)
@@ -66,15 +65,12 @@ module DataMapper
         end
       EOS
     end
-    
   end
 end
 
 module DataMapper
   module Resource
-    
     module ClassMethods
-      
       def view(name)
         @views ||= Hash.new { |h,k| h[k] = {} }
         proc = View.new(self, name)

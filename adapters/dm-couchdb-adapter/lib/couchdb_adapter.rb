@@ -7,6 +7,7 @@ require 'json'
 require Pathname(__FILE__).dirname + 'couchdb_views'
 
 class Time
+  # Converts a Time object to a JSON representation.
   def to_json(*a)
     self.to_i.to_json(*a)
   end
@@ -14,62 +15,50 @@ end
 
 module DataMapper
   module Resource
-    
+    # Converts a Resource to a JSON representation.
     def to_json(dirty = false)
-      
-      doc = (dirty ? self.dirty_attributes : self.class.properties).map do |property| 
-        [property.field, instance_variable_get(property.instance_variable_name)]
-      end
-
-      Hash[*doc.flatten].to_json
-
+      property_list = (dirty ? self.dirty_attributes : self.class.properties)
+      inferred_fields = {:type => self.class.name.downcase}
+      return (property_list.inject(inferred_fields) do |accumulator, property|
+        accumulator[property.field] =
+          instance_variable_get(property.instance_variable_name)
+        accumulator
+      end).to_json
     end
   end
 end
 
 module DataMapper
   module Adapters
-    class CouchdbAdapter < AbstractAdapter
-      
-      def create(repository, resource)
-        result = http_post("/#{resource.class.storage_name(name)}/", resource.to_json(true))
-        resource.instance_variable_set("@rev", result["rev"])
-        if result["ok"]
-          key = resource.class.key(name)
-          if key.size == 1
-            resource.instance_variable_set(key.first.instance_variable_name, result["id"])
-          end
-          true
+    class CouchDBAdapter < AbstractAdapter
+      # Returns the name of the CouchDB database.
+      #
+      # Raises an exception if the CouchDB database name is invalid.
+      def db_name
+        result = @uri.path.scan(/^\/?([-_+%()$a-z0-9]+?)\/?$/).flatten[0]
+        if result != nil
+          return Addressable::URI.unencode_segment(result)
         else
-          false
+          raise StandardError, "Invalid database path: '#{@uri.path}'"
         end
       end
-      
-      def read(repository, resource, key)
-        properties = resource.properties(repository.name).defaults
-        properties_with_indexes = Hash[*properties.zip((0...properties.length).to_a).flatten]
-        set = Collection.new(repository, resource, properties_with_indexes)
-        
-        doc = http_get("/#{resource.storage_name(name)}/#{key}")
-        set.load(properties.map { |property| typecast(property.type, doc[property.field.to_s]) })
-        
-        set.first
+
+      # Returns the name of the CouchDB database after being escaped.
+      def escaped_db_name
+        return Addressable::URI.encode_segment(
+          self.db_name, Addressable::URI::CharacterClasses::UNRESERVED)
       end
       
-      def delete(repository, resource)
-        key = resource.class.key(name).map { |property| resource.instance_variable_get(property.instance_variable_name) }
-        result = http_delete("/#{resource.class.storage_name(name)}/#{key}?rev=#{resource.rev}")
-        return result["ok"]
-      end
-      
-      def update(repository, resource)
-        key = resource.class.key(name).map { |property| resource.instance_variable_get(property.instance_variable_name) }
-        result = http_put("/#{resource.class.storage_name(name)}/#{key}", resource.to_json)
-        
+      # Creates a new resource in the specified repository.
+      def create(repository, resource)
+        result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
         if result["ok"]
-          
-          key = resource.class.key(name)
-          resource.instance_variable_set(key.first.instance_variable_name, result["id"])
+          key = resource.class.key(self.name)
+          if key.size == 1
+            resource.instance_variable_set(
+              key.first.instance_variable_name, result["id"]
+            )
+          end
           resource.instance_variable_set("@rev", result["rev"])
           true
         else
@@ -77,26 +66,83 @@ module DataMapper
         end
       end
       
+      # Reads the data specified by the given key into a resource from
+      # the given repository.
+      def read(repository, resource, key)
+        properties = resource.properties(repository.name).defaults
+        properties_with_indexes =
+          Hash[*properties.zip((0...properties.length).to_a).flatten]
+        set = Collection.new(repository, resource, properties_with_indexes)
+        
+        doc = http_get("/#{self.escaped_db_name}/#{key}")
+        set.load(
+          properties.map do |property|
+            typecast(property.type, doc[property.field.to_s])
+          end
+        )
+        
+        set.first
+      end
+      
+      # Deletes the resource from the repository.
+      def delete(repository, resource)
+        key = resource.class.key(self.name).map do |property|
+          resource.instance_variable_get(property.instance_variable_name)
+        end
+        result = http_delete(
+          "/#{self.escaped_db_name}/#{key}?rev=#{resource.rev}"
+        )
+        return result["ok"]
+      end
+      
+      # Commits changes in the resource to the repository.
+      def update(repository, resource)
+        key = resource.class.key(self.name).map do |property|
+          resource.instance_variable_get(property.instance_variable_name)
+        end
+        result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
+        
+        if result["ok"]
+          key = resource.class.key(self.name)
+          resource.instance_variable_set(
+            key.first.instance_variable_name, result["id"])
+          resource.instance_variable_set(
+            "@rev", result["rev"])
+          true
+        else
+          false
+        end
+      end
+      
+      # Reads in a set from a query.
       def read_set(repository, query)
         doc = request do |http|
           http.request(build_javascript_request(query))
         end
-        
         populate_set(repository, query.model, query.fields, doc["rows"])
       end
 
+      # Reads in a set from a stored view.
       def view(repository, resource, proc_name)
         properties = resource.properties(repository.name).defaults
-        doc = http_get("/#{resource.storage_name(name)}/_view/#{resource.storage_name(name)}/#{proc_name}")
+        doc = http_get(
+          "/#{self.escaped_db_name}/_view" +
+          "/#{resource.storage_name(self.name)}/#{proc_name}"
+        )
         populate_set(repository, resource, properties, doc["rows"])
       end
       
       def populate_set(repository, resource, properties, docs)
-        properties_with_indexes = Hash[*properties.zip((0...properties.length).to_a).flatten]
+        properties_with_indexes =
+          Hash[*properties.zip((0...properties.length).to_a).flatten]
         set = Collection.new(repository, resource, properties_with_indexes)
         
         docs.each do |doc|
-          set.load(properties.map { |property| typecast(property.type, doc["value"][property.field.to_s]) })
+          set.load(
+            properties.map do |property|
+              typecast(property.type, doc["value"][property.field.to_s])
+            end
+          )
         end
         
         set
@@ -106,10 +152,12 @@ module DataMapper
         raise NotImplementedError
       end
       
-      private
-      
+    protected      
+    # Converts the URI's scheme into a parsed HTTP identifier.
       def normalize_uri(uri_or_options)
-        uri_or_options = URI.parse(uri_or_options) if String === uri_or_options
+        if String === uri_or_options
+          uri_or_options = Addressable::URI.parse(uri_or_options)
+        end
         uri_or_options.scheme = "http"
         uri_or_options
       end
@@ -125,19 +173,25 @@ module DataMapper
       end
       
       def build_javascript_request(query)
-        
         if query.order.empty?
           key = "null"
         else
-          key = query.order.map { |order| "doc.#{order.property.field}" }.join(", ")
+          key = (query.order.map do |order|
+            "doc.#{order.property.field}"
+          end).join(", ")
           key = "[#{key}]"
         end
         
-        request = Net::HTTP::Post.new("/#{query.model.storage_name(name)}/_temp_view")
-        request["content-type"] = "text/javascript"
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view")
+        request["Content-Type"] = "text/javascript"
         
         if query.conditions.empty?
-          request.body = "function(doc) { map(#{key}, doc); }"
+          request.body =
+            "function(doc) {\n" +
+            "  if (doc.type == '#{query.model.name.downcase}') {\n" +
+            "    map(#{key}, doc);\n" +
+            "  }\n" +
+            "}\n"
         else
           conditions = query.conditions.map do |operator, property, value|
             condition = "doc.#{property.field}"
@@ -151,7 +205,17 @@ module DataMapper
             when :like  then like_operator(value)
             end
           end
-          request.body = "function(doc) { if (#{conditions.join(" && ")}) { map(#{key}, doc); } }"
+          body = <<-JS
+            function(doc) {
+              if (doc.type == '#{query.model.name.downcase}') {
+                if (#{conditions.join(" && ")}) {
+                  map(#{key}, doc);
+                }
+              }
+            }
+          JS
+          space = body.split("\n")[0].to_s[/^(\s+)/, 0]
+          request.body = body.gsub(/^#{space}/, '')
         end
         request
       end
@@ -192,7 +256,9 @@ module DataMapper
         end
         JSON.parse(res.body) if parse_result
       end
-      
     end
+    
+    # Required naming scheme.
+    CouchdbAdapter = CouchDBAdapter
   end
 end
