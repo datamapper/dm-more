@@ -26,7 +26,7 @@ describe DataMapper::Serialize do
     betsy.composite = 22
     betsy.name = 'Betsy'
     betsy.breed = 'Jersey'
-    betsy.to_yaml.strip.should == <<-EOS.margin
+    betsy.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
       ---
       :id: 230
       :composite: 22
