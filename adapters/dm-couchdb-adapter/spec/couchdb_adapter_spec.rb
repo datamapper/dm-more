@@ -1,5 +1,4 @@
 require 'pathname'
-require 'socket'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
 class User
