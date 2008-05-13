@@ -7,6 +7,8 @@ module DataMapper
       end
 
       module SQL
+        private
+
         def count_statement(property, query)
           qualify      = query.links.any?
           storage_name = query.model.storage_name(query.repository.name)
