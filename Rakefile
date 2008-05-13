@@ -182,3 +182,12 @@ namespace :ci do
     end
   end
 end
+
+namespace :dm do
+desc 'Run specifications'
+  Spec::Rake::SpecTask.new(:spec) do |t|
+    t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
+    t.spec_files = Pathname.glob(Pathname.new(__FILE__).parent.join("**").join("spec").join("**").join("*_spec.rb").to_s)
+  end
+end
+
