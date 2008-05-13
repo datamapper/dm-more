@@ -1,10 +1,5 @@
-require 'rubygems'
 require 'pathname'
-gem 'dm-core', '=0.9.0'
-require 'data_mapper'
-
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-serializer'
-
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Serialize do
 
