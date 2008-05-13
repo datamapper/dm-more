@@ -1,19 +1,20 @@
 module DataMapper
   module Adapters
     class DataObjectsAdapter
-      def count(repository, query)
-        parameters = []
-        parameters = query.conditions.collect { |condition| condition.last }
-        row_count =  query(count_statement(query), *parameters).first.to_i
+      def count(repository, property, query)
+        parameters = query.parameters
+        row_count =  query(count_statement(property, query), *parameters).first.to_i
       end
 
       module SQL
-        def count_statement(query)
-          qualify = query.links.any?
+        def count_statement(property, query)
+          qualify      = query.links.any?
+          storage_name = query.model.storage_name(query.repository.name)
+          column_name  = property.nil? ? '*' : property_to_column_name(storage_name, property, qualify)
 
-          statement = 'SELECT COUNT(*) as row_count'
+          statement = "SELECT COUNT(#{column_name}) as row_count"
 
-          statement << ' FROM ' << quote_table_name(query.model.storage_name(query.repository.name))
+          statement << ' FROM ' << quote_table_name(storage_name)
 
           unless query.conditions.empty?
             statement << ' WHERE '
