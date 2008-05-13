@@ -6,7 +6,7 @@ describe DataMapper::Validate::ConfirmationValidator do
     class Canoe
       include DataMapper::Resource
 
-      property :id,                Fixnum, :serial => true
+      property :id,                Integer, :serial => true
       property :name,              String
       property :name_confirmation, String
 

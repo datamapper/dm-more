@@ -7,14 +7,14 @@ if HAS_SQLITE3
     before do
       class Landscaper
         include DataMapper::Resource
-        property :id, Fixnum, :key => true
+        property :id, Integer, :key => true
         property :name, String
       end
 
       class Garden
         include DataMapper::Resource
-        property :id, Fixnum, :key => true
-        property :landscaper_id, Fixnum
+        property :id, Integer, :key => true
+        property :landscaper_id, Integer
         property :name, String, :auto_validation => false
 
         belongs_to :landscaper #has :landscaper, 1..n
@@ -25,7 +25,7 @@ if HAS_SQLITE3
 
       class Fertilizer
         include DataMapper::Resource
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :brand, String, :auto_validation => false, :default => 'Scotts'
         validates_present :brand, :when => :property_test
       end

@@ -6,10 +6,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     before :all do
       class Dragon
         include DataMapper::Resource
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :name, String
         property :is_fire_breathing, TrueClass
-        property :toes_on_claw, Fixnum
+        property :toes_on_claw, Integer
 
         auto_migrate!(:default)
       end

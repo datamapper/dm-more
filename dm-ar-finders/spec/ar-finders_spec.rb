@@ -32,7 +32,7 @@ begin
 
       class GreenSmoothie
         include DataMapper::Resource
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :name, String
       end
     end

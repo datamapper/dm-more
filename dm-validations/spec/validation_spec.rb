@@ -5,7 +5,7 @@ describe DataMapper::Validate do
   before(:all) do
     class Yacht
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :name, String, :auto_validation => false
 
       validates_present :name
@@ -119,7 +119,7 @@ describe DataMapper::Validate do
       if the Proc returns true" do
     class Dingy
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :owner, String, :auto_validation => false
       validates_present :owner, :if => Proc.new{|resource| resource.owned?}
       def owned?; false; end
@@ -156,7 +156,7 @@ describe DataMapper::Validate do
       validation if the Proc returns true" do
     class RowBoat
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       validates_present :salesman, :unless => Proc.new{|resource| resource.sold?}
 
       def sold?; false; end
@@ -194,7 +194,7 @@ describe DataMapper::Validate do
       instance variables (and ivar.each items if valid)" do
     class Invoice
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :customer, String, :auto_validation => false
       validates_present :customer
 
@@ -213,7 +213,7 @@ describe DataMapper::Validate do
 
     class LineItem
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :price, String, :auto_validation => false
       validates_is_number :price
 
@@ -224,7 +224,7 @@ describe DataMapper::Validate do
 
     class Comment
       include DataMapper::Resource
-      property :id, Fixnum, :serial => true
+      property :id, Integer, :serial => true
       property :note, String, :auto_validation => false
 
       validates_present :note

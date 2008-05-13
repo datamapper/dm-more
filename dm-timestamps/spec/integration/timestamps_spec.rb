@@ -7,7 +7,7 @@ if HAS_SQLITE3
       class GreenSmoothie
         include DataMapper::Resource
 
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :name, String
         property :created_at, DateTime
         property :created_on, Date

@@ -16,8 +16,8 @@ module DataMapper
       #     include DataMapper::Resource
       #     include DataMapper::Is::Tree
       #
-      #     property :id, Fixnum
-      #     property :parent_id, Fixnum
+      #     property :id, Integer
+      #     property :parent_id, Integer
       #     property :name, String
       #
       #     is_a_tree :order => "name"

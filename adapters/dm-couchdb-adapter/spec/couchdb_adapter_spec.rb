@@ -14,7 +14,7 @@ class User
   
   # regular properties
   property :name, String
-  property :age, Fixnum
+  property :age, Integer
   property :wealth, Float
   property :created_at, DateTime
   property :created_on, Date

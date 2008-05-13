@@ -12,8 +12,8 @@ describe DataMapper::Serialize do
     class Cow
       include DataMapper::Resource
       include DataMapper::Serialize
-      property :id, Fixnum, :key => true
-      property :composite, Fixnum, :key => true
+      property :id, Integer, :key => true
+      property :composite, Integer, :key => true
       property :name, String
       property :breed, String
     end

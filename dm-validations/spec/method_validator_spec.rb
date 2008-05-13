@@ -5,7 +5,7 @@ describe DataMapper::Validate::MethodValidator do
   before(:all) do
     class Ship
       include DataMapper::Resource
-      property :id, Fixnum, :key => true
+      property :id, Integer, :key => true
       property :name, String
 
       validates_with_method :fail_validation, :when => [:testing_failure]
