@@ -153,7 +153,7 @@ module DataMapper
       end
       
     protected      
-    # Converts the URI's scheme into a parsed HTTP identifier.
+      # Converts the URI's scheme into a parsed HTTP identifier.
       def normalize_uri(uri_or_options)
         if String === uri_or_options
           uri_or_options = Addressable::URI.parse(uri_or_options)
