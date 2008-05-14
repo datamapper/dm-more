@@ -61,9 +61,8 @@ end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
-windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-
-SUDO = windows ? "" : "sudo"
+WIN32 = (PLATFORM =~ /win32|cygwin/) rescue nil
+SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
