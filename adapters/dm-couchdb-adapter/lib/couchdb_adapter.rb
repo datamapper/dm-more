@@ -48,7 +48,7 @@ module DataMapper
         return Addressable::URI.encode_segment(
           self.db_name, Addressable::URI::CharacterClasses::UNRESERVED)
       end
-      
+
       # Creates a new resource in the specified repository.
       def create(repository, resource)
         result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
@@ -65,7 +65,7 @@ module DataMapper
           false
         end
       end
-      
+
       # Reads the data specified by the given key into a resource from
       # the given repository.
       def read(repository, resource, key)
@@ -73,17 +73,17 @@ module DataMapper
         properties_with_indexes =
           Hash[*properties.zip((0...properties.length).to_a).flatten]
         set = Collection.new(repository, resource, properties_with_indexes)
-        
+
         doc = http_get("/#{self.escaped_db_name}/#{key}")
         set.load(
           properties.map do |property|
             typecast(property.type, doc[property.field.to_s])
           end
         )
-        
+
         set.first
       end
-      
+
       # Deletes the resource from the repository.
       def delete(repository, resource)
         key = resource.class.key(self.name).map do |property|
@@ -94,14 +94,14 @@ module DataMapper
         )
         return result["ok"]
       end
-      
+
       # Commits changes in the resource to the repository.
       def update(repository, resource)
         key = resource.class.key(self.name).map do |property|
           resource.instance_variable_get(property.instance_variable_name)
         end
         result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
-        
+
         if result["ok"]
           key = resource.class.key(self.name)
           resource.instance_variable_set(
@@ -113,7 +113,7 @@ module DataMapper
           false
         end
       end
-      
+
       # Reads in a set from a query.
       def read_set(repository, query)
         doc = request do |http|
@@ -131,12 +131,12 @@ module DataMapper
         )
         populate_set(repository, resource, properties, doc["rows"])
       end
-      
+
       def populate_set(repository, resource, properties, docs)
         properties_with_indexes =
           Hash[*properties.zip((0...properties.length).to_a).flatten]
         set = Collection.new(repository, resource, properties_with_indexes)
-        
+
         docs.each do |doc|
           set.load(
             properties.map do |property|
@@ -144,15 +144,15 @@ module DataMapper
             end
           )
         end
-        
+
         set
       end
 
       def delete_set(repository, query)
         raise NotImplementedError
       end
-      
-    protected      
+
+    protected
       # Converts the URI's scheme into a parsed HTTP identifier.
       def normalize_uri(uri_or_options)
         if String === uri_or_options
@@ -161,7 +161,7 @@ module DataMapper
         uri_or_options.scheme = "http"
         uri_or_options
       end
-      
+
       def typecast(type, value)
         return value if value.nil?
         case type.to_s
@@ -171,7 +171,7 @@ module DataMapper
         else value
         end
       end
-      
+
       def build_javascript_request(query)
         if query.order.empty?
           key = "null"
@@ -181,10 +181,10 @@ module DataMapper
           end).join(", ")
           key = "[#{key}]"
         end
-        
+
         request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view")
         request["Content-Type"] = "text/javascript"
-        
+
         if query.conditions.empty?
           request.body =
             "function(doc) {\n" +
@@ -219,7 +219,7 @@ module DataMapper
         end
         request
       end
-      
+
       def like_operator(value)
         case value
         when Regexp then value = value.source
@@ -232,23 +232,23 @@ module DataMapper
         end
         return ".match(/#{value}/)"
       end
-      
+
       def http_put(uri, data = nil)
         request { |http| http.put(uri, data) }
       end
-      
+
       def http_post(uri, data)
         request { |http| http.post(uri, data) }
       end
-      
+
       def http_get(uri)
         request { |http| http.get(uri) }
       end
-      
+
       def http_delete(uri)
         request { |http| http.delete(uri) }
       end
-      
+
       def request(parse_result = true, &block)
         res = nil
         Net::HTTP.start(@uri.host, @uri.port) do |http|
@@ -257,7 +257,7 @@ module DataMapper
         JSON.parse(res.body) if parse_result
       end
     end
-    
+
     # Required naming scheme.
     CouchdbAdapter = CouchDBAdapter
   end

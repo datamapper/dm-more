@@ -36,7 +36,7 @@ module DataMapper
       #     raise NotImplementedError
       #   end
       # end
-      # 
+      #
       # def last(*args)
       #   with_repository_and_property(*args) do |repository,property,options|
       #     raise NotImplementedError

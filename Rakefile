@@ -192,11 +192,10 @@ desc 'Run specifications'
         Dir.chdir(File.dirname(rakefile))
         begin
           raise "Broken specs in #{path}" unless system 'rake'
-        ensure        
+        ensure
           Dir.chdir current_dir
         end
       end
     end
   end
 end
-
