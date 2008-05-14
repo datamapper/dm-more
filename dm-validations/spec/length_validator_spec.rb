@@ -17,6 +17,19 @@ describe DataMapper::Validate::LengthValidator do
     end
   end
 
+  it "should be able to consider things valid even if we have a custom error message" do
+    class Jabberwock
+      include DataMapper::Resource
+      property :id, Integer, :key => true
+      property :snickersnack, String
+      validates_length :snickersnack, :within => 3..40, :message => "worble warble"
+    end
+    wock = Jabberwock.new
+    wock.snickersnack = "hello"
+    wock.id = 1
+    wock.valid?.should == true
+  end
+
   it "should be able to set a minimum length of a string field" do
     class MotorLaunch
       validates_length :name, :min => 3
