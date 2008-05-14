@@ -21,7 +21,7 @@ module DataMapper
       def avg(respository, property, query)
         parameters = query.parameters
         avg = query(aggregate_value_statement(:avg, property, query), *parameters).first
-        property.typecast(avg)
+        property.type == Fixnum ? avg.to_f : property.typecast(avg)
       end
 
       def sum(respository, property, query)

@@ -188,7 +188,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       describe 'with a property name' do
         it 'should provide the average value of an Integer property' do
-          Dragon.avg(:toes_on_claw).should == 4
+          Dragon.avg(:toes_on_claw).should be_kind_of(Float)
+          Dragon.avg(:toes_on_claw).should == 4.0
         end
 
         it 'should provide the average value of a Float property' do
@@ -205,7 +206,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the average value when conditions provided' do
-          Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4
+          Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4.5
           Dragon.avg(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
