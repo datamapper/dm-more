@@ -185,16 +185,14 @@ end
 
 namespace :dm do
   desc 'Run specifications'
-  task :spec do
+  task :specs do
     Spec::Rake::SpecTask.new(:spec) do |t|
       Dir["**/Rakefile"].each do |rakefile|
+        # don't run in the top level dir
         unless rakefile == "Rakefile"
-          current_dir = Dir.getwd
-          Dir.chdir(File.dirname(rakefile))
-          begin
+          # running chdir in a block runs the task in specified dir, then returns to previous dir.
+          Dir.chdir(File.join(File.dirname(__FILE__), File.dirname(rakefile))) do
             raise "Broken specs in #{path}" unless system 'rake'
-          ensure
-            Dir.chdir current_dir
           end
         end
       end
