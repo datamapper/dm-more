@@ -184,16 +184,18 @@ namespace :ci do
 end
 
 namespace :dm do
-desc 'Run specifications'
-  Spec::Rake::SpecTask.new(:spec) do |t|
-    Dir["**/Rakefile"].each do |rakefile|
-      unless rakefile == "Rakefile"
-        current_dir = Dir.getwd
-        Dir.chdir(File.dirname(rakefile))
-        begin
-          raise "Broken specs in #{path}" unless system 'rake'
-        ensure
-          Dir.chdir current_dir
+  desc 'Run specifications'
+  task :spec do
+    Spec::Rake::SpecTask.new(:spec) do |t|
+      Dir["**/Rakefile"].each do |rakefile|
+        unless rakefile == "Rakefile"
+          current_dir = Dir.getwd
+          Dir.chdir(File.dirname(rakefile))
+          begin
+            raise "Broken specs in #{path}" unless system 'rake'
+          ensure
+            Dir.chdir current_dir
+          end
         end
       end
     end
