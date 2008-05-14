@@ -2,10 +2,6 @@ TODO
 ====
 
 - Add the following methods: (query is an optional parameter)
-  - min(property_name)   - return the lowest value of this property        (numeric properties only)
-  - max(property_name)   - return the highest value of this property       (numeric properties only)
-  - avg(property_name)   - return the average value of this property       (numeric properties only)
-  - sum(property_name)   - returns the sum of the values for this property (numeric properties only)
   - first(property_name) - returns the first value for this property
   - last()               - returns the last resource
   - last(property_name)  - returns the last value for this property
