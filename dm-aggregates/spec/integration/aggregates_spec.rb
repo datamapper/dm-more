@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Resource' do
-    before(:all) do
+    before :all do
       # A simplistic example, using with an Integer property
       class Dragon
         include DataMapper::Resource
@@ -28,26 +28,26 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :id,                  Integer, :serial => true
         property :name,                String,  :nullable => false
         property :population,          Integer
-        property :birth_rate,          Float
-        property :gold_reserve_tonnes, Float
-        property :gold_reserve_value,  BigDecimal, :scale => 16, :precision => 2  # approx. value in USD
+        property :birth_rate,          Float,      :scale => 4,  :precision => 2
+        property :gold_reserve_tonnes, Float,      :scale => 6,  :precision => 2
+        property :gold_reserve_value,  BigDecimal, :scale => 15, :precision => 1  # approx. value in USD
 
         auto_migrate!(:default)
       end
 
       gold_kilo_price  = 277738.70
-      gold_tonne_price = gold_kilo_price * 10000
+      @gold_tonne_price = gold_kilo_price * 10000
 
       Country.create(:name => 'China',
                       :population => 1330044605,
                       :birth_rate => 13.71,
                       :gold_reserve_tonnes => 600.0,
-                      :gold_reserve_value  => 600.0 * gold_tonne_price) #  32150000
+                      :gold_reserve_value  => 600.0 * @gold_tonne_price) #  32150000
       Country.create(:name => 'United States',
                       :population => 303824646,
                       :birth_rate => 14.18,
                       :gold_reserve_tonnes => 8133.5,
-                      :gold_reserve_value  => 8133.5 * gold_tonne_price)
+                      :gold_reserve_value  => 8133.5 * @gold_tonne_price)
       Country.create(:name => 'Brazil',
                       :population => 191908598,
                       :birth_rate => 16.04,
@@ -56,12 +56,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
                       :population => 140702094,
                       :birth_rate => 11.03,
                       :gold_reserve_tonnes => 438.2,
-                      :gold_reserve_value  => 438.2 * gold_tonne_price)
+                      :gold_reserve_value  => 438.2 * @gold_tonne_price)
       Country.create(:name => 'Japan',
                       :population => 127288419,
                       :birth_rate => 7.87,
                       :gold_reserve_tonnes => 765.2,
-                      :gold_reserve_value  => 765.2 * gold_tonne_price)
+                      :gold_reserve_value  => 765.2 * @gold_tonne_price)
       Country.create(:name => 'Mexico',
                       :population => 109955400,
                       :birth_rate => 20.04,
@@ -70,7 +70,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
                       :population => 82369548,
                       :birth_rate => 8.18,
                       :gold_reserve_tonnes => 3417.4,
-                      :gold_reserve_value  => 3417.4 * gold_tonne_price)
+                      :gold_reserve_value  => 3417.4 * @gold_tonne_price)
+
+      @approx_by = 0.000001
     end
 
     describe '.count' do
@@ -98,16 +100,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       describe 'with a property name' do
-        it 'should count the results where the property is not nil' do
+        it 'should count the results' do
           Dragon.count(:name).should == 2
         end
 
-        it 'should count the results with conditions having operators where the property is not nil' do
-          result = Dragon.count(:name, :toes_on_claw.gt => 3)
-          result.should == 1
+        it 'should count the results with conditions having operators' do
+          Dragon.count(:name, :toes_on_claw.gt => 3).should == 1
         end
 
-        it 'should count the results with raw conditions where the property is not nil' do
+        it 'should count the results with raw conditions' do
           statement = 'is_fire_breathing = ?'
           Dragon.count(:name, :conditions => [ statement, false ]).should == 1
           Dragon.count(:name, :conditions => [ statement, true  ]).should == 1
@@ -129,16 +130,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the lowest value of a Float property' do
-          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
           Country.min(:birth_rate).should be_kind_of(Float)
-          Country.min(:birth_rate).should == 7.87
+          Country.min(:birth_rate).should >= 7.87 - @approx_by  # approx match
+          Country.min(:birth_rate).should <= 7.87 + @approx_by  # approx match
         end
 
         it 'should provide the lowest value of a BigDecimal property' do
-          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
-          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Country.min(:gold_reserve_value).should be_kind_of(BigDecimal)
-          Country.min(:gold_reserve_value).should == BigDecimal('1575238632')
+          Country.min(:gold_reserve_value).should == BigDecimal('1217050983400.0')
+        end
+
+        it 'should provide the lowest value when conditions provided' do
+          Dragon.min(:toes_on_claw, :is_fire_breathing => true).should  == 4
+          Dragon.min(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -156,20 +161,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Country.max(:population).should == 1330044605
         end
 
-        it 'should provide the highest value of a property with a condition set on another property' do
-          pending
-          Country.max(:population, :birth_rate.lt => 7.87).should == 201
-        end
-
         it 'should provide the highest value of a Float property' do
-          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
           Country.max(:birth_rate).should be_kind_of(Float)
-          Country.max(:birth_rate).should === 20.04
+          Country.max(:birth_rate).should >= 20.04 - @approx_by  # approx match
+          Country.max(:birth_rate).should <= 20.04 + @approx_by  # approx match
         end
 
         it 'should provide the highest value of a BigDecimal property' do
-          pending # FIXME
-          Country.max(:gold_reserve_value).should == 1575238632
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
+          Country.max(:gold_reserve_value).should == BigDecimal('22589877164500.0')
+        end
+
+        it 'should provide the highest value when conditions provided' do
+          Dragon.max(:toes_on_claw, :is_fire_breathing => true).should  == 5
+          Dragon.max(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -183,20 +188,25 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       describe 'with a property name' do
         it 'should provide the average value of an Integer property' do
-          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
           Dragon.avg(:toes_on_claw).should == 4
         end
 
         it 'should provide the average value of a Float property' do
-          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
-          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
           mean_birth_rate = (13.71 + 14.18 + 16.04 + 11.03 + 7.87 + 20.04 + 8.18) / 7
           Country.avg(:birth_rate).should be_kind_of(Float)
-          Country.avg(:birth_rate).should == mean_birth_rate
+          Country.avg(:birth_rate).should >= mean_birth_rate - @approx_by  # approx match
+          Country.avg(:birth_rate).should <= mean_birth_rate + @approx_by  # approx match
         end
 
         it 'should provide the average value of a BigDecimal property' do
-          pending
+          mean_gold_reserve_value = ((600.0 + 8133.50 + 438.20 + 765.20 + 3417.40) * @gold_tonne_price) / 5
+          Country.avg(:gold_reserve_value).should be_kind_of(BigDecimal)
+          Country.avg(:gold_reserve_value).should == BigDecimal(mean_gold_reserve_value.to_s)
+        end
+
+        it 'should provide the average value when conditions provided' do
+          Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4
+          Dragon.avg(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -210,7 +220,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       describe 'with a property name' do
         it 'should provide the sum of values for an Integer property' do
-          pending 'FIXME'
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Dragon.sum(:toes_on_claw).should == 12
 
           total_population = 1330044605 + 303824646 + 191908598 + 140702094 +
@@ -219,16 +229,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the sum of values for a Float property' do
-          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
-          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
-          total_tonnes = 600.0 + 8133.5 + 438.2 + 765.2 +  3417.4
+          total_tonnes = 600.0 + 8133.5 + 438.2 + 765.2 + 3417.4
           Country.sum(:gold_reserve_tonnes).should be_kind_of(Float)
-          Country.sum(:gold_reserve_tonnes).should == total_tonnes
+          Country.sum(:gold_reserve_tonnes).should >= total_tonnes - @approx_by  # approx match
+          Country.sum(:gold_reserve_tonnes).should <= total_tonnes + @approx_by  # approx match
         end
 
         it 'should provide the sum of values for a BigDecimal property' do
-          pending 'FIXME'
-          Country.sum(:toes_on_claw).should == 12
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
+          Country.sum(:gold_reserve_value).should == BigDecimal('37090059214100.0')
+        end
+
+        it 'should provide the average value when conditions provided' do
+          Dragon.sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
+          Dragon.sum(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
