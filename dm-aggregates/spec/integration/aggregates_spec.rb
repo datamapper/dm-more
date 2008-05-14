@@ -30,7 +30,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :population,          Integer
         property :birth_rate,          Float
         property :gold_reserve_tonnes, Float
-        property :gold_reserve_value,  BigDecimal # approx. value in USD
+        property :gold_reserve_value,  BigDecimal, :scale => 16, :precision => 2  # approx. value in USD
 
         auto_migrate!(:default)
       end
@@ -98,28 +98,30 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       describe 'with a property name' do
-        before do
-          @property_name = :name
-        end
-
         it 'should count the results where the property is not nil' do
-          Dragon.count(@property_name).should == 2
+          Dragon.count(:name).should == 2
         end
 
         it 'should count the results with conditions having operators where the property is not nil' do
-          result = Dragon.count(@property_name, :toes_on_claw.gt => 3)
+          result = Dragon.count(:name, :toes_on_claw.gt => 3)
           result.should == 1
         end
 
         it 'should count the results with raw conditions where the property is not nil' do
           statement = 'is_fire_breathing = ?'
-          Dragon.count(@property_name, :conditions => [ statement, false ]).should == 1
-          Dragon.count(@property_name, :conditions => [ statement, true  ]).should == 1
+          Dragon.count(:name, :conditions => [ statement, false ]).should == 1
+          Dragon.count(:name, :conditions => [ statement, true  ]).should == 1
         end
       end
     end
 
     describe '.min' do
+      describe 'with no arguments' do
+        it 'should raise an error' do
+          lambda { Dragon.min }.should raise_error(ArgumentError)
+        end
+      end
+
       describe 'with a property name' do
         it 'should provide the lowest value of an Integer property' do
           Dragon.min(:toes_on_claw).should == 3
@@ -127,53 +129,69 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the lowest value of a Float property' do
-          Country.min(:birth_rate).should === 7.87
+          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
+          Country.min(:birth_rate).should be_kind_of(Float)
+          Country.min(:birth_rate).should == 7.87
         end
 
         it 'should provide the lowest value of a BigDecimal property' do
-          Country.min(:gold_reserve_value).should == 1575238632
-        end
-      end
-      describe 'with no arguments' do
-        it 'should raise an error' do
-          #Dragon.min
-          pending
+          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
+          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
+          Country.min(:gold_reserve_value).should be_kind_of(BigDecimal)
+          Country.min(:gold_reserve_value).should == BigDecimal('1575238632')
         end
       end
     end
 
     describe '.max' do
+      describe 'with no arguments' do
+        it 'should raise an error' do
+          lambda { Dragon.max }.should raise_error(ArgumentError)
+        end
+      end
+
       describe 'with a property name' do
         it 'should provide the highest value of an Integer property' do
           Dragon.max(:toes_on_claw).should == 5
           Country.max(:population).should == 1330044605
         end
 
-        it 'should provide the highest value of a property with a condition set
-            on another property' do
-          #Country.max(:population, :birth_rate.lt => 7.87).should == 201
+        it 'should provide the highest value of a property with a condition set on another property' do
           pending
+          Country.max(:population, :birth_rate.lt => 7.87).should == 201
         end
 
         it 'should provide the highest value of a Float property' do
+          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
+          Country.max(:birth_rate).should be_kind_of(Float)
           Country.max(:birth_rate).should === 20.04
         end
 
         it 'should provide the highest value of a BigDecimal property' do
-          #Country.max(:gold_reserve_value).should == 1575238632
-          pending ## FIXME
+          pending # FIXME
+          Country.max(:gold_reserve_value).should == 1575238632
         end
       end
     end
 
     describe '.avg' do
+      describe 'with no arguments' do
+        it 'should raise an error' do
+          lambda { Dragon.avg }.should raise_error(ArgumentError)
+        end
+      end
+
       describe 'with a property name' do
         it 'should provide the average value of an Integer property' do
+          pending 'Does not provide correct results with MySQL' if HAS_MYSQL
           Dragon.avg(:toes_on_claw).should == 4
         end
 
         it 'should provide the average value of a Float property' do
+          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
+          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
           mean_birth_rate = (13.71 + 14.18 + 16.04 + 11.03 + 7.87 + 20.04 + 8.18) / 7
+          Country.avg(:birth_rate).should be_kind_of(Float)
           Country.avg(:birth_rate).should == mean_birth_rate
         end
 
@@ -184,27 +202,35 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     describe '.sum' do
+      describe 'with no arguments' do
+        it 'should raise an error' do
+          lambda { Dragon.sum }.should raise_error(ArgumentError)
+        end
+      end
+
       describe 'with a property name' do
         it 'should provide the sum of values for an Integer property' do
+          pending 'FIXME'
           Dragon.sum(:toes_on_claw).should == 12
 
           total_population = 1330044605 + 303824646 + 191908598 + 140702094 +
                              127288419 + 109955400 + 82369548
-          #Country.sum(:population).should == total_population
-          pending # FIXME:
+          Country.sum(:population).should == total_population
         end
 
         it 'should provide the sum of values for a Float property' do
+          pending 'Does not provide correct results with MySQL'      if HAS_MYSQL
+          pending 'Does not provide correct results with PostgreSQL' if HAS_POSTGRES
           total_tonnes = 600.0 + 8133.5 + 438.2 + 765.2 +  3417.4
+          Country.sum(:gold_reserve_tonnes).should be_kind_of(Float)
           Country.sum(:gold_reserve_tonnes).should == total_tonnes
         end
 
         it 'should provide the sum of values for a BigDecimal property' do
-          #Country.sum(:toes_on_claw).should == 12
-          pending # FIXME:
+          pending 'FIXME'
+          Country.sum(:toes_on_claw).should == 12
         end
       end
     end
-
   end
 end

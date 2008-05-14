@@ -60,7 +60,7 @@ module DataMapper
       end
 
       def check_property_is_number(property)
-        raise ArgumentError, "+property+ should be an Integer, Float or BigDecimal, but was #{property.type.class}"  unless Fixnum || Float || BigDecimal == property.type
+        raise ArgumentError, "+property+ should be an Integer, Float or BigDecimal, but was #{property.nil? ? 'nil' : property.type.class}" unless property && [ Fixnum, Float, BigDecimal ].include?(property.type)
       end
 
     end
