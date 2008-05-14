@@ -57,5 +57,44 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
+
+    describe '.min' do
+      describe 'with a property name' do
+        it 'should provide the min' do
+          Dragon.min(:toes_on_claw).should == 3
+        end
+      end
+      describe 'with no arguments' do
+        it 'should raise an error' do
+          #Dragon.min
+          pending
+        end
+      end
+    end
+
+    describe '.max' do
+      describe 'with a property name' do
+        it 'should provide the max' do
+          Dragon.max(:toes_on_claw).should == 5
+        end
+      end
+    end
+
+    describe '.avg' do
+      describe 'with a property name' do
+        it 'should provide the avg' do
+          Dragon.avg(:toes_on_claw).should == 4
+        end
+      end
+    end
+
+    describe '.sum' do
+      describe 'with a property name' do
+        it 'should provide the sum' do
+          Dragon.sum(:toes_on_claw).should == 12
+        end
+      end
+    end
+
   end
 end

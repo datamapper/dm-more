@@ -9,25 +9,29 @@ module DataMapper
 
       def min(*args)
         with_repository_and_property(*args) do |repository,property,options|
-          raise NotImplementedError
+          check_property_is_number(property)
+          repository.min(self, property, options)
         end
       end
 
       def max(*args)
         with_repository_and_property(*args) do |repository,property,options|
-          raise NotImplementedError
+          check_property_is_number(property)
+          repository.max(self, property, options)
         end
       end
 
       def avg(*args)
         with_repository_and_property(*args) do |repository,property,options|
-          raise NotImplementedError
+          check_property_is_number(property)
+          repository.avg(self, property, options)
         end
       end
 
       def sum(*args)
         with_repository_and_property(*args) do |repository,property,options|
-          raise NotImplementedError
+          check_property_is_number(property)
+          repository.sum(self, property, options)
         end
       end
 
@@ -54,6 +58,11 @@ module DataMapper
           yield repository, property, options
         end
       end
+
+      def check_property_is_number(property)
+        raise ArgumentError, "+property+ should be an Integer, Float or BigDecimal, but was #{property.type.class}"  unless Fixnum || Float || BigDecimal == property.type
+      end
+
     end
   end
 end
