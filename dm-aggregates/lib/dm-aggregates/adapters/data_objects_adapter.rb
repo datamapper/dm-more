@@ -8,22 +8,22 @@ module DataMapper
 
       def min(respository, property, query)
         parameters = query.parameters
-        min = query(aggregate_value_statement(property, :min, query), *parameters).first.to_i
+        min = query(aggregate_value_statement(property, :min, query), *parameters).first
       end
 
       def max(respository, property, query)
         parameters = query.parameters
-        max = query(aggregate_value_statement(property, :max, query), *parameters).first.to_i
+        max = query(aggregate_value_statement(property, :max, query), *parameters).first
       end
 
       def avg(respository, property, query)
         parameters = query.parameters
-        avg = query(aggregate_value_statement(property, :avg, query), *parameters).first.to_i
+        avg = query(aggregate_value_statement(property, :avg, query), *parameters).first
       end
 
       def sum(respository, property, query)
         parameters = query.parameters
-        sum = query(aggregate_value_statement(property, :sum, query), *parameters).first.to_i
+        sum = query(aggregate_value_statement(property, :sum, query), *parameters).first
       end
 
       module SQL
