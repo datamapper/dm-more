@@ -19,7 +19,7 @@ module Merb
         end
 
         def config
-          @config ||= Merb::Plugins.config[:merb_datamapper] = get_config_for_environment
+          @config ||= Merb::Plugins.config[:merb_datamapper] ||= get_config_for_environment
         end
 
         # Database connects as soon as the gem is loaded
