@@ -158,8 +158,21 @@ module DataMapper
         if String === uri_or_options
           uri_or_options = Addressable::URI.parse(uri_or_options)
         end
-        uri_or_options.scheme = "http"
-        uri_or_options
+        if Addressable::URI === uri_or_options
+          return uri_or_options.normalize
+        end
+
+        user = uri_or_options.delete(:username)
+        password = uri_or_options.delete(:password)
+        host = (uri_or_options.delete(:host) || "")
+        port = uri_or_options.delete(:port)
+        database = uri_or_options.delete(:database)
+        query = uri_or_options.to_a.map { |pair| pair.join('=') }.join('&')
+        query = nil if query == ""
+
+        return Addressable::URI.new(
+          "http", user, password, host, port, database, query, nil
+        )
       end
       
       def typecast(type, value)
