@@ -1,11 +1,20 @@
 require 'rubygems'
 require 'spec'
 require 'rake/clean'
+require 'rake/rdoctask'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
 require 'pathname'
 
 CLEAN.include '{log,pkg}/'
+
+desc "Generate Documentation"
+rd = Rake::RDocTask.new do |rdoc|
+  rdoc.rdoc_dir = 'doc'
+  rdoc.title = "DataMapper Validations"
+  rdoc.options << '--line-numbers' << '--inline-source' << '--main' << 'README'
+  rdoc.rdoc_files.include(FileList[ 'lib/**/*.rb', 'README', 'LICENSE'])
+end
 
 spec = Gem::Specification.new do |s|
   s.name             = 'dm-validations'
