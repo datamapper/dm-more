@@ -19,9 +19,7 @@ module Merb
         end
 
         def config
-          @config ||=
-            Merb::Plugins.config[:merb_datamapper] =
-            (full_config[Merb.environment.to_sym] || symbolize_keys(full_config[Merb.environment]))
+          @config ||= Merb::Plugins.config[:merb_datamapper] ||= get_config_for_environment
         end
 
         # Database connects as soon as the gem is loaded
@@ -73,6 +71,18 @@ module Merb
           end
 
           config
+        end
+
+        private
+
+        def get_config_for_environment
+          if hash = full_config[Merb.environment]
+            symbolize_keys(hash)
+          elsif hash = full_config[Merb.environment.to_sym]
+            hash
+          else
+            raise ArgumentError, "missing environment '#{Merb.environment}' in config file #{config_file}"
+          end
         end
       end
     end

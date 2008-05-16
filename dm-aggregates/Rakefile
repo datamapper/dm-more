@@ -25,9 +25,8 @@ end
 
 task :default => [ :spec ]
 
-windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-
-SUDO = windows ? "" : "sudo"
+WIN32 = (PLATFORM =~ /win32|cygwin/) rescue nil
+SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
@@ -35,7 +34,7 @@ end
 
 desc "Install #{spec.name} #{spec.version}"
 task :install => [ :package ] do
-  sh "#{SUDO unless ENV['SUDOLESS']} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+  sh "#{SUDO} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
 end
 
 desc 'Run specifications'

@@ -3,19 +3,51 @@ module DataMapper
     class DataObjectsAdapter
       def count(repository, property, query)
         parameters = query.parameters
-        row_count =  query(count_statement(property, query), *parameters).first.to_i
+        query(aggregate_value_statement(:count, property, query), *parameters).first
+      end
+
+      def min(respository, property, query)
+        parameters = query.parameters
+        min = query(aggregate_value_statement(:min, property, query), *parameters).first
+        property.typecast(min)
+      end
+
+      def max(respository, property, query)
+        parameters = query.parameters
+        max = query(aggregate_value_statement(:max, property, query), *parameters).first
+        property.typecast(max)
+      end
+
+      def avg(respository, property, query)
+        parameters = query.parameters
+        avg = query(aggregate_value_statement(:avg, property, query), *parameters).first
+        property.type == Fixnum ? avg.to_f : property.typecast(avg)
+      end
+
+      def sum(respository, property, query)
+        parameters = query.parameters
+        sum = query(aggregate_value_statement(:sum, property, query), *parameters).first
+        property.typecast(sum)
       end
 
       module SQL
         private
 
-        def count_statement(property, query)
+        def aggregate_value_statement(aggregate_function, property, query)
           qualify      = query.links.any?
           storage_name = query.model.storage_name(query.repository.name)
-          column_name  = property.nil? ? '*' : property_to_column_name(storage_name, property, qualify)
+          column_name  = aggregate_function == :count && property.nil?? '*' : property_to_column_name(storage_name, property, qualify)
 
-          statement = "SELECT COUNT(#{column_name}) as row_count"
+          function_name = case aggregate_function
+            when :count then 'COUNT'
+            when :min   then 'MIN'
+            when :max   then 'MAX'
+            when :avg   then 'AVG'
+            when :sum   then 'SUM'
+            else raise "Invalid aggregate function: #{aggregate_function.inspect}"
+          end
 
+          statement = "SELECT #{function_name}(#{column_name})"
           statement << ' FROM ' << quote_table_name(storage_name)
 
           unless query.conditions.empty?
@@ -46,8 +78,9 @@ module DataMapper
           DataMapper.logger.error("QUERY INVALID: #{query.inspect} (#{e})")
           raise e
         end
+
       end #module SQL
       include SQL
-    end
-  end
-end
+    end # class DataObjectsAdapter
+  end # module Adapters
+end # module DataMapper

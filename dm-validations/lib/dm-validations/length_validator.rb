@@ -31,8 +31,6 @@ module DataMapper
         max = @range ? @range.max : @max
         equal = @equal
 
-        error_message = @options[:message]
-
         case @validation_method
         when :range then
           unless valid = @range.include?(field_value.size)
@@ -50,7 +48,9 @@ module DataMapper
           unless valid = field_value.size == equal
             error_message = '%s must be %s characters long'.t(field, equal)
           end
-        end unless error_message
+        end
+
+        error_message ||= @options[:message]
 
         add_error(target, error_message, @field_name) unless valid
 

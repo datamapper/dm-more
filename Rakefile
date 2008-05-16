@@ -61,9 +61,8 @@ end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
-windows = (PLATFORM =~ /win32|cygwin/) rescue nil
-
-SUDO = windows ? "" : "sudo"
+WIN32 = (PLATFORM =~ /win32|cygwin/) rescue nil
+SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
@@ -184,19 +183,18 @@ namespace :ci do
 end
 
 namespace :dm do
-desc 'Run specifications'
-  Spec::Rake::SpecTask.new(:spec) do |t|
-    Dir["**/Rakefile"].each do |rakefile|
-      unless rakefile == "Rakefile"
-        current_dir = Dir.getwd
-        Dir.chdir(File.dirname(rakefile))
-        begin
-          raise "Broken specs in #{path}" unless system 'rake'
-        ensure        
-          Dir.chdir current_dir
+  desc 'Run specifications'
+  task :specs do
+    Spec::Rake::SpecTask.new(:spec) do |t|
+      Dir["**/Rakefile"].each do |rakefile|
+        # don't run in the top level dir or in the pkg dir
+        unless rakefile == "Rakefile" || rakefile =~ /^pkg/
+          # running chdir in a block runs the task in specified dir, then returns to previous dir.
+          Dir.chdir(File.join(File.dirname(__FILE__), File.dirname(rakefile))) do
+            raise "Broken specs in #{path}" unless system 'rake'
+          end
         end
       end
     end
   end
 end
-
