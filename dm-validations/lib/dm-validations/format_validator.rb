@@ -6,6 +6,10 @@ require Pathname(__FILE__).dirname.expand_path + 'formats/email'
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class FormatValidator < GenericValidator
 
       FORMATS = {}

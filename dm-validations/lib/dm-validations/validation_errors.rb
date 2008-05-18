@@ -1,5 +1,10 @@
 module DataMapper
   module Validate
+
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class ValidationErrors
 
       def initialize
@@ -11,12 +16,11 @@ module DataMapper
         @errors.clear
       end
 
-      # Add a validation error. Use the field_name :general if
-      # the error doesn't apply to a specific field of the resource.
+      # Add a validation error. Use the field_name :general if the errors does
+      # not apply to a specific field of the Resource.
       #
-      # ==== Parameters
-      #    field_name<Symbol>::     the name of the field that cause the error
-      #    message<String>::        the message to add
+      # @param <Symbol> field_name the name of the field that caused the error
+      # @param <String> message    the message to add
       def add(field_name, message)
         @errors[field_name] << message
       end
@@ -30,8 +34,7 @@ module DataMapper
 
       # Return validation errors for a particular field_name.
       #
-      # ==== Parameters
-      #   field_name<Symbol>::  the name of the field you want error on
+      # @param <Symbol> field_name the name of the field you want an error for
       def on(field_name)
         @errors[field_name].empty? ? nil : @errors[field_name]
       end

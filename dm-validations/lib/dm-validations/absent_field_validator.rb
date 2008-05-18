@@ -1,6 +1,10 @@
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class AbsentFieldValidator < GenericValidator
 
       def initialize(field_name, options={})

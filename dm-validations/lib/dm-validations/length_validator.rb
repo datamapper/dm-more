@@ -1,6 +1,10 @@
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class LengthValidator < GenericValidator
 
       def initialize(field_name, options)
@@ -25,7 +29,8 @@ module DataMapper
 
         field_value = '' if field_value.nil?
 
-        # HACK seems hacky to do this on every validation, probably should do this elsewhere?
+        # XXX: HACK seems hacky to do this on every validation, probably should
+        #      do this elsewhere?
         field = DataMapper::Inflection.humanize(@field_name)
         min = @range ? @range.min : @min
         max = @range ? @range.max : @max

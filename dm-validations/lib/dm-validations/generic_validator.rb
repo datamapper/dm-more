@@ -1,10 +1,10 @@
 module DataMapper
   module Validate
 
-    # A base class that all validators must be derived from. Child classes
-    # must implement the abstract method call where the actual validation
-    # occures
+    # A base class that all Validators must be derived from. Child classes must
+    # implement the abstract method call where the actual validation occurs.
     #
+    # @author Guy van den Berg
     class GenericValidator
 
       attr_accessor :if_clause
@@ -17,14 +17,13 @@ module DataMapper
         @unless_clause = opts.has_key?(:unless) ? opts[:unless] : nil
       end
 
-      # Add an error message to a target resource. If the error corrosponds
-      # to a specific field of the resource, add it to that field, otherwise
-      # add it as a :general message
+      # Add an error message to a target resource. If the error corresponds to a
+      # specific field of the resource, add it to that field, otherwise add it
+      # as a :general message.
       #
-      # ==== Parameters
-      #   target<Object>::        the resource that has the error
-      #   message<String>::       a string message to add
-      #   field_name<Symbol>      the name of the field that caused the error
+      # @param <Object> target the resource that has the error
+      # @param <String> message the message to add
+      # @param <Symbol> field_name the name of the field that caused the error
       #
       # TODO - should the field_name for a general message be :default???
       #
@@ -33,14 +32,11 @@ module DataMapper
       end
 
       # Call the validator. "call" is used so the operation is BoundMethod and
-      # Block compatible. This must be implemented in all concreate classes
+      # Block compatible. This must be implemented in all concrete classes.
       #
-      # ==== Parameters
-      #   target<Object>:: the resource that the validator must be called against"
-      #
-      # ==== Returns
-      # <Boolean>:: TRUE if valid otherwise FALSE
-      #
+      # @param <Object> target  the resource that the validator must be called
+      #                         against
+      # @return <Boolean> TRUE if valid, otherwise FALSE
       def call(target)
         raise "DataMapper::Validate::GenericValidator::call must be overriden in #{self.class.to_s}"
       end
@@ -52,12 +48,8 @@ module DataMapper
 
       # Determine if this validator should be run against the target
       #
-      # ==== Parameters
-      #   target<Object>:: the resource that we check against
-      #
-      # ==== Returns
-      # <Boolean>:: TRUE if should be run otherwise FALSE
-      #
+      # @param <Object> target the resource that we check against
+      # @return <Boolean> TRUE if should be run, otherwise FALSE
       def execute?(target)
         return true if self.if_clause.nil? && self.unless_clause.nil?
 

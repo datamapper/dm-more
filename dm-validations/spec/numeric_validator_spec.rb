@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-class Bill
+class Bill # :nodoc:
   include DataMapper::Resource
   property :id, Integer, :serial => true
   property :amount_1, String, :auto_validation => false
@@ -9,7 +9,7 @@ class Bill
   validates_is_number :amount_1, :amount_2
 end
 
-class Hillary
+class Hillary # :nodoc:
   include DataMapper::Resource
   property :id, Integer, :serial => true
   property :amount_1, Float, :auto_validation => false, :default => 0.01

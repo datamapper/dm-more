@@ -1,6 +1,10 @@
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class MethodValidator < GenericValidator
 
       def initialize(method_name, options={})

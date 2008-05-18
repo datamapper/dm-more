@@ -3,6 +3,10 @@
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class CustomValidator < GenericValidator
 
       def initialize(field_name, options = {}, &b)

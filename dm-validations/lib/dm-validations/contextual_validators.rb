@@ -1,5 +1,10 @@
 module DataMapper
   module Validate
+
+    ##
+    #
+    # @author Guy van den Berg
+    # @since  0.9
     class ContextualValidators
 
       def dump
@@ -10,15 +15,14 @@ module DataMapper
 
       # Get a hash of named context validators for the resource
       #
-      # ==== Returns
-      # <Hash>:: a hash of validators <GenericValidator>
-      #
+      # @return <Hash> a hash of validators <GenericValidator>
       def contexts
         @contexts ||= @contexts = {}
       end
 
       # Return an array of validators for a named context
       #
+      # @return <Array> An array of validators
       def context(name)
         contexts[name] = [] unless contexts.has_key?(name)
         contexts[name]
@@ -32,14 +36,9 @@ module DataMapper
 
       # Execute all validators in the named context against the target
       #
-      # ==== Parameters
-      #
-      #   named_context<Symbol>::  - the context we are validating against
-      #   target<Object>::         - the resource that we are validating
-      #
-      # ==== Return Value
-      # <Boolean>:: - true if all is valid otherwise false
-      #
+      # @param <Symbol> named_context the context we are validating against
+      # @param <Object> target        the resource that we are validating
+      # @return <Boolean> true if all are valid, otherwise false
       def execute(named_context, target)
         target.errors.clear!
         result = true

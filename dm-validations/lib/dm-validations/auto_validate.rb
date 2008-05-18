@@ -5,29 +5,30 @@ module DataMapper
       # Auto-generate validations for a given property. This will only occur
       # if the option :auto_validation is either true or left undefined.
       #
-      # ==== Triggers that generate validator creation
+      # @details [Triggers]
+      #   Triggers that generate validator creation
       #
-      # :nullable => false
+      #   :nullable => false
       #       Setting the option :nullable to false causes a
       #       validates_presence_of validator to be automatically created on
       #       the property
       #
-      # :size => 20 or :length => 20
+      #   :size => 20 or :length => 20
       #       Setting the option :size or :length causes a validates_length_of
       #       validator to be automatically created on the property. If the
       #       value is a Integer the validation will set :maximum => value if
       #       the value is a Range the validation will set :within => value
       #
-      # :format => :predefined / lambda / Proc
+      #   :format => :predefined / lambda / Proc
       #       Setting the :format option causes a validates_format_of
       #       validator to be automatically created on the property
       #
-      # Integer type
+      #   Integer type
       #       Using a Integer type causes a validates_is_number
       #       validator to be created for the property.  integer_only
       #       is set to true
       #
-      # BigDecimal or Float type
+      #   BigDecimal or Float type
       #       Using a Integer type causes a validates_is_number
       #       validator to be created for the property.  integer_only
       #       is set to false, and precision/scale match the property

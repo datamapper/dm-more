@@ -1,6 +1,10 @@
 module DataMapper
   module Validate
 
+    ##
+    #
+    # @author Martin Kihlgren
+    # @since  0.9
     class AcceptanceValidator < GenericValidator
 
       def self.default_message_for_field(field_name)
