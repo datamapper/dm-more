@@ -61,7 +61,7 @@ end
 
 CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
 
-WIN32 = (PLATFORM =~ /win32|cygwin/) rescue nil
+WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 desc "Install it all"

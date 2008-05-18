@@ -25,7 +25,7 @@ end
 
 task :default => [ :spec ]
 
-WIN32 = (PLATFORM =~ /win32|cygwin/) rescue nil
+WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 Rake::GemPackageTask.new(spec) do |pkg|
