@@ -6,7 +6,6 @@ describe DataMapper::Serialize do
   before(:all) do
     class Cow
       include DataMapper::Resource
-      include DataMapper::Serialize
       property :id, Integer, :key => true
       property :composite, Integer, :key => true
       property :name, String
@@ -69,8 +68,5 @@ describe DataMapper::Serialize do
     peter.breed = 'Long Horn'
     peter.to_csv.chomp.should == '44,344,Peter,Long Horn'
   end
-
-
-
 
 end
