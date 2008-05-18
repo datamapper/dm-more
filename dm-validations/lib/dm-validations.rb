@@ -184,4 +184,4 @@ module DataMapper
       include Validate::ClassMethods
     end # module ClassMethods
   end # module Resource
-end
+end # module DataMapper

@@ -106,7 +106,7 @@ module DataMapper
     end
 
   end # module Serialize
-  
+
   module Resource
     include Serialize
   end # module Resource
