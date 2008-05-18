@@ -4,6 +4,7 @@ pkg/*
 */pkg/*
 bundle
 bundle/*
+doc
 *.log
 log
 !log*.rb
