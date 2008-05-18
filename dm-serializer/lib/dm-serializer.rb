@@ -15,8 +15,48 @@ end
 module DataMapper
   module Serialize
 
-    # Serialise a resource to YAML
+    # Serialize a Resource to JavaScript Object Notation (JSON; RFC 4627)
     #
+    # @return <String> a JSON representation of the Resource
+    def to_json
+      result = '{ '
+      fields = []
+      self.class.properties(self.repository.name).each do |property|
+        fields << "#{property.name.to_json}: #{self.send(property.getter).to_json}"
+      end
+      if self.class.respond_to?(:read_only_attributes)
+        self.class.read_only_attributes.each do |property|
+          fields << "#{property.to_json}: #{self.send(property).to_json}"
+        end
+      end
+      result << fields.join(', ')
+      result << ' }'
+      result
+    end
+
+    # Serialize a Resource to comma-separated values (CSV).
+    #
+    # @return <String> a CSV representation of the Resource
+    def to_csv(writer = '')
+      FasterCSV.generate(writer) do |csv|
+        row = []
+        self.class.properties(self.repository.name).each do |property|
+         row << self.send(property.name).to_s
+        end
+        csv << row
+      end
+    end
+
+    # Serialize a Resource to XML
+    #
+    # @return <REXML::Document> an XML representation of this Resource
+    def to_xml(opts = {})
+      to_xml_document(opts).to_s
+    end
+
+    # Serialize a Resource to YAML
+    #
+    # @return <YAML> a YAML representation of this Resource
     def to_yaml(opts = {})
       YAML::quick_emit(object_id,opts) do |out|
         out.map(nil,to_yaml_style) do |map|
@@ -31,21 +71,19 @@ module DataMapper
       end
     end
 
-    # Serialise a resource to XML
-    #
-    def to_xml(opts = {})
-      to_xml_document(opts).to_s
-    end
+    protected
 
-    # Return the name of this resource - to be used as the root element
-    # name. This can be overloaded
+    # Return the name of this Resource - to be used as the root element name.
+    # This can be overloaded.
     #
+    # @return <String> name of this Resource
     def xml_element_name
       DataMapper::Inflection.underscore(self.class.name)
     end
 
-    # Return a REXML::Document representing this resource
+    # Return a REXML::Document representing this Resource
     #
+    # @return <REXML::Document> an XML representation of this Resource
     def to_xml_document(opts={})
       doc = REXML::Document.new
       root = doc.add_element(xml_element_name)
@@ -67,31 +105,5 @@ module DataMapper
       doc
     end
 
-    def to_json
-      result = '{ '
-      fields = []
-      self.class.properties(self.repository.name).each do |property|
-        fields << "#{property.name.to_json}: #{self.send(property.getter).to_json}"
-      end
-      if self.class.respond_to?(:read_only_attributes)
-        self.class.read_only_attributes.each do |property|
-          fields << "#{property.to_json}: #{self.send(property).to_json}"
-        end
-      end
-      result << fields.join(', ')
-      result << ' }'
-      result
-    end
-
-    def to_csv(writer = '')
-      FasterCSV.generate(writer) do |csv|
-        row = []
-        self.class.properties(self.repository.name).each do |property|
-         row << self.send(property.name).to_s
-        end
-        csv << row
-      end
-    end
-
-  end
+  end # module Serialize
 end # module DataMapper
