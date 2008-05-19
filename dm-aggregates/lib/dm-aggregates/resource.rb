@@ -1,7 +1,7 @@
 module DataMapper
   module Resource
     module ClassMethods
-      
+
       # Count results (given the conditions)
       #
       # ==== Example
@@ -12,10 +12,10 @@ module DataMapper
       #   Friend.count(:address, :age.gt => 18) # returns count of all friends with an address that are older then 18
       #   Friend.count(:adress, :conditions => [ 'gender = ?', 'female' ]) # returns count of all your female friends with an address
       #
-      # ==== Parameters 
+      # ==== Parameters
       # property<Symbol>:: of the property you with to count (optional)
       # opts<Hash, Symbol>:: of the conditions
-      # 
+      #
       # ==== Returns
       # <Integer>:: with the count of the results
       #---
@@ -32,10 +32,10 @@ module DataMapper
       #   Friend.min(:age) # returns the age of the youngest friend
       #   Friend.min(:age, :conditions => [ 'gender = ?', 'female' ]) # returns the age of the youngest female friends
       #
-      # ==== Parameters 
+      # ==== Parameters
       # property<Symbol>:: the property you wish to get the lowest value of
       # opts<Hash, Symbol>:: the conditions
-      # 
+      #
       # ==== Returns
       # <Integer>:: return the lowest value of a property given the conditions
       #---
@@ -53,10 +53,10 @@ module DataMapper
       #   Friend.max(:age) # returns the age of the oldest friend
       #   Friend.max(:age, :conditions => [ 'gender = ?', 'female' ]) # returns the age of the oldest female friends
       #
-      # ==== Parameters 
+      # ==== Parameters
       # property<Symbol>:: the property you wish to get the highest value of
       # opts<Hash, Symbol>:: the conditions
-      # 
+      #
       # ==== Returns
       # <Integer>:: return the highest value of a property given the conditions
       #---
@@ -74,10 +74,10 @@ module DataMapper
       #   Friend.avg(:age) # returns the average age of friends
       #   Friend.avg(:age, :conditions => [ 'gender = ?', 'female' ]) # returns the average age of the female friends
       #
-      # ==== Parameters 
+      # ==== Parameters
       # property<Symbol>:: the property you wish to get the average value of
       # opts<Hash, Symbol>:: the conditions
-      # 
+      #
       # ==== Returns
       # <Integer>:: return the average value of a property given the conditions
       #---
@@ -88,17 +88,17 @@ module DataMapper
           repository.avg(self, property, options)
         end
       end
-      
+
       # Get the total value of a property
       #
       # ==== Example
       #   Friend.sum(:age) # returns total age of all friends
       #   Friend.max(:age, :conditions => [ 'gender = ?', 'female' ]) # returns the total age of all female friends
       #
-      # ==== Parameters 
+      # ==== Parameters
       # property<Symbol>:: the property you wish to get the total value of
       # opts<Hash, Symbol>:: the conditions
-      # 
+      #
       # ==== Returns
       # <Integer>:: return the total value of a property given the conditions
       #---
