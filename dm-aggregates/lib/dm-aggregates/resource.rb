@@ -8,9 +8,9 @@ module DataMapper
       #   Friend.count # returns count of all friends
       #   Friend.count(:age.gt => 18) # returns count of all friends older then 18
       #   Friend.count(:conditions => [ 'gender = ?', 'female' ]) # returns count of all your female friends
-      #   Friend.count(:address) # returns count of all friends with a address (NULL values are not included)
-      #   Friend.count(:address, :age.gt => 18) # returns count of all friends with a address that are older then 18
-      #   Friend.count(:adress, :conditions => [ 'gender = ?', 'female' ]) # returns count of all your female friends with a address
+      #   Friend.count(:address) # returns count of all friends with an address (NULL values are not included)
+      #   Friend.count(:address, :age.gt => 18) # returns count of all friends with an address that are older then 18
+      #   Friend.count(:adress, :conditions => [ 'gender = ?', 'female' ]) # returns count of all your female friends with an address
       #
       # ==== Parameters 
       # property<Symbol>:: of the property you with to count (optional)
