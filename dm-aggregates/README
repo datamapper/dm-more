@@ -3,5 +3,3 @@ dm-aggregates
 
 DataMapper plugin providing support for aggregates, functions on collections and
 datasets.
-
-Currently, only count support is provided.
