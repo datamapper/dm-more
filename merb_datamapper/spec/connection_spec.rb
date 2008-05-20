@@ -7,7 +7,7 @@ describe 'Merb datamapper' do
   end
 
   it 'should return an option hash with symbol keys' do
-    Merb.should_receive(:environment).twice.and_return('development')
+    Merb.should_receive(:environment).once.and_return('development')
 
     config = {
       'development' => {
@@ -21,7 +21,7 @@ describe 'Merb datamapper' do
       }
     }
 
-    Merb::Orms::DataMapper.should_receive(:full_config).twice.and_return(config)
+    Merb::Orms::DataMapper.should_receive(:full_config).once.and_return(config)
     Merb::Orms::DataMapper.config.should have_key(:adapter)
     Merb::Orms::DataMapper.config[:adapter].should == 'myadapter'
     Merb::Orms::DataMapper.config.should have_key(:repositories)
