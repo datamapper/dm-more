@@ -43,8 +43,7 @@
 <%= "  " * counter %>  def update
 <%= "  " * counter %>    @<%= singular_model %> = <%= model_class_name %>.get(<%= params_for_get %>)
 <%= "  " * counter %>    raise NotFound unless @<%= singular_model %>
-<%= "  " * counter %>    @<%= singular_model %>.attributes = params[:<%= singular_model %>]
-<%= "  " * counter %>    if  @<%= singular_model %>.save
+<%= "  " * counter %>    if @<%= singular_model %>.update_attributes(params[:<%= singular_model %>]) || !@<%= singular_model %>.dirty?
 <%= "  " * counter %>      redirect url(:<%= (controller_modules.collect{|m| m.downcase} << singular_model).join("_") %>, @<%= singular_model %>)
 <%= "  " * counter %>    else
 <%= "  " * counter %>      raise BadRequest
