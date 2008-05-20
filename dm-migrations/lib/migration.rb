@@ -89,7 +89,7 @@ module DataMapper
     end
 
     def drop_table(table_name, opts = {})
-      execute "DROP TABLE #{@adapter.quote_table_name(table_name.to_s)}"
+      execute "DROP TABLE #{@adapter.send(:quote_table_name, table_name.to_s)}"
     end
 
     def modify_table(table_name, opts = {}, &block)
@@ -180,12 +180,12 @@ module DataMapper
 
     # Quoted table name, for the adapter
     def migration_info_table
-      @migration_info_table ||= @adapter.quote_table_name("migration_info")
+      @migration_info_table ||= @adapter.send(:quote_table_name, 'migration_info')
     end
 
     # Quoted `migration_name` column, for the adapter
     def migration_name_column
-      @migration_name_column ||= @adapter.quote_column_name("migration_name")
+      @migration_name_column ||= @adapter.send(:quote_column_name, 'migration_name')
     end
 
   end

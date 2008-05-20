@@ -18,7 +18,7 @@ module SQL
     end
 
     def quoted_table_name
-      @adapter.quote_table_name(table_name)
+      @adapter.send(:quote_table_name, table_name)
     end
 
     def column(name, type, opts = {})
@@ -43,7 +43,7 @@ module SQL
       end
 
       def quoted_name
-        @adapter.quote_column_name(name)
+        @adapter.send(:quote_column_name, name)
       end
     end
 
@@ -89,11 +89,11 @@ module SQL
     end
 
     def quote_column_name(name)
-      @adapter.quote_column_name(name.to_s)
+      @adapter.send(:quote_column_name, name.to_s)
     end
 
     def quoted_table_name
-      @adapter.quote_table_name(table_name)
+      @adapter.send(:quote_table_name, table_name)
     end
 
   end
