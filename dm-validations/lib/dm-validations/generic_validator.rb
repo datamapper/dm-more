@@ -9,6 +9,7 @@ module DataMapper
     # * Implement the call method, returning true or false. 
     #   The call method provides the validation logic.
     #
+    # @author Guy van den Berg
     class GenericValidator
 
       attr_accessor :if_clause
@@ -37,12 +38,10 @@ module DataMapper
       # specific field of the resource, add it to that field, otherwise add it
       # as a :general message.
       #
-      # ==== Parameters
-      # target<Object>:: The resource (model) that has the error
-      # message<String>:: The message to add
-      # field_name<Symbol>:: The property that has the error, defaults to :general
+      # @param <Object> target the resource that has the error
+      # @param <String> message the message to add
+      # @param <Symbol> field_name the name of the field that caused the error
       #
-      #--
       # TODO - should the field_name for a general message be :default???
       #
       def add_error(target, message, field_name = :general)
@@ -52,12 +51,9 @@ module DataMapper
       # Call the validator. "call" is used so the operation is BoundMethod and
       # Block compatible. This must be implemented in all concrete classes.
       #
-      # ==== Parameters
-      # target<Object>:: The resource that the validator must be called
-      #                  against
-      #
-      # ==== Returns
-      # Boolean:: True if valid, false otherwise
+      # @param <Object> target  the resource that the validator must be called
+      #                         against
+      # @return <Boolean> TRUE if valid, otherwise FALSE
       def call(target)
         raise "DataMapper::Validate::GenericValidator::call must be overriden in #{self.class.to_s}"
       end
@@ -73,8 +69,8 @@ module DataMapper
       # ==== Parameters
       # target<Object>:: The resource that we check against
       #
-      # ==== Returns
-      # Boolean:: True if should be run, false otherwise
+      # @param <Object> target the resource that we check against
+      # @return <Boolean> TRUE if should be run, otherwise FALSE
       def execute?(target)
         return true if self.if_clause.nil? && self.unless_clause.nil?
 
