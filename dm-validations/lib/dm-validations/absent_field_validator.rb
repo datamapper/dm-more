@@ -26,26 +26,27 @@ module DataMapper
     module ValidatesAbsent
 
       ##
-      # Validates that the specified attribute is "blank" via the attribute's #blank?
-      # method.
-      # 
-      # dm-core's support lib adds the #blank? method to many classes, 
-      # see dm-core's lib/data_mapper/support/blank.rb for more information.
-      # 
-      # ==== Example Usage
+      # Validates that the specified attribute is "blank" via the attribute's
+      # #blank? method.
+      #
+      # @note
+      #   dm-core's support lib adds the #blank? method to many classes,
+      # @see lib/data_mapper/support/blank.rb (dm-core)for more information.
+      #
+      # @example [Usage]
       #   require 'dm-validations'
-      #   
+      #
       #   class Page
       #     include DataMapper::Resource
-      #     
+      #
       #     property :unwanted_attribute, String
       #     property :another_unwanted, String
       #     property :yet_again, String
-      # 
+      #
       #     validates_absent :unwanted_attribute
       #     validates_absent :another_unwanted, :yet_again
-      #   
-      #     # a call to valid? will return false unless 
+      #
+      #     # a call to valid? will return false unless
       #     # all three attributes are blank
       #   end
       #

@@ -66,35 +66,38 @@ module DataMapper
 
     module ValidatesLength
 
-      # Validates that the length of the attribute is equal to, less than, 
-      # greater than or within a certain range (depending upon the options 
+      # Validates that the length of the attribute is equal to, less than,
+      # greater than or within a certain range (depending upon the options
       # you specify).
-      # 
-      # ==== Options
-      #   :allow_nil => true/false (default is true)
-      #   :minimum => ensures that the attribute's length is greater than or equal to the supplied value
-      #   :min => alias for :minimum
-      #   :maximum => ensures the attribute's length is less than or equal to the supplied value
-      #   :max => alias for :maximum
-      #   :equals => ensures the attribute's length is equal to the supplied value
-      #   :is => alias for :equals
-      #   :in => given a Range, ensures that the attributes length is include?'ed in the Range
-      #   :within => alias for :in
-      # 
-      # ==== Example Usage
+      #
+      # @option :allow_nil<Boolean> true/false (default is true)
+      # @option :minimum    ensures that the attribute's length is greater than
+      #   or equal to the supplied value
+      # @option :min        alias for :minimum
+      # @option :maximum    ensures the attribute's length is less than or equal
+      #   to the supplied value
+      # @option :max        alias for :maximum
+      # @option :equals     ensures the attribute's length is equal to the
+      #   supplied value
+      # @option :is         alias for :equals
+      # @option :in<Range>  given a Range, ensures that the attributes length is
+      #   include?'ed in the Range
+      # @option :within<Range>  alias for :in
+      #
+      # @example [Usage]
       #   require 'dm-validations'
-      #   
+      #
       #   class Page
       #     include DataMapper::Resource
       #
       #     property high, Integer
       #     property low, Integer
       #     property just_right, Integer
-      # 
+      #
       #     validates_length :high, :min => 100000000000
       #     validates_length :low, :equals => 0
       #     validates_length :just_right, :within => 1..10
-      # 
+      #
       #     # a call to valid? will return false unless:
       #     # high is greater than or equal to 100000000000
       #     # low is equal to 0

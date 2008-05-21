@@ -41,25 +41,26 @@ module DataMapper
     end # class AcceptanceValidator
 
     module ValidatesIsAccepted
-      
+
       ##
       # Validates that the attributes's value is in the set of accepted values.
-      # 
-      # ==== Options
-      #   :allow_nil => true/false (default is true)
-      #   :accept => an array of accepted values (default is ["1",1,"true",true,"t"])
-      # 
-      # ==== Example Usage
+      #
+      # @option :allow_nil<Boolean> true if nil is allowed, false if nil is not
+      #                             allowed. Default is true.
+      # @option :accept<Array>      a list of accepted values.
+      #                             Default are ["1",1,"true",true,"t"]).
+      #
+      # @example [Usage]
       #   require 'dm-validations'
-      #   
+      #
       #   class Page
       #     include DataMapper::Resource
-      # 
+      #
       #     property :license_agreement_accepted, String
       #     property :terms_accepted, String
       #     validates_is_accepted :license_agreement, :accept => "1"
       #     validates_is_accepted :terms_accepted, :allow_nil => false
-      #     
+      #
       #     # a call to valid? will return false unless:
       #     # license_agreement is nil or "1"
       #     # and

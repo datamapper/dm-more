@@ -38,16 +38,18 @@ module DataMapper
     module ValidatesIsConfirmed
 
       ##
-      # Validates that the given attribute is confirmed by another attribute. Commonly 
-      # used when you have password and password_confirmation attributes.
-      # 
-      # ==== Options
-      #   :allow_nil => true/false (default is true)
-      #   :confirm => the attribute that you want to validate against (default is firstattr_confirmation)
+      # Validates that the given attribute is confirmed by another attribute.
+      # A common use case scenario is when you require a user to confirm their
+      # password, for which you use both password and password_confirmation
+      # attributes.
       #
-      # ==== Example Usage
+      # @option :allow_nil<Boolean> true/false (default is true)
+      # @option :confirm<Symbol>    the attribute that you want to validate
+      #                             against (default is firstattr_confirmation)
+      #
+      # @example [Usage]
       #   require 'dm-validations'
-      #   
+      #
       #   class Page
       #     include DataMapper::Resource
       #
@@ -55,15 +57,15 @@ module DataMapper
       #     property :email, String
       #     attr_accessor :password_confirmation
       #     attr_accessor :email_repeated
-      # 
+      #
       #     validates_is_confirmed :password
       #     validates_is_confirmed :email, :confirm => :email_repeated
-      # 
+      #
       #     # a call to valid? will return false unless:
       #     # password == password_confirmation
       #     # and
       #     # email == email_repeated
-      #     
+      #
       def validates_is_confirmed(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)

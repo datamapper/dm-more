@@ -27,26 +27,27 @@ module DataMapper
     module ValidatesPresent
 
       ##
-      # Validates that the specified attribute is "not blank" via the 
-      # attribute's #blank? method. 
-      # 
-      # dm-core's support lib adds the blank? method to many classes, 
-      # see dm-core's lib/data_mapper/support/blank.rb for more information.
-      # 
-      # ==== Example Usage
+      # Validates that the specified attribute is "not blank" via the
+      # attribute's #blank? method.
+      #
+      # @note
+      #   dm-core's support lib adds the blank? method to many classes,
+      # @see lib/data_mapper/support/blank.rb (dm-core) for more information.
+      #
+      # @example [Usage]
       #   require 'dm-validations'
-      #   
+      #
       #   class Page
       #     include DataMapper::Resource
-      #     
+      #
       #     property :required_attribute, String
       #     property :another_required, String
       #     property :yet_again, String
-      # 
+      #
       #     validates_present :required_attribute
       #     validates_present :another_required, :yet_again
-      #   
-      #     # a call to valid? will return false unless 
+      #
+      #     # a call to valid? will return false unless
       #     # all three attributes are !blank?
       #   end
       def validates_present(*fields)
