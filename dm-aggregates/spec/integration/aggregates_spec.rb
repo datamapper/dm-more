@@ -136,6 +136,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the lowest value of a BigDecimal property' do
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Country.min(:gold_reserve_value).should be_kind_of(BigDecimal)
           Country.min(:gold_reserve_value).should == BigDecimal('1217050983400.0')
         end
@@ -167,7 +168,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the highest value of a BigDecimal property' do
-#          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Country.max(:gold_reserve_value).should == BigDecimal('22589877164500.0')
         end
 
@@ -220,7 +221,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       describe 'with a property name' do
         it 'should provide the sum of values for an Integer property' do
-#          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Dragon.sum(:toes_on_claw).should == 12
 
           total_population = 1330044605 + 303824646 + 191908598 + 140702094 +
@@ -236,7 +237,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the sum of values for a BigDecimal property' do
-#          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
+          pending 'Does not provide correct results with SQLite3' if HAS_SQLITE3
           Country.sum(:gold_reserve_value).should == BigDecimal('37090059214100.0')
         end
 
