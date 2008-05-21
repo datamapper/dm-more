@@ -1,10 +1,6 @@
 module DataMapper
   module Validate
 
-    ##
-    #
-    # @author Guy van den Berg
-    # @since  0.9
     class ConfirmationValidator < GenericValidator
 
       def initialize(field_name, options = {})
@@ -37,9 +33,33 @@ module DataMapper
 
     module ValidatesIsConfirmed
 
-      # Validates a field when it is confirmed by another field with the same
-      # value
+      ##
+      # Validates that the given attribute is confirmed by another attribute. Commonly 
+      # used when you have password and password_confirmation attributes.
+      # 
+      # ==== Options
+      #   :allow_nil => true/false (default is true)
+      #   :confirm => the attribute that you want to validate against (default is firstattr_confirmation)
       #
+      # ==== Example Usage
+      #   require 'dm-validations'
+      #   
+      #   class Page
+      #     include DataMapper::Resource
+      #
+      #     property :password, String
+      #     property :email, String
+      #     attr_accessor :password_confirmation
+      #     attr_accessor :email_repeated
+      # 
+      #     validates_is_confirmed :password
+      #     validates_is_confirmed :email, :confirm => :email_repeated
+      # 
+      #     # a call to valid? will return false unless:
+      #     # password == password_confirmation
+      #     # and
+      #     # email == email_repeated
+      #     
       def validates_is_confirmed(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)

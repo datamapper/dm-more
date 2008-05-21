@@ -54,8 +54,38 @@ module DataMapper
 
     module ValidatesFormat
 
-      # Validates the format of a field
+      ##
+      # Validates that the attribute is in the specified format. You may 
+      # use the :as (or :with, it's an alias) option to specify the 
+      # pre-defined format that you want to validate against. You may also 
+      # specify your own format via a Proc or Regexp passed to the the :as 
+      # or :with options.
+      # 
+      # ==== Options
+      #   :allow_nil => true/false (default is true)
+      #   :as => the pre-defined format, Proc or Regexp to validate against
+      #   :with => (is an alias for :as)
+      # 
+      # ==== Pre-defined Formats
+      #   :email_address (format is specified in DataMapper::Validate::Format::Email)
+      # 
+      # ==== Example Usage
+      #   require 'dm-validations'
+      #   
+      #   class Page
+      #     include DataMapper::Resource
       #
+      #     property :email, String
+      #     property :zip_code, String
+      # 
+      #     validates_format :email, :as => :email_address
+      #     validates_format :zip_code, :with => /^\d{5}$/
+      # 
+      #     # a call to valid? will return false unless:
+      #     # email is formatted like an email address
+      #     # and
+      #     # zip_code is a string of 5 digits
+      # 
       def validates_format(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
