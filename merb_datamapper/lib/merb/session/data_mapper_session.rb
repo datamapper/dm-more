@@ -82,6 +82,10 @@ module Merb
       data.each(&b)
     end
 
+    def each_with_index(&b)
+      data.each_with_index(&b)
+    end
+
     def [](key)
       data[key]
     end
@@ -91,7 +95,7 @@ module Merb
     end
 
     def data
-      @unmarshalled_data || @unmarshalled_data = self.class.unmarshal(@data)
+      @unmarshalled_data ||= self.class.unmarshal(@data) || {}
     end
 
     def data=(data)
