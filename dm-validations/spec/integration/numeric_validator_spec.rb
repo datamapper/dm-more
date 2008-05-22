@@ -52,4 +52,30 @@ describe DataMapper::Validate::NumericValidator do
     h = Hillary.new
     h.should be_valid
   end
+
+  it "should validate with autovalidate" do
+
+    class RobotFish
+      include DataMapper::Resource
+      property :id,     Integer, :serial => true
+      property :scales, Integer
+      property :average_weight, Float
+    end
+
+    class PondFish
+      include DataMapper::Resource
+      property :id,     Integer, :serial => true
+      property :scales, Integer
+      property :average_weight, Float, :scale => 10, :precision => 0, :auto_validation => false
+      validates_is_number :average_weight
+    end
+
+    fish1 = PondFish.new
+    fish2 = RobotFish.new
+    fish1.scales = fish2.scales = 1
+    fish1.average_weight = fish2.average_weight = 20.22
+    fish1.valid?.should == true
+    fish2.valid?.should == true
+  end
+
 end
