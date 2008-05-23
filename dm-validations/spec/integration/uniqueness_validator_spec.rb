@@ -1,7 +1,7 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-if HAS_SQLITE3
+if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe DataMapper::Validate::UniquenessValidator do
 
     before do
@@ -26,10 +26,10 @@ if HAS_SQLITE3
         validates_is_unique :user_name, :when => :testing_property, :scope => [:organisation_id]
       end
 
-      Organisation.auto_migrate!(:sqlite3)
-      User.auto_migrate!(:sqlite3)
+      Organisation.auto_migrate!
+      User.auto_migrate!
 
-      repository(:sqlite3) do
+      repository do
          Organisation.new(:id=>1, :name=>'Org One', :domain=>'taken').save
          Organisation.new(:id=>2, :name=>'Org Two', :domain=>'two').save
 
@@ -38,7 +38,7 @@ if HAS_SQLITE3
     end
 
     it 'should validate the uniqueness of a value on a resource' do
-      repository(:sqlite3) do
+      repository do
         o = Organisation[1]
         o.should be_valid
 
@@ -52,7 +52,7 @@ if HAS_SQLITE3
     end
 
     it 'should validate the uniqueness of a value with scope' do
-      repository(:sqlite3) do
+      repository do
         u = User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')
         u.should_not be_valid_for_testing_property
         u.should_not be_valid_for_testing_association

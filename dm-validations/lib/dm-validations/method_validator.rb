@@ -22,8 +22,31 @@ module DataMapper
 
     module ValidatesWithMethod
 
-      # Validate using a method. The method signiture needs to be
-      # method_name() result::<Boolean>, Error Message::<String>
+      ##
+      # Validate using the given method. The method given needs to return:
+      # [result::<Boolean>, Error Message::<String>]
+      #
+      # @example [Usage]
+      #   require 'dm-validations'
+      #
+      #   class Page
+      #     include DataMapper::Resource
+      #
+      #     property :zip_code, String
+      #
+      #     validates_with_method :in_the_right_location?
+      #
+      #     def in_the_right_location?
+      #       if @zip_code == "94301"
+      #         return true
+      #       else
+      #         return [false, "You're in the wrong zip code"]
+      #       end
+      #     end
+      #
+      #     # A call to valid? will return false and
+      #     # populate the object's errors with "You're in the
+      #     # wrong zip code" unless zip_code == "94301"
       #
       def validates_with_method(*fields)
         opts = opts_from_validator_args(fields)

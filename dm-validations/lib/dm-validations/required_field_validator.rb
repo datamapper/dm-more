@@ -13,9 +13,6 @@ module DataMapper
       end
 
       def call(target)
-        if @field_name == 'customer'
-          puts @field_name
-        end
         value = target.validation_property_value(@field_name)
         return true if !value.blank?
 
@@ -29,8 +26,30 @@ module DataMapper
 
     module ValidatesPresent
 
-      # Validate the presence of a field
+      ##
+      # Validates that the specified attribute is "not blank" via the
+      # attribute's #blank? method.
       #
+      # @note
+      #   dm-core's support lib adds the blank? method to many classes,
+      # @see lib/data_mapper/support/blank.rb (dm-core) for more information.
+      #
+      # @example [Usage]
+      #   require 'dm-validations'
+      #
+      #   class Page
+      #     include DataMapper::Resource
+      #
+      #     property :required_attribute, String
+      #     property :another_required, String
+      #     property :yet_again, String
+      #
+      #     validates_present :required_attribute
+      #     validates_present :another_required, :yet_again
+      #
+      #     # a call to valid? will return false unless
+      #     # all three attributes are !blank?
+      #   end
       def validates_present(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::RequiredFieldValidator)

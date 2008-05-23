@@ -128,7 +128,7 @@ module DataMapper
         options       = Hash === args.last ? args.pop : {}
         property_name = args.shift
 
-        repository(options[:repository]) do |repository|
+        repository(*Array(options[:repository])) do |repository|
           property = properties(repository.name)[property_name] if property_name
           yield repository, property, options
         end

@@ -102,11 +102,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it "should properly quote the migration_info table for use in queries" do
-      @migration.send(:migration_info_table).should == repository.adapter.quote_table_name('migration_info')
+      @migration.send(:migration_info_table).should == '"migration_info"'
     end
 
     it "should properly quote the migration_info.migration_name column for use in queries" do
-      @migration.send(:migration_name_column).should == repository.adapter.quote_column_name('migration_name')
+      @migration.send(:migration_name_column).should == '"migration_name"'
     end
 
     it "should properly quote the migration's name for use in queries"

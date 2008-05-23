@@ -1,16 +1,31 @@
 module DataMapper
   module Validate
 
-    # A base class that all Validators must be derived from. Child classes must
-    # implement the abstract method call where the actual validation occurs.
+    # All validators extend this base class. Validators must:
+    #
+    # * Implement the initialize method to capture its parameters, also calling
+    #   super to have this parent class capture the optional, general :if and
+    #   :unless parameters.
+    # * Implement the call method, returning true or false. The call method
+    #   provides the validation logic.
     #
     # @author Guy van den Berg
+    # @since  0.9
     class GenericValidator
 
       attr_accessor :if_clause
       attr_accessor :unless_clause
 
-      # Construct a validator. Capture the :if clause when one is present
+      # Construct a validator. Capture the :if and :unless clauses when present.
+      #
+      # @param field<String, Symbol> The property specified for validation
+      #
+      # @option :if<Symbol, Proc>   The name of a method or a Proc to call to
+      #                     determine if the validation should occur.
+      # @option :unless<Symbol, Proc> The name of a method or a Proc to call to
+      #                         determine if the validation should not occur
+      # All additional key/value pairs are passed through to the validator
+      # that is sub-classing this GenericValidator
       #
       def initialize(field, opts = {})
         @if_clause = opts.has_key?(:if) ? opts[:if] : nil
@@ -36,20 +51,21 @@ module DataMapper
       #
       # @param <Object> target  the resource that the validator must be called
       #                         against
-      # @return <Boolean> TRUE if valid, otherwise FALSE
+      # @return <Boolean> true if valid, otherwise false
       def call(target)
         raise "DataMapper::Validate::GenericValidator::call must be overriden in #{self.class.to_s}"
       end
-
 
       def field_name
         @field_name
       end
 
-      # Determine if this validator should be run against the target
+      # Determines if this validator should be run against the
+      # target by evaluating the :if and :unless clauses
+      # optionally passed while specifying any validator.
       #
       # @param <Object> target the resource that we check against
-      # @return <Boolean> TRUE if should be run, otherwise FALSE
+      # @return <Boolean> true if should be run, otherwise false
       def execute?(target)
         return true if self.if_clause.nil? && self.unless_clause.nil?
 

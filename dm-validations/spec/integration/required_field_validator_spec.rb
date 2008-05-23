@@ -1,7 +1,7 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-if HAS_SQLITE3
+if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe DataMapper::Validate::RequiredFieldValidator do
 
     before do
@@ -30,9 +30,9 @@ if HAS_SQLITE3
         validates_present :brand, :when => :property_test
       end
 
-      Landscaper.auto_migrate!(:sqlite3)
-      Garden.auto_migrate!(:sqlite3)
-      Fertilizer.auto_migrate!(:sqlite3)
+      Landscaper.auto_migrate!
+      Garden.auto_migrate!
+      Fertilizer.auto_migrate!
     end
 
     it "should validate the presence of a property value on an instance of a

@@ -158,7 +158,7 @@ module DataMapper
       end
 
       # Create a new validator of the given klazz and push it onto the
-      # requested context for each of the fields in the fields list
+      # requested context for each of the attributes in the fields list
       #
       def add_validator_to_context(opts, fields, klazz)
         fields.each do |field|
