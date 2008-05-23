@@ -124,9 +124,12 @@ module DataMapper
           # if this node is already positioned we need to move it, and close the gap it leaves behind etc
           # otherwise we only need to open a gap in the set, and smash that buggar in
           # 
-          if self.positioned?
+          if self.lft && self.rgt
             
-            return false if self.lft == position || self.rgt == position - 1 || position.blank? # If already in position
+            # is the node already in that position, or has no concrete position been given?
+            return false if self.lft == position || self.rgt == position - 1 || position.blank?
+            # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
+            raise RecursiveNestingError if position > self.lft && position < self.rgt
             
             gap = self.rgt - self.lft + 1 # How wide am I?
             self.class.alter_gap_in_set( position , gap ) # Making a gap where we can insert the node
@@ -144,7 +147,7 @@ module DataMapper
         end
         
         ##
-        # show all ancestors of this node, up to (and including) self
+        # get all ancestors of this node, up to (and including) self
         # 
         # @return <Collection> Returns
         def self_and_ancestors
@@ -152,7 +155,7 @@ module DataMapper
         end
         
         ##
-        # show all ancestors of this node
+        # get all ancestors of this node
         # 
         # @return <Collection> collection of all parents, with root as first item
         # @see #self_and_ancestors
@@ -161,7 +164,7 @@ module DataMapper
         end
         
         ##
-        # returns the parent of this node. Same as #parent, but finds it from lft/rgt instead of parent-key
+        # get the parent of this node. Same as #parent, but finds it from lft/rgt instead of parent-key
         #
         # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
         def ancestor
@@ -169,7 +172,16 @@ module DataMapper
         end
         
         ##
-        # show all descendants of this node, including self
+        # get the root this node belongs to. this will atm always be the same as Resource.root, but has a
+        # meaning when scoped sets is implemented
+        #
+        # @return <Resource, NilClass>
+        def root
+          ancestors.first
+        end
+        
+        ##
+        # get all descendants of this node, including self
         #
         # @return <Collection> flat collection, sorted according to nested_set positions
         def self_and_descendants
@@ -177,7 +189,7 @@ module DataMapper
         end
         
         ##
-        # show all descendants of this node
+        # get all descendants of this node
         #
         # @return <Collection> flat collection, sorted according to nested_set positions
         # @see #self_and_descendants
@@ -186,7 +198,7 @@ module DataMapper
         end
         
         ##
-        # show all descendants of this node that does not have any children
+        # get all descendants of this node that does not have any children
         #
         # @return <Collection>
         def leaves
@@ -194,15 +206,15 @@ module DataMapper
         end
         
         ##
-        # 
+        # get all siblings of this node, and include self 
         #
-        # @par
+        # @return <Collection>
         def self_and_siblings
           self.class.all(:parent_id => parent_id)
         end
         
         ##
-        # show all siblings of this node
+        # get all siblings of this node
         #
         # @return <Collection>
         # @see #self_and_siblings
@@ -211,7 +223,7 @@ module DataMapper
         end
         
         ##
-        # shows sibling to the left of/above this node in the nested tree 
+        # get sibling to the left of/above this node in the nested tree 
         #
         # @return <Resource, NilClass> the resource to the left, or nil if self is leftmost
         # @see #self_and_siblings
@@ -220,15 +232,17 @@ module DataMapper
         end
         
         ##
-        # shows sibling to the right of/above this node in the nested tree
+        # get sibling to the right of/above this node in the nested tree
         #
         # @return <Resource, NilClass> the resource to the right, or nil if self is rightmost
         # @see #self_and_siblings
         def right_sibling
           self_and_siblings.find  {|v| v.lft == rgt+1}
         end
-        
       end
+      
+      class RecursiveNestingError < StandardError; end
+      
     end # NestedSet
   end # Is
 end # DataMapper
