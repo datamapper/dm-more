@@ -80,7 +80,9 @@ module DataMapper
         # @param vector <Symbol, Hash> A symbol, or a key-value pair that describes the requested movement
         #   
         # @option :higher<Symbol> move node higher (1 up if possible) # specifying nr of steps is in the pipeline
+        # @option :highest<Symbol> move node to the top of the list (within its parent)
         # @option :lower<Symbol> move node lower (1 down if possible)
+        # @option :lowest<Symbol> move node to the bottom of the list (within its parent)
         # @option :indent<Symbol> move node into sibling above
         # @option :outdent<Symbol> move node out below its current parent
         # @option :into<Resource> move node into another node
@@ -94,7 +96,9 @@ module DataMapper
           
           position = case action
             when :higher  then left_sibling.lft   if left_sibling
+            when :highest then ancestor.lft+1     if ancestor
             when :lower   then right_sibling.lft  if right_sibling
+            when :lowest  then ancestor.rgt       if ancestor
             when :indent  then left_sibling.rgt   if left_sibling
             when :outdent then ancestor.rgt+1     if ancestor
             when :into    then obj.rgt
