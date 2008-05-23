@@ -44,6 +44,9 @@ module DataMapper
             self.class.reload_positions
           end
           
+          ##
+          # makes sure that all finders order correctly. if overridden (on class-level),some of the nested-set finders may act up
+          #
           scope_stack << Query.new(repository,self,:order => [:lft.asc])
           
           class_eval <<-CLASS, __FILE__, __LINE__
@@ -66,10 +69,16 @@ module DataMapper
       
       module InstanceMethods
         
-        def reload_position; self.reload_attributes(:lft,:rgt) end
+        ##
+        # reloads the left and right attributes for self. if #move did not use this, we'd get quite
+        # peculiar results, and most likely corrupt the nested sets pretty fast.
+        #
+        def reload_position
+          self.reload_attributes(:lft,:rgt)
+        end
         
         ##
-        # move self / node to position in the set.
+        # move self / node to a position in the set. position can _only_ be changed through this
         #
         # @example [Usage]
         #   * node.move :higher           # moves node higher unless it is at the top of parent
@@ -91,9 +100,13 @@ module DataMapper
         # @option :to<Fixnum> move node to a specific location in the nested set
         #
         # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
+        # @raise <RecursiveNestingError> if node is asked to position itself into one of its descendants
         def move(vector)
           if vector.is_a? Hash then action,obj = vector.keys[0],vector.values[0] else action = vector end
           
+          ##
+          # checking what kind of movement has been requested, and calculate the new position node should move to
+          #
           position = case action
             when :higher  then left_sibling.lft   if left_sibling
             when :highest then ancestor.lft+1     if ancestor
@@ -101,14 +114,20 @@ module DataMapper
             when :lowest  then ancestor.rgt       if ancestor
             when :indent  then left_sibling.rgt   if left_sibling
             when :outdent then ancestor.rgt+1     if ancestor
-            when :into    then obj.rgt
-            when :above   then obj.lft
-            when :below   then obj.rgt+1
-            when :to      then obj
+            when :into    then obj.rgt            if obj
+            when :above   then obj.lft            if obj
+            when :below   then obj.rgt+1          if obj
+            when :to      then obj.to_i           if obj
           end
           
-          if self.rgt && self.lft
+          ##
+          # if this node is already positioned we need to move it, and close the gap it leaves behind etc
+          # otherwise we only need to open a gap in the set, and smash that buggar in
+          # 
+          if self.positioned?
+            
             return false if self.lft == position || self.rgt == position - 1 || position.blank? # If already in position
+            
             gap = self.rgt - self.lft + 1 # How wide am I?
             self.class.alter_gap_in_set( position , gap ) # Making a gap where we can insert the node
             self.reload_position # Reloading my coordinates, in case I was skewed to the left
@@ -186,6 +205,7 @@ module DataMapper
         # show all siblings of this node
         #
         # @return <Collection>
+        # @see #self_and_siblings
         def siblings
           self_and_siblings.reject{|r| r == self }
         end
@@ -193,7 +213,8 @@ module DataMapper
         ##
         # shows sibling to the left of/above this node in the nested tree 
         #
-        # @return <Collection>
+        # @return <Resource, NilClass> the resource to the left, or nil if self is leftmost
+        # @see #self_and_siblings
         def left_sibling
           self_and_siblings.find  {|v| v.rgt == lft-1}
         end
@@ -201,7 +222,8 @@ module DataMapper
         ##
         # shows sibling to the right of/above this node in the nested tree
         #
-        # @return <Collection>
+        # @return <Resource, NilClass> the resource to the right, or nil if self is rightmost
+        # @see #self_and_siblings
         def right_sibling
           self_and_siblings.find  {|v| v.lft == rgt+1}
         end
