@@ -63,6 +63,10 @@ module DataMapper
               self.query_set("rgt = rgt+\#{addition}" ,"rgt \#{operator} \#{pos}")
               self.query_set("lft = lft+\#{addition}", "lft \#{operator} \#{pos}")
             end
+            
+            def self.offset_nodes_in_set(offset,range)
+              self.query_set("lft=lft + \#{offset}, rgt=rgt + \#{offset}", "rgt BETWEEN \#{range.first} AND \#{range.last}" )
+            end
           CLASS
         end
       end
@@ -101,6 +105,7 @@ module DataMapper
         #
         # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
         # @raise <RecursiveNestingError> if node is asked to position itself into one of its descendants
+        # @raise <UnableToPositionError> if node is unable to calculate a new position for the element
         def move(vector)
           if vector.is_a? Hash then action,obj = vector.keys[0],vector.values[0] else action = vector end
           
@@ -120,29 +125,39 @@ module DataMapper
             when :to      then obj.to_i           if obj
           end
           
+          raise UnableToPositionError unless (position > 0 && position.is_a?(Fixnum))
+          
           ##
           # if this node is already positioned we need to move it, and close the gap it leaves behind etc
           # otherwise we only need to open a gap in the set, and smash that buggar in
           # 
           if self.lft && self.rgt
-            
             # is the node already in that position, or has no concrete position been given?
-            return false if self.lft == position || self.rgt == position - 1 || position.blank?
+            return false if self.lft == position || self.rgt == position - 1
             # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
             raise RecursiveNestingError if position > self.lft && position < self.rgt
-            
-            gap = self.rgt - self.lft + 1 # How wide am I?
-            self.class.alter_gap_in_set( position , gap ) # Making a gap where we can insert the node
-            self.reload_position # Reloading my coordinates, in case I was skewed to the left
-            distance = position - self.lft # Calculating my distance from the position I'm aiming for
-            self.class.query_set("lft=lft + #{distance}, rgt=rgt + #{distance}", "rgt BETWEEN #{self.lft} AND #{self.rgt}" )
-            self.class.alter_gap_in_set(self.lft,-gap,'>') # Closing the gap I left behind
-            self.reload_position # Reloading my coordinates, in case I was skewed to the right
-          elsif position
-            self.class.alter_gap_in_set( position , 2 ) # Making a gap where we can insert the node
-            self.lft, self.rgt = position, position + 1    # Setting the lft/rgt for my model
+            # find out how wide this node is, as we need to make a gap large enough for it to fit in
+            gap = self.rgt - self.lft + 1
+            # make a gap at position, that is as wide as this node
+            self.class.alter_gap_in_set( position , gap )
+            # adding this gap may have changed this node's position. reloading the attributes from the repository
+            self.reload_position
+            # offset this node (and all its descendants) to the right position
+            self.class.offset_nodes_in_set( position - self.lft , self.lft...self.rgt)
+            # close the gap this movement left behind. self.lft here is the old value, _not_ yet reloaded after offset
+            self.class.alter_gap_in_set(self.lft,-gap,'>')
+            # reloading the position to the new one. this is really not nececarry, as it gets done on save automatically
+            self.reload_position
+          else
+            # make a gap where the new node can be inserted
+            self.class.alter_gap_in_set( position , 2 )
+            # set the position fields
+            self.lft, self.rgt = position, position + 1
           end
+
+          # after repositioning we try to set the parent according to the structure of the nested set, _not_ the parent_id
           self.parent = self.ancestor
+          # saving the node, since parent and positions may have changed
           self.save
         end
         
@@ -240,7 +255,7 @@ module DataMapper
           self_and_siblings.find  {|v| v.lft == rgt+1}
         end
       end
-      
+      class UnableToPositionError < StandardError; end
       class RecursiveNestingError < StandardError; end
       
     end # NestedSet

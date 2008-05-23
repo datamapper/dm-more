@@ -8,4 +8,3 @@ TODO
 * Caching the finder-methods
 * Allow options to pass through finders
 * Handle children of destroyed objects
-* Throw error when trying to make self parent of self/ancestors
