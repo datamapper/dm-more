@@ -2,8 +2,8 @@ module DataMapper
   module Is
     module NestedSet
       def self.included(base)
-        #base.extend(ClassMethods)
-        raise NotImplementedError
+        base.extend(ClassMethods)
+        #raise NotImplementedError
       end
       
       module ClassMethods
@@ -51,22 +51,32 @@ module DataMapper
           scope_stack << Query.new(repository,self,:order => [:lft.asc])
           
           class_eval <<-CLASS, __FILE__, __LINE__
-            def self.root;   first;                             end
-            def self.leaves; all(:conditions => ["rgt=lft+1"]); end
-            def self.reload_positions; repository.identity_map_get(self).each_pair{ |key,obj| obj.reload_position } end
-              
-            def self.query_set(set,where)
-              query = %Q{ UPDATE categories SET \#{set} WHERE \#{where} }
-              repository.adapter.execute query.gsub(/lft/,'lft').gsub(/rgt/,'rgt').gsub('+ -','-')
+            
+            def self.root
+              first
             end
             
-            def self.alter_gap_in_set(pos,addition,operator='>=')
-              self.query_set("rgt = rgt+\#{addition}" ,"rgt \#{operator} \#{pos}")
-              self.query_set("lft = lft+\#{addition}", "lft \#{operator} \#{pos}")
+            def self.leaves
+              all(:conditions => ["rgt=lft+1"])
+            end
+            
+            def self.reload_positions
+              repository.identity_map_get(self).each_pair{ |key,obj| obj.reload_position }
+            end
+              
+            def self.query_set(set,where,*pars)
+              query = %Q{UPDATE \#{self.storage_name} SET \#{set} WHERE \#{where}}
+              repository.adapter.execute(query,*pars)
+            end
+            
+            def self.alter_gap_in_set(pos,addition,opr='>=')
+              #[:lft,:rgt].each{ |p| self.query_set("\#{p}=\#{p}+(?)","\#{p} \#{opr} ?",addition,pos)}
+              self.query_set("rgt=rgt+(?)","rgt \#{opr} ?",addition,pos)
+              self.query_set("lft=lft+(?)","lft \#{opr} ?",addition,pos)
             end
             
             def self.offset_nodes_in_set(offset,range)
-              self.query_set("lft=lft + \#{offset}, rgt=rgt + \#{offset}", "rgt BETWEEN \#{range.first} AND \#{range.last}" )
+              self.query_set("lft=lft+(?), rgt=rgt+(?)","rgt BETWEEN ?",offset,offset,range)
             end
           CLASS
         end
@@ -126,14 +136,13 @@ module DataMapper
             when :to      then obj.to_i           if obj
           end
           
-          raise UnableToPositionError unless (position > 0 && position.is_a?(Fixnum))
+          raise UnableToPositionError unless position > 0 && position.is_a?(Fixnum)
           
           ##
           # if this node is already positioned we need to move it, and close the gap it leaves behind etc
           # otherwise we only need to open a gap in the set, and smash that buggar in
           # 
           if self.lft && self.rgt
-            # is the node already in that position, or has no concrete position been given?
             return false if self.lft == position || self.rgt == position - 1
             # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
             raise RecursiveNestingError if position > self.lft && position < self.rgt
@@ -144,7 +153,7 @@ module DataMapper
             # adding this gap may have changed this node's position. reloading the attributes from the repository
             self.reload_position
             # offset this node (and all its descendants) to the right position
-            self.class.offset_nodes_in_set( position - self.lft , self.lft...self.rgt)
+            self.class.offset_nodes_in_set( position - self.lft , self.lft..self.rgt)
             # close the gap this movement left behind. self.lft here is the old value, _not_ yet reloaded after offset
             self.class.alter_gap_in_set(self.lft,-gap,'>')
             # reloading the position to the new one. this is really not nececarry, as it gets done on save automatically
@@ -160,6 +169,14 @@ module DataMapper
           self.parent = self.ancestor
           # saving the node, since parent and positions may have changed
           self.save
+        end
+        
+        ##
+        # get the level of this node, where 0 is root. temporary solution
+        # 
+        # @return <Fixnum>
+        def level
+          ancestors.length
         end
         
         ##
@@ -256,6 +273,7 @@ module DataMapper
           self_and_siblings.find  {|v| v.lft == rgt+1}
         end
       end
+      
       class UnableToPositionError < StandardError; end
       class RecursiveNestingError < StandardError; end
       
