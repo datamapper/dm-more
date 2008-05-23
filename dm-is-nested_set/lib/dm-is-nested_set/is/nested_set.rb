@@ -8,9 +8,8 @@ module DataMapper
       module ClassMethods
         
         ##
-        # 
+        # docs in the works
         #
-        # 
         def is_a_nested_set(options={})
           options = { :child_key => :parent_id }.merge(options)
 
@@ -21,7 +20,11 @@ module DataMapper
           
           belongs_to :parent,  :class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
           has n,     :children,:class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
-        
+          
+          ##
+          # demands that the node has a position in the tree, and moves it into the right position if parent-association
+          # has been changed manually by the user
+          #
           before :save do 
             if self.class.count == 0
               self.lft , self.rgt = 1 , 2
@@ -32,6 +35,11 @@ module DataMapper
             end 
           end
           
+          ##
+          # reloads the position-attributes on all loaded objects after saving. left / right will often get changed
+          # by semimanual queries, and this is a way to try to keep the objects up with the changes with minimal
+          # performance loss
+          #
           after :save do
             self.class.reload_positions
           end
@@ -54,25 +62,45 @@ module DataMapper
             end
           CLASS
         end
-      end # ClassMethods
+      end
       
       module InstanceMethods
         
         def reload_position; self.reload_attributes(:lft,:rgt) end
         
+        ##
+        # move self / node to position in the set.
         #
-        # Use to move node. Example:  object.move(:higher), object.move(:into => parent) 
+        # @example [Usage]
+        #   * node.move :higher           # moves node higher unless it is at the top of parent
+        #   * node.move :lower            # moves node lower unless it is at the bottom of parent
+        #   * node.move :below => other   # moves this node below other resource in the set
+        #   * node.move :into => other    # same as setting a parent-relationship
         #
-        def move(opts)
-          if opts.is_a? Hash then action,obj = opts.keys[0],opts.values[0] else action = opts end
+        # @param vector <Symbol, Hash> A symbol, or a key-value pair that describes the requested movement
+        #   
+        # @option :higher<Symbol> move node higher (1 up if possible) # specifying nr of steps is in the pipeline
+        # @option :lower<Symbol> move node lower (1 down if possible)
+        # @option :indent<Symbol> move node into sibling above
+        # @option :outdent<Symbol> move node out below its current parent
+        # @option :into<Resource> move node into another node
+        # @option :above<Resource> move node above other node 
+        # @option :below<Resource> move node below other node
+        # @option :to<Fixnum> move node to a specific location in the nested set
+        #
+        # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
+        def move(vector)
+          if vector.is_a? Hash then action,obj = vector.keys[0],vector.values[0] else action = vector end
           
           position = case action
-            when :higher then left_sibling.lft if left_sibling
-            when :lower  then right_sibling.lft if right_sibling
-            when :into   then obj.rgt
-            when :above  then obj.lft
-            when :below  then obj.rgt+1
-            when :to     then obj
+            when :higher  then left_sibling.lft   if left_sibling
+            when :lower   then right_sibling.lft  if right_sibling
+            when :indent  then left_sibling.rgt   if left_sibling
+            when :outdent then ancestor.rgt+1     if ancestor
+            when :into    then obj.rgt
+            when :above   then obj.lft
+            when :below   then obj.rgt+1
+            when :to      then obj
           end
           
           if self.rgt && self.lft
@@ -92,17 +120,89 @@ module DataMapper
           self.save
         end
         
-        def self_and_ancestors;   self.class.all(:lft.lte => lft, :rgt.gte => rgt)               end
-        def ancestors;            self_and_ancestors.reject{|r| r == self }                      end
-        def ancestor;             ancestors.reverse.first                                        end
-        def self_and_descendants; self.class.all(:lft => lft..rgt)                               end
-        def descendants;          self_and_descendants.reject{|r| r == self }                    end
-        def self_and_siblings;    self.class.all(:parent_id => parent_id)                        end
-        def siblings;             self_and_siblings.reject{|r| r == self }                       end
-        def left_sibling;         self_and_siblings.find  {|v| v.rgt == lft-1}                   end
-        def right_sibling;        self_and_siblings.find  {|v| v.lft == rgt+1}                   end
-        def leaves;               self.class.all(:lft => lft..rgt, :conditions=>["rgt=lft+1"])   end
-      end # InstanceMethods
+        ##
+        # show all ancestors of this node, up to (and including) self
+        # 
+        # @return <Collection> Returns
+        def self_and_ancestors
+          self.class.all(:lft.lte => lft, :rgt.gte => rgt)
+        end
+        
+        ##
+        # show all ancestors of this node
+        # 
+        # @return <Collection> collection of all parents, with root as first item
+        # @see #self_and_ancestors
+        def ancestors
+          self_and_ancestors.reject{|r| r == self }
+        end
+        
+        ##
+        # returns the parent of this node. Same as #parent, but finds it from lft/rgt instead of parent-key
+        #
+        # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
+        def ancestor
+          ancestors.reverse.first
+        end
+        
+        ##
+        # show all descendants of this node, including self
+        #
+        # @return <Collection> flat collection, sorted according to nested_set positions
+        def self_and_descendants
+          self.class.all(:lft => lft..rgt)
+        end
+        
+        ##
+        # show all descendants of this node
+        #
+        # @return <Collection> flat collection, sorted according to nested_set positions
+        # @see #self_and_descendants
+        def descendants
+          self_and_descendants.reject{|r| r == self }
+        end
+        
+        ##
+        # show all descendants of this node that does not have any children
+        #
+        # @return <Collection>
+        def leaves
+          self.class.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"])
+        end
+        
+        ##
+        # 
+        #
+        # @par
+        def self_and_siblings
+          self.class.all(:parent_id => parent_id)
+        end
+        
+        ##
+        # show all siblings of this node
+        #
+        # @return <Collection>
+        def siblings
+          self_and_siblings.reject{|r| r == self }
+        end
+        
+        ##
+        # shows sibling to the left of/above this node in the nested tree 
+        #
+        # @return <Collection>
+        def left_sibling
+          self_and_siblings.find  {|v| v.rgt == lft-1}
+        end
+        
+        ##
+        # shows sibling to the right of/above this node in the nested tree
+        #
+        # @return <Collection>
+        def right_sibling
+          self_and_siblings.find  {|v| v.lft == rgt+1}
+        end
+        
+      end
     end # NestedSet
   end # Is
 end # DataMapper
