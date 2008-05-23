@@ -1,12 +1,16 @@
 module DataMapper
   module Is
     module NestedSet
-      
       def self.included(base)
         base.extend(ClassMethods)
       end
       
       module ClassMethods
+        
+        ##
+        # 
+        #
+        # 
         def is_a_nested_set(options={})
           options = { :child_key => :parent_id }.merge(options)
 
@@ -79,7 +83,7 @@ module DataMapper
             distance = position - self.lft # Calculating my distance from the position I'm aiming for
             self.class.query_set("lft=lft + #{distance}, rgt=rgt + #{distance}", "rgt BETWEEN #{self.lft} AND #{self.rgt}" )
             self.class.alter_gap_in_set(self.lft,-gap,'>') # Closing the gap I left behind
-            self.reload_position # Reloading my coordinates, in case I was skewed to the left
+            self.reload_position # Reloading my coordinates, in case I was skewed to the right
           elsif position
             self.class.alter_gap_in_set( position , 2 ) # Making a gap where we can insert the node
             self.lft, self.rgt = position, position + 1    # Setting the lft/rgt for my model
@@ -88,9 +92,6 @@ module DataMapper
           self.save
         end
         
-        #
-        # Finders for retrieving different nodes in the set
-        #
         def self_and_ancestors;   self.class.all(:lft.lte => lft, :rgt.gte => rgt)               end
         def ancestors;            self_and_ancestors.reject{|r| r == self }                      end
         def ancestor;             ancestors.reverse.first                                        end

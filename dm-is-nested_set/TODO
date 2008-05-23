@@ -1,2 +1,8 @@
 TODO
 ====
+* Write docs throughout the plugin
+* Add simple way to see which level a node is on
+* Add support for transactions and tablelocking when reorganizing items
+* Add function for (re)building nested set from ordinary tree
+* Caching the finder-methods
+* Allow options to pass through finders
