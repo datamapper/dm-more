@@ -40,36 +40,36 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           pos(c1).should == [1,2]
       
           c2 = Category.create(:name => "Televisions")
-          c2.move_to_position(2)
+          c2.move :to => 2
           
           pos(c1,c2).should == [1,4, 2,3]
         
           c3 = Category.create(:name => "Portable Electronics")
-          c3.move_to_position(2)
+          c3.move :to => 2
           
           pos(c1,c2,c3).should == [1,6, 4,5, 2,3]
           
-          c3.move_to_position(6)
+          c3.move :to => 6
           
           pos(c1).should == [1,6]
           pos(c2).should == [2,3]
           pos(c3).should == [4,5]
         
           c4 = Category.create(:name => "Tube")
-          c4.move_to_position(3)
+          c4.move :to => 3
           
           pos(c1).should == [1,8]
           pos(c2).should == [2,5]
           pos(c3).should == [6,7]
           pos(c4).should == [3,4]    
           
-          c4.move_below(c3)
+          c4.move :below => c3
           pos(c1).should == [1,8]
           pos(c2).should == [2,3]
           pos(c3).should == [4,5]
           pos(c4).should == [6,7]
           
-          c2.move_into(c4)
+          c2.move :into => c4
           pos(c1).should == [1,8]
           pos(c2).should == [5,6]
           pos(c3).should == [2,3]
@@ -105,7 +105,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           pos(c3).should == [3,4]
           
           c3.parent=c1
-          c3.move_into(c2)
+          c3.move(:into => c2)
           
           pos(c1).should == [1,6]
           pos(c2).should == [2,5]
@@ -120,7 +120,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           pos(c4).should == [5,6]
           pos(c5).should == [7,8]
           
-          c5.move_above c3
+          c5.move(:above => c3)
           pos(c3).should == [5,6]
           pos(c4).should == [7,8]
           pos(c5).should == [3,4]

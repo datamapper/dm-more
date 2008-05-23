@@ -22,9 +22,9 @@ module DataMapper
             if self.class.count == 0
               self.lft , self.rgt = 1 , 2
             elsif self.new_record? && !self.parent && !self.attribute_dirty?(:lft) 
-              self.move_into(self.class.root,false)
+              self.move(:into => self.class.root); throw :halt
             elsif self.parent && self.attribute_dirty?(options[:child_key]) && !self.attribute_dirty?(:lft) 
-              self.move_into(self.parent,false) 
+              self.move(:into => self.parent); throw :halt
             end 
           end
           
@@ -56,32 +56,41 @@ module DataMapper
         
         def reload_position; self.reload_attributes(:lft,:rgt) end
         
-        def move_to_position(position, save=true)
-          if self.rgt && self.lft     
-            return false if self.lft == position || self.rgt == position - 1 # If already in position
+        #
+        # Use to move node. Example:  object.move(:higher), object.move(:into => parent) 
+        #
+        def move(opts)
+          if opts.is_a? Hash then action,obj = opts.keys[0],opts.values[0] else action = opts end
+          
+          position = case action
+            when :higher then left_sibling.lft if left_sibling
+            when :lower  then right_sibling.lft if right_sibling
+            when :into   then obj.rgt
+            when :above  then obj.lft
+            when :below  then obj.rgt+1
+            when :to     then obj
+          end
+          
+          if self.rgt && self.lft
+            return false if self.lft == position || self.rgt == position - 1 || position.blank? # If already in position
             gap = self.rgt - self.lft + 1 # How wide am I?
             self.class.alter_gap_in_set( position , gap ) # Making a gap where we can insert the node
             self.reload_position # Reloading my coordinates, in case I was skewed to the left
-            distance = position - self.lft # Calculating my distance from the position I'm aiming for      
+            distance = position - self.lft # Calculating my distance from the position I'm aiming for
             self.class.query_set("lft=lft + #{distance}, rgt=rgt + #{distance}", "rgt BETWEEN #{self.lft} AND #{self.rgt}" )
             self.class.alter_gap_in_set(self.lft,-gap,'>') # Closing the gap I left behind
             self.reload_position # Reloading my coordinates, in case I was skewed to the left
-          else
+          elsif position
             self.class.alter_gap_in_set( position , 2 ) # Making a gap where we can insert the node
-            self.lft, self.rgt = position,position+1    # Setting the lft/rgt for my model
+            self.lft, self.rgt = position, position + 1    # Setting the lft/rgt for my model
           end
           self.parent = self.ancestor
-          self.save if save
+          self.save
         end
         
-        # Functions for moving a set/node
-        def move_above (resource, save=true); move_to_position(resource.lft,save)                end
-        def move_below (resource, save=true); move_to_position(resource.rgt+1,save)              end
-        def move_into  (resource, save=true); move_to_position(resource.rgt,save)                end
-        def move_higher(save=true); move_to_position(left_sibling.lft,save)    if left_sibling   end
-        def move_lower (save=true); move_to_position(right_sibling.rgt+1,save) if right_sibling  end
-        
-        # Finders for NestedSet
+        #
+        # Finders for retrieving different nodes in the set
+        #
         def self_and_ancestors;   self.class.all(:lft.lte => lft, :rgt.gte => rgt)               end
         def ancestors;            self_and_ancestors.reject{|r| r == self }                      end
         def ancestor;             ancestors.reverse.first                                        end
