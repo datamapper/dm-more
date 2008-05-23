@@ -22,6 +22,7 @@ gem_paths = %w[
   dm-aggregates
   dm-ar-finders
   dm-cli
+  dm-is-nested_set
   dm-is-tree
   dm-migrations
   dm-serializer

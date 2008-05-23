@@ -15,12 +15,13 @@ spec = Gem::Specification.new do |s|
   s.extra_rdoc_files = %w[ README LICENSE TODO ]
   s.summary          = 'DataMapper plugin allowing the creation of nested sets from data models'
   s.description      = s.summary
-  s.author           = 'Timothy Bennett'
+  s.author           = 'Sindre Aarsaether'
   s.email            = 'sindre@identu.no'
   s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-is-nested_set'
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
   s.add_dependency('dm-core', '>= 0.9.0')
+  s.add_dependency('dm-aggregates', '>= 0.9.0')
 end
 
 task :default => [ :spec ]

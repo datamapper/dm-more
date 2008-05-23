@@ -1,5 +1,6 @@
-dm-is-nestedset
+dm-is-nested_set
 ===============
 
 DataMapper plugin allowing the creation of nested sets from data models.
-The plugin is not yet functional. Look back in a few days..
+The plugin has not been thoroughly tested. There are also some features
+missing atm. Look back in a few days for docs, tests, and more functionality.
