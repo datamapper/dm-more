@@ -2,7 +2,8 @@ module DataMapper
   module Is
     module NestedSet
       def self.included(base)
-        base.extend(ClassMethods)
+        #base.extend(ClassMethods)
+        raise NotImplementedError
       end
       
       module ClassMethods
