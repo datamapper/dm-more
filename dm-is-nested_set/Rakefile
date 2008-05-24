@@ -21,7 +21,6 @@ spec = Gem::Specification.new do |s|
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
   s.add_dependency('dm-core', '>= 0.9.0')
-  s.add_dependency('dm-aggregates', '>= 0.9.0')
 end
 
 task :default => [ :spec ]

@@ -3,7 +3,6 @@ module DataMapper
     module NestedSet
       def self.included(base)
         base.extend(ClassMethods)
-        #raise NotImplementedError
       end
       
       module ClassMethods
@@ -12,7 +11,8 @@ module DataMapper
         # docs in the works
         #
         def is_a_nested_set(options={})
-          options = { :child_key => :parent_id }.merge(options)
+  
+          @nested_options = options = { :child_key => :parent_id }.merge(options)
 
           include DataMapper::Is::NestedSet::InstanceMethods
           
@@ -22,24 +22,35 @@ module DataMapper
           belongs_to :parent,  :class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
           has n,     :children,:class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
           
-          ##
-          # demands that the node has a position in the tree, and moves it into the right position if parent-association
-          # has been changed manually by the user
-          #
-          before :save do 
-            if self.class.count == 0
-              self.lft , self.rgt = 1 , 2
-            elsif self.new_record? && !self.parent && !self.attribute_dirty?(:lft) 
-              self.move(:into => self.class.root); throw :halt
-            elsif self.parent && self.attribute_dirty?(options[:child_key]) && !self.attribute_dirty?(:lft) 
-              self.move(:into => self.parent); throw :halt
-            end 
+          before :create do
+            # scenarios: 
+            # - user creates a new object and does not specify a parent
+            # - user creates a new object with a direct reference to a parent
+            # - user spawnes a new object, and then moves it to a position
+            if !self.parent
+              self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
+              # if this is actually root, it will not move a bit (as lft is already 1)
+            elsif self.parent && !self.lft
+              # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
+              # might be som problems here if the referenced parent is not saved.
+              self.move_without_saving(:into => self.parent)
+            end  
           end
           
+          before :update do
+            # scenarios:
+            # - user moves the object to a position
+            # - user has changed the parent
+            # - user has removed any reference to a parent
+            # - user sets the parent_id to something, and then use #move before saving 
+            if (self.parent && !self.lft) || (self.parent != self.ancestor)
+              # if the parent is set, we try to move this into that parent, otherwise we try to move into root.
+              self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
+            end
+          end
+
           ##
-          # reloads the position-attributes on all loaded objects after saving. left / right will often get changed
-          # by semimanual queries, and this is a way to try to keep the objects up with the changes with minimal
-          # performance loss
+          # reloads the position-attributes on all loaded objects after saving.
           #
           after :save do
             self.class.reload_positions
@@ -51,6 +62,7 @@ module DataMapper
           scope_stack << Query.new(repository,self,:order => [:lft.asc])
           
           class_eval <<-CLASS, __FILE__, __LINE__
+            attr_reader :nested_options
             
             def self.root
               first
@@ -103,9 +115,9 @@ module DataMapper
         #
         # @param vector <Symbol, Hash> A symbol, or a key-value pair that describes the requested movement
         #   
-        # @option :higher<Symbol> move node higher (1 up if possible) # specifying nr of steps is in the pipeline
+        # @option :higher<Symbol> move node higher # specifying nr of steps is in the pipeline
         # @option :highest<Symbol> move node to the top of the list (within its parent)
-        # @option :lower<Symbol> move node lower (1 down if possible)
+        # @option :lower<Symbol> move node lower
         # @option :lowest<Symbol> move node to the bottom of the list (within its parent)
         # @option :indent<Symbol> move node into sibling above
         # @option :outdent<Symbol> move node out below its current parent
@@ -117,33 +129,54 @@ module DataMapper
         # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
         # @raise <RecursiveNestingError> if node is asked to position itself into one of its descendants
         # @raise <UnableToPositionError> if node is unable to calculate a new position for the element
+        # @see move_without_saving
         def move(vector)
-          if vector.is_a? Hash then action,obj = vector.keys[0],vector.values[0] else action = vector end
+          move_without_saving(vector)
+          save
+        end
+        
+        ##
+        # does all the actual movement in #move, but does not save afterwards. this is used internally in
+        # before :save, and will probably be marked private. should not be used by organic beings.
+        #
+        # @see move_without_saving 
+        def move_without_saving(vector)
+          if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
           
           ##
           # checking what kind of movement has been requested, and calculate the new position node should move to
           #
           position = case action
-            when :higher  then left_sibling.lft   if left_sibling
-            when :highest then ancestor.lft+1     if ancestor
-            when :lower   then right_sibling.lft  if right_sibling
-            when :lowest  then ancestor.rgt       if ancestor
-            when :indent  then left_sibling.rgt   if left_sibling
-            when :outdent then ancestor.rgt+1     if ancestor
-            when :into    then obj.rgt            if obj
-            when :above   then obj.lft            if obj
-            when :below   then obj.rgt+1          if obj
-            when :to      then obj.to_i           if obj
+            when :higher  then left_sibling  ? left_sibling.lft    : nil # : "already at the top"
+            when :highest then ancestor      ? ancestor.lft+1      : nil # : "is root, or has no parent"
+            when :lower   then right_sibling ? right_sibling.rgt+1 : nil # : "already at the bottom"
+            when :lowest  then ancestor      ? ancestor.rgt        : nil # : "is root, or has no parent"
+            when :indent  then left_sibling  ? left_sibling.rgt    : nil # : "cannot find a sibling to indent into"
+            when :outdent then ancestor      ? ancestor.rgt+1      : nil # : "is root, or has no parent"
+            when :into    then object        ? object.rgt          : nil # : "supply an object"
+            when :above   then object        ? object.lft          : nil # : "supply an object"
+            when :below   then object        ? object.rgt+1        : nil # : "supply an object"
+            when :to      then object        ? object.to_i         : nil # : "supply a number"
           end
           
-          raise UnableToPositionError unless position > 0 && position.is_a?(Fixnum)
+          ##
+          # raising an error whenever it couldnt move seems a bit harsh. want to return self for nesting.
+          # if anyone has a good idea about how it should react when it cant set a valid position, 
+          # don't hesitate to find me in #datamapper, or send me an email at sindre -a- identu -dot- no
+          #
+          # raise UnableToPositionError unless position.is_a?(Fixnum) && position > 0
+          return false if !position || position < 1
+          # if node is already in the requested position
+          if self.lft == position || self.rgt == position - 1
+            self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
+            return false
+          end
           
           ##
           # if this node is already positioned we need to move it, and close the gap it leaves behind etc
           # otherwise we only need to open a gap in the set, and smash that buggar in
           # 
           if self.lft && self.rgt
-            return false if self.lft == position || self.rgt == position - 1
             # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
             raise RecursiveNestingError if position > self.lft && position < self.rgt
             # find out how wide this node is, as we need to make a gap large enough for it to fit in
@@ -164,11 +197,9 @@ module DataMapper
             # set the position fields
             self.lft, self.rgt = position, position + 1
           end
-
-          # after repositioning we try to set the parent according to the structure of the nested set, _not_ the parent_id
+          
           self.parent = self.ancestor
-          # saving the node, since parent and positions may have changed
-          self.save
+          
         end
         
         ##
@@ -243,7 +274,8 @@ module DataMapper
         #
         # @return <Collection>
         def self_and_siblings
-          self.class.all(:parent_id => parent_id)
+          parent_key = self.class.relationships(:default)[:parent].child_key.to_a.first
+          parent ? self.class.all(parent_key => parent.key) : [self]
         end
         
         ##
