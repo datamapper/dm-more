@@ -11,8 +11,7 @@ module DataMapper
         # docs in the works
         #
         def is_a_nested_set(options={})
-  
-          @nested_options = options = { :child_key => :parent_id }.merge(options)
+          options = { :child_key => :parent_id }.merge(options)
 
           include DataMapper::Is::NestedSet::InstanceMethods
           
@@ -62,8 +61,6 @@ module DataMapper
           scope_stack << Query.new(repository,self,:order => [:lft.asc])
           
           class_eval <<-CLASS, __FILE__, __LINE__
-            attr_reader :nested_options
-            
             def self.root
               first
             end
