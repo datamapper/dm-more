@@ -43,7 +43,7 @@ module DataMapper
             # - user has removed any reference to a parent
             # - user sets the parent_id to something, and then use #move before saving 
             if (self.parent && !self.lft) || (self.parent != self.ancestor)
-              # if the parent is set, we try to move this into that parent, otherwise we try to move into root.
+              # if the parent is set, we try to move this into that parent, otherwise move into root.
               self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
             end
           end
@@ -56,7 +56,7 @@ module DataMapper
           end
           
           ##
-          # makes sure that all finders order correctly. if overridden (on class-level),some of the nested-set finders may act up
+          # makes sure that all finders order correctly
           #
           scope_stack << Query.new(repository,self,:order => [:lft.asc])
           
@@ -70,7 +70,7 @@ module DataMapper
             end
             
             def self.reload_positions
-              repository.identity_map_get(self).each_pair{ |key,obj| obj.reload_position }
+              repository.identity_map(self).each_pair{ |key,obj| obj.reload_position }
             end
               
             def self.query_set(set,where,*pars)
