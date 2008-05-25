@@ -33,13 +33,12 @@ See all of the DataMapper::Validate module's XYZValidator(s) to learn about the
 complete collections of validators available to you.
 
 == Validating
-DataMapper validations, when included, do not alter the default
-save/create/update process for a model. In order to ensure that your model is
-valid before saving, the simplest approach is to call valid? on the model before
-trying to save. For example:
+DataMapper validations, when included, alter the default save/create/update
+process for a model.  Unless you specify a context the resource must be
+valid in the :default context before saving.
 
-  my_account = Account.new(:name => "Jose")
-  my_account.save if my_account.valid?
+You may manually validate a resource using the valid? method, which will
+return true if the resource is valid, and false if it is invalid.
 
 In addition to the valid? method, there is also an all_valid? method that
 recursively walks both the current object and its associated objects and returns
@@ -53,8 +52,8 @@ your models via calls to your model's errors method.
 For example:
 
   my_account = Account.new(:name => "Jose")
-  if my_account.valid?
-    my_account.save
+  if my_account.save
+    # my_account is valid and has been saved
   else
     my_account.errors.each do |e|
       puts e
