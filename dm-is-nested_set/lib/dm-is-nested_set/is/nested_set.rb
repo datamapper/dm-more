@@ -58,15 +58,15 @@ module DataMapper
           ##
           # makes sure that all finders order correctly
           #
-          scope_stack << Query.new(repository,self,:order => [:lft.asc])
+          scope_stack << DataMapper::Query.new(repository,self,:order => [:lft.asc])
           
           class_eval <<-CLASS, __FILE__, __LINE__
             def self.root
-              first
+              first(:order => [:lft.asc])
             end
             
             def self.leaves
-              all(:conditions => ["rgt=lft+1"])
+              all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
             end
             
             def self.reload_positions
@@ -212,7 +212,7 @@ module DataMapper
         # 
         # @return <Collection> Returns
         def self_and_ancestors
-          self.class.all(:lft.lte => lft, :rgt.gte => rgt)
+          self.class.all(:lft.lte => lft, :rgt.gte => rgt, :order => [:lft.asc])
         end
         
         ##
@@ -246,7 +246,7 @@ module DataMapper
         #
         # @return <Collection> flat collection, sorted according to nested_set positions
         def self_and_descendants
-          self.class.all(:lft => lft..rgt)
+          self.class.all(:lft => lft..rgt, :order => [:lft.asc])
         end
         
         ##
@@ -263,7 +263,7 @@ module DataMapper
         #
         # @return <Collection>
         def leaves
-          self.class.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"])
+          self.class.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"], :order => [:lft.asc])
         end
         
         ##
@@ -300,6 +300,15 @@ module DataMapper
         # @see #self_and_siblings
         def right_sibling
           self_and_siblings.find  {|v| v.lft == rgt+1}
+        end
+        
+        ##
+        # check if this node is a leaf (does not have subnodes). 
+        # use this instead ofdescendants.empty?
+        #
+        # @par
+        def leaf?
+          rgt-lft == 1
         end
       end
       
