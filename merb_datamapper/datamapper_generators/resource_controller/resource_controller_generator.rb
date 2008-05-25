@@ -90,9 +90,11 @@ class ResourceControllerGenerator < Merb::GeneratorBase
     end
   end
 
-  #returns the params needed for getting the object
+  #returns the params needed for getting the object. 
+  # uses params[:id] as a default if no keys has been set in the model.
   def params_for_get
-    @params_for_get ||= properties.select{|p| p.key?}.map{|p| "params[:#{p.field}]"}.join(', ')
+    params = properties.select{|p| p.key?}.map{|p| "params[:#{p.field}]"}.join(', ')
+    @params_for_get ||= (params == "" ? "params[:id]" : params)
   end
 
 

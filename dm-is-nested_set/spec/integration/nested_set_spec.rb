@@ -27,7 +27,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Category.create!(:id => 7, :parent_id => 6,  :name => "MP3 Players")
       Category.create!(:id => 8, :parent_id => 7,  :name => "Flash")
       Category.create!(:id => 9, :parent_id => 6,  :name => "CD Players")
-      Category.create!(:id => 10,:parent_id => 6, :name => "2 Way Radios")
+      Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
       
       # id | lft| rgt| title
       #========================================
@@ -53,6 +53,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       # |                                       Electronics                                                  |
       # |____________________________________________________________________________________________________|
       
+    end
+    
+    describe 'Class#rebuild_parent_child_relationships' do
+      it 'should reset all parent_ids correctly' do
+        Category[5].parent_id = nil
+        Category.rebuild_parent_child_relationships
+        Category[5].parent_id.should == 2
+        Category[9].parent_id.should == 6
+      end
     end
     
     describe 'Class#root' do

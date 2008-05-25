@@ -2,17 +2,18 @@ module DataMapper
   module Is
     module NestedSet
       def self.included(base)
-        base.extend(ClassMethods)
+        base.extend(GenerateMethod)
       end
       
-      module ClassMethods
+      module GenerateMethod
         
         ##
         # docs in the works
         #
         def is_a_nested_set(options={})
           options = { :child_key => :parent_id }.merge(options)
-
+            
+          extend  DataMapper::Is::NestedSet::ClassMethods
           include DataMapper::Is::NestedSet::InstanceMethods
           
           property :lft, Integer, :writer => :private
@@ -54,40 +55,50 @@ module DataMapper
           after :save do
             self.class.reload_positions
           end
-          
-          ##
-          # makes sure that all finders order correctly
-          #
-          scope_stack << DataMapper::Query.new(repository,self,:order => [:lft.asc])
-          
-          class_eval <<-CLASS, __FILE__, __LINE__
-            def self.root
-              first(:order => [:lft.asc])
-            end
-            
-            def self.leaves
-              all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
-            end
-            
-            def self.reload_positions
-              repository.identity_map(self).each_pair{ |key,obj| obj.reload_position }
-            end
-              
-            def self.query_set(set,where,*pars)
-              query = %Q{UPDATE \#{self.storage_name} SET \#{set} WHERE \#{where}}
-              repository.adapter.execute(query,*pars)
-            end
-            
-            def self.alter_gap_in_set(pos,addition,opr='>=')
-              #[:lft,:rgt].each{ |p| self.query_set("\#{p}=\#{p}+(?)","\#{p} \#{opr} ?",addition,pos)}
-              self.query_set("rgt=rgt+(?)","rgt \#{opr} ?",addition,pos)
-              self.query_set("lft=lft+(?)","lft \#{opr} ?",addition,pos)
-            end
-            
-            def self.offset_nodes_in_set(offset,range)
-              self.query_set("lft=lft+(?), rgt=rgt+(?)","rgt BETWEEN ?",offset,offset,range)
-            end
-          CLASS
+        end
+      end # GenerateMethod
+      
+      ##
+      # all the ClassMethods. They do not get added before / unless calling is_a_nested_set
+      # since we dont want to clutter your model unless you need it. 
+      #
+      module ClassMethods
+        
+        ##
+        # get the root of the tree. might be changed when support for multiple roots is added.
+        #
+        def root
+          first(:order => [:lft.asc])
+        end
+        
+        def leaves
+          all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
+        end
+        
+        def reload_positions
+          repository.identity_map(self).each_pair{ |key,obj| obj.reload_position }
+        end
+        
+        def rebuild_parent_child_relationships
+          all.each do |n|
+            n.parent = n.ancestor
+            n.save
+          end
+        end
+        
+        def offset_nodes_in_set(offset,range) # :nodoc:
+          self.query_set("lft=lft+(?), rgt=rgt+(?)","rgt BETWEEN ?",offset,offset,range)
+        end
+        
+        def alter_gap_in_set(pos,addition,opr='>=') # :nodoc:
+          #[:lft,:rgt].each{ |p| self.query_set("\#{p}=\#{p}+(?)","\#{p} \#{opr} ?",addition,pos)}
+          self.query_set("rgt=rgt+(?)","rgt #{opr} ?",addition,pos)
+          self.query_set("lft=lft+(?)","lft #{opr} ?",addition,pos)
+        end
+        
+        def query_set(set,where,*pars) # :nodoc:
+          query = %Q{UPDATE #{self.storage_name} SET #{set} WHERE #{where}}
+          repository.adapter.execute(query,*pars)
         end
       end
       
@@ -208,6 +219,19 @@ module DataMapper
         end
         
         ##
+        # check if this node is a leaf (does not have subnodes). 
+        # use this instead ofdescendants.empty?
+        #
+        # @par
+        def leaf?
+          rgt-lft == 1
+        end
+        
+        ##
+        # all methods for finding related nodes following
+        ##
+        
+        ##
         # get all ancestors of this node, up to (and including) self
         # 
         # @return <Collection> Returns
@@ -221,7 +245,7 @@ module DataMapper
         # @return <Collection> collection of all parents, with root as first item
         # @see #self_and_ancestors
         def ancestors
-          self_and_ancestors.reject{|r| r == self }
+          self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
         
         ##
@@ -255,7 +279,7 @@ module DataMapper
         # @return <Collection> flat collection, sorted according to nested_set positions
         # @see #self_and_descendants
         def descendants
-          self_and_descendants.reject{|r| r == self }
+          self_and_descendants.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
         
         ##
@@ -281,7 +305,7 @@ module DataMapper
         # @return <Collection>
         # @see #self_and_siblings
         def siblings
-          self_and_siblings.reject{|r| r == self }
+          self_and_siblings.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
         
         ##
@@ -302,14 +326,6 @@ module DataMapper
           self_and_siblings.find  {|v| v.lft == rgt+1}
         end
         
-        ##
-        # check if this node is a leaf (does not have subnodes). 
-        # use this instead ofdescendants.empty?
-        #
-        # @par
-        def leaf?
-          rgt-lft == 1
-        end
       end
       
       class UnableToPositionError < StandardError; end
