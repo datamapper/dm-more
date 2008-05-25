@@ -28,6 +28,13 @@ require dir / 'support' / 'object'
 module DataMapper
   module Validate
 
+    # Validate the resource before saving
+    #
+    def save(context = :default)
+      return false unless valid?(context)
+      super()
+    end
+
     # Return the ValidationErrors
     #
     def errors
@@ -178,7 +185,14 @@ module DataMapper
   end # module Validate
 
   module Resource
-    include Validate
+    class << self
+      included = instance_method(:included)
+
+      define_method(:included) do |model|
+        included.bind(self).call(model)
+        model.send(:include, Validate)
+      end
+    end
 
     module ClassMethods
       include Validate::ClassMethods

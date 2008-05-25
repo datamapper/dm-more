@@ -2,13 +2,76 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate do
-  before(:all) do
+  before :all do
     class Yacht
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :name, String, :auto_validation => false
 
       validates_present :name
+    end
+  end
+
+  it 'should respond to save' do
+    Yacht.new.should respond_to(:save)
+  end
+
+  describe '#save' do
+    before do
+      Yacht.auto_migrate!
+      @yacht = Yacht.new :name => 'The Gertrude'
+    end
+
+    describe 'without context specified' do
+      it 'should validate using the default context' do
+        @yacht.should_receive(:valid?).with(:default)
+        @yacht.save
+      end
+
+      it 'should save if the object is valid for the default context' do
+        @yacht.should be_valid
+        @yacht.save.should be_true
+        @yacht.should_not be_new_record
+      end
+
+      it 'should not save if the object is not valid for the default context' do
+        @yacht.name = 'a'
+        @yacht.should be_valid
+
+        @yacht.name = nil
+        @yacht.should_not be_valid
+        @yacht.save.should be_false
+        @yacht.should be_new_record
+      end
+    end
+
+    describe 'with context specified' do
+      before :all do
+        class Yacht
+          validates_length :name, :min => 2, :context => [ :strict_name ]
+        end
+      end
+
+      it 'should validate using the specified context' do
+        @yacht.should_receive(:valid?).with(:strict_name)
+        @yacht.save(:strict_name)
+      end
+
+      it 'should save if the object is valid for the specified context' do
+        @yacht.should be_valid(:strict_name)
+        @yacht.save(:strict_name).should be_true
+        @yacht.should_not be_new_record
+      end
+
+      it 'should not save if the object is not valid for the specified context' do
+        @yacht.name = 'aa'
+        @yacht.should be_valid(:strict_name)
+
+        @yacht.name = 'a'
+        @yacht.should_not be_valid(:strict_name)
+        @yacht.save(:strict_name).should be_false
+        @yacht.should be_new_record
+      end
     end
   end
 
@@ -30,17 +93,16 @@ describe DataMapper::Validate do
     Yacht.validators.should respond_to(:execute)
   end
 
-  it "should place a validator in the :default context if a named context is
-      not provided" do
+  it "should place a validator in the :default context if a named context is not provided" do
     Yacht.validators.context(:default).length.should == 2
   end
-
 
   it "should allow multiple user defined contexts for a validator" do
     class Yacht
       property :port, String, :auto_validation => false
       validates_present :port, :context => [:at_sea, :in_harbor]
     end
+
     Yacht.validators.context(:at_sea).length.should == 1
     Yacht.validators.context(:in_harbor).length.should == 1
     Yacht.validators.context(:no_such_context).length.should == 0
@@ -115,83 +177,94 @@ describe DataMapper::Validate do
     sea.errors.full_messages.first.should == 'Year built is a must enter field'
   end
 
-  it "should execute a Proc when provided in an :if clause and run validation
-      if the Proc returns true" do
+  it "should execute a Proc when provided in an :if clause and run validation if the Proc returns true" do
     class Dingy
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :owner, String, :auto_validation => false
       validates_present :owner, :if => Proc.new{|resource| resource.owned?}
-      def owned?; false; end
+
+      def owned?
+        false
+      end
     end
 
     Dingy.new.valid?.should == true
 
     class Dingy
-      def owned?; true; end
+      def owned?
+        true
+      end
     end
 
     Dingy.new.valid?.should_not == true
   end
 
-  it "should execute a symbol or method name provided in an :if clause and run
-      validation if the method returns true" do
+  it "should execute a symbol or method name provided in an :if clause and run validation if the method returns true" do
     class Dingy
       validators.clear!
       validates_present :owner, :if => :owned?
 
-      def owned?; false; end
+      def owned?
+        false
+      end
     end
 
     Dingy.new.valid?.should == true
 
     class Dingy
-      def owned?; true; end
+      def owned?
+        true
+      end
     end
 
     Dingy.new.valid?.should_not == true
   end
 
-  it "should execute a Proc when provided in an :unless clause and not run
-      validation if the Proc returns true" do
+  it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
     class RowBoat
       include DataMapper::Resource
       property :id, Integer, :serial => true
       validates_present :salesman, :unless => Proc.new{|resource| resource.sold?}
 
-      def sold?; false; end
+      def sold?
+        false
+      end
     end
 
     RowBoat.new.valid?.should_not == true
 
     class RowBoat
-      def sold?; true; end
+      def sold?
+        true
+      end
     end
 
     RowBoat.new.valid?.should == true
   end
 
-  it "should execute a symbol or method name provided in an :unless clause and
-      not run validation if the method returns true" do
+  it "should execute a symbol or method name provided in an :unless clause and not run validation if the method returns true" do
     class Dingy
       validators.clear!
       validates_present :salesman, :unless => :sold?
 
-      def sold?; false; end
+      def sold?
+        false
+      end
     end
 
     Dingy.new.valid?.should_not == true  #not sold and no salesman
 
     class Dingy
-      def sold?; true; end
+      def sold?
+        true
+      end
     end
 
     Dingy.new.valid?.should == true    # sold and no salesman
   end
 
-
-  it "should perform automatic recursive validation #all_valid? checking all
-      instance variables (and ivar.each items if valid)" do
+  it "should perform automatic recursive validation #all_valid? checking all instance variables (and ivar.each items if valid)" do
     class Invoice
       include DataMapper::Resource
       property :id, Integer, :serial => true
@@ -249,6 +322,5 @@ describe DataMapper::Validate do
     invoice.line_items[1].price = '23.44'
 
     invoice.all_valid?.should == true
-
   end
 end
