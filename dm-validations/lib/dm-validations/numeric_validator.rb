@@ -28,7 +28,13 @@ module DataMapper
           error_message ||= '%s must be an integer'.t(DataMapper::Inflection.humanize(@field_name))
         else
           if scale && precision
-            return true if value =~ /\A(?:\d{1,#{scale - precision}}|\d{0,#{scale - precision}}\.\d{1,#{precision}})\z/
+            if scale == precision
+              return true if value =~ /\A(?:0\.\d{1,#{precision}})\z/
+            elsif precision == 0
+              return true if value =~ /\A(?:\d{1,#{scale}}(?:\.0)?)\z/
+            else
+              return true if value =~ /\A(?:\d{1,#{scale - precision}}|\d{0,#{scale - precision}}\.\d{1,#{precision}})\z/
+            end
           else
             return true if value =~ /\A(?:\d+|\d*\.\d+)\z/
           end

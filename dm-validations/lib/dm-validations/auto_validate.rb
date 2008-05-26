@@ -84,8 +84,8 @@ module DataMapper
           opts[:integer_only] = true
           validates_is_number property.name, opts
         elsif BigDecimal == property.type || Float == property.type
-          opts[:precision] = property.precision if property.precision > 0
-          opts[:scale]     = property.scale     if property.scale != 10
+          opts[:precision] = property.precision
+          opts[:scale]     = property.scale
           validates_is_number property.name, opts
         end
       end

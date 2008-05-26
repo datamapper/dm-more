@@ -53,29 +53,116 @@ describe DataMapper::Validate::NumericValidator do
     h.should be_valid
   end
 
-  it "should validate with autovalidate" do
-
-    class RobotFish
-      include DataMapper::Resource
-      property :id,     Integer, :serial => true
-      property :scales, Integer
-      property :average_weight, Float
+  describe 'auto validation' do
+    before :all do
+      class Fish
+        include DataMapper::Resource
+        property :id,     Integer, :serial => true
+        property :scales, Integer
+      end
     end
 
-    class PondFish
-      include DataMapper::Resource
-      property :id,     Integer, :serial => true
-      property :scales, Integer
-      property :average_weight, Float, :scale => 10, :precision => 0, :auto_validation => false
-      validates_is_number :average_weight
-    end
+    describe 'Float' do
+      describe 'with default scale and precision' do
+        before :all do
+          class RobotFish < Fish
+            property :average_weight, Float
+          end
+        end
 
-    fish1 = PondFish.new
-    fish2 = RobotFish.new
-    fish1.scales = fish2.scales = 1
-    fish1.average_weight = fish2.average_weight = 20.22
-    fish1.valid?.should == true
-    fish2.valid?.should == true
+        before do
+          @robot_fish = RobotFish.new
+        end
+
+        it 'should allow up to 10 digits before the decimal' do
+          @robot_fish.average_weight = 0
+          @robot_fish.should be_valid
+
+          @robot_fish.average_weight = 9_999_999_999
+          @robot_fish.should be_valid
+
+          @robot_fish.average_weight = 10_000_000_000
+          @robot_fish.should_not be_valid
+        end
+
+        it 'should allow 0 digits of precision after the decimal' do
+          @robot_fish.average_weight = 0
+          @robot_fish.should be_valid
+        end
+
+        it 'should allow 1 digit of precision after the decimal if it is a zero' do
+          @robot_fish.average_weight = 0.0
+          @robot_fish.should be_valid
+
+          @robot_fish.average_weight = 9_999_999_999.0
+          @robot_fish.should be_valid
+
+          @robot_fish.average_weight = 0.1
+          @robot_fish.should_not be_valid
+        end
+      end
+
+      describe 'with a scale of 4 and a precision of 2' do
+        before :all do
+          class GoldFish < Fish
+            property :average_weight, Float, :scale => 4, :precision => 2
+          end
+        end
+
+        before do
+          @gold_fish = GoldFish.new
+        end
+
+        it 'should allow up to 2 digits before the decimal' do
+          @gold_fish.average_weight = 0
+          @gold_fish.should be_valid
+
+          @gold_fish.average_weight = 99
+          @gold_fish.should be_valid
+
+          @gold_fish.average_weight = 100
+          @gold_fish.should_not be_valid
+        end
+
+        it 'should allow 2 digits of precision after the decimal' do
+          @gold_fish.average_weight = 99.99
+          @gold_fish.should be_valid
+
+          @gold_fish.average_weight = 99.999
+          @gold_fish.should_not be_valid
+        end
+      end
+
+      describe 'with a scale of 2 and a precision of 2' do
+        before :all do
+          class SilverFish < Fish
+            property :average_weight, Float, :scale => 2, :precision => 2
+          end
+        end
+
+        before do
+          @silver_fish = SilverFish.new
+        end
+
+        it 'should allow a 0 before the decimal' do
+          @silver_fish.average_weight = 0
+          @silver_fish.should be_valid
+
+          @silver_fish.average_weight = 0.1
+          @silver_fish.should be_valid
+
+          @silver_fish.average_weight = 1
+          @silver_fish.should_not be_valid
+        end
+
+        it 'should allow 2 digits of precision after the decimal' do
+          @silver_fish.average_weight = 0.99
+          @silver_fish.should be_valid
+
+          @silver_fish.average_weight = 0.999
+          @silver_fish.should_not be_valid
+        end
+      end
+    end
   end
-
 end
