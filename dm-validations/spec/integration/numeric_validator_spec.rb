@@ -120,7 +120,13 @@ describe DataMapper::Validate::NumericValidator do
           @gold_fish.average_weight = 99
           @gold_fish.should be_valid
 
+          @gold_fish.average_weight = -99
+          @gold_fish.should be_valid
+
           @gold_fish.average_weight = 100
+          @gold_fish.should_not be_valid
+
+          @gold_fish.average_weight = -100
           @gold_fish.should_not be_valid
         end
 
@@ -128,7 +134,13 @@ describe DataMapper::Validate::NumericValidator do
           @gold_fish.average_weight = 99.99
           @gold_fish.should be_valid
 
+          @gold_fish.average_weight = -99.99
+          @gold_fish.should be_valid
+
           @gold_fish.average_weight = 99.999
+          @gold_fish.should_not be_valid
+
+          @gold_fish.average_weight = -99.999
           @gold_fish.should_not be_valid
         end
       end
@@ -151,7 +163,13 @@ describe DataMapper::Validate::NumericValidator do
           @silver_fish.average_weight = 0.1
           @silver_fish.should be_valid
 
+          @silver_fish.average_weight = -0.1
+          @silver_fish.should be_valid
+
           @silver_fish.average_weight = 1
+          @silver_fish.should_not be_valid
+
+          @silver_fish.average_weight = -1
           @silver_fish.should_not be_valid
         end
 
@@ -159,7 +177,13 @@ describe DataMapper::Validate::NumericValidator do
           @silver_fish.average_weight = 0.99
           @silver_fish.should be_valid
 
+          @silver_fish.average_weight = -0.99
+          @silver_fish.should be_valid
+
           @silver_fish.average_weight = 0.999
+          @silver_fish.should_not be_valid
+
+          @silver_fish.average_weight = -0.999
           @silver_fish.should_not be_valid
         end
       end
