@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-ar-finders'
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
-  s.add_dependency('dm-core', '>= 0.9.0')
+  s.add_dependency('dm-core', '= 0.9.0.1')
 end
 
 task :default => [ :spec ]

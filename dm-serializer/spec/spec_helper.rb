@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'pathname'
 
-gem 'dm-core', '=0.9.0'
+gem 'dm-core', '=0.9.0.1'
 require 'data_mapper'
 
 require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-serializer'
@@ -12,7 +12,7 @@ def load_driver(name, default_uri)
   lib = "do_#{name}"
 
   begin
-    gem lib, '=0.9.0'
+    gem lib, '=0.9.0.1'
     require lib
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
