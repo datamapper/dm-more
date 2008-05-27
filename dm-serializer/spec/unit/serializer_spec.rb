@@ -1,4 +1,5 @@
 require 'pathname'
+require 'yaml'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Serialize do
@@ -11,8 +12,14 @@ describe DataMapper::Serialize do
       property :name, String
       property :breed, String
     end
-  end
 
+    properties = Cow.properties(:default)
+    properties_with_indexes = Hash[*properties.zip((0...properties.length).to_a).flatten]
+    @collection = DataMapper::Collection.new(DataMapper::repository(:default), Cow, properties_with_indexes)
+    @collection.load([1, 2, 'Betsy', 'Jersey'])
+    @collection.load([10, 20, 'Berta', 'Guernsey'])
+
+  end
 
   it "should serialize a resource to YAML" do
     betsy = Cow.new
@@ -27,6 +34,21 @@ describe DataMapper::Serialize do
       :name: Betsy
       :breed: Jersey
     EOS
+  end
+
+  it "should serialize a collection to YAML" do
+    @collection.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
+      ---
+      - :id: 1
+        :composite: 2
+        :name: Betsy
+        :breed: Jersey
+      - :id: 10
+        :composite: 20
+        :name: Berta
+        :breed: Guernsey
+    EOS
+
   end
 
   it "should serialize a resource to XML" do
@@ -59,6 +81,13 @@ describe DataMapper::Serialize do
       }
     EOS
   end
+
+  it "should serialize a collection to JSON" do
+    @collection.to_json.gsub(/[[:space:]]+\n/, "\n").strip.should ==
+      '[{ "id": 1, "composite": 2, "name": "Betsy", "breed": "Jersey" },' +
+      '{ "id": 10, "composite": 20, "name": "Berta", "breed": "Guernsey" }]'
+  end
+
 
   it "should serialize a resource to CSV" do
     peter = Cow.new

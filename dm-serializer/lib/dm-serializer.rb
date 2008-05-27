@@ -105,9 +105,20 @@ module DataMapper
       doc
     end
 
-  end # module Serialize
+  end # module Serialize
 
   module Resource
     include Serialize
   end # module Resource
+
+  class Collection
+    def to_yaml(opts = {})
+      to_a.to_yaml(opts)
+    end
+
+    def to_json
+      to_a.to_json
+    end
+  end
+
 end # module DataMapper
