@@ -18,26 +18,32 @@ describe DataMapper::Serialize do
     @collection = DataMapper::Collection.new(DataMapper::repository(:default), Cow, properties_with_indexes)
     @collection.load([1, 2, 'Betsy', 'Jersey'])
     @collection.load([10, 20, 'Berta', 'Guernsey'])
-
   end
 
-  it "should serialize a resource to YAML" do
-    betsy = Cow.new
-    betsy.id = 230
-    betsy.composite = 22
-    betsy.name = 'Betsy'
-    betsy.breed = 'Jersey'
-    betsy.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
+
+  
+  #
+  # ==== yummy YAML
+  #
+
+  describe "#to_yaml" do
+    it "serializes single resource to YAML" do
+      betsy = Cow.new
+      betsy.id = 230
+      betsy.composite = 22
+      betsy.name = 'Betsy'
+      betsy.breed = 'Jersey'
+      betsy.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
       ---
       :id: 230
       :composite: 22
       :name: Betsy
       :breed: Jersey
     EOS
-  end
+    end
 
-  it "should serialize a collection to YAML" do
-    @collection.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
+    it "serializes a collection to YAML" do
+      @collection.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
       ---
       - :id: 1
         :composite: 2
@@ -48,36 +54,51 @@ describe DataMapper::Serialize do
         :name: Berta
         :breed: Guernsey
     EOS
+    end
   end
 
-  it "should serialize a resource to XML" do
-    berta = Cow.new
-    berta.id = 89
-    berta.composite = 34
-    berta.name = 'Berta'
-    berta.breed = 'Guernsey'
 
-    berta.to_xml.should == <<-EOS.compress_lines(false)
+  #
+  # ==== enterprisey XML
+  #
+
+  describe "#to_xml" do
+    it "should serialize a resource to XML" do
+      berta = Cow.new
+      berta.id = 89
+      berta.composite = 34
+      berta.name = 'Berta'
+      berta.breed = 'Guernsey'
+
+      berta.to_xml.should == <<-EOS.compress_lines(false)
       <cow composite='34' id='89'>
         <name>Berta</name>
         <breed>Guernsey</breed>
       </cow>
     EOS
+    end
+
+    it "should serialize a collection to XML" do
+      @collection.to_xml.gsub(/[[:space:]]+\n/, "\n").should ==
+        "<cow composite='2' id='1'><name>Betsy</name><breed>Jersey</breed></cow>\n" +
+        "<cow composite='20' id='10'><name>Berta</name><breed>Guernsey</breed></cow>\n"
+    end
   end
 
-  it "should serialize a collection to XML" do
-    @collection.to_xml.gsub(/[[:space:]]+\n/, "\n").should ==
-      "<cow composite='2' id='1'><name>Betsy</name><breed>Jersey</breed></cow>\n" +
-      "<cow composite='20' id='10'><name>Berta</name><breed>Guernsey</breed></cow>\n"
-  end
 
-  it "should serialize a resource to JSON" do
-    harry = Cow.new
-    harry.id = 1
-    harry.composite = 322
-    harry.name = 'Harry'
-    harry.breed = 'Angus'
-    harry.to_json.should == <<-EOS.compress_lines
+  
+  #
+  # ==== ajaxy JSON
+  #
+
+  describe "#to_json" do
+    it "should serialize a resource to JSON" do
+      harry = Cow.new
+      harry.id = 1
+      harry.composite = 322
+      harry.name = 'Harry'
+      harry.breed = 'Angus'
+      harry.to_json.should == <<-EOS.compress_lines
       {
         "id": 1,
         "composite": 322,
@@ -85,28 +106,34 @@ describe DataMapper::Serialize do
         "breed": "Angus"
       }
     EOS
+    end
+
+    it "should serialize a collection to JSON" do
+      @collection.to_json.gsub(/[[:space:]]+\n/, "\n").strip.should ==
+        '[{ "id": 1, "composite": 2, "name": "Betsy", "breed": "Jersey" },' +
+        '{ "id": 10, "composite": 20, "name": "Berta", "breed": "Guernsey" }]'
+    end
   end
 
-  it "should serialize a collection to JSON" do
-    @collection.to_json.gsub(/[[:space:]]+\n/, "\n").strip.should ==
-      '[{ "id": 1, "composite": 2, "name": "Betsy", "breed": "Jersey" },' +
-      '{ "id": 10, "composite": 20, "name": "Berta", "breed": "Guernsey" }]'
+
+  #
+  # ==== blah, it's CSV
+  #
+
+  describe "#to_csv" do
+    it "should serialize a resource to CSV" do
+      peter = Cow.new
+      peter.id = 44
+      peter.composite = 344
+      peter.name = 'Peter'
+      peter.breed = 'Long Horn'
+      peter.to_csv.chomp.should == '44,344,Peter,Long Horn'
+    end
+
+    it "should serialize a collection to CSV" do
+      @collection.to_csv.gsub(/[[:space:]]+\n/, "\n").should ==
+        "1,2,Betsy,Jersey\n" +
+        "10,20,Berta,Guernsey\n"
+    end
   end
-
-
-  it "should serialize a resource to CSV" do
-    peter = Cow.new
-    peter.id = 44
-    peter.composite = 344
-    peter.name = 'Peter'
-    peter.breed = 'Long Horn'
-    peter.to_csv.chomp.should == '44,344,Peter,Long Horn'
-  end
-
-  it "should serialize a collection to CSV" do
-    @collection.to_csv.gsub(/[[:space:]]+\n/, "\n").should ==
-      "1,2,Betsy,Jersey\n" +
-      "10,20,Berta,Guernsey\n"
-  end
-
 end
