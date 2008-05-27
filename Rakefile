@@ -48,9 +48,9 @@ dm_more_spec = Gem::Specification.new do |s|
   s.homepage = "http://datamapper.org"
 
   s.files = %w[ MIT-LICENSE README Rakefile TODO lib/dm-more.rb ]
-  s.add_dependency("dm-core", ">= #{DataMapper::VERSION}")
+  s.add_dependency("dm-core", "=#{DataMapper::VERSION}")
   gems.each do |gem|
-    s.add_dependency gem, [">= #{DataMapper::VERSION}"]
+    s.add_dependency gem, "=#{DataMapper::VERSION}"
   end
 end
 

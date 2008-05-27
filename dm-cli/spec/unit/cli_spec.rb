@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'dm-core', '>= 0.9'
+gem 'dm-core', '=0.9.0.1'
 require 'data_mapper'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib', 'data_mapper', 'cli'))
