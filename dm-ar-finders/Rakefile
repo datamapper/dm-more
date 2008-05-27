@@ -9,7 +9,7 @@ CLEAN.include '{log,pkg}/'
 
 spec = Gem::Specification.new do |s|
   s.name             = 'dm-ar-finders'
-  s.version          = '0.9.0'
+  s.version          = '0.9.0.1'
   s.platform         = Gem::Platform::RUBY
   s.has_rdoc         = true
   s.extra_rdoc_files = %w[ README LICENSE TODO ]
