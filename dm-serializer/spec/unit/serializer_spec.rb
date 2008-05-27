@@ -48,7 +48,6 @@ describe DataMapper::Serialize do
         :name: Berta
         :breed: Guernsey
     EOS
-
   end
 
   it "should serialize a resource to XML" do
@@ -64,6 +63,12 @@ describe DataMapper::Serialize do
         <breed>Guernsey</breed>
       </cow>
     EOS
+  end
+
+  it "should serialize a collection to XML" do
+    @collection.to_xml.gsub(/[[:space:]]+\n/, "\n").should ==
+      "<cow composite='2' id='1'><name>Betsy</name><breed>Jersey</breed></cow>\n" +
+      "<cow composite='20' id='10'><name>Berta</name><breed>Guernsey</breed></cow>\n"
   end
 
   it "should serialize a resource to JSON" do
@@ -96,6 +101,12 @@ describe DataMapper::Serialize do
     peter.name = 'Peter'
     peter.breed = 'Long Horn'
     peter.to_csv.chomp.should == '44,344,Peter,Long Horn'
+  end
+
+  it "should serialize a collection to CSV" do
+    @collection.to_csv.gsub(/[[:space:]]+\n/, "\n").should ==
+      "1,2,Betsy,Jersey\n" +
+      "10,20,Berta,Guernsey\n"
   end
 
 end

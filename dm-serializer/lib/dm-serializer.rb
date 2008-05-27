@@ -113,11 +113,27 @@ module DataMapper
 
   class Collection
     def to_yaml(opts = {})
-      to_a.to_yaml(opts)
+      self.to_a.to_yaml(opts)
     end
 
     def to_json
-      to_a.to_json
+      self.to_a.to_json
+    end
+
+    def to_xml
+      result = ""
+      self.each do |item|
+        result << item.to_xml + "\n"
+      end
+      result
+    end
+
+    def to_csv
+      result = ""
+      self.each do |item|
+        result << item.to_csv + "\n"
+      end
+      result
     end
   end
 
