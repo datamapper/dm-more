@@ -4,7 +4,8 @@ require 'pathname'
 gem 'dm-core', '=0.9.0.1'
 require 'data_mapper'
 
-require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-serializer'
+spec_dir_path = Pathname(__FILE__).dirname.expand_path
+require spec_dir_path.parent + 'lib/dm-serializer'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
@@ -28,3 +29,9 @@ ENV['ADAPTER'] ||= 'sqlite3'
 HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
+
+
+# require fixture resources
+Dir[spec_dir_path + "fixtures/*.rb"].each do |fixture_file|
+  require fixture_file
+end
