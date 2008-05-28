@@ -9,6 +9,8 @@ describe DataMapper::Serialize do
     @collection = DataMapper::Collection.new(DataMapper::repository(:default), Cow, properties_with_indexes)
     @collection.load([1, 2, 'Betsy', 'Jersey'])
     @collection.load([10, 20, 'Berta', 'Guernsey'])
+
+    @empty_collection = DataMapper::Collection.new(DataMapper::repository(:default), Cow, properties_with_indexes)
   end
 
   #
@@ -16,26 +18,43 @@ describe DataMapper::Serialize do
   #
 
   describe "#to_json" do
-    it "should serialize a resource to JSON" do
-      harry = Cow.new
-      harry.id = 1
-      harry.composite = 322
-      harry.name = 'Harry'
-      harry.breed = 'Angus'
-      harry.to_json.should == <<-EOS.compress_lines
-      {
-        "id": 1,
-        "composite": 322,
-        "name": "Harry",
-        "breed": "Angus"
-      }
-    EOS
+    it "serializes resource to JSON" do
+      deserialized_hash = JSON.parse(Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus").to_json)
+
+      deserialized_hash["id"].should        == 1
+      deserialized_hash["composite"].should == 322
+      deserialized_hash["name"].should      == "Harry"
+      deserialized_hash["breed"].should     == "Angus"
     end
 
-    it "should serialize a collection to JSON" do
-      @collection.to_json.gsub(/[[:space:]]+\n/, "\n").strip.should ==
-        '[{ "id": 1, "composite": 2, "name": "Betsy", "breed": "Jersey" },' +
-        '{ "id": 10, "composite": 20, "name": "Berta", "breed": "Guernsey" }]'
+    it "excludes nil attributes" do
+      deserialized_hash = JSON.parse(Cow.new(:id => 1, :name => "Harry", :breed => "Angus").to_json)
+
+      deserialized_hash["id"].should        == 1
+      deserialized_hash["composite"].should be(nil)
+      deserialized_hash["name"].should      == "Harry"
+      deserialized_hash["breed"].should     == "Angus"
+    end
+
+    it "serializes collections to JSON by serializing each member" do
+      deserialized_collection = JSON.parse(@collection.to_json)
+      betsy = deserialized_collection.first
+      berta = deserialized_collection.last
+
+      betsy["id"].should        == 1
+      betsy["composite"].should == 2
+      betsy["name"].should      == "Betsy"
+      betsy["breed"].should     == "Jersey"
+
+      berta["id"].should        == 10
+      berta["composite"].should == 20
+      berta["name"].should      == "Berta"
+      berta["breed"].should     == "Guernsey"
+    end
+
+    it "handles empty collections just fine" do
+      deserialized_collection = JSON.parse(@empty_collection.to_json)
+      deserialized_collection.should be_empty
     end
   end
 end  
