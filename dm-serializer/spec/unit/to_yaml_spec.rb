@@ -18,11 +18,7 @@ describe DataMapper::Serialize do
 
   describe "#to_yaml" do
     it "serializes single resource to YAML" do
-      betsy = Cow.new
-      betsy.id = 230
-      betsy.composite = 22
-      betsy.name = 'Betsy'
-      betsy.breed = 'Jersey'
+      betsy = Cow.new(:id => 230, :composite => 22, :name => "Betsy", :breed => "Jersey")
       betsy.to_yaml.gsub(/[[:space:]]+\n/, "\n").strip.should == <<-EOS.margin
       ---
       :id: 230
