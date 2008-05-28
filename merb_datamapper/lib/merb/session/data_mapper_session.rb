@@ -107,7 +107,7 @@ module Merb
     before :save, :serialize_data
 
     def serialize_data
-      @data = self.class.marshal(self.data)
+      attribute_set :data, self.class.marshal(self.data)
     end
   end
 
