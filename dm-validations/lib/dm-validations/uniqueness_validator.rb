@@ -17,6 +17,8 @@ module DataMapper
         scope = [scope] if !scope.nil? && scope.is_a?(Symbol)
         raise ArgumentError, '+scope+ must be a symbol or array of symbols' if scope && !scope.is_a?(Array)
 
+        return true if @options[:allow_nil] && target.attribute_get(@field_name).nil?
+
         opts = {}
         opts[@field_name] = target.validation_property_value(@field_name)
         unless scope.nil?

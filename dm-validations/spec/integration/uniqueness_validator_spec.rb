@@ -11,7 +11,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :name, String
         property :domain, String #, :unique => true
 
-        validates_is_unique :domain
+        validates_is_unique :domain, :allow_nil => true
       end
 
       class User
@@ -38,6 +38,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it 'should validate the uniqueness of a value on a resource' do
+      repository do
+        o = Organisation[1]
+        o.should be_valid
+
+        o = Organisation.new(:id=>20,:name=>"Org Twenty", :domain=>nil)
+        o.should be_valid
+        o.save
+
+        o = Organisation.new(:id=>30,:name=>"Org Thirty", :domain=>nil)
+        o.should be_valid
+      end
+    end
+
+    it "should not even check if :allow_nil is true" do
       repository do
         o = Organisation[1]
         o.should be_valid
