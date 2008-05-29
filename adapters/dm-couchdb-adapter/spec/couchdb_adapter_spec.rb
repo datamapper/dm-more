@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
 if DataMapper::Repository.adapters.has_key?(:couchdb)
-  
+
   class User
     include DataMapper::Resource
 
@@ -212,7 +212,7 @@ if DataMapper::Repository.adapters.has_key?(:couchdb)
       User.new(default_options)
     end
   end
-  
+
 else
   describe DataMapper::Adapters::CouchdbAdapter do
     it "No CouchDB found"

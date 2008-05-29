@@ -4,16 +4,13 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Serialize do
   before(:all) do
-    properties = Cow.properties(:default)
-    properties_with_indexes = Hash[*properties.zip((0...properties.length).to_a).flatten]
-
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    
-    @collection = DataMapper::Collection.new(query, properties_with_indexes)
+
+    @collection = DataMapper::Collection.new(query)
     @collection.load([1, 2, 'Betsy', 'Jersey'])
     @collection.load([10, 20, 'Berta', 'Guernsey'])
 
-    @empty_collection = DataMapper::Collection.new(query, properties_with_indexes)
+    @empty_collection = DataMapper::Collection.new(query)
   end
 
   #
@@ -60,4 +57,4 @@ describe DataMapper::Serialize do
       deserialized_collection.should be_empty
     end
   end
-end  
+end
