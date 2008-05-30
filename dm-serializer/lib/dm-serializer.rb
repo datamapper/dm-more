@@ -21,10 +21,26 @@ module DataMapper
     def to_json(options = {})
       result = '{ '
       fields = []
-      self.class.properties(repository.name).each do |property|
-        fields << "#{property.name.to_json}: #{send(property.getter).to_json}"
+
+      # FIXME: this should go into bunch of protected methods shared with other serialization methods
+      only_properties     = options[:only]    || []
+      excluded_properties = options[:exclude] || []
+      exclude_read_only   = options[:without_read_only_attributes] || false
+      
+      propset = self.class.properties(repository.name)
+
+      # FIXME: this ugly condition is here because PropertySet does not support reject/select yet.
+      unless only_properties.empty?
+        propset.each do |property|
+          fields << "#{property.name.to_json}: #{send(property.getter).to_json}" if only_properties.include?(property.name.to_sym)
+        end
+      else
+        propset.each do |property|
+          fields << "#{property.name.to_json}: #{send(property.getter).to_json}" unless excluded_properties.include?(property.name.to_sym)
+        end
       end
-      if self.class.respond_to?(:read_only_attributes)
+      
+      if self.class.respond_to?(:read_only_attributes) && exclude_read_only
         self.class.read_only_attributes.each do |property|
           fields << "#{property.to_json}: #{send(property).to_json}"
         end

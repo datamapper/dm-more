@@ -63,5 +63,32 @@ describe DataMapper::Serialize do
       deserialized_hash["category"].should == "terrestrial"
       deserialized_hash["has_known_form_of_life?"].should be(false)
     end
+
+    it "only includes properties given to :only option" do
+      deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:name]))
+      
+      deserialized_hash["name"].should == "Mars"
+      deserialized_hash["aphelion"].should be(nil)
+    end
+
+    it "only includes properties given to :only option" do
+      deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:exclude => [:aphelion]))
+      
+      deserialized_hash["name"].should == "Mars"
+      deserialized_hash["aphelion"].should be(nil)
+    end
+
+    it "has higher presedence for :only option" do
+      deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:aphelion], :exclude => [:aphelion]))
+      
+      deserialized_hash["name"].should be(nil)
+      deserialized_hash["aphelion"].should == 249_209_300.4
+    end
+
+    it "supports :include option for one level depth"
+
+    it "supports :include option for more than one level depth"
+
+    it "has :repository option to override used repository"
   end
 end
