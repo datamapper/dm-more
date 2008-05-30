@@ -18,7 +18,7 @@ module DataMapper
     # Serialize a Resource to JavaScript Object Notation (JSON; RFC 4627)
     #
     # @return <String> a JSON representation of the Resource
-    def to_json
+    def to_json(options = {})
       result = '{ '
       fields = []
       self.class.properties(repository.name).each do |property|
@@ -29,6 +29,14 @@ module DataMapper
           fields << "#{property.to_json}: #{send(property).to_json}"
         end
       end
+
+      # add methods
+      (options[:methods] || []).each do |meth|
+        if self.respond_to?(meth)
+          fields << "#{meth.to_json}: #{send(meth).to_json}"
+        end
+      end
+      
       result << fields.join(', ')
       result << ' }'
       result

@@ -56,5 +56,12 @@ describe DataMapper::Serialize do
       deserialized_collection = JSON.parse(@empty_collection.to_json)
       deserialized_collection.should be_empty
     end
+
+    it "serializes values returned by methods given to :methods option" do
+      deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:methods => [:category, :has_known_form_of_life?]))
+      
+      deserialized_hash["category"].should == "terrestrial"
+      deserialized_hash["has_known_form_of_life?"].should be(false)
+    end
   end
 end
