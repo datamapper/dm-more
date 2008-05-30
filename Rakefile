@@ -193,7 +193,7 @@ namespace :dm do
         unless rakefile == "Rakefile" || rakefile =~ /^pkg/
           # running chdir in a block runs the task in specified dir, then returns to previous dir.
           Dir.chdir(File.join(File.dirname(__FILE__), File.dirname(rakefile))) do
-            raise "Broken specs in #{path}" unless system 'rake'
+            raise "Broken specs in #{rakefile}" unless system 'rake'
           end
         end
       end
