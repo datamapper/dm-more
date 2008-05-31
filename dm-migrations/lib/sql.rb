@@ -33,13 +33,24 @@ module SQL
       attr_accessor :name, :type
 
       def initialize(adapter, name, type, opts = {})
+        puts "adapter (#{adapter.class}): #{adapter.inspect}"
+        puts "name (#{name.class}): #{name.inspect}"
+        puts "type (#{type.class}): #{type.inspect}"
+        puts "opts (#{opts.class}): #{opts.inspect}"
         @adapter = adapter
-        @name, @type = name.to_s, type.to_s
-        @opts = opts
+        @name = name.to_s
+        @opts = (opts ||= {})
+        @type = build_type(type)
+      end
+      
+      def build_type(type_class)
+        schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
+        schema.merge!(@adapter.class.type_map[type_class])
+        @adapter.property_schema_statement(schema)
       end
 
       def to_sql
-          "#{quoted_name} #{type}"
+          type
       end
 
       def quoted_name
@@ -55,7 +66,7 @@ module SQL
     def initialize(adapter, table_name, opts = {}, &block)
       @adapter = adapter
       @table_name = table_name.to_s
-      @opts = opts
+      @opts = (opts ||= {})
 
       @statements = []
 
@@ -63,7 +74,8 @@ module SQL
     end
 
     def add_column(name, type, opts = {})
-      @statements << "ALTER TABLE #{quoted_table_name} ADD COLUMN #{quote_column_name(name)} #{type.to_s}"
+      column = SQL::TableCreator::Column.new(@adapter, name, type, opts)
+      @statements << "ALTER TABLE #{quoted_table_name} ADD COLUMN #{column.to_sql}"
     end
 
     def drop_column(name)

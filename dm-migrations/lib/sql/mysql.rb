@@ -16,6 +16,19 @@ module SQL
       execute "CREATE DATABASE #{db_name}"
       execute "USE #{db_name}"
     end
+    
+    def supports_serial?
+      true
+    end
+    
+    # TODO: move to dm-more/dm-migrations
+    def property_schema_statement(schema)
+      if supports_serial? && schema[:serial]
+        statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
+      else
+        super
+      end
+    end
 
     class Table
       def initialize(adapter, table_name)
