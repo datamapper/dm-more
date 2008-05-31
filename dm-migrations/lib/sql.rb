@@ -33,10 +33,6 @@ module SQL
       attr_accessor :name, :type
 
       def initialize(adapter, name, type, opts = {})
-        puts "adapter (#{adapter.class}): #{adapter.inspect}"
-        puts "name (#{name.class}): #{name.inspect}"
-        puts "type (#{type.class}): #{type.inspect}"
-        puts "opts (#{opts.class}): #{opts.inspect}"
         @adapter = adapter
         @name = name.to_s
         @opts = (opts ||= {})
