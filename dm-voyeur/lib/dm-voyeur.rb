@@ -30,6 +30,18 @@ module DataMapper
         end
       end
       
+      def before_class_method(sym, &block)
+        self.neighborhood_watch.each do |klass|
+          klass.before_class_method(sym.to_sym, &block)
+        end
+      end
+      
+      def after_class_method(sym, &block)
+        self.neighborhood_watch.each do |klass|
+          klass.after_class_method(sym.to_sym, &block)
+        end
+      end
+      
     end # ClassMethods
     
   end # Voyeur

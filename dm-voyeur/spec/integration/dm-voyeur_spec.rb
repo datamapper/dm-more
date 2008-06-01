@@ -26,6 +26,10 @@ describe DataMapper::Voyeur do
         @happy
       end
       
+      def self.unite
+        [Adam.new(:name => "Adam 1"), Adam.new(:name => "Adam 2")]
+      end
+      
     end
     Adam.auto_migrate!
     
@@ -60,6 +64,10 @@ describe DataMapper::Voyeur do
       
       before :dig_a_hole_to_china do
         throw :halt
+      end
+      
+      after_class_method :unite do
+        raise "Call for help!"
       end
       
     end
@@ -112,6 +120,10 @@ describe DataMapper::Voyeur do
     @beer.drink
     @adam.should be_happy
     @beer.should be_empty
+  end
+  
+  it "should wrap class methods" do
+    lambda {Adam.unite}.should raise_error('Call for help!')
   end
   
 end
