@@ -2,31 +2,30 @@ module DataMapper
   module Voyeur
     
     def self.included(klass)
-      puts "i've been included into #{klass}"
       klass.extend(ClassMethods)
     end
     
     module ClassMethods
 
-      attr_accessor :peep_list
+      attr_accessor :neighborhood_watch
 
       def initialize
-        self.peep_list = []
+        self.neighborhood_watch = []
       end
 
       def peep(*args)
-        puts "#{self.to_s} peeping... #{args.collect{|c| DataMapper::Inflection.classify(c.to_s)}.join(', ')}"
-        self.peep_list = args.collect{|c| DataMapper::Inflection.constantize(DataMapper::Inflection.classify(c.to_s))}
+        # puts "#{self.to_s} peeping... #{args.collect{|c| DataMapper::Inflection.classify(c.to_s)}.join(', ')}"
+        self.neighborhood_watch = args.collect{|c| DataMapper::Inflection.constantize(DataMapper::Inflection.classify(c.to_s))}
       end
       
       def before(sym, &block)
-        self.peep_list.each do |klass|
+        self.neighborhood_watch.each do |klass|
           klass.before(sym.to_sym, &block)
         end
       end
       
       def after(sym, &block)
-        self.peep_list.each do |klass|
+        self.neighborhood_watch.each do |klass|
           klass.after(sym.to_sym, &block)
         end
       end

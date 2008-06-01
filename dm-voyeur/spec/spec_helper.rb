@@ -1,6 +1,8 @@
 require 'rubygems'
 gem 'rspec', '>=1.1.3'
 require 'spec'
+gem "dm-core"
+require 'data_mapper'
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-voyeur'
 
