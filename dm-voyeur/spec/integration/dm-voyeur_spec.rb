@@ -29,22 +29,25 @@ describe DataMapper::Voyeur do
     end
     Adam.auto_migrate!
     
-    class Beer
-      include DataMapper::Resource
+    module Alcohol
+      class Beer
+        include DataMapper::Resource
       
-      property :id, Integer, :serial => true
-      property :name, String
+        property :id, Integer, :serial => true
+        property :name, String
       
-      def drink
-        @empty = true
+        def drink
+          @empty = true
+        end
+      
+        def empty?
+          @empty
+        end
+      
       end
-      
-      def empty?
-        @empty
-      end
-      
     end
-    Beer.auto_migrate!
+    Alcohol::Beer.auto_migrate!
+
     
     class AdamVoyeur
       include DataMapper::Voyeur
@@ -64,7 +67,7 @@ describe DataMapper::Voyeur do
     class DrinkingVoyeur
       include DataMapper::Voyeur
       
-      peep Adam, Beer
+      peep Adam, Alcohol::Beer
       
       after :drink do
         @refrigerated = true
@@ -76,7 +79,7 @@ describe DataMapper::Voyeur do
     
   before(:each) do
     @adam = Adam.new
-    @beer = Beer.new
+    @beer = Alcohol::Beer.new
   end
   
   it "should assign a callback" do
@@ -99,7 +102,7 @@ describe DataMapper::Voyeur do
   it "peep should add more than one class to the neighborhood watch" do
     DrinkingVoyeur.should have(2).neighborhood_watch
     DrinkingVoyeur.neighborhood_watch.first.should == Adam
-    DrinkingVoyeur.neighborhood_watch[1].should == Beer
+    DrinkingVoyeur.neighborhood_watch[1].should == Alcohol::Beer
   end
   
   it "should peep multiple classes with the same method name" do
