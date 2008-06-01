@@ -29,6 +29,7 @@ gem_paths = %w[
   dm-timestamps
   dm-types
   dm-validations
+  dm-voyeur
   adapters/dm-couchdb-adapter
 ]
 gems = gem_paths.map { |p| File.basename(p) }
