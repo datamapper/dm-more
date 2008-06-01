@@ -1,4 +1,6 @@
 module DataMapper
+  # Voyeur's allow you to add callback hooks to DataMapper::Resource objects in a separate class. This is great
+  # for separating out logic that is not really part of the model, but needs to be triggered by a model, or models.
   module Voyeur
     
     def self.included(klass)
@@ -13,6 +15,8 @@ module DataMapper
         self.neighborhood_watch = []
       end
 
+      # Assign an Array of Class names to watch.
+      #   peep User, Article, Topic
       def peep(*args)
         # puts "#{self.to_s} peeping... #{args.collect{|c| DataMapper::Inflection.classify(c.to_s)}.join(', ')}"
         self.neighborhood_watch = args
