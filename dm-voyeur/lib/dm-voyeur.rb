@@ -15,7 +15,7 @@ module DataMapper
 
       def peep(*args)
         # puts "#{self.to_s} peeping... #{args.collect{|c| DataMapper::Inflection.classify(c.to_s)}.join(', ')}"
-        self.neighborhood_watch = args.collect{|c| DataMapper::Inflection.constantize(DataMapper::Inflection.classify(c.to_s))}
+        self.neighborhood_watch = args
       end
       
       def before(sym, &block)

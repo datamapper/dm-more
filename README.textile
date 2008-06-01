@@ -13,3 +13,4 @@ Including
   * ActiveRecord-style finders
   * Adapters for your favorite repository or database type
   * Integration with your favorite web frameworks
+  * Voyeurs for watching do things. Think observers.

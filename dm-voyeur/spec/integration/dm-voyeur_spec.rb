@@ -49,7 +49,7 @@ describe DataMapper::Voyeur do
     class AdamVoyeur
       include DataMapper::Voyeur
       
-      peep :adam
+      peep Adam
       
       before :save do
         @falling = true
@@ -64,7 +64,7 @@ describe DataMapper::Voyeur do
     class DrinkingVoyeur
       include DataMapper::Voyeur
       
-      peep :adam, :beer
+      peep Adam, Beer
       
       after :drink do
         @refrigerated = true
