@@ -16,11 +16,11 @@ module SQL
       system "rm #{@uri.path}"
       # do nothing, sqlite will automatically create the database file
     end
-    
+
     def supports_serial?
       true
     end
-    
+
     # TODO: move to dm-more/dm-migrations
     def property_schema_statement(schema)
       statement = super

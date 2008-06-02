@@ -7,7 +7,7 @@ if DataMapper::Repository.adapters.has_key?(:couchdb)
     before(:all) do
       class Zoo
         include DataMapper::Resource
-        property :id, Fixnum, :serial => true
+        property :id, Integer, :serial => true
         property :name, String
         property :open, TrueClass
       end

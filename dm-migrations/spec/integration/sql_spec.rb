@@ -5,8 +5,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe DataMapper::Migration, "#create_table helper" do
     before do
       @creator = DataMapper::Migration::TableCreator.new(repository(:default).adapter, :people) do
-                    column :name, :string
-                 end
+        column :name, String
+      end
     end
 
     it "should have a #create_table helper" do

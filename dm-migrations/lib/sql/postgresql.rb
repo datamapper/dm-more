@@ -17,11 +17,11 @@ module SQL
       execute "CREATE SCHEMA test"
       execute "SET search_path TO test"
     end
-    
+
     def supports_serial?
       true
     end
-    
+
     def property_schema_statement(schema)
       if supports_serial? && schema[:serial]
         statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"

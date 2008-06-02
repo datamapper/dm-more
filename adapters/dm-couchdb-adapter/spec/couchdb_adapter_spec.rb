@@ -16,7 +16,7 @@ if DataMapper::Repository.adapters.has_key?(:couchdb)
 
     # regular properties
     property :name, String
-    property :age, Fixnum
+    property :age, Integer
     property :wealth, Float
     property :created_at, DateTime
     property :created_on, Date
@@ -39,7 +39,7 @@ if DataMapper::Repository.adapters.has_key?(:couchdb)
 
     # This class happens to have similar properties
     property :name, String
-    property :age, Fixnum
+    property :age, Integer
   end
 
   describe DataMapper::Adapters::CouchdbAdapter do

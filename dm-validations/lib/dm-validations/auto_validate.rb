@@ -80,7 +80,7 @@ module DataMapper
         end
 
         # numeric validator
-        if Fixnum == property.type
+        if Integer == property.type
           opts[:integer_only] = true
           validates_is_number property.name, opts
         elsif BigDecimal == property.type || Float == property.type

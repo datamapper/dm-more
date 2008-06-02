@@ -11,9 +11,9 @@ DataMapper.logger.debug( "Starting Migration" )
 migration 1, :create_people_table do
   up do
     create_table :people do
-      column :id,     Fixnum, :serial => true
+      column :id,     Integer, :serial => true
       column :name,   String, :size => 50
-      column :age,    Fixnum
+      column :age,    Integer
     end
   end
   down do
@@ -33,21 +33,21 @@ migration 2, :add_dob_to_people do
       drop_column :dob
     end
   end
-end 
+end
 
 # migrate_down!
 # migrate_up!
-# 
+#
 # class Person
 #   include DataMapper::Resource
-#   
-#   property :id, Fixnum, :serial => true
+#
+#   property :id, Integer, :serial => true
 #   property :name, String, :size => 50
-#   property :age, Fixnum
+#   property :age, Integer
 #   property :dob, DateTime, :default => Time.now
-#   
+#
 # end
-# 
+#
 # Person.create(:name => "Mark Bates", :age => 31)
 # puts Person.first.inspect
 # puts Person.all.inspect
