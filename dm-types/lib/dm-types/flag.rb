@@ -42,6 +42,7 @@ module DataMapper
 
       def self.dump(value, property)
         flags = value.is_a?(Array) ? value : [value]
+        flags.map!{|f| f.to_sym}
         flag_map.invert.values_at(*flags.flatten).compact.inject(0) {|sum, i| sum + i}
       end
     end # class Flag
