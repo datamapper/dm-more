@@ -25,7 +25,7 @@ module DataMapper
         new(*flags)
       end
 
-      def self.load(value)
+      def self.load(value, property)
         begin
           matches = []
 
@@ -33,14 +33,15 @@ module DataMapper
             pow = 2 ** i
             matches << flag_map[pow] if value & pow == pow
           end
-
+          
           matches.compact
         rescue TypeError, Errno::EDOM
           []
         end
       end
 
-      def self.dump(*flags)
+      def self.dump(value, property)
+        flags = value.is_a?(Array) ? value : [value]
         flag_map.invert.values_at(*flags.flatten).compact.inject(0) {|sum, i| sum + i}
       end
     end # class Flag

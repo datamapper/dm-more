@@ -36,21 +36,21 @@ describe DataMapper::Types::Flag do
     end
 
     it "should return the key of the value match from the flag map" do
-      @flag.dump(:first).should == 1
-      @flag.dump(:second).should == 2
-      @flag.dump(:third).should == 4
-      @flag.dump(:fourth).should == 8
-      @flag.dump(:fifth).should == 16
+      @flag.dump(:first, :property).should == 1
+      @flag.dump(:second, :property).should == 2
+      @flag.dump(:third, :property).should == 4
+      @flag.dump(:fourth, :property).should == 8
+      @flag.dump(:fifth, :property).should == 16
     end
 
     it "should return a binary flag built from the key values of all matches" do
-      @flag.dump(:first, :second).should == 3
-      @flag.dump(:second, :fourth).should == 10
-      @flag.dump(:first, :second, :third, :fourth, :fifth).should == 31
+      @flag.dump([:first, :second], :property).should == 3
+      @flag.dump([:second, :fourth], :property).should == 10
+      @flag.dump([:first, :second, :third, :fourth, :fifth], :property).should == 31
     end
 
     it "should return 0 if there is no match" do
-      @flag.dump(:zero).should == 0
+      @flag.dump(:zero, :property).should == 0
     end
   end
 
@@ -60,23 +60,23 @@ describe DataMapper::Types::Flag do
     end
 
     it "should return the value of the key match from the flag map" do
-      @flag.load(1).should == [:uno]
-      @flag.load(2).should == [:dos]
-      @flag.load(4).should == [:tres]
-      @flag.load(8).should == [:cuatro]
-      @flag.load(16).should == [:cinco]
+      @flag.load(1, :property).should == [:uno]
+      @flag.load(2, :property).should == [:dos]
+      @flag.load(4, :property).should == [:tres]
+      @flag.load(8, :property).should == [:cuatro]
+      @flag.load(16, :property).should == [:cinco]
     end
 
     it "should return an array of all flags matches" do
-      @flag.load(3).should include(:uno, :dos)
-      @flag.load(10).should include(:dos, :cuatro)
-      @flag.load(31).should include(:uno, :dos, :tres, :cuatro, :cinco)
+      @flag.load(3, :property).should include(:uno, :dos)
+      @flag.load(10, :property).should include(:dos, :cuatro)
+      @flag.load(31, :property).should include(:uno, :dos, :tres, :cuatro, :cinco)
     end
 
     it "should return an empty array if there is no key" do
-      @flag.load(-1).should == []
-      @flag.load(nil).should == []
-      @flag.load(32).should == []
+      @flag.load(-1, :property).should == []
+      @flag.load(nil, :property).should == []
+      @flag.load(32, :property).should == []
     end
   end
 end
