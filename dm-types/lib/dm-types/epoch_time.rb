@@ -1,7 +1,7 @@
 module DataMapper
   module Types
     class EpochTime < DataMapper::Type
-      primitive Fixnum
+      primitive Integer
 
       def self.load(value, property)
         case value

@@ -132,7 +132,7 @@ module DataMapper
         # @option :into<Resource> move node into another node
         # @option :above<Resource> move node above other node
         # @option :below<Resource> move node below other node
-        # @option :to<Fixnum> move node to a specific location in the nested set
+        # @option :to<Integer> move node to a specific location in the nested set
         #
         # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
         # @raise <RecursiveNestingError> if node is asked to position itself into one of its descendants
@@ -172,7 +172,7 @@ module DataMapper
           # if anyone has a good idea about how it should react when it cant set a valid position,
           # don't hesitate to find me in #datamapper, or send me an email at sindre -a- identu -dot- no
           #
-          # raise UnableToPositionError unless position.is_a?(Fixnum) && position > 0
+          # raise UnableToPositionError unless position.is_a?(Integer) && position > 0
           return false if !position || position < 1
           # if node is already in the requested position
           if self.lft == position || self.rgt == position - 1
@@ -213,7 +213,7 @@ module DataMapper
         ##
         # get the level of this node, where 0 is root. temporary solution
         #
-        # @return <Fixnum>
+        # @return <Integer>
         def level
           ancestors.length
         end

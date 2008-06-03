@@ -18,17 +18,41 @@ module DataMapper
     # Serialize a Resource to JavaScript Object Notation (JSON; RFC 4627)
     #
     # @return <String> a JSON representation of the Resource
-    def to_json
+    def to_json(options = {})
       result = '{ '
       fields = []
-      self.class.properties(self.repository.name).each do |property|
-        fields << "#{property.name.to_json}: #{self.send(property.getter).to_json}"
-      end
-      if self.class.respond_to?(:read_only_attributes)
-        self.class.read_only_attributes.each do |property|
-          fields << "#{property.to_json}: #{self.send(property).to_json}"
+
+      # FIXME: this should go into bunch of protected methods shared with other serialization methods
+      only_properties     = options[:only]    || []
+      excluded_properties = options[:exclude] || []
+      exclude_read_only   = options[:without_read_only_attributes] || false
+
+      propset = self.class.properties(repository.name)
+
+      # FIXME: this ugly condition is here because PropertySet does not support reject/select yet.
+      unless only_properties.empty?
+        propset.each do |property|
+          fields << "#{property.name.to_json}: #{send(property.getter).to_json}" if only_properties.include?(property.name.to_sym)
+        end
+      else
+        propset.each do |property|
+          fields << "#{property.name.to_json}: #{send(property.getter).to_json}" unless excluded_properties.include?(property.name.to_sym)
         end
       end
+
+      if self.class.respond_to?(:read_only_attributes) && exclude_read_only
+        self.class.read_only_attributes.each do |property|
+          fields << "#{property.to_json}: #{send(property).to_json}"
+        end
+      end
+
+      # add methods
+      (options[:methods] || []).each do |meth|
+        if self.respond_to?(meth)
+          fields << "#{meth.to_json}: #{send(meth).to_json}"
+        end
+      end
+
       result << fields.join(', ')
       result << ' }'
       result
@@ -40,8 +64,8 @@ module DataMapper
     def to_csv(writer = '')
       FasterCSV.generate(writer) do |csv|
         row = []
-        self.class.properties(self.repository.name).each do |property|
-         row << self.send(property.name).to_s
+        self.class.properties(repository.name).each do |property|
+         row << send(property.name).to_s
         end
         csv << row
       end
@@ -60,11 +84,11 @@ module DataMapper
     def to_yaml(opts = {})
       YAML::quick_emit(object_id,opts) do |out|
         out.map(nil,to_yaml_style) do |map|
-          self.class.properties(self.repository.name).each do |property|
-            value = self.send(property.name.to_sym)
+          self.class.properties(repository.name).each do |property|
+            value = send(property.name.to_sym)
             map.add(property.name, value.is_a?(Class) ? value.to_s : value)
           end
-          (self.instance_variable_get("@yaml_addes") || []).each do |k,v|
+          (instance_variable_get("@yaml_addes") || []).each do |k,v|
             map.add(k.to_s,v)
           end
         end
@@ -87,17 +111,17 @@ module DataMapper
     def to_xml_document(opts={})
       doc = REXML::Document.new
       root = doc.add_element(xml_element_name)
-      keys = self.class.key(self.repository.name)
+      keys = self.class.key(repository.name)
       keys.each do |key|
-        value = self.send(key.name)
+        value = send(key.name)
         root.attributes[key.name.to_s] = value.to_s
       end
 
       #TODO old code base was converting single quote to double quote on attribs
 
-      self.class.properties(self.repository.name).each do |property|
+      self.class.properties(repository.name).each do |property|
         if !keys.include?(property)
-          value = self.send(property.name)
+          value = send(property.name)
           node = root.add_element(property.name.to_s)
           node << REXML::Text.new(value.to_s) unless value.nil?
         end
@@ -113,16 +137,16 @@ module DataMapper
 
   class Collection
     def to_yaml(opts = {})
-      self.to_a.to_yaml(opts)
+      to_a.to_yaml(opts)
     end
 
     def to_json
-      self.to_a.to_json
+      to_a.to_json
     end
 
     def to_xml
       result = ""
-      self.each do |item|
+      each do |item|
         result << item.to_xml + "\n"
       end
       result
@@ -130,7 +154,7 @@ module DataMapper
 
     def to_csv
       result = ""
-      self.each do |item|
+      each do |item|
         result << item.to_csv + "\n"
       end
       result

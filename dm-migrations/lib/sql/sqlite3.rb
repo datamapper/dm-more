@@ -17,6 +17,17 @@ module SQL
       # do nothing, sqlite will automatically create the database file
     end
 
+    def supports_serial?
+      true
+    end
+
+    # TODO: move to dm-more/dm-migrations
+    def property_schema_statement(schema)
+      statement = super
+      statement << ' PRIMARY KEY AUTOINCREMENT' if supports_serial? && schema[:serial]
+      statement
+    end
+
     class Table < SQL::Table
       def initialize(adapter, table_name)
         @columns = []

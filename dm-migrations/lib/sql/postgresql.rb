@@ -18,6 +18,23 @@ module SQL
       execute "SET search_path TO test"
     end
 
+    def supports_serial?
+      true
+    end
+
+    def property_schema_statement(schema)
+      if supports_serial? && schema[:serial]
+        statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
+      else
+        statement = super
+        if schema.has_key?(:sequence_name)
+          statement << " DEFAULT nextval('#{schema[:sequence_name]}') NOT NULL"
+        end
+        statement
+      end
+      statement
+    end
+
     class Table < SQL::Table
       def initialize(adapter, table_name)
         @columns = []

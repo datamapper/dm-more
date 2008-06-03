@@ -1,6 +1,6 @@
 module DataMapper
   module Types
-    class Enum < DataMapper::Type(Fixnum)
+    class Enum < DataMapper::Type(Integer)
 
       def self.flag_map
         @flag_map

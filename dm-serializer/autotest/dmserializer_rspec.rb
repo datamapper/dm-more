@@ -7,7 +7,7 @@ class RspecCommandError < StandardError; end
 # Autotest has no full-blown snake_case to CamelCase
 class Autotest::DmserializerRspec < Autotest
   WHOLE_SUITE_REGEXP = %r{^spec/(unit|integration)/.*_spec\.rb}
-  
+
   Autotest.add_hook :initialize do |at|
     at.clear_mappings
     at.add_exception(/\.git|TAGS/)
@@ -36,12 +36,12 @@ class Autotest::DmserializerRspec < Autotest
 
   def initialize(kernel = Kernel, separator = File::SEPARATOR, alt_separator = File::ALT_SEPARATOR) # :nodoc:
     super() # need parens so that Ruby doesn't pass our args
-    # to the superclass version which takes none..    
-    
+    # to the superclass version which takes none..
+
     @kernel, @separator, @alt_separator = kernel, separator, alt_separator
     @spec_command = spec_command
   end
-  
+
   attr_accessor :failures
 
   def failed_results(results)
