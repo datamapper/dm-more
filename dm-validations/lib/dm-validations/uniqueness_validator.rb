@@ -42,7 +42,7 @@ module DataMapper
         # is target and found resource identic? same instance... but not ==
         return true if resource.class == target.class && resource.repository.name == target.repository.name && resource.key == target.key
 
-        error_message = @options[:message] || "%s is already taken".t(DataMapper::Inflection.humanize(@field_name))
+        error_message = @options[:message] || "%s is already taken".t(Extlib::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
         return false
       end
