@@ -16,7 +16,7 @@ module DataMapper
         value = target.validation_property_value(@field_name)
         return true if !value.blank?
 
-        error_message = @options[:message] || "%s must not be blank".t(DataMapper::Inflection.humanize(@field_name))
+        error_message = @options[:message] || "%s must not be blank".t(Extlib::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
 
         return false

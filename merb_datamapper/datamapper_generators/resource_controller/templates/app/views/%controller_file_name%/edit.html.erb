@@ -7,7 +7,7 @@
 <%% form_for(@<%= singular_model %>, :action => url(:<%= singular_model %>, @<%= singular_model %>)) do %>
 <% for property in properties.select{|p| !p.key?} -%>
   <p>
-    <b><%= DataMapper::Inflection.humanize(property.field) %></b><br />
+    <b><%= Extlib::Inflection.humanize(property.field) %></b><br />
     <%%= <%= field_from_type(property.type) %> :<%= property.getter %> %>
   </p>
 

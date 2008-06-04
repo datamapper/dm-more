@@ -18,7 +18,7 @@ module DataMapper
       # Assign an Array of Class names to watch.
       #   peep User, Article, Topic
       def peep(*args)
-        # puts "#{self.to_s} peeping... #{args.collect{|c| DataMapper::Inflection.classify(c.to_s)}.join(', ')}"
+        # puts "#{self.to_s} peeping... #{args.collect{|c| Extlib::Inflection.classify(c.to_s)}.join(', ')}"
         self.neighborhood_watch = args
       end
 

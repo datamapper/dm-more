@@ -30,7 +30,7 @@ module DataMapper
         raise "No such predefined format '#{validation}'" if validation.is_a?(Symbol) && !FORMATS.has_key?(validation)
         validator = validation.is_a?(Symbol) ? FORMATS[validation][0] : validation
 
-        field = DataMapper::Inflection.humanize(@field_name)
+        field = Extlib::Inflection.humanize(@field_name)
         error_message = @options[:message] || '%s has an invalid format'.t(field)
 
         valid = case validator

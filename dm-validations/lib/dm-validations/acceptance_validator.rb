@@ -8,7 +8,7 @@ module DataMapper
     class AcceptanceValidator < GenericValidator
 
       def self.default_message_for_field(field_name)
-        '%s is not accepted'.t(DataMapper::Inflection.humanize(field_name))
+        '%s is not accepted'.t(Extlib::Inflection.humanize(field_name))
       end
 
       def initialize(field_name, options = {})

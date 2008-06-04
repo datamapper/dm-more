@@ -16,7 +16,7 @@ module DataMapper
         field_value = target.attribute_get(field_name).blank?
         return true if field_value
 
-        error_message = @options[:message] || "%s must be absent".t(DataMapper::Inflection.humanize(@field_name))
+        error_message = @options[:message] || "%s must be absent".t(Extlib::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
 
         return false

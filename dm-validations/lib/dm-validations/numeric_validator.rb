@@ -25,7 +25,7 @@ module DataMapper
 
         if @options[:integer_only]
           return true if value =~ /\A[+-]?\d+\z/
-          error_message ||= '%s must be an integer'.t(DataMapper::Inflection.humanize(@field_name))
+          error_message ||= '%s must be an integer'.t(Extlib::Inflection.humanize(@field_name))
         else
           if scale && precision
             if scale == precision
@@ -38,7 +38,7 @@ module DataMapper
           else
             return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
           end
-          error_message ||= '%s must be a number'.t(DataMapper::Inflection.humanize(@field_name))
+          error_message ||= '%s must be a number'.t(Extlib::Inflection.humanize(@field_name))
         end
 
         add_error(target, error_message, @field_name)
