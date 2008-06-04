@@ -66,24 +66,6 @@ module DataMapper
         end
       end
 
-      # Reads the data specified by the given key into a resource from
-      # the given repository.
-      def read(repository, resource, key)
-        properties = resource.properties(repository.name).defaults
-        properties_with_indexes =
-          Hash[*properties.zip((0...properties.length).to_a).flatten]
-        set = Collection.new(repository, resource, properties_with_indexes)
-
-        doc = http_get("/#{self.escaped_db_name}/#{key}")
-        set.load(
-          properties.map do |property|
-            typecast(property.type, doc[property.field.to_s])
-          end
-        )
-
-        set.first
-      end
-
       # Deletes the resource from the repository.
       def delete(repository, resource)
         key = resource.class.key(self.name).map do |property|
@@ -119,23 +101,25 @@ module DataMapper
         doc = request do |http|
           http.request(build_javascript_request(query))
         end
-        populate_set(repository, query.model, query.fields, doc["rows"])
+        populate_set(repository, query, doc["rows"])
       end
 
       # Reads in a set from a stored view.
       def view(repository, resource, proc_name)
-        properties = resource.properties(repository.name).defaults
         doc = http_get(
           "/#{self.escaped_db_name}/_view" +
           "/#{resource.storage_name(self.name)}/#{proc_name}"
         )
-        populate_set(repository, resource, properties, doc["rows"])
+        query = Query.new(repository, resource)
+        populate_set(repository, query, doc["rows"])
       end
 
-      def populate_set(repository, resource, properties, docs)
+      # Populates a set with data from the supplied docs.
+      def populate_set(repository, query, docs)
+        resource, properties = query.model, query.fields
         properties_with_indexes =
           Hash[*properties.zip((0...properties.length).to_a).flatten]
-        set = Collection.new(repository, resource, properties_with_indexes)
+        set = Collection.new(query)
 
         docs.each do |doc|
           set.load(
