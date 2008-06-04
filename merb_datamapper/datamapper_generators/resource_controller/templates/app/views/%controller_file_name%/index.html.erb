@@ -5,7 +5,7 @@
 <table>
   <tr>
 <% for property in properties.reject{|p| p.lazy?} -%>
-    <th><%= DataMapper::Inflection.humanize(property.field) %></th>
+    <th><%= Extlib::Inflection.humanize(property.field) %></th>
 <% end -%>
   </tr>
 

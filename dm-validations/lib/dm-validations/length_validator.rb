@@ -31,7 +31,7 @@ module DataMapper
 
         # XXX: HACK seems hacky to do this on every validation, probably should
         #      do this elsewhere?
-        field = DataMapper::Inflection.humanize(@field_name)
+        field = Extlib::Inflection.humanize(@field_name)
         min = @range ? @range.min : @min
         max = @range ? @range.max : @max
         equal = @equal

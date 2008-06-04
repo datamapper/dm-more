@@ -4,7 +4,7 @@
 
 <% for property in properties -%>
 <p>
-  <b><%= DataMapper::Inflection.humanize(property.field) %>:</b>
+  <b><%= Extlib::Inflection.humanize(property.field) %>:</b>
   <%%=h @<%= singular_model %>.<%= property.getter %> %>
 </p>
 
