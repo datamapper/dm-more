@@ -2,7 +2,7 @@ require 'rubygems'
 require 'pathname'
 
 gem 'dm-core', '=0.9.1'
-require 'data_mapper'
+require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-types'
 

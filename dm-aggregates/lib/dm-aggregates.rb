@@ -1,6 +1,6 @@
 require 'rubygems'
 gem 'dm-core', '=0.9.1'
-require 'data_mapper'
+require 'dm-core'
 
 require File.join(File.dirname(__FILE__),'dm-aggregates','resource')
 require File.join(File.dirname(__FILE__),'dm-aggregates','repository')

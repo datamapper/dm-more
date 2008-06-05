@@ -2,7 +2,7 @@ require 'rubygems'
 require 'pathname'
 
 gem 'dm-core', '=0.9.1'
-require 'data_mapper'
+require 'dm-core'
 
 spec_dir_path = Pathname(__FILE__).dirname.expand_path
 require spec_dir_path.parent + 'lib/dm-serializer'

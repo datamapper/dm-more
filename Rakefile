@@ -17,6 +17,8 @@ include FileUtils
 
 DIR = Pathname(__FILE__).dirname.expand_path.to_s
 
+## ORDER IS IMPORTANT
+# gems may depend on other member gems of dm-more
 gem_paths = %w[
   merb_datamapper
   dm-aggregates

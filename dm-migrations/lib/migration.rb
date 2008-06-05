@@ -1,6 +1,6 @@
 require 'rubygems'
 gem 'dm-core', '=0.9.1'
-require 'data_mapper'
+require 'dm-core'
 require 'benchmark'
 require File.dirname(__FILE__) + '/sql'
 

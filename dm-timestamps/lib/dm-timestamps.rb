@@ -1,7 +1,7 @@
 require 'rubygems'
 
 gem 'dm-core', '=0.9.1'
-require 'data_mapper'
+require 'dm-core'
 
 module DataMapper
   module Timestamp
