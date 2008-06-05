@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'fileutils'
-require 'data_mapper'
+require 'dm-core'
 
 module Merb
   module Orms
