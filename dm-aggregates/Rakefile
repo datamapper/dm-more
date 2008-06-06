@@ -32,9 +32,16 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc "Install #{spec.name} #{spec.version}"
+desc "Install #{spec.name} #{spec.version} (default ruby)"
 task :install => [ :package ] do
   sh "#{SUDO} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+end
+
+namespace :jruby do
+  desc "Install #{spec.name} #{spec.version} with JRuby"
+  task :install => [ :package ] do
+    sh %{#{SUDO} jruby -S gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources}, :verbose => false
+  end
 end
 
 desc 'Run specifications'
