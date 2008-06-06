@@ -21,8 +21,8 @@ module DataMapper
       #---
       # @public
       def count(*args)
-        with_repository_and_property(*args) do |repository,property,options|
-          repository.count(self, property, options)
+        with_repository_and_property(*args) do |repository,property,query|
+          repository.count(self, property, query)
         end
       end
 
@@ -41,9 +41,9 @@ module DataMapper
       #---
       # @public
       def min(*args)
-        with_repository_and_property(*args) do |repository,property,options|
+        with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.min(self, property, options)
+          repository.min(self, property, query)
         end
       end
 
@@ -62,9 +62,9 @@ module DataMapper
       #---
       # @public
       def max(*args)
-        with_repository_and_property(*args) do |repository,property,options|
+        with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.max(self, property, options)
+          repository.max(self, property, query)
         end
       end
 
@@ -83,9 +83,9 @@ module DataMapper
       #---
       # @public
       def avg(*args)
-        with_repository_and_property(*args) do |repository,property,options|
+        with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.avg(self, property, options)
+          repository.avg(self, property, query)
         end
       end
 
@@ -104,20 +104,20 @@ module DataMapper
       #---
       # @public
       def sum(*args)
-        with_repository_and_property(*args) do |repository,property,options|
+        with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.sum(self, property, options)
+          repository.sum(self, property, query)
         end
       end
 
       # def first(*args)
-      #   with_repository_and_property(*args) do |repository,property,options|
+      #   with_repository_and_property(*args) do |repository,property,query|
       #     raise NotImplementedError
       #   end
       # end
       #
       # def last(*args)
-      #   with_repository_and_property(*args) do |repository,property,options|
+      #   with_repository_and_property(*args) do |repository,property,query|
       #     raise NotImplementedError
       #   end
       # end
@@ -125,12 +125,12 @@ module DataMapper
       private
 
       def with_repository_and_property(*args, &block)
-        options       = Hash === args.last ? args.pop : {}
-        property_name = args.shift
+        query         = args.last.respond_to?(:merge) ? args.pop : {}
+        property_name = args[0]
 
-        repository(*Array(options[:repository])) do |repository|
+        repository(*Array(query[:repository])) do |repository|
           property = properties(repository.name)[property_name] if property_name
-          yield repository, property, options
+          yield repository, property, query
         end
       end
 

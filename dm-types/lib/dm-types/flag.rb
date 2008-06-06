@@ -33,7 +33,7 @@ module DataMapper
             pow = 2 ** i
             matches << flag_map[pow] if value & pow == pow
           end
-          
+
           matches.compact
         rescue TypeError, Errno::EDOM
           []

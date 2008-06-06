@@ -1,32 +1,34 @@
 module DataMapper
   class Repository
-    def count(model, property, options)
-      @adapter.count(self, property, scoped_query(model, options))
+    def count(model, property, query)
+      @adapter.count(self, property, scoped_query(model, query))
     end
 
-    def min(model, property, options)
-      @adapter.min(self, property, scoped_query(model, options))
+    def min(model, property, query)
+      @adapter.min(self, property, scoped_query(model, query))
     end
 
-    def max(model, property, options)
-      @adapter.max(self, property, scoped_query(model, options))
+    def max(model, property, query)
+      @adapter.max(self, property, scoped_query(model, query))
     end
 
-    def avg(model, property, options)
-      @adapter.avg(self, property, scoped_query(model, options))
+    def avg(model, property, query)
+      @adapter.avg(self, property, scoped_query(model, query))
     end
 
-    def sum(model, property, options)
-      @adapter.sum(self, property, scoped_query(model, options))
+    def sum(model, property, query)
+      @adapter.sum(self, property, scoped_query(model, query))
     end
 
     private
 
-    def scoped_query(model, options)
-      if current_scope = model.send(:current_scope)
-        current_scope.merge(options)
+    def scoped_query(model, query)
+      query = if model.query
+        model.query.merge(query)
+      elsif Hash === query
+        Query.new(self, model, query)
       else
-        Query.new(self, model, options)
+        query
       end
     end
   end

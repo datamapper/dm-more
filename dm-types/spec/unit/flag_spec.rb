@@ -48,13 +48,13 @@ describe DataMapper::Types::Flag do
       @flag.dump([:second, :fourth], :property).should == 10
       @flag.dump([:first, :second, :third, :fourth, :fifth], :property).should == 31
     end
-    
+
     it "should return a binary flag built from the key values of all matches even if strings" do
       @flag.dump(["first", "second"], :property).should == 3
       @flag.dump(["second", "fourth"], :property).should == 10
       @flag.dump(["first", "second", "third", "fourth", "fifth"], :property).should == 31
     end
-    
+
     it "should return 0 if there is no match" do
       @flag.dump(:zero, :property).should == 0
     end
