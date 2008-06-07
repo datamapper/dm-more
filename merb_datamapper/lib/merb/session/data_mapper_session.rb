@@ -115,11 +115,4 @@ module Merb
       attribute_set :data, self.class.marshal(self.data)
     end
   end
-
-
-  # unless DataMapper.database.exists?(table_name)
-  #   puts "Warning: The database did not contain a '#{table_name}' table for sessions."
-  #   DataMapperSession.auto_migrate!
-  #   puts "Created sessions table."
-  # end
 end
