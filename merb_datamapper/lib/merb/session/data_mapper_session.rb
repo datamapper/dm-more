@@ -1,4 +1,9 @@
-require 'data_mapper'
+begin
+  require 'dm-core'
+rescue LoadError => e
+  require 'data_mapper'
+end
+
 require 'base64'
 module Merb
   module SessionMixin
