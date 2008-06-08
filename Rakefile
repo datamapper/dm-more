@@ -21,6 +21,7 @@ DIR = Pathname(__FILE__).dirname.expand_path.to_s
 # gems may depend on other member gems of dm-more
 gem_paths = %w[
   adapters/dm-couchdb-adapter
+  adapters/dm-rest-adapter
   dm-aggregates
   dm-ar-finders
   dm-cli
@@ -33,7 +34,6 @@ gem_paths = %w[
   dm-timestamps
   dm-types
   dm-validations
-
   merb_datamapper
 ]
 gems = gem_paths.map { |p| File.basename(p) }
