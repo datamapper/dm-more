@@ -12,6 +12,7 @@ require dir / 'epoch_time'
 require dir / 'file_path'
 require dir / 'flag'
 require dir / 'ip_address'
+require dir / "json"""
 require dir / 'uri'
 require dir / 'yaml'
 require dir / 'serial'

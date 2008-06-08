@@ -26,6 +26,6 @@ module DataMapper
           ::JSON.dump(value)
         end
       end
-    end # class Yaml
+    end # class Json
   end # module Types
 end # module DataMapper
