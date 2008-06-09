@@ -16,26 +16,26 @@ module DataMapper
         value = target.validation_property_value(@field_name)
         property = target.class.properties(target.repository.name)[@field_name]
         return true if present?(value, property.type)
-        
+
         error_message = @options[:message] || default_error(property.type)
         add_error(target, error_message, @field_name)
 
         false
       end
-      
+
       protected
-      
+
       # Boolean types are considered present if non-nil.
       # Other types are considered present if non-blank.
       def present?(value, property_type)
         boolean_type?(property_type) ? !value.nil? : !value.blank?
       end
-      
+
       def default_error(property_type)
         actual = boolean_type?(property_type) ? "nil" : "blank"
         "%s must not be #{actual}".t(Extlib::Inflection.humanize(@field_name))
       end
-      
+
       # Is +type+ a boolean property type?
       #
       # TODO: Consolidate Boolean and TrueClass across DataMapper code

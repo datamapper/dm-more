@@ -22,7 +22,7 @@ class SailBoat
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
   property :float,         Float,      :scale => 2, :precision => 1
   property :big_decimal,   BigDecimal, :scale => 2, :precision => 1
-  
+
   include TypecastBypassSetter
 end
 

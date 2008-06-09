@@ -12,7 +12,7 @@ Let's say you have repositories :default, :one and :two.
 
   class MyModel
     include DataMapper::Resource
-    
+
     property :a, String
     property :b, String
   end

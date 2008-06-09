@@ -7,7 +7,7 @@ describe "Shorthand" do
   module DaModule
     class MyModel
       include DataMapper::Resource
-      
+
       property :a, String, :key => true
       property :b, String
     end
@@ -35,7 +35,7 @@ describe "Shorthand" do
     end
 
     it "should contain the same properties as the parent" do
-      DaModule::MyModel(:alternative).properties.should have(2).items 
+      DaModule::MyModel(:alternative).properties.should have(2).items
     end
   end
 
