@@ -43,8 +43,7 @@ module DataMapper
         opts[:context] = property.options[:validates] if property.options.has_key?(:validates)
 
         # presence
-        # TODO: Consolidate Boolean and TrueClass
-        unless opts[:allow_nil] || (property.type == DM::Boolean || property.type == TrueClass)
+        unless opts[:allow_nil]
           validates_present property.name, opts
         end
 

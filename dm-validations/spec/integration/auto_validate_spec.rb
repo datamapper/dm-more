@@ -1,9 +1,18 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
+module TypecastBypassSetter
+  # Bypass typecasting so we can set values for specs
+  def set(attributes)
+    attributes.each do |k,v|
+      instance_variable_set("@#{k}", v)
+    end
+  end
+end
+
 class SailBoat
   include DataMapper::Resource
-  property :id,            Integer,     :key => true
+  property :id,            Integer,    :key => true
   property :name,          String,                                :nullable => false,     :validates       => :presence_test
   property :description,   String,     :length => 10,                                     :validates       => :length_test_1
   property :notes,         String,     :length => 2..10,                                  :validates       => :length_test_2
@@ -13,16 +22,24 @@ class SailBoat
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
   property :float,         Float,      :scale => 2, :precision => 1
   property :big_decimal,   BigDecimal, :scale => 2, :precision => 1
-  property :bool,          Boolean
-  property :bool_false,    Boolean,    :default => false
-  property :bool_true,     Boolean,    :default => true
+  
+  include TypecastBypassSetter
+end
 
-  # bypass typecasting so we can set values for specs
-  def set(attributes)
-    attributes.each do |k,v|
-      instance_variable_set("@#{k}", v)
-    end
-  end
+class NotNullableBooleanBoat
+  include DataMapper::Resource
+  property :id,   Integer, :key => true
+  property :bool, Boolean, :nullable => false
+
+  include TypecastBypassSetter
+end
+
+class NullableBooleanBoat
+  include DataMapper::Resource
+  property :id,   Integer, :key => true
+  property :bool, Boolean # :nullable => true by default
+
+  include TypecastBypassSetter
 end
 
 describe "Automatic Validation from Property Definition" do
@@ -95,6 +112,7 @@ describe "Automatic Validation from Property Definition" do
       include DataMapper::Resource
       property :id,   Integer,     :serial   => true,  :auto_validation => false
       property :name, String,      :nullable => false, :auto_validation => false
+      property :bool, DM::Boolean, :nullable => false, :auto_validation => false
     end
     klass.new.valid?.should == true
   end
@@ -140,9 +158,9 @@ describe "Automatic Validation from Property Definition" do
     end
   end
 
-  describe 'for Boolean properties' do
+  describe 'for non-nullable Boolean properties' do
     before do
-      @boat = SailBoat.new(:id => 1)
+      @boat = NotNullableBooleanBoat.new(:id => 1)
     end
 
     it 'should allow true' do
@@ -152,6 +170,32 @@ describe "Automatic Validation from Property Definition" do
 
     it 'should allow false' do
       @boat.set(:bool => false)
+      @boat.should be_valid
+    end
+
+    it 'should not allow nil' do
+      @boat.set(:bool => nil)
+      @boat.should_not be_valid
+    end
+  end
+
+  describe 'for nullable Boolean properties' do
+    before do
+      @boat = NullableBooleanBoat.new(:id => 1)
+    end
+
+    it 'should allow true' do
+      @boat.set(:bool => true)
+      @boat.should be_valid
+    end
+
+    it 'should allow false' do
+      @boat.set(:bool => false)
+      @boat.should be_valid
+    end
+
+    it 'should allow nil' do
+      @boat.set(:bool => nil)
       @boat.should be_valid
     end
   end
