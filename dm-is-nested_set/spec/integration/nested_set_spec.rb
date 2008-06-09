@@ -57,12 +57,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'Class#rebuild_parent_child_relationships' do
       it 'should reset all parent_ids correctly' do
-        pending do
-          Category[5].parent_id = nil
-          Category.rebuild_parent_child_relationships
-          Category[5].parent_id.should == 2
-          Category[9].parent_id.should == 6
-        end
+        Category.get!(5).parent_id = nil
+        Category.rebuild_parent_child_relationships
+        Category.get!(5).parent_id.should == 2
+        Category.get!(9).parent_id.should == 6
       end
     end
 
@@ -82,59 +80,51 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe '#ancestor, #ancestors and #self_and_ancestors' do
       it 'should return ancestors in an array' do
-        pending do
-          repository(:default) do |repos|
-            c8 = Category.get(8)
-            c8.ancestor.should == Category.get(7)
-            c8.ancestor.should == c8.parent
+        repository(:default) do |repos|
+          c8 = Category.get!(8)
+          c8.ancestor.should == Category.get!(7)
+          c8.ancestor.should == c8.parent
 
-            c8.ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players"]
-            c8.self_and_ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players","Flash"]
-          end
+          c8.ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players"]
+          c8.self_and_ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players","Flash"]
         end
       end
     end
 
     describe '#children' do
       it 'should return children of node' do
-        pending do
-          r = Category.root
-          r.children.length.should == 2
+        r = Category.root
+        r.children.length.should == 2
 
-          t = r.children.first
-          t.children.length.should == 3
-          t.children.first.name.should == "Tube"
-          t.children[2].name.should == "Plasma"
-        end
+        t = r.children.first
+        t.children.length.should == 3
+        t.children.first.name.should == "Tube"
+        t.children[2].name.should == "Plasma"
       end
     end
 
     describe '#descendants and #self_and_descendants' do
       it 'should return all subnodes of node' do
-        pending do
-          repository(:default) do
-            r = Category.root
-            r.self_and_descendants.length.should == 10
-            r.descendants.length.should == 9
+        repository(:default) do
+          r = Category.root
+          r.self_and_descendants.length.should == 10
+          r.descendants.length.should == 9
 
-            t = r.children[1]
-            t.descendants.length.should == 4
-            t.descendants.map{|a|a.name}.should == ["MP3 Players","Flash","CD Players","2 Way Radios"]
-          end
+          t = r.children[1]
+          t.descendants.length.should == 4
+          t.descendants.map{|a|a.name}.should == ["MP3 Players","Flash","CD Players","2 Way Radios"]
         end
       end
     end
 
     describe '#leaves' do
       it 'should return all subnodes of node without descendants' do
-        pending do
-          repository(:default) do
-            r = Category.root
-            r.leaves.length.should == 6
+        repository(:default) do
+          r = Category.root
+          r.leaves.length.should == 6
 
-            t = r.children[1]
-            t.leaves.length.should == 3
-          end
+          t = r.children[1]
+          t.leaves.length.should == 3
         end
       end
     end
@@ -159,30 +149,30 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it 'should move items correctly with :higher / :highest / :lower / :lowest' do
         pending do
           repository(:default) do
-            Category[4].pos.should == [5,6]
+            Category.get!(4).pos.should == [5,6]
 
-            Category[4].move(:above => Category[3])
-            Category[4].pos.should == [3,4]
+            Category.get!(4).move(:above => Category.get!(3))
+            Category.get!(4).pos.should == [3,4]
 
-            Category[4].move(:higher).should == false
-            Category[4].pos.should == [3,4]
-            Category[3].pos.should == [5,6]
-            Category[4].right_sibling.should == Category[3]
+            Category.get!(4).move(:higher).should == false
+            Category.get!(4).pos.should == [3,4]
+            Category.get!(3).pos.should == [5,6]
+            Category.get!(4).right_sibling.should == Category.get!(3)
 
-            Category[4].move(:lower)
-            Category[4].pos.should == [5,6]
-            Category[4].left_sibling.should == Category[3]
-            Category[4].right_sibling.should == Category[5]
+            Category.get!(4).move(:lower)
+            Category.get!(4).pos.should == [5,6]
+            Category.get!(4).left_sibling.should == Category.get!(3)
+            Category.get!(4).right_sibling.should == Category.get!(5)
 
-            Category[4].move(:highest)
-            Category[4].pos.should == [3,4]
-            Category[4].move(:higher).should == false
+            Category.get!(4).move(:highest)
+            Category.get!(4).pos.should == [3,4]
+            Category.get!(4).move(:higher).should == false
 
-            Category[4].move(:lowest)
-            Category[4].pos.should == [7,8]
-            Category[4].left_sibling.should == Category[5]
+            Category.get!(4).move(:lowest)
+            Category.get!(4).pos.should == [7,8]
+            Category.get!(4).left_sibling.should == Category.get!(5)
 
-            Category[4].move(:higher) # should reset the tree to how it was
+            Category.get!(4).move(:higher) # should reset the tree to how it was
 
           end
         end
@@ -191,21 +181,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it 'should move items correctly with :indent / :outdent' do
         pending do
           repository(:default) do
-            Category[7].pos.should == [11,14]
-            Category[7].descendants.length.should == 1
+            Category.get!(7).pos.should == [11,14]
+            Category.get!(7).descendants.length.should == 1
 
             # The category is at the top of its parent, should not be able to indent.
-            Category[7].move(:indent).should == false
+            Category.get!(7).move(:indent).should == false
 
             # After doing this, it tries to move into parent again, and throw false...
-            Category[7].move(:outdent)
-            Category[7].pos.should == [16,19]
-            Category[7].left_sibling.should == Category[6]
+            Category.get!(7).move(:outdent)
+            Category.get!(7).pos.should == [16,19]
+            Category.get!(7).left_sibling.should == Category.get!(6)
 
-            Category[7].move(:higher) # Move up above Portable Electronics
+            Category.get!(7).move(:higher) # Move up above Portable Electronics
 
-            Category[7].pos.should == [10,13]
-            Category[7].left_sibling.should == Category[2]
+            Category.get!(7).pos.should == [10,13]
+            Category.get!(7).left_sibling.should == Category.get!(2)
           end
         end
       end
