@@ -12,6 +12,12 @@ module DataMapper
 
           include DataMapper::Is::Versioned::InstanceMethods
 
+          class_eval <<-END, __FILE__, __LINE__
+          class #{self.name}Version
+            include DataMapper::Resource
+          end
+          END
+
         end
 
       end
