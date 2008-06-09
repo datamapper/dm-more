@@ -13,6 +13,9 @@ class SailBoat
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
   property :float,         Float,      :scale => 2, :precision => 1
   property :big_decimal,   BigDecimal, :scale => 2, :precision => 1
+  property :bool,          Boolean
+  property :bool_false,    Boolean,    :default => false
+  property :bool_true,     Boolean,    :default => true
 
   # bypass typecasting so we can set values for specs
   def set(attributes)
@@ -90,8 +93,8 @@ describe "Automatic Validation from Property Definition" do
       was given" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id, Integer, :serial => true, :auto_validation => false
-      property :name, String, :nullable => false, :auto_validation => false
+      property :id,   Integer,     :serial   => true,  :auto_validation => false
+      property :name, String,      :nullable => false, :auto_validation => false
     end
     klass.new.valid?.should == true
   end
@@ -134,6 +137,22 @@ describe "Automatic Validation from Property Definition" do
       @boat.set(:id => BigDecimal('1'))
       @boat.should_not be_valid
       @boat.errors.on(:id).should == [ 'Id must be an integer' ]
+    end
+  end
+
+  describe 'for Boolean properties' do
+    before do
+      @boat = SailBoat.new(:id => 1)
+    end
+
+    it 'should allow true' do
+      @boat.set(:bool => true)
+      @boat.should be_valid
+    end
+
+    it 'should allow false' do
+      @boat.set(:bool => false)
+      @boat.should be_valid
     end
   end
 
