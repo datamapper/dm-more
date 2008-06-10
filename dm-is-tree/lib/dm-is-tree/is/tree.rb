@@ -62,7 +62,7 @@ module DataMapper
           configuration = { :child_key => :parent_id }
           configuration.update(options) if Hash === options
 
-          many_to_one :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
+          belongs_to :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
           has n, :children, :class_name => name, :child_key => [ configuration[:child_key] ]
 
           include DataMapper::Is::Tree::InstanceMethods

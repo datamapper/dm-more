@@ -25,7 +25,7 @@ module DataMapper
                     @repository_name ||= _repository_name
                   end
                 end
-              
+
                 klass
               end
             end
