@@ -18,18 +18,32 @@ class Book
   property :created_at, DateTime
 end
 
-describe Book do
+describe DataMapper::Adapters::RestAdapter do
+  
+  before :all do
+    @adapter = DataMapper::Repository.adapters[:default]
+    @no_connection = false
+    unless @no_connection
+      begin
+        @adapter.send(:http_post, "/books.xml", "")
+      rescue Errno::ECONNREFUSED
+        @no_connection = true
+      end
+    end
+  end
+  
   it "should be able to get all the books" do
+    pending "No connection" if @no_connection
     pending "Not Implemented"
     Book.all.should_not be_empty
   end
-end
-
-describe "A Book" do
-  before do
-    @book = Book.new(:title => "Hello, World!", :author => "Anonymous")
-  end
   it "should be able to create a book" do
-    @book.save
+    pending "No connection" if @no_connection
+    new_book.save
   end
+
+  def new_book(options={})
+    Book.new(options.merge({:title => "Hello, World!", :author => "Anonymous"}))
+  end
+
 end
