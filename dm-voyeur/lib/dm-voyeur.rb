@@ -53,8 +53,9 @@ end # DataMapper
 
 if $0 == __FILE__
   require 'rubygems'
-  gem 'dm-core'
-  require 'data_mapper'
+  
+  gem 'dm-core', '=0.9.1'
+  require 'dm-core'
 
   FileUtils.touch(File.join(Dir.pwd, "migration_test.db"))
   DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/migration_test.db")

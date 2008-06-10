@@ -31,7 +31,7 @@ module DataMapper
       #
       # @note
       #   dm-core's support lib adds the #blank? method to many classes,
-      # @see lib/data_mapper/support/blank.rb (dm-core)for more information.
+      # @see lib/dm-core/support/blank.rb (dm-core) for more information.
       #
       # @example [Usage]
       #   require 'dm-validations'
