@@ -92,6 +92,16 @@ module DataMapper
       return self.send(name) if self.respond_to?(name)
       nil
     end
+    
+    # Get the corresponding Resource property, if it exists.
+    #
+    # Note: DataMapper validations can be used on non-DataMapper resources.
+    # In such cases, the return value will be nil.
+    def validation_property(field_name)
+      if DataMapper::Resource > self.class
+        self.class.properties(self.repository.name)[field_name]
+      end
+    end
 
     def validation_association_keys(name)
       if self.class.relationships.has_key?(name)

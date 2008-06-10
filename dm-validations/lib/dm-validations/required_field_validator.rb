@@ -14,7 +14,7 @@ module DataMapper
 
       def call(target)
         value = target.validation_property_value(@field_name)
-        property = target.class.properties(target.repository.name)[@field_name]
+        property = target.validation_property(@field_name)
         return true if present?(value, property)
 
         error_message = @options[:message] || default_error(property)
@@ -25,8 +25,9 @@ module DataMapper
 
       protected
 
-      # Boolean types are considered present if non-nil.
-      # Other types are considered present if non-blank.
+      # Boolean property types are considered present if non-nil.
+      # Other property types are considered present if non-blank.
+      # Non-properties are considered present if non-blank.
       def present?(value, property)
         boolean_type?(property) ? !value.nil? : !value.blank?
       end
@@ -38,9 +39,11 @@ module DataMapper
 
       # Is +property+ a boolean property?
       #
-      # Returns true for Boolean, ParanoidBoolean, TrueClass, etc.
+      # Returns true for Boolean, ParanoidBoolean, TrueClass, etc. properties.
+      # Returns false for other property types.
+      # Returns false for non-properties.
       def boolean_type?(property)
-        property.primitive == TrueClass
+        property ? property.primitive == TrueClass : false
       end
 
     end # class RequiredFieldValidator
