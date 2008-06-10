@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'fileutils'
+
+gem 'dm-core', '=0.9.1'
 require 'dm-core'
 
 module Merb
