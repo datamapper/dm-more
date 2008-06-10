@@ -32,7 +32,7 @@ module DataMapper
 
       def request(parse_result = true, &block)
         res = nil
-        Net::HTTP.start("localhost", 3001) do |http|
+        Net::HTTP.start(@uri[:host], @uri[:port].to_i) do |http|
           res = yield(http)
         end
         res

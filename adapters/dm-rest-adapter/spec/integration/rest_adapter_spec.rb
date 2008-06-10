@@ -7,7 +7,8 @@ require Pathname(__FILE__).dirname.parent.expand_path + '../lib/rest_adapter'
 DataMapper.setup(:default, {
   :adapter  => 'rest',
   :format => 'xml',
-  :base_url => 'http://localhost:3001'
+  :host => 'localhost',
+  :port => '3001'
 })
 
 class Book
@@ -33,17 +34,23 @@ describe DataMapper::Adapters::RestAdapter do
   end
   
   it "should be able to get all the books" do
-    pending "No connection" if @no_connection
+    check_connection
     pending "Not Implemented"
     Book.all.should_not be_empty
   end
+
   it "should be able to create a book" do
+    check_connection
     pending "No connection" if @no_connection
     new_book.save
   end
 
   def new_book(options={})
     Book.new(options.merge({:title => "Hello, World!", :author => "Anonymous"}))
+  end
+
+  def check_connection
+    pending "Could not connect to #{@adapter.uri[:host]}:#{@adapter.uri[:port]}" if @no_connection
   end
 
 end
