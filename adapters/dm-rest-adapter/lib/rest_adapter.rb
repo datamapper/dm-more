@@ -11,7 +11,7 @@ module DataMapper
       # Creates a new resource in the specified repository.
       def create(repository, resource)
         result = http_post("/#{resource.class.storage_name}.xml", resource.to_xml)
-        #TODO: Check to see if result is HTTP 200, parse id out of response
+        #puts Hash.from_xml(result.body).inspect
       end
     protected
       def http_put(uri, data = nil)

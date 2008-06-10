@@ -7,7 +7,8 @@ steps_for :using_rest_adapter do
   DataMapper.setup(:default, {
     :adapter  => 'rest',
     :format => 'xml',
-    :base_url => 'http://localhost:3001'
+    :host => 'localhost',
+    :port => '3001'
   })
 
   class Book
