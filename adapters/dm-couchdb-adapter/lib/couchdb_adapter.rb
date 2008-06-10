@@ -22,7 +22,11 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] =
-          instance_variable_get(property.instance_variable_name)
+          unless [Date, DateTime].include? property.type
+            instance_variable_get(property.instance_variable_name)
+          else
+            instance_variable_get(property.instance_variable_name).to_s          
+          end
         accumulator
       end).to_json
     end
@@ -170,7 +174,7 @@ module DataMapper
       def typecast(type, value)
         return value if value.nil?
         case type.to_s
-        when "Time"       then Time.at(value)
+        when "Time"       then Time.at(value.to_i)
         when "Date"       then Date.parse(value)
         when "DateTime"   then DateTime.parse(value)
         else value
