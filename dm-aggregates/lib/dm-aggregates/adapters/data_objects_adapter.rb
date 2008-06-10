@@ -2,31 +2,31 @@ module DataMapper
   module Adapters
     class DataObjectsAdapter
       def count(repository, property, query)
-        parameters = query.parameters
-        query(aggregate_value_statement(:count, property, query), *parameters).first
+        bind_values = query.bind_values
+        query(aggregate_value_statement(:count, property, query), *bind_values).first
       end
 
       def min(respository, property, query)
-        parameters = query.parameters
-        min = query(aggregate_value_statement(:min, property, query), *parameters).first
+        bind_values = query.bind_values
+        min = query(aggregate_value_statement(:min, property, query), *bind_values).first
         property.typecast(min)
       end
 
       def max(respository, property, query)
-        parameters = query.parameters
-        max = query(aggregate_value_statement(:max, property, query), *parameters).first
+        bind_values = query.bind_values
+        max = query(aggregate_value_statement(:max, property, query), *bind_values).first
         property.typecast(max)
       end
 
       def avg(respository, property, query)
-        parameters = query.parameters
-        avg = query(aggregate_value_statement(:avg, property, query), *parameters).first
+        bind_values = query.bind_values
+        avg = query(aggregate_value_statement(:avg, property, query), *bind_values).first
         property.type == Integer ? avg.to_f : property.typecast(avg)
       end
 
       def sum(respository, property, query)
-        parameters = query.parameters
-        sum = query(aggregate_value_statement(:sum, property, query), *parameters).first
+        bind_values = query.bind_values
+        sum = query(aggregate_value_statement(:sum, property, query), *bind_values).first
         property.typecast(sum)
       end
 

@@ -189,14 +189,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           portable_electronics = Category.get(6)
           televisions = Category.get(2)
-
           
           mp3_players.pos.should == [11,14]
           #mp3_players.descendants.length.should == 1
-
+          
           # The category is at the top of its parent, should not be able to indent.
           mp3_players.move(:indent).should == false
-
+          
           mp3_players.move(:outdent)
           
           mp3_players.pos.should == [16,19]

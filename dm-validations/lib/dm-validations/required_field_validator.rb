@@ -14,12 +14,33 @@ module DataMapper
 
       def call(target)
         value = target.validation_property_value(@field_name)
-        return true if !value.blank?
+        property = target.class.properties(target.repository.name)[@field_name]
+        return true if present?(value, property)
 
-        error_message = @options[:message] || "%s must not be blank".t(Extlib::Inflection.humanize(@field_name))
-        add_error(target, error_message , @field_name)
+        error_message = @options[:message] || default_error(property)
+        add_error(target, error_message, @field_name)
 
-        return false
+        false
+      end
+
+      protected
+
+      # Boolean types are considered present if non-nil.
+      # Other types are considered present if non-blank.
+      def present?(value, property)
+        boolean_type?(property) ? !value.nil? : !value.blank?
+      end
+
+      def default_error(property)
+        actual = boolean_type?(property) ? "nil" : "blank"
+        "%s must not be #{actual}".t(Extlib::Inflection.humanize(@field_name))
+      end
+
+      # Is +property+ a boolean property?
+      #
+      # Returns true for Boolean, ParanoidBoolean, TrueClass, etc.
+      def boolean_type?(property)
+        property.primitive == TrueClass
       end
 
     end # class RequiredFieldValidator
@@ -27,8 +48,12 @@ module DataMapper
     module ValidatesPresent
 
       ##
-      # Validates that the specified attribute is "not blank" via the
-      # attribute's #blank? method.
+      # Validates that the specified attribute is present.
+      #
+      # For most property types "being present" is the same as being "not
+      # blank" as determined by the attribute's #blank? method. However, in
+      # the case of Boolean, "being present" means not nil; i.e. true or
+      # false.
       #
       # @note
       #   dm-core's support lib adds the blank? method to many classes,

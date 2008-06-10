@@ -20,7 +20,7 @@ DIR = Pathname(__FILE__).dirname.expand_path.to_s
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
 gem_paths = %w[
-  merb_datamapper
+  adapters/dm-couchdb-adapter
   dm-aggregates
   dm-ar-finders
   dm-cli
@@ -28,11 +28,12 @@ gem_paths = %w[
   dm-is-tree
   dm-migrations
   dm-serializer
+  dm-shorthand
   dm-timestamps
   dm-types
   dm-validations
   dm-voyeur
-  adapters/dm-couchdb-adapter
+  merb_datamapper
 ]
 gems = gem_paths.map { |p| File.basename(p) }
 
@@ -165,7 +166,6 @@ namespace :ci do
     gem_names = [(ENV['gem_name'] || gems)].flatten
     gem_names.each do |gem_name|
       Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
-        puts "#{gem_name}:spec"
         t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
         t.spec_files = Pathname.glob(ENV['FILES'] || DIR + "/#{gem_name}/spec/**/*_spec.rb")
         unless ENV['NO_RCOV']
