@@ -1,5 +1,5 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + '../lib/rest_adapter'
+require Pathname(__FILE__).dirname.parent.expand_path + 'lib/rest_adapter'
 
 DataMapper.setup(:default, {
   :adapter  => 'rest',
@@ -23,7 +23,7 @@ describe "Book#save" do
   end
   
   it "should make an HTTP Post" do
-    @adapter.should_receive(:http_post).with("/books.xml",@book.to_xml)
+    @adapter.should_receive(:http_post).with("/books.xml", @book.to_xml)
     @book.save
   end
 
