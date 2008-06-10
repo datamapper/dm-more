@@ -1,65 +1,69 @@
 module DataMapper
   module Is
     module NestedSet
-      def self.included(base)
-        base.extend(GenerateMethod)
-      end
+      
+      ##
+      # Include the GeneratorMethods now. Wait with the other methods until
+      # plugin is actually called (to keep from cluttering namespace)
+      #
 
-      module GenerateMethod
+      ##
+      # docs in the works
+      #
+      def is_nested_set(options={})
+        options = { :child_key => :parent_id }.merge(options)
 
-        ##
-        # docs in the works
-        #
-        def is_a_nested_set(options={})
-          options = { :child_key => :parent_id }.merge(options)
+        extend  DataMapper::Is::NestedSet::ClassMethods
+        include DataMapper::Is::NestedSet::InstanceMethods
 
-          extend  DataMapper::Is::NestedSet::ClassMethods
-          include DataMapper::Is::NestedSet::InstanceMethods
+        property :lft, Integer, :writer => :private
+        property :rgt, Integer, :writer => :private
 
-          property :lft, Integer, :writer => :private
-          property :rgt, Integer, :writer => :private
+        belongs_to :parent,  :class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
+        has n,     :children,:class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
 
-          belongs_to :parent,  :class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
-          has n,     :children,:class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
-
-          before :create do
-            # scenarios:
-            # - user creates a new object and does not specify a parent
-            # - user creates a new object with a direct reference to a parent
-            # - user spawnes a new object, and then moves it to a position
-            if !self.parent
-              self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
-              # if this is actually root, it will not move a bit (as lft is already 1)
-            elsif self.parent && !self.lft
-              # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
-              # might be som problems here if the referenced parent is not saved.
-              self.move_without_saving(:into => self.parent)
-            end
-          end
-
-          before :update do
-            # scenarios:
-            # - user moves the object to a position
-            # - user has changed the parent
-            # - user has removed any reference to a parent
-            # - user sets the parent_id to something, and then use #move before saving
-            if (self.parent && !self.lft) || (self.parent != self.ancestor)
-              # if the parent is set, we try to move this into that parent, otherwise move into root.
-              self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
-            end
-          end
-
-          ##
-          # reloads the position-attributes on all loaded objects after saving.
-          #
-          after :save do
-            #puts "Reloading positions of all items"
-            #puts "#{self.inspect}right after saving\n: #{self.collection.inspect}\n\n" if self.id == 7
-            self.class.reload_positions(self)
+        before :create do
+          # scenarios:
+          # - user creates a new object and does not specify a parent
+          # - user creates a new object with a direct reference to a parent
+          # - user spawnes a new object, and then moves it to a position
+          if !self.parent
+            self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
+            # if this is actually root, it will not move a bit (as lft is already 1)
+          elsif self.parent && !self.lft
+            # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
+            # might be som problems here if the referenced parent is not saved.
+            self.move_without_saving(:into => self.parent)
           end
         end
-      end # GenerateMethod
 
+        before :update do
+          # scenarios:
+          # - user moves the object to a position
+          # - user has changed the parent
+          # - user has removed any reference to a parent
+          # - user sets the parent_id to something, and then use #move before saving
+          if (self.parent && !self.lft) || (self.parent != self.ancestor)
+            # if the parent is set, we try to move this into that parent, otherwise move into root.
+            self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
+          end
+        end
+
+        ##
+        # reloads the position-attributes on all loaded objects after saving.
+        #
+        after :save do
+          #puts "Reloading positions of all items"
+          #puts "#{self.inspect}right after saving\n: #{self.collection.inspect}\n\n" if self.id == 7
+          self.class.reload_positions(self)
+        end
+      end
+      
+      def is_a_nested_set(*args)
+        warn("'is_a_nested_set' is depreciated, use 'is :nested_set' instead.")
+        is_nested_set(*args)
+      end
+      
       ##
       # all the ClassMethods. They do not get added before / unless calling is_a_nested_set
       # since we dont want to clutter your model unless you need it.

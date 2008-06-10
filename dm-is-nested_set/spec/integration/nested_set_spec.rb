@@ -5,12 +5,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   
   class Category
     include DataMapper::Resource
-    include DataMapper::Is::NestedSet
 
     property :id, Integer, :serial => true
     property :name, String
 
-    is_a_nested_set
+    is :nested_set
 
     auto_migrate!(:default)
     
