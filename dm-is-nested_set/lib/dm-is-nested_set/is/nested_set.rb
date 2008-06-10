@@ -53,7 +53,9 @@ module DataMapper
           # reloads the position-attributes on all loaded objects after saving.
           #
           after :save do
-            self.class.reload_positions
+            #puts "Reloading positions of all items"
+            #puts "#{self.inspect}right after saving\n: #{self.collection.inspect}\n\n" if self.id == 7
+            self.class.reload_positions(self)
           end
         end
       end # GenerateMethod
@@ -75,15 +77,36 @@ module DataMapper
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
-        def reload_positions
-          repository.identity_map(self).each_pair{ |key,obj| obj.reload_position }
+        def reload_positions(caller)
+          # When reloading one object, it reloads all objects in the same collection. Therefore
+          # we need to trace which objects has been reloaded, so that we don't reload the same
+          # objects multiple times.
+          
+          reloaded_nodes = []
+
+          repository.identity_map(self).each_pair do |key,obj|
+            if !reloaded_nodes.include?(obj.key)
+              obj.reload_position
+              reloaded_nodes = reloaded_nodes | obj.collection.map{|o| o.key }
+            end
+          end
         end
 
-        def rebuild_parent_child_relationships
-          all.each do |n|
-            n.parent = n.ancestor
-            n.save
+        ##
+        # rebuilds the parent/child relationships (parent_id) from nested set (left/right values)
+        #
+        def rebuild_tree_from_set
+          all.each do |node|
+            node.parent = node.ancestor
+            node.save
           end
+        end
+
+        ##
+        # rebuilds the nested set using parent/child relationships and a chosen order
+        #
+        def rebuild_set_from_tree(order=nil)
+          # pending
         end
 
         def offset_nodes_in_set(offset,range) # :nodoc:
@@ -123,7 +146,7 @@ module DataMapper
         #
         # @param vector <Symbol, Hash> A symbol, or a key-value pair that describes the requested movement
         #
-        # @option :higher<Symbol> move node higher # specifying nr of steps is in the pipeline
+        # @option :higher<Symbol> move node higher
         # @option :highest<Symbol> move node to the top of the list (within its parent)
         # @option :lower<Symbol> move node lower
         # @option :lowest<Symbol> move node to the bottom of the list (within its parent)
@@ -147,7 +170,7 @@ module DataMapper
         # does all the actual movement in #move, but does not save afterwards. this is used internally in
         # before :save, and will probably be marked private. should not be used by organic beings.
         #
-        # @see move_without_saving
+        # @see move
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
 
@@ -234,7 +257,7 @@ module DataMapper
         ##
         # get all ancestors of this node, up to (and including) self
         #
-        # @return <Collection> Returns
+        # @return <Collection>
         def self_and_ancestors
           self.class.all(:lft.lte => lft, :rgt.gte => rgt, :order => [:lft.asc])
         end
@@ -245,7 +268,8 @@ module DataMapper
         # @return <Collection> collection of all parents, with root as first item
         # @see #self_and_ancestors
         def ancestors
-          self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
+          self.class.all(:lft.lt => lft, :rgt.gt => rgt, :order => [:lft.asc])
+          #self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
 
         ##
@@ -253,7 +277,7 @@ module DataMapper
         #
         # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
         def ancestor
-          ancestors.reverse.first
+          ancestors.last
         end
 
         ##
@@ -295,8 +319,8 @@ module DataMapper
         #
         # @return <Collection>
         def self_and_siblings
-          parent_key = self.class.relationships(:default)[:parent].child_key.to_a.first
-          parent ? self.class.all(parent_key => parent.key) : [self]
+          parent_key = self.class.relationships(:default)[:parent].child_key #.to_a.first
+          parent ? self.class.all(Hash[ *parent_key.zip(parent.key).flatten ]) : [self]
         end
 
         ##

@@ -21,10 +21,6 @@ def load_driver(name, default_uri)
   end
 end
 
-def pos(*cats)
-    map = cats.map{|v| [v.lft,v.rgt]}.flatten
-end
-
 ENV['ADAPTER'] ||= 'sqlite3'
 
 HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
