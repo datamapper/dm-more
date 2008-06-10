@@ -45,3 +45,8 @@ Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_files =
     Pathname.glob(Pathname.new(__FILE__).dirname + 'spec/**/*_spec.rb')
 end
+
+desc "Run all stories"
+task :stories do
+  ruby "stories/all.rb --colour --format plain"
+end

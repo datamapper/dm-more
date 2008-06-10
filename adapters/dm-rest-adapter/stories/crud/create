@@ -1,0 +1,9 @@
+Story: remote app wants to create a resource
+  As a remote app
+  I want to create a resource
+  So that I can store some data about something
+  
+  Scenario: remote app supplies a valid DataMapper::Resource 
+    Given a valid DataMapper::Resource
+    When I try to save the Resource
+    Then the result should indicate success
