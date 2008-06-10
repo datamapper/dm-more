@@ -22,11 +22,19 @@ class SailBoat
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
   property :float,         Float,      :scale => 2, :precision => 1
   property :big_decimal,   BigDecimal, :scale => 2, :precision => 1
-  
+
   include TypecastBypassSetter
 end
 
-class NotNullableBooleanBoat
+class HasNullableBoolean
+  include DataMapper::Resource
+  property :id,   Integer, :key => true
+  property :bool, Boolean # :nullable => true by default
+
+  include TypecastBypassSetter
+end
+
+class HasNotNullableBoolean
   include DataMapper::Resource
   property :id,   Integer, :key => true
   property :bool, Boolean, :nullable => false
@@ -34,10 +42,10 @@ class NotNullableBooleanBoat
   include TypecastBypassSetter
 end
 
-class NullableBooleanBoat
+class HasNotNullableParanoidBoolean
   include DataMapper::Resource
-  property :id,   Integer, :key => true
-  property :bool, Boolean # :nullable => true by default
+  property :id,   Integer,         :key => true
+  property :bool, ParanoidBoolean, :nullable => false
 
   include TypecastBypassSetter
 end
@@ -158,9 +166,30 @@ describe "Automatic Validation from Property Definition" do
     end
   end
 
+  describe 'for nullable Boolean properties' do
+    before do
+      @boat = HasNullableBoolean.new(:id => 1)
+    end
+
+    it 'should allow true' do
+      @boat.set(:bool => true)
+      @boat.should be_valid
+    end
+
+    it 'should allow false' do
+      @boat.set(:bool => false)
+      @boat.should be_valid
+    end
+
+    it 'should allow nil' do
+      @boat.set(:bool => nil)
+      @boat.should be_valid
+    end
+  end
+
   describe 'for non-nullable Boolean properties' do
     before do
-      @boat = NotNullableBooleanBoat.new(:id => 1)
+      @boat = HasNotNullableBoolean.new(:id => 1)
     end
 
     it 'should allow true' do
@@ -179,9 +208,9 @@ describe "Automatic Validation from Property Definition" do
     end
   end
 
-  describe 'for nullable Boolean properties' do
+  describe 'for non-nullable ParanoidBoolean properties' do
     before do
-      @boat = NullableBooleanBoat.new(:id => 1)
+      @boat = HasNotNullableParanoidBoolean.new(:id => 1)
     end
 
     it 'should allow true' do
@@ -194,9 +223,9 @@ describe "Automatic Validation from Property Definition" do
       @boat.should be_valid
     end
 
-    it 'should allow nil' do
+    it 'should not allow nil' do
       @boat.set(:bool => nil)
-      @boat.should be_valid
+      @boat.should_not be_valid
     end
   end
 

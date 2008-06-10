@@ -15,32 +15,32 @@ module DataMapper
       def call(target)
         value = target.validation_property_value(@field_name)
         property = target.class.properties(target.repository.name)[@field_name]
-        return true if present?(value, property.type)
-        
-        error_message = @options[:message] || default_error(property.type)
+        return true if present?(value, property)
+
+        error_message = @options[:message] || default_error(property)
         add_error(target, error_message, @field_name)
 
         false
       end
-      
+
       protected
-      
+
       # Boolean types are considered present if non-nil.
       # Other types are considered present if non-blank.
-      def present?(value, property_type)
-        boolean_type?(property_type) ? !value.nil? : !value.blank?
+      def present?(value, property)
+        boolean_type?(property) ? !value.nil? : !value.blank?
       end
-      
-      def default_error(property_type)
-        actual = boolean_type?(property_type) ? "nil" : "blank"
+
+      def default_error(property)
+        actual = boolean_type?(property) ? "nil" : "blank"
         "%s must not be #{actual}".t(Extlib::Inflection.humanize(@field_name))
       end
-      
-      # Is +type+ a boolean property type?
+
+      # Is +property+ a boolean property?
       #
-      # TODO: Consolidate Boolean and TrueClass across DataMapper code
-      def boolean_type?(property_type)
-        property_type == DM::Boolean || property_type == TrueClass
+      # Returns true for Boolean, ParanoidBoolean, TrueClass, etc.
+      def boolean_type?(property)
+        property.primitive == TrueClass
       end
 
     end # class RequiredFieldValidator
