@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'lib/rest_adapter'
 DataMapper.setup(:default, {
   :adapter  => 'rest',
   :format => 'xml',
-  :base_url => 'http://whatever.com/api'
+  :base_url => 'http://localhost:3001'
 })
 
 class Book
