@@ -1,9 +1,16 @@
 Story: remote app wants to create a resource
   As a remote app
   I want to create a resource
-  So that I can store some data about something
+  So that I can store some data about a particular item
   
   Scenario: remote app supplies a valid DataMapper::Resource 
     Given a valid DataMapper::Resource
     When I try to save the Resource
-    Then the result should indicate success
+    Then the Resource should save
+
+  Scenario: remote app supplies a invalid DataMapper::Resource 
+    Given a valid DataMapper::Resource
+    When I make invalid changes to that Resource
+    When I try to save the Resource
+    Then the Resource should not save
+    
