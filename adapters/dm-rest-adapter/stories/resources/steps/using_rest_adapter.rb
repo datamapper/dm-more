@@ -45,7 +45,6 @@ steps_for :using_rest_adapter do
   end
   
   When("I request all of the Resources of that type") do
-    pending
     @resources = @type.all
   end
   
@@ -63,8 +62,7 @@ steps_for :using_rest_adapter do
   end
   
   When("I destroy the Resource") do
-    pending
-    @type.destroy(@resource_id)
+    @resource.destroy
   end
   
   Then("the Resource should save") do
@@ -76,23 +74,20 @@ steps_for :using_rest_adapter do
   end
   
   Then("I should not receive an empty list") do
-    pending
     @resources.should_not be_empty
   end
 
   Then("I should receive that Resource") do
-    pending
     @resource.should_not be_nil
     @reourece.id.should == @resource_id
   end
 
   Then("I should get nothing in return") do
-    pending
     @resource.should be_nil
   end
   
   Then("the Resource will no longer be available") do
-    pending
+
     @type.get(@resource_id).should be_nil
   end
 end
