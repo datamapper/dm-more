@@ -28,7 +28,7 @@ module Spec
         end
 
         def matches?(repository)
-          repository.adapter.exists?(table_name)
+          repository.adapter.storage_exists?(table_name)
         end
 
         def failure_message
