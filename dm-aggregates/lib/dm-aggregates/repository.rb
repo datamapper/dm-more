@@ -19,17 +19,5 @@ module DataMapper
     def sum(model, property, query)
       adapter.sum(self, property, scoped_query(model, query))
     end
-
-    private
-
-    def scoped_query(model, query)
-      query = if model.query
-        model.query.merge(query)
-      elsif Hash === query
-        Query.new(self, model, query)
-      else
-        query
-      end
-    end
   end
 end
