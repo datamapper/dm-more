@@ -31,4 +31,3 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
   end
 end
-

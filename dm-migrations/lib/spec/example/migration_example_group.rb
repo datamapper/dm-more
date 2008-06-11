@@ -51,7 +51,7 @@ module Spec
       end
 
       def all_databases
-        @@migrations.map(&:database).uniq
+        @@migrations.map { |m| m.database }.uniq
       end
 
       def this_migration

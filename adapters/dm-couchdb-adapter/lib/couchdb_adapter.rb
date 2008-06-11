@@ -25,7 +25,7 @@ module DataMapper
           unless [Date, DateTime].include? property.type
             instance_variable_get(property.instance_variable_name)
           else
-            instance_variable_get(property.instance_variable_name).to_s          
+            instance_variable_get(property.instance_variable_name).to_s
           end
         accumulator
       end).to_json
@@ -120,7 +120,7 @@ module DataMapper
         doc = http_get(
           "/#{self.escaped_db_name}/_view" +
           "/#{resource.storage_name(self.name)}/#{proc_name}" +
-          "#{options}" 
+          "#{options}"
         )
         query = Query.new(repository, resource)
         populate_set(repository, query, doc["rows"])

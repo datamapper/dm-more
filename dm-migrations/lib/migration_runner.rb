@@ -38,7 +38,7 @@ module DataMapper
     # possibility the migration will no longer work. Using SQL will always work.
     def migration( number, name, opts = {}, &block )
       @@migrations ||= []
-      raise "Migration name conflict: '#{name}'" if @@migrations.map(&:name).include?(name.to_s)
+      raise "Migration name conflict: '#{name}'" if @@migrations.map { |m| m.name }.include?(name.to_s)
 
       @@migrations << DataMapper::Migration.new( number, name.to_s, opts, &block )
     end

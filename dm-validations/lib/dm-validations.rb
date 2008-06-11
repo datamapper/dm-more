@@ -92,7 +92,7 @@ module DataMapper
       return self.send(name) if self.respond_to?(name)
       nil
     end
-    
+
     # Get the corresponding Resource property, if it exists.
     #
     # Note: DataMapper validations can be used on non-DataMapper resources.

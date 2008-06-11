@@ -53,7 +53,7 @@ end # DataMapper
 
 if $0 == __FILE__
   require 'rubygems'
-  
+
   gem 'dm-core', '=0.9.1'
   require 'dm-core'
 
