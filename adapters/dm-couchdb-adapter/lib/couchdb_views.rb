@@ -29,8 +29,8 @@
 
 module DataMapper
   class Repository
-    def view(model, name)
-      @adapter.view(self, model, name)
+    def view(model, name, options = {})
+      @adapter.view(self, model, name, options)
     end
   end
 end
@@ -38,7 +38,7 @@ end
 module DataMapper
   module Adapters
     class AbstractAdapter
-      def view(repository, resource, proc_name)
+      def view(repository, resource, proc_name, options = {})
         raise NotImplementedError
       end
     end
@@ -58,8 +58,12 @@ module DataMapper
 
     def create_getter
       @model.class_eval <<-EOS, __FILE__, __LINE__
-        def self.#{@name}(repository_name = self.repository.name)
-          repository(repository_name).view(self, :#{@name})
+        def self.#{@name}(options = {})
+          if Hash === options && options.has_key?(:repository)
+            repository(options.delete(:repository)).view(self, :#{@name}, options)
+          else
+            repository.view(self, :#{@name}, options)
+          end
         end
       EOS
     end

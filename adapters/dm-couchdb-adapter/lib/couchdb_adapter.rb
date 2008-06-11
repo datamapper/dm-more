@@ -4,6 +4,7 @@ require 'dm-core'
 require 'pathname'
 require 'net/http'
 require 'json'
+require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_views'
 
 class Time
@@ -21,7 +22,11 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] =
-          instance_variable_get(property.instance_variable_name)
+          unless [Date, DateTime].include? property.type
+            instance_variable_get(property.instance_variable_name)
+          else
+            instance_variable_get(property.instance_variable_name).to_s          
+          end
         accumulator
       end).to_json
     end
@@ -105,10 +110,17 @@ module DataMapper
       end
 
       # Reads in a set from a stored view.
-      def view(repository, resource, proc_name)
+      def view(repository, resource, proc_name, options = {})
+        if options.empty?
+          options = ''
+        else
+          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
+        end
+        options = URI.encode(options)
         doc = http_get(
           "/#{self.escaped_db_name}/_view" +
-          "/#{resource.storage_name(self.name)}/#{proc_name}"
+          "/#{resource.storage_name(self.name)}/#{proc_name}" +
+          "#{options}" 
         )
         query = Query.new(repository, resource)
         populate_set(repository, query, doc["rows"])
@@ -162,7 +174,7 @@ module DataMapper
       def typecast(type, value)
         return value if value.nil?
         case type.to_s
-        when "Time"       then Time.at(value)
+        when "Time"       then Time.at(value.to_i)
         when "Date"       then Date.parse(value)
         when "DateTime"   then DateTime.parse(value)
         else value
