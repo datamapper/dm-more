@@ -44,4 +44,13 @@ Spec::Rake::SpecTask.new(:spec) do |t|
   end
   t.spec_files =
     Pathname.glob(Pathname.new(__FILE__).dirname + 'spec/**/*_spec.rb')
+
+  begin
+    t.rcov = ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true
+    t.rcov_opts << '--exclude' << 'spec'
+    t.rcov_opts << '--text-summary'
+    t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
+  rescue Exception
+    # rcov not installed
+  end
 end
