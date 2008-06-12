@@ -1,19 +1,21 @@
 README
-========================================================================
-DataMapper::Voyeur allows you to add callback hooks to many models. This is similar to observers in ActiveRecord.
+======
+DataMapper::Observer allows you to add callback hooks to many models. This is
+similar to observers in ActiveRecord.
 
 Example:
+
 class Adam
   include DataMapper::Resource
 
   property :id, Integer, :serial => true
   property :name, String
 end
+  
+class AdamObserver
+  include DataMapper::Observer
 
-class AdamVoyeur
-  include DataMapper::Voyeur
-
-  peep Adam
+  observe Adam
 
   before :save do
     # log message

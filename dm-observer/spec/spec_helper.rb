@@ -4,7 +4,7 @@ require 'spec'
 gem "dm-core"
 require 'dm-core'
 require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-voyeur'
+require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-observer'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

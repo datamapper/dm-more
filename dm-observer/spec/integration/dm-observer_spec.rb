@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-describe DataMapper::Voyeur do
+describe DataMapper::Observer do
   before :all do
     class Adam
       include DataMapper::Resource
@@ -53,10 +53,10 @@ describe DataMapper::Voyeur do
     Alcohol::Beer.auto_migrate!
 
 
-    class AdamVoyeur
-      include DataMapper::Voyeur
+    class AdamObserver
+      include DataMapper::Observer
 
-      peep Adam
+      observe Adam
 
       before :save do
         @falling = true
@@ -72,10 +72,10 @@ describe DataMapper::Voyeur do
 
     end
 
-    class DrinkingVoyeur
-      include DataMapper::Voyeur
+    class DrinkingObserver
+      include DataMapper::Observer
 
-      peep Adam, Alcohol::Beer
+      observe Adam, Alcohol::Beer
 
       after :drink do
         @refrigerated = true
@@ -102,18 +102,18 @@ describe DataMapper::Voyeur do
      @adam.done.should be_nil
   end
 
-  it "peep should add a class to the neighborhood watch" do
-    AdamVoyeur.should have(1).neighborhood_watch
-    AdamVoyeur.neighborhood_watch.first.should == Adam
+  it "observe should add a class to the neighborhood watch" do
+    AdamObserver.should have(1).observing
+    AdamObserver.observing.first.should == Adam
   end
 
-  it "peep should add more than one class to the neighborhood watch" do
-    DrinkingVoyeur.should have(2).neighborhood_watch
-    DrinkingVoyeur.neighborhood_watch.first.should == Adam
-    DrinkingVoyeur.neighborhood_watch[1].should == Alcohol::Beer
+  it "observe should add more than one class to the neighborhood watch" do
+    DrinkingObserver.should have(2).observing
+    DrinkingObserver.observing.first.should == Adam
+    DrinkingObserver.observing[1].should == Alcohol::Beer
   end
 
-  it "should peep multiple classes with the same method name" do
+  it "should observe multiple classes with the same method name" do
     @adam.should_not be_happy
     @beer.should_not be_empty
     @adam.drink

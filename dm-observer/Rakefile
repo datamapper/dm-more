@@ -8,7 +8,7 @@ require 'pathname'
 CLEAN.include '{log,pkg}/'
 
 spec = Gem::Specification.new do |s|
-  s.name             = 'dm-voyeur'
+  s.name             = 'dm-observer'
   s.version          = '0.9.1'
   s.platform         = Gem::Platform::RUBY
   s.has_rdoc         = true
@@ -17,7 +17,7 @@ spec = Gem::Specification.new do |s|
   s.description      = s.summary
   s.author           = 'Mark Bates'
   s.email            = 'mark@mackframework.com'
-  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-voyeur'
+  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-observer'
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
   s.add_dependency('dm-core', "=#{s.version}")

@@ -1,7 +1,8 @@
 module DataMapper
-  # Voyeur's allow you to add callback hooks to DataMapper::Resource objects in a separate class. This is great
-  # for separating out logic that is not really part of the model, but needs to be triggered by a model, or models.
-  module Voyeur
+  # Observers allow you to add callback hooks to DataMapper::Resource objects
+  # in a separate class. This is great for separating out logic that is not
+  # really part of the model, but needs to be triggered by a model, or models.
+  module Observer
 
     def self.included(klass)
       klass.extend(ClassMethods)
@@ -9,46 +10,46 @@ module DataMapper
 
     module ClassMethods
 
-      attr_accessor :neighborhood_watch
+      attr_accessor :observing
 
       def initialize
-        self.neighborhood_watch = []
+        self.observing = []
       end
 
       # Assign an Array of Class names to watch.
-      #   peep User, Article, Topic
-      def peep(*args)
-        # puts "#{self.to_s} peeping... #{args.collect{|c| Extlib::Inflection.classify(c.to_s)}.join(', ')}"
-        self.neighborhood_watch = args
+      #   observe User, Article, Topic
+      def observe(*args)
+        # puts "#{self.to_s} observing... #{args.collect{|c| Extlib::Inflection.classify(c.to_s)}.join(', ')}"
+        self.observing = args
       end
 
       def before(sym, &block)
-        self.neighborhood_watch.each do |klass|
+        self.observing.each do |klass|
           klass.before(sym.to_sym, &block)
         end
       end
 
       def after(sym, &block)
-        self.neighborhood_watch.each do |klass|
+        self.observing.each do |klass|
           klass.after(sym.to_sym, &block)
         end
       end
 
       def before_class_method(sym, &block)
-        self.neighborhood_watch.each do |klass|
+        self.observing.each do |klass|
           klass.before_class_method(sym.to_sym, &block)
         end
       end
 
       def after_class_method(sym, &block)
-        self.neighborhood_watch.each do |klass|
+        self.observing.each do |klass|
           klass.after_class_method(sym.to_sym, &block)
         end
       end
 
     end # ClassMethods
 
-  end # Voyeur
+  end # Observer
 end # DataMapper
 
 if $0 == __FILE__
@@ -69,10 +70,10 @@ if $0 == __FILE__
 
   Foo.auto_migrate!
 
-  class FooVoyeur
-    include DataMapper::Voyeur
+  class FooObserver
+    include DataMapper::Observer
 
-    peep :foo
+    observe :foo
 
     before :save do
       raise "Hell!" if self.bar.nil?

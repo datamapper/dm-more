@@ -27,12 +27,13 @@ gem_paths = %w[
   dm-is-nested_set
   dm-is-tree
   dm-migrations
+  dm-observer
   dm-serializer
   dm-shorthand
   dm-timestamps
   dm-types
   dm-validations
-  dm-voyeur
+
   merb_datamapper
 ]
 gems = gem_paths.map { |p| File.basename(p) }
