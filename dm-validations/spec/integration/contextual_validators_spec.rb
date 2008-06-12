@@ -22,6 +22,7 @@ describe DataMapper::Validate::ContextualValidators do
   it "should raise an exception if you provide an invalid context to save" do
     
     lambda { Kayak.new.save(:invalid_context) }.should raise_error
-    
+    lambda { Kayak.new.save(nil) }.should raise_error
+    lambda { Kayak.new.save(false) }.should raise_error
   end
 end

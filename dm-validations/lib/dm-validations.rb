@@ -200,6 +200,7 @@ module DataMapper
 
       define_method(:included) do |model|
         included.bind(self).call(model)
+        model.send(:alias_method, :save!, :save) unless model.method_defined? :save!
         model.send(:include, Validate)
       end
     end

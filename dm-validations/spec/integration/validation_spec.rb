@@ -75,6 +75,19 @@ describe DataMapper::Validate do
     end
   end
 
+  describe '#save!' do
+    before do
+      Yacht.auto_migrate!
+      @yacht = Yacht.new
+    end
+    
+    it "should save object without running validations" do
+      @yacht.should_not_receive(:valid?)
+      @yacht.save!
+      @yacht.should_not be_new_record
+    end
+  end
+
   it "should respond to validatable? (for recursing assocations)" do
     Yacht.new.should be_validatable
     Class.new.new.should_not be_validatable
