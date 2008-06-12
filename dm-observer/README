@@ -11,7 +11,7 @@ class Adam
   property :id, Integer, :serial => true
   property :name, String
 end
-  
+
 class AdamObserver
   include DataMapper::Observer
 
