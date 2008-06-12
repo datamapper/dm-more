@@ -28,7 +28,8 @@ require dir / 'support' / 'object'
 module DataMapper
   module Validate
 
-    # Validate the resource before saving
+    # Validate the resource before saving. Use #save! to save
+    # the record without validations.
     #
     def save(context = :default)
       return false unless valid?(context)
