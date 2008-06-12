@@ -9,11 +9,12 @@ describe DataMapper::Serialize, '#to_xml' do
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
-    @collection = DataMapper::Collection.new(query)
-    @collection.load([1, 2, 'Betsy', 'Jersey'])
-    @collection.load([10, 20, 'Berta', 'Guernsey'])
+    @collection = DataMapper::Collection.new(query) do |c|
+      c.load([1, 2, 'Betsy', 'Jersey'])
+      c.load([10, 20, 'Berta', 'Guernsey'])
+    end
 
-    @empty_collection = DataMapper::Collection.new(query)
+    @empty_collection = DataMapper::Collection.new(query) {}
   end
 
   it "should serialize a resource to XML" do
