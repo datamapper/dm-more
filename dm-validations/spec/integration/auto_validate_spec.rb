@@ -114,8 +114,7 @@ describe "Automatic Validation from Property Definition" do
     t.errors.full_messages.should include('Name must be less than 50 characters long')
   end
 
-  it "should not auto add any validators if the option :auto_validation => false
-      was given" do
+  it "should not auto add any validators if the option :auto_validation => false was given" do
     klass = Class.new do
       include DataMapper::Resource
       property :id,   Integer,     :serial   => true,  :auto_validation => false
@@ -125,8 +124,7 @@ describe "Automatic Validation from Property Definition" do
     klass.new.valid?.should == true
   end
 
-  it "should auto add range checking the length of a string while still allowing
-      null values" do
+  it "should auto add range checking the length of a string while still allowing null values" do
     boat = SailBoat.new
     boat.allow_nil = 'ABC'
     boat.should_not be_valid_for_nil_test
