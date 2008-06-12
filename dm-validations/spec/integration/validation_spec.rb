@@ -80,7 +80,7 @@ describe DataMapper::Validate do
       Yacht.auto_migrate!
       @yacht = Yacht.new
     end
-    
+
     it "should save object without running validations" do
       @yacht.should_not_receive(:valid?)
       @yacht.save!

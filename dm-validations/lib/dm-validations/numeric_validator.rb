@@ -29,7 +29,7 @@ module DataMapper
         else
           if scale && precision
             if scale == precision
-              return true if value =~ /\A[+-]?(?:0\.\d{1,#{precision}})\z/
+              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{precision}})?)\z/
             elsif precision == 0
               return true if value =~ /\A[+-]?(?:\d{1,#{scale}}(?:\.0)?)\z/
             else

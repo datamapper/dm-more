@@ -116,10 +116,11 @@ module DataMapper
         query         = args.last.respond_to?(:merge) ? args.pop : {}
         property_name = args.first
 
-        repository = repository_for_finder(query)
+        query      = scoped_query(query)
+        repository = query.repository
         property   = properties(repository.name)[property_name] if property_name
 
-        yield repository, property, scoped_query(repository, query)
+        yield repository, property, query
       end
 
       def check_property_is_number(property)
