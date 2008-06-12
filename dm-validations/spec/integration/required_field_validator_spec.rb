@@ -58,9 +58,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         fert.should be_valid_for_property_test
       end
     end
-    
+
     describe "A plain class (not a DM resource)" do
-      
+
       before do
         class PlainClass
           extend DataMapper::Validate::ClassMethods
@@ -71,23 +71,23 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           def empty; ""     end
           def nil;   nil    end
         end
-        
+
         @pc = PlainClass.new
       end
-      
+
       it "should fail validation with empty, nil, or blank fields" do
         @pc.should_not be_valid
         @pc.errors.on(:empty).should    include("Empty must not be blank")
         @pc.errors.on(:nil).should      include("Nil must not be blank")
         @pc.errors.on(:accessor).should include("Accessor must not be blank")
       end
-      
+
       it "giving accessor a value should remove validation error" do
         @pc.accessor = "full"
         @pc.valid?
         @pc.errors.on(:accessor).should be_nil
       end
     end
-    
+
   end
 end

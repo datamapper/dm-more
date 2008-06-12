@@ -1,7 +1,7 @@
 module DataMapper
   module Is
     module NestedSet
-      
+
       ##
       # Include the GeneratorMethods now. Wait with the other methods until
       # plugin is actually called (to keep from cluttering namespace)
@@ -58,12 +58,12 @@ module DataMapper
           self.class.reload_positions(self)
         end
       end
-      
+
       def is_a_nested_set(*args)
         warn("'is_a_nested_set' is depreciated, use 'is :nested_set' instead.")
         is_nested_set(*args)
       end
-      
+
       ##
       # all the ClassMethods. They do not get added before / unless calling is_a_nested_set
       # since we dont want to clutter your model unless you need it.
@@ -85,7 +85,7 @@ module DataMapper
           # When reloading one object, it reloads all objects in the same collection. Therefore
           # we need to trace which objects has been reloaded, so that we don't reload the same
           # objects multiple times.
-          
+
           reloaded_nodes = []
 
           repository.identity_map(self).each_pair do |key,obj|

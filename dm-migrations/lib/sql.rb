@@ -26,7 +26,7 @@ module SQL
     end
 
     def to_sql
-        "CREATE TABLE #{quoted_table_name} (#{@columns.map(&:to_sql).join(', ')})"
+        "CREATE TABLE #{quoted_table_name} (#{@columns.map{ |c| c.to_sql }.join(', ')})"
     end
 
     class Column

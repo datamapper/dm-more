@@ -51,7 +51,7 @@ module Spec
 
         def matches?(table)
           @table = table
-          table.columns.map(&:name).include?(column_name.to_s)
+          table.columns.map { |c| c.name }.include?(column_name.to_s)
         end
 
         def failure_message

@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
-  
+
   class Category
     include DataMapper::Resource
 
@@ -12,11 +12,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     is :nested_set
 
     auto_migrate!(:default)
-    
+
     # convenience method only for speccing.
     def pos; [lft,rgt] end
   end
-  
+
   repository(:default) do
     electronics  = Category.create!(:id => 1, :name => "Electronics")
     televisions  = Category.create!(:id => 2, :parent_id => 1,  :name => "Televisions")
@@ -29,7 +29,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     cd_players   = Category.create!(:id => 9, :parent_id => 6,  :name => "CD Players")
     radios       = Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
   end
-  
+
   # id | lft| rgt| title
   #========================================
   # 1  | 1  | 20 | - Electronics
@@ -53,9 +53,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   # |                                                                                                    |
   # |                                       Electronics                                                  |
   # |____________________________________________________________________________________________________|
-  
-  
-  
+
+
+
   describe 'DataMapper::Is::NestedSet' do
     before :all do
 
@@ -85,7 +85,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it 'should return all nodes without descendants' do
         repository(:default) do
           Category.leaves.length.should == 6
-          
+
           r = Category.root
           r.leaves.length.should == 6
           r.children[1].leaves.length.should == 3
@@ -184,20 +184,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it 'should move items correctly with :indent / :outdent' do
         repository(:default) do |repos|
-          
+
           mp3_players = Category.get(7)
 
           portable_electronics = Category.get(6)
           televisions = Category.get(2)
-          
+
           mp3_players.pos.should == [11,14]
           #mp3_players.descendants.length.should == 1
-          
+
           # The category is at the top of its parent, should not be able to indent.
           mp3_players.move(:indent).should == false
-          
+
           mp3_players.move(:outdent)
-          
+
           mp3_players.pos.should == [16,19]
           mp3_players.left_sibling.should == portable_electronics
 
