@@ -22,7 +22,7 @@ module DataMapper
       # @public
       def count(*args)
         with_repository_and_property(*args) do |repository,property,query|
-          repository.count(self, property, query)
+          repository.count(property, query)
         end
       end
 
@@ -43,7 +43,7 @@ module DataMapper
       def min(*args)
         with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.min(self, property, query)
+          repository.min(property, query)
         end
       end
 
@@ -64,7 +64,7 @@ module DataMapper
       def max(*args)
         with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.max(self, property, query)
+          repository.max(property, query)
         end
       end
 
@@ -85,7 +85,7 @@ module DataMapper
       def avg(*args)
         with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.avg(self, property, query)
+          repository.avg(property, query)
         end
       end
 
@@ -106,38 +106,25 @@ module DataMapper
       def sum(*args)
         with_repository_and_property(*args) do |repository,property,query|
           check_property_is_number(property)
-          repository.sum(self, property, query)
+          repository.sum(property, query)
         end
       end
-
-      # def first(*args)
-      #   with_repository_and_property(*args) do |repository,property,query|
-      #     raise NotImplementedError
-      #   end
-      # end
-      #
-      # def last(*args)
-      #   with_repository_and_property(*args) do |repository,property,query|
-      #     raise NotImplementedError
-      #   end
-      # end
 
       private
 
       def with_repository_and_property(*args, &block)
         query         = args.last.respond_to?(:merge) ? args.pop : {}
-        property_name = args[0]
+        property_name = args.first
 
-        repository(*Array(query[:repository])) do |repository|
-          property = properties(repository.name)[property_name] if property_name
-          yield repository, property, query
-        end
+        repository = repository_for_finder(query)
+        property   = properties(repository.name)[property_name] if property_name
+
+        yield repository, property, scoped_query(repository, query)
       end
 
       def check_property_is_number(property)
         raise ArgumentError, "+property+ should be an Integer, Float or BigDecimal, but was #{property.nil? ? 'nil' : property.type.class}" unless property && [ Integer, Float, BigDecimal ].include?(property.type)
       end
-
     end
   end
 end

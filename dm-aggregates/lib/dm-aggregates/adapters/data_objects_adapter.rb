@@ -1,32 +1,27 @@
 module DataMapper
   module Adapters
     class DataObjectsAdapter
-      def count(repository, property, query)
-        bind_values = query.bind_values
-        query(aggregate_read_statement(:count, property, query), *bind_values).first
+      def count(property, query)
+        query(aggregate_read_statement(:count, property, query), *query.bind_values).first
       end
 
-      def min(respository, property, query)
-        bind_values = query.bind_values
-        min = query(aggregate_read_statement(:min, property, query), *bind_values).first
+      def min(property, query)
+        min = query(aggregate_read_statement(:min, property, query), *query.bind_values).first
         property.typecast(min)
       end
 
-      def max(respository, property, query)
-        bind_values = query.bind_values
-        max = query(aggregate_read_statement(:max, property, query), *bind_values).first
+      def max(property, query)
+        max = query(aggregate_read_statement(:max, property, query), *query.bind_values).first
         property.typecast(max)
       end
 
-      def avg(respository, property, query)
-        bind_values = query.bind_values
-        avg = query(aggregate_read_statement(:avg, property, query), *bind_values).first
+      def avg(property, query)
+        avg = query(aggregate_read_statement(:avg, property, query), *query.bind_values).first
         property.type == Integer ? avg.to_f : property.typecast(avg)
       end
 
-      def sum(respository, property, query)
-        bind_values = query.bind_values
-        sum = query(aggregate_read_statement(:sum, property, query), *bind_values).first
+      def sum(property, query)
+        sum = query(aggregate_read_statement(:sum, property, query), *query.bind_values).first
         property.typecast(sum)
       end
 
@@ -65,9 +60,9 @@ module DataMapper
 
           "#{function_name}(#{column_name})"
         end
+      end # module SQL
 
-      end #module SQL
       include SQL
     end # class DataObjectsAdapter
-  end # module Adapters
-end # module DataMapper
+  end # module Adapters
+end # module DataMapper

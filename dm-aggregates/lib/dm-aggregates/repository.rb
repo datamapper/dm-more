@@ -1,23 +1,23 @@
 module DataMapper
   class Repository
-    def count(model, property, query)
-      adapter.count(self, property, scoped_query(model, query))
+    def count(property, query)
+      adapter.count(property, query)
     end
 
-    def min(model, property, query)
-      adapter.min(self, property, scoped_query(model, query))
+    def min(property, query)
+      adapter.min(property, query)
     end
 
-    def max(model, property, query)
-      adapter.max(self, property, scoped_query(model, query))
+    def max(property, query)
+      adapter.max(property, query)
     end
 
-    def avg(model, property, query)
-      adapter.avg(self, property, scoped_query(model, query))
+    def avg(property, query)
+      adapter.avg(property, query)
     end
 
-    def sum(model, property, query)
-      adapter.sum(self, property, scoped_query(model, query))
+    def sum(property, query)
+      adapter.sum(property, query)
     end
   end
 end

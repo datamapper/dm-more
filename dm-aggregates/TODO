@@ -1,11 +1,6 @@
 TODO
 ====
 
-- Add the following methods: (query is an optional parameter)
-  - first(property_name) - returns the first value for this property
-  - last()               - returns the last resource
-  - last(property_name)  - returns the last value for this property
-
 ---
 TODO tickets may also be found in the DataMapper Issue Tracker:
 http://wm.lighthouseapp.com/projects/4819-datamapper/overview
