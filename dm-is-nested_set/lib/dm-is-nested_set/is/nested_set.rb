@@ -55,7 +55,7 @@ module DataMapper
         after :save do
           #puts "Reloading positions of all items"
           #puts "#{self.inspect}right after saving\n: #{self.collection.inspect}\n\n" if self.id == 7
-          self.class.reload_positions(self)
+          self.class.reload_positions
         end
       end
 
@@ -81,7 +81,7 @@ module DataMapper
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
-        def reload_positions(caller)
+        def reload_positions
           # When reloading one object, it reloads all objects in the same collection. Therefore
           # we need to trace which objects has been reloaded, so that we don't reload the same
           # objects multiple times.
