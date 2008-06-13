@@ -34,7 +34,7 @@ end
 
 desc "Install #{spec.name} #{spec.version} (default ruby)"
 task :install => [ :package ] do
-  sh "#{SUDO} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+  sh "#{SUDO} gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
 end
 
 namespace :jruby do
