@@ -1,5 +1,5 @@
 begin
-  gem 'dm-core', '=0.9.1'
+  gem 'dm-core', '=0.9.2'
   require 'dm-core'
 rescue LoadError => e
   require 'data_mapper'
