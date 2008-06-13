@@ -93,11 +93,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should count the results with raw conditions' do
-          pending 'bypass dm-core breakage' do
-            dragon_statement = 'is_fire_breathing = ?'
-            Dragon.count(:conditions => [ dragon_statement, false ]).should == 1
-            Dragon.count(:conditions => [ dragon_statement, true  ]).should == 2
-          end
+          dragon_statement = 'is_fire_breathing = ?'
+          Dragon.count(:conditions => [ dragon_statement, false ]).should == 1
+          Dragon.count(:conditions => [ dragon_statement, true  ]).should == 2
         end
       end
 
@@ -111,11 +109,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should count the results with raw conditions' do
-          pending 'bypass dm-core breakage' do
-            statement = 'is_fire_breathing = ?'
-            Dragon.count(:name, :conditions => [ statement, false ]).should == 1
-            Dragon.count(:name, :conditions => [ statement, true  ]).should == 1
-          end
+          statement = 'is_fire_breathing = ?'
+          Dragon.count(:name, :conditions => [ statement, false ]).should == 1
+          Dragon.count(:name, :conditions => [ statement, true  ]).should == 1
         end
       end
     end
@@ -145,10 +141,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the lowest value when conditions provided' do
-          pending 'bypass dm-core breakage' do
-            Dragon.min(:toes_on_claw, :is_fire_breathing => true).should  == 4
-            Dragon.min(:toes_on_claw, :is_fire_breathing => false).should == 3
-          end
+          Dragon.min(:toes_on_claw, :is_fire_breathing => true).should  == 4
+          Dragon.min(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -177,10 +171,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the highest value when conditions provided' do
-          pending 'bypass dm-core breakage' do
-            Dragon.max(:toes_on_claw, :is_fire_breathing => true).should  == 5
-            Dragon.max(:toes_on_claw, :is_fire_breathing => false).should == 3
-          end
+          Dragon.max(:toes_on_claw, :is_fire_breathing => true).should  == 5
+          Dragon.max(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -212,10 +204,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the average value when conditions provided' do
-          pending 'bypass dm-core breakage' do
-            Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4.5
-            Dragon.avg(:toes_on_claw, :is_fire_breathing => false).should == 3
-          end
+          Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4.5
+          Dragon.avg(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
@@ -248,10 +238,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
 
         it 'should provide the average value when conditions provided' do
-          pending 'bypass dm-core breakage' do
-            Dragon.sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
-            Dragon.sum(:toes_on_claw, :is_fire_breathing => false).should == 3
-          end
+          Dragon.sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
+          Dragon.sum(:toes_on_claw, :is_fire_breathing => false).should == 3
         end
       end
     end
