@@ -37,6 +37,11 @@ task :install => [ :package ] do
   sh "#{SUDO} gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
 end
 
+desc "Uninstall #{spec.name} #{spec.version} (default ruby)"
+task :uninstall => [ :clobber ] do
+  sh "#{SUDO} gem uninstall #{spec.name} -v#{spec.version} -I -x", :verbose => false
+end
+
 namespace :jruby do
   desc "Install #{spec.name} #{spec.version} with JRuby"
   task :install => [ :package ] do

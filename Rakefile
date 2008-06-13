@@ -77,6 +77,11 @@ task :install => [:install_gems, :package] do
 #  sh %{#{SUDO} gem install --local pkg/dm-#{DataMapper::MORE_VERSION}.gem --no-update-sources}
 end
 
+desc "Uninstall it all"
+task :uninstall => [ :uninstall_gems, :clobber ] do
+  sh "#{SUDO} gem uninstall dm-more -v#{DataMapper::MORE_VERSION} -I -x", :verbose => false rescue "dm-more not installed"
+end
+
 desc "Build the dm-more gems"
 task :build_gems do
   gem_paths.each do |dir|
@@ -94,7 +99,7 @@ end
 desc "Uninstall the dm-more gems"
 task :uninstall_gems do
   gems.each do |sub_gem|
-    sh %{#{SUDO} gem uninstall #{sub_gem}}
+    sh %{#{SUDO} gem uninstall #{sub_gem} -I -x} rescue "#{sub_gem} not installed."
   end
 end
 
