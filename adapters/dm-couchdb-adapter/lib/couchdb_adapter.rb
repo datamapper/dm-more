@@ -77,39 +77,38 @@ module DataMapper
       # Deletes the resource from the repository.
       def delete(query)
         deleted = 0
-        resource = read_one(query)
-        key = resource.class.key(self.name).map do |property|
-          resource.instance_variable_get(property.instance_variable_name)
+        resources = read_many(query)
+        resources.each do |resource|
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          result = http_delete(
+            "/#{self.escaped_db_name}/#{key}?rev=#{resource.rev}"
+          )
+          deleted += 1 if result["ok"]
         end
-        result = http_delete(
-          "/#{self.escaped_db_name}/#{key}?rev=#{resource.rev}"
-        )
-        if result["ok"]
-          deleted += 1
-        else
-          deleted
-        end
+        deleted
       end
 
       # Commits changes in the resource to the repository.
       def update(attributes, query)
         updated = 0
-        resource = read_one(query)
-        key = resource.class.key(self.name).map do |property|
-          resource.instance_variable_get(property.instance_variable_name)
+        resources = read_many(query)
+        resources.each do |resource|
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
+          if result["ok"]
+            key = resource.class.key(self.name)
+            resource.instance_variable_set(
+              key.first.instance_variable_name, result["id"])
+            resource.instance_variable_set(
+              "@rev", result["rev"])
+            updated += 1
+          end
         end
-        result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
-
-        if result["ok"]
-          key = resource.class.key(self.name)
-          resource.instance_variable_set(
-            key.first.instance_variable_name, result["id"])
-          resource.instance_variable_set(
-            "@rev", result["rev"])
-          updated += 1
-        else
-          updated
-        end
+        updated
       end
 
       # Reads in a set from a query.
