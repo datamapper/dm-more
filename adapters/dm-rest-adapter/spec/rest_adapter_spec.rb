@@ -67,12 +67,9 @@ describe "A REST adapter" do
     end
     
     describe "if the resource does not exist" do
-      before do
-        @id = 4200
-      end
-      
-      it "Resource.get(id) should return nil" do
-        Book.get(@id).should be_nil
+      it "should return nil" do
+        id = 4200
+        Book.get(id).should be_nil
       end
     end
   end
