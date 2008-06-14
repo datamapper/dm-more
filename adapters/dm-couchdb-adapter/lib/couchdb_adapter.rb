@@ -22,12 +22,10 @@ module DataMapper
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
-        accumulator[property.field] =
-          unless [Date, DateTime].include? property.type
-            instance_variable_get(property.instance_variable_name)
-          else
-            instance_variable_get(property.instance_variable_name).to_s
-          end
+        accumulator[property.field] = instance_variable_get(property.instance_variable_name)
+        if [Date, DateTime].include?(property.type) && !accumulator[property.field].nil?
+          accumulator[property.field] = accumulator[property.field].to_s
+        end
         accumulator
       end).to_json
     end
