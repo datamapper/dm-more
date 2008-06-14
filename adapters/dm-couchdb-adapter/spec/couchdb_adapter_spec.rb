@@ -2,16 +2,12 @@ require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
 DataMapper.setup(
-  :couchdb,
+  :default,
   Addressable::URI.parse("couchdb://localhost:5984/test_cdb_adapter")
 )
 
 class User
   include DataMapper::Resource
-
-  def self.default_repository_name
-    :couchdb
-  end
 
   # required for CouchDB
   property :id, String, :key => true, :field => :_id
@@ -27,14 +23,15 @@ class User
   # creates methods for accessing stored/indexed views in the CouchDB database
   view :by_name
   view :by_age
+
+  before :create do
+    self.created_at = DateTime.now
+    self.created_on = Date.today
+  end
 end
 
 class Company
   include DataMapper::Resource
-
-  def self.default_repository_name
-    :couchdb
-  end
 
   # required for CouchDB
   property :id, String, :key => true, :field => :_id
@@ -80,7 +77,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     pending("No CouchDB connection.") if @no_connection
     created_user = new_user
     created_user.save
-    user = User[created_user.id]
+    user = User.get!(created_user.id)
     user.id.should_not be_nil
     user.name.should == "Jamie"
     user.age.should == 67
@@ -90,7 +87,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     pending("No CouchDB connection.") if @no_connection
     created_user = new_user
     created_user.save
-    user = User[created_user.id]
+    user = User.get!(created_user.id)
     user.name = "Janet"
     user.save
     user.name.should_not == created_user.name
@@ -108,7 +105,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
 
   it "should get all records" do
     pending("No CouchDB connection.") if @no_connection
-    User.all.size.should == 3
+    User.all.length.should == 3
   end
 
   it "should get records by eql matcher" do
@@ -174,7 +171,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     user = new_user
     user.save
     time = user.created_at
-    User[user.id].created_at.should == time
+    User.get!(user.id).created_at.should.eql? time
   end
 
   it "should handle Date" do
@@ -182,7 +179,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     user = new_user
     user.save
     date = user.created_on
-    User[user.id].created_on.should == date
+    User.get!(user.id).created_on.should == date
   end
 
   it "should be able to call stored views" do
