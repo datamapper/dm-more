@@ -122,12 +122,15 @@ module DataMapper
       def read_one(query)
         doc = request do |http|
           http.request(build_javascript_request(query))
-        end["rows"].first
-        query.model.load(
-          query.fields.map do |property|
-            typecast(property.type, doc["value"][property.field.to_s])
-          end,
-          query)
+        end
+        unless doc["total_rows"] == 0
+          data = doc["rows"].first
+          query.model.load(
+            query.fields.map do |property|
+              typecast(property.type, data["value"][property.field.to_s])
+            end,
+            query)
+        end
       end
 
       # Reads in a set from a stored view.
