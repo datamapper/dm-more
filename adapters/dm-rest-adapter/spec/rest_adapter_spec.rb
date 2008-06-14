@@ -70,6 +70,7 @@ describe "A REST adapter" do
   
   describe "when getting all resource of a particular type" do
     it "should get a non-empty list" do
+      Book.all.should_not be_empty
     end
   end
 
