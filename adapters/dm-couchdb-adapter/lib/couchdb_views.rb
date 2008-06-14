@@ -30,7 +30,7 @@
 module DataMapper
   class Repository
     def view(model, name, options = {})
-      @adapter.view(self, model, name, options)
+      adapter.view(model, name, options)
     end
   end
 end
@@ -38,7 +38,7 @@ end
 module DataMapper
   module Adapters
     class AbstractAdapter
-      def view(repository, resource, proc_name, options = {})
+      def view(resource, proc_name, options = {})
         raise NotImplementedError
       end
     end

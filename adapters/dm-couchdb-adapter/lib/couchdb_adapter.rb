@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'base64'
 gem 'dm-core', '=0.9.2'
 require 'dm-core'
 require 'pathname'
@@ -18,15 +19,13 @@ module DataMapper
   module Resource
     # Converts a Resource to a JSON representation.
     def to_json(dirty = false)
-      property_list = (dirty ? self.dirty_attributes : self.class.properties)
+      property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
-        accumulator[property.field] =
-          unless [Date, DateTime].include? property.type
-            instance_variable_get(property.instance_variable_name)
-          else
-            instance_variable_get(property.instance_variable_name).to_s
-          end
+        accumulator[property.field] = instance_variable_get(property.instance_variable_name)
+        if [Date, DateTime].include?(property.type) && !accumulator[property.field].nil?
+          accumulator[property.field] = accumulator[property.field].to_s
+        end
         accumulator
       end).to_json
     end
@@ -54,63 +53,86 @@ module DataMapper
           self.db_name, Addressable::URI::CharacterClasses::UNRESERVED)
       end
 
-      # Creates a new resource in the specified repository.
-      def create(repository, resource)
-        result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
-        if result["ok"]
-          key = resource.class.key(self.name)
-          if key.size == 1
-            resource.instance_variable_set(
-              key.first.instance_variable_name, result["id"]
-            )
+      # Creates a new resources in the specified repository.
+      def create(resources)
+        created = 0
+        resources.each do |resource|
+          result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+          if result["ok"]
+            key = resource.class.key(self.name)
+            if key.size == 1
+              resource.instance_variable_set(
+                key.first.instance_variable_name, result["id"]
+              )
+            end
+            resource.instance_variable_set("@rev", result["rev"])
+            created += 1
           end
-          resource.instance_variable_set("@rev", result["rev"])
-          true
-        else
-          false
         end
+        created
       end
 
       # Deletes the resource from the repository.
-      def delete(repository, resource)
-        key = resource.class.key(self.name).map do |property|
-          resource.instance_variable_get(property.instance_variable_name)
+      def delete(query)
+        deleted = 0
+        resources = read_many(query)
+        resources.each do |resource|
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          result = http_delete(
+            "/#{self.escaped_db_name}/#{key}?rev=#{resource.rev}"
+          )
+          deleted += 1 if result["ok"]
         end
-        result = http_delete(
-          "/#{self.escaped_db_name}/#{key}?rev=#{resource.rev}"
-        )
-        return result["ok"]
+        deleted
       end
 
       # Commits changes in the resource to the repository.
-      def update(repository, resource)
-        key = resource.class.key(self.name).map do |property|
-          resource.instance_variable_get(property.instance_variable_name)
+      def update(attributes, query)
+        updated = 0
+        resources = read_many(query)
+        resources.each do |resource|
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
+          if result["ok"]
+            key = resource.class.key(self.name)
+            resource.instance_variable_set(
+              key.first.instance_variable_name, result["id"])
+            resource.instance_variable_set(
+              "@rev", result["rev"])
+            updated += 1
+          end
         end
-        result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
-
-        if result["ok"]
-          key = resource.class.key(self.name)
-          resource.instance_variable_set(
-            key.first.instance_variable_name, result["id"])
-          resource.instance_variable_set(
-            "@rev", result["rev"])
-          true
-        else
-          false
-        end
+        updated
       end
 
       # Reads in a set from a query.
-      def read_set(repository, query)
+      def read_many(query)
         doc = request do |http|
           http.request(build_javascript_request(query))
         end
-        populate_set(repository, query, doc["rows"])
+        populate_set(query, doc["rows"])
+      end
+
+      def read_one(query)
+        doc = request do |http|
+          http.request(build_javascript_request(query))
+        end
+        unless doc["total_rows"] == 0
+          data = doc["rows"].first
+          query.model.load(
+            query.fields.map do |property|
+              typecast(property.type, data["value"][property.field.to_s])
+            end,
+            query)
+        end
       end
 
       # Reads in a set from a stored view.
-      def view(repository, resource, proc_name, options = {})
+      def view(resource, proc_name, options = {})
         if options.empty?
           options = ''
         else
@@ -123,28 +145,23 @@ module DataMapper
           "#{options}"
         )
         query = Query.new(repository, resource)
-        populate_set(repository, query, doc["rows"])
+        populate_set(query, doc["rows"])
       end
 
       # Populates a set with data from the supplied docs.
-      def populate_set(repository, query, docs)
-        resource, properties = query.model, query.fields
-        properties_with_indexes =
-          Hash[*properties.zip((0...properties.length).to_a).flatten]
-        set = Collection.new(query)
-
-        docs.each do |doc|
-          set.load(
-            properties.map do |property|
-              typecast(property.type, doc["value"][property.field.to_s])
-            end
-          )
+      def populate_set(query, docs)
+        Collection.new(query) do |collection|
+          docs.each do |doc|
+            collection.load(
+              query.fields.map do |property|
+                typecast(property.type, doc["value"][property.field.to_s])
+              end
+            )
+          end
         end
-
-        set
       end
 
-      def delete_set(repository, query)
+      def delete_set(query)
         raise NotImplementedError
       end
 
@@ -174,9 +191,9 @@ module DataMapper
       def typecast(type, value)
         return value if value.nil?
         case type.to_s
-        when "Time"       then Time.at(value.to_i)
         when "Date"       then Date.parse(value)
         when "DateTime"   then DateTime.parse(value)
+        when "Time"       then Time.at(value.to_i)
         else value
         end
       end
