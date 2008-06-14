@@ -57,7 +57,7 @@ module DataMapper
         request { |http| http.delete(uri) }
       end
 
-      def request(parse_result = true, &block)
+      def request(&block)
         res = nil
         Net::HTTP.start(@uri[:host], @uri[:port].to_i) do |http|
           res = yield(http)
@@ -65,15 +65,15 @@ module DataMapper
         res
       end  
       
-      def parse_resources(data, resource_name, dm_model, dm_properties)
-        doc = REXML::Document::new(data)
+      def parse_resources(xml, resource_name, dm_model_class, dm_properties)
+        doc = REXML::Document::new(xml)
         # TODO: handle singular resource case as well....
         doc.elements.collect("#{resource_name.pluralize}/#{resource_name}") do |entity_element|
-          resource = dm_model.new
+          resource = dm_model_class.new
+#          entity_element.elements
           entity_element.elements.each do |field_element|
             dm_property = dm_properties.find { |f| f.name.to_s == field_element.name.to_s }
-            next unless dm_property
-            resource.send("#{dm_property.name}=", field_element.text)
+            resource.send("#{dm_property.name}=", field_element.text) if dm_property
           end
           resource
         end
