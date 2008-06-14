@@ -56,7 +56,8 @@ module DataMapper
     protected
       def read_set_all(repository, query, resource)
         # TODO: how do we know whether the resource we're talking to is singular or plural?
-        data = http_get("/#{resource.pluralize}.xml").body
+        res = http_get("/#{resource.pluralize}.xml")
+        data = res.body
         # puts data
         parse_resources(data, resource, query.model, query.fields)
         # TODO: Raise error if cannot reach server
@@ -64,10 +65,12 @@ module DataMapper
       
       #    GET /books/4200
       def read_set_for_condition(repository, query, resource)
-        if is_query_for_single_resource? query 
+        if is_single_resource_query? query 
           res = read_set_one(repository, query, resource)
-          # puts "--" + res
-          # puts "== " + res.inspect
+          if res
+            puts "---" + res
+            puts "=== " + res.inspect
+          end
           res
         else
           # More complex conditions
@@ -76,14 +79,19 @@ module DataMapper
       end    
     
       # query.conditions like [[:eql, #<Property:Book:id>, 4200]]
-      def is_query_for_single_resource?(query)
+      def is_single_resource_query?(query)
         query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
       end
       
       def read_set_one(repository, query, resource)
         id = query.conditions.first[2]
         # TODO: Again, we're assuming below that we're dealing with a pluralized resource mapping
-        data = http_get("/#{resource.pluralize}/#{id}.xml").body
+        res = http_get("/#{resource.pluralize}/#{id}.xml")
+        # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
+        return nil if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
+        
+        data = res.body
+        puts "***" + data
         parse_resource(data, resource, query.model, query.fields)
       end
       
@@ -124,7 +132,7 @@ module DataMapper
             resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) 
           end
         end
-        resource
+        resource || Net::HTTPNotFound.new
       end
       
       def parse_resources(xml, resource_name, dm_model_class, dm_properties)

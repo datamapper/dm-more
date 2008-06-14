@@ -32,7 +32,7 @@ steps_for :using_rest_adapter do
   end
 
   Given("the ID of a nonexistent Resource") do
-    @resource_id = 42 * 2
+    @resource_id = 42 ** 3
   end
 
   Given("a local representation of a remote Resource") do

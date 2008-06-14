@@ -68,6 +68,10 @@ describe "A REST adapter" do
     
     describe "if the resource does not exist" do
       it "should return nil" do
+        @id = 1
+        @response = mock(Net::HTTPNotFound)
+        @response.stub!(:body).and_return(book_xml)
+        @adapter.stub!(:http_get).and_return(@response)
         id = 4200
         Book.get(id).should be_nil
       end
