@@ -32,11 +32,10 @@ steps_for :using_rest_adapter do
   end
 
   Given("the ID of a nonexistent Resource") do
-    @resource_id = 42 ** 42
+    @resource_id = 42 * 2
   end
 
   Given("a local representation of a remote Resource") do
-    pending
     @resource = Book.get(1)
   end
   
@@ -49,7 +48,6 @@ steps_for :using_rest_adapter do
   end
   
   When("I request the Resource") do
-    pending
     @resource = @type.get(@resource_id)
   end
 
