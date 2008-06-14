@@ -49,14 +49,6 @@ module DataMapper
           end
         end
 
-        ##
-        # reloads the position-attributes on all loaded objects after saving.
-        #
-        after :save do
-          #puts "Reloading positions of all items"
-          #puts "#{self.inspect}right after saving\n: #{self.collection.inspect}\n\n" if self.id == 7
-          self.class.reload_positions
-        end
       end
 
       def is_a_nested_set(*args)
@@ -81,21 +73,6 @@ module DataMapper
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
-        def reload_positions
-          # When reloading one object, it reloads all objects in the same collection. Therefore
-          # we need to trace which objects has been reloaded, so that we don't reload the same
-          # objects multiple times.
-
-          reloaded_nodes = []
-
-          repository.identity_map(self).each_pair do |key,obj|
-            if !reloaded_nodes.include?(obj.key)
-              obj.reload_position
-              reloaded_nodes = reloaded_nodes | obj.collection.map{|o| o.key }
-            end
-          end
-        end
-
         ##
         # rebuilds the parent/child relationships (parent_id) from nested set (left/right values)
         #
@@ -112,32 +89,9 @@ module DataMapper
         def rebuild_set_from_tree(order=nil)
           # pending
         end
-
-        def offset_nodes_in_set(offset,range) # :nodoc:
-          self.query_set("lft=lft+(?), rgt=rgt+(?)","rgt BETWEEN ?",offset,offset,range)
-        end
-
-        def alter_gap_in_set(pos,addition,opr='>=') # :nodoc:
-          #[:lft,:rgt].each{ |p| self.query_set("\#{p}=\#{p}+(?)","\#{p} \#{opr} ?",addition,pos)}
-          self.query_set("rgt=rgt+(?)","rgt #{opr} ?",addition,pos)
-          self.query_set("lft=lft+(?)","lft #{opr} ?",addition,pos)
-        end
-
-        def query_set(set,where,*pars) # :nodoc:
-          query = %Q{UPDATE #{self.storage_name} SET #{set} WHERE #{where}}
-          repository.adapter.execute(query,*pars)
-        end
       end
 
       module InstanceMethods
-
-        ##
-        # reloads the left and right attributes for self. if #move did not use this, we'd get quite
-        # peculiar results, and most likely corrupt the nested sets pretty fast.
-        #
-        def reload_position
-          self.reload_attributes(:lft,:rgt)
-        end
 
         ##
         # move self / node to a position in the set. position can _only_ be changed through this
@@ -217,18 +171,19 @@ module DataMapper
             # find out how wide this node is, as we need to make a gap large enough for it to fit in
             gap = self.rgt - self.lft + 1
             # make a gap at position, that is as wide as this node
-            self.class.alter_gap_in_set( position , gap )
-            # adding this gap may have changed this node's position. reloading the attributes from the repository
-            self.reload_position
+            self.class.all(:rgt.gte => position).adjust(:rgt => gap)
+            self.class.all(:lft.gte => position).adjust(:lft => gap)
             # offset this node (and all its descendants) to the right position
-            self.class.offset_nodes_in_set( position - self.lft , self.lft..self.rgt)
-            # close the gap this movement left behind. self.lft here is the old value, _not_ yet reloaded after offset
-            self.class.alter_gap_in_set(self.lft,-gap,'>')
-            # reloading the position to the new one. this is really not nececarry, as it gets done on save automatically
-            self.reload_position
+            offset = position - self.lft
+            old_position = self.lft
+            self.class.all(:rgt => self.lft..self.rgt).adjust(:lft => offset, :rgt => offset)
+            # close the gap this movement left behind.
+            self.class.all(:rgt.gt => old_position).adjust(:rgt => -gap)
+            self.class.all(:lft.gt => old_position).adjust(:lft => -gap)
           else
             # make a gap where the new node can be inserted
-            self.class.alter_gap_in_set( position , 2 )
+            self.class.all(:rgt.gte => position).adjust(:rgt => 2)
+            self.class.all(:lft.gte => position).adjust(:lft => 2)
             # set the position fields
             self.lft, self.rgt = position, position + 1
           end

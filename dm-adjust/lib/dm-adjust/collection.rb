@@ -55,9 +55,12 @@ module DataMapper
       # can do is update the query of our collection to follow the adjustments. We need to loop 
       # through all conditions of the query, and check if any of our adjusted attributes are 
       # involved. if so, they must be updated to reflect the changes.
-      query.conditions.each do |condition|
-        if adjustment = adjust_attributes[condition[1]]
-          condition[2] += adjustment
+      query.conditions.each do |c|
+        if adjustment = adjust_attributes[c[1]]
+          case c[2]
+          when Numeric then c[2] += adjustment
+          when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
+          end
         end
       end
       
