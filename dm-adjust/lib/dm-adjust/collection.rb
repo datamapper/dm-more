@@ -11,8 +11,8 @@ module DataMapper
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @param load <TrueClass,FalseClass>
     # @public
-    def adjust(attributes, load=true)
- 
+    def adjust(attributes={}, load=true)
+      return true if attributes.empty?
       adjust_attributes = {}
       # Finding the actual properties to adjust
       model.properties(repository.name).slice(*attributes.keys).each do |property|
@@ -44,8 +44,8 @@ module DataMapper
        
       end
       
-      # Asking the repository (adapter) to do its magic.
-      repository.adjust(adjust_attributes,scoped_query)
+      # Asking the repository (adapter) to do its magic. 
+      affected = repository.adjust(adjust_attributes,scoped_query)
       
       # Reload the objects that was preloaded _and_ affected, unless this collection is loaded
       model.all(keys_to_reload).reload(:fields => attributes.keys) if keys_to_reload && !keys_to_reload.empty?
@@ -63,6 +63,8 @@ module DataMapper
           end
         end
       end
+      
+      return affected
       
     end
 

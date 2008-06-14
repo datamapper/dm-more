@@ -3,11 +3,6 @@ module DataMapper
     module NestedSet
 
       ##
-      # Include the GeneratorMethods now. Wait with the other methods until
-      # plugin is actually called (to keep from cluttering namespace)
-      #
-
-      ##
       # docs in the works
       #
       def is_nested_set(options={})
@@ -19,8 +14,8 @@ module DataMapper
         property :lft, Integer, :writer => :private
         property :rgt, Integer, :writer => :private
 
-        belongs_to :parent,  :class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
-        has n,     :children,:class_name => self.name, :child_key => [ options[:child_key] ], :order => [:lft.asc]
+        belongs_to :parent,   :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
+        has n,     :children, :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
 
         before :create do
           # scenarios:
@@ -125,9 +120,6 @@ module DataMapper
         end
 
         ##
-        # does all the actual movement in #move, but does not save afterwards. this is used internally in
-        # before :save, and will probably be marked private. should not be used by organic beings.
-        #
         # @see move
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
@@ -174,12 +166,12 @@ module DataMapper
             self.class.all(:rgt.gte => position).adjust(:rgt => gap)
             self.class.all(:lft.gte => position).adjust(:lft => gap)
             # offset this node (and all its descendants) to the right position
-            offset = position - self.lft
             old_position = self.lft
+            offset = position - old_position
             self.class.all(:rgt => self.lft..self.rgt).adjust(:lft => offset, :rgt => offset)
             # close the gap this movement left behind.
-            self.class.all(:rgt.gt => old_position).adjust(:rgt => -gap)
-            self.class.all(:lft.gt => old_position).adjust(:lft => -gap)
+            self.class.all(:rgt.gt => old_position).adjust(:rgt => -gap,false)
+            self.class.all(:lft.gt => old_position).adjust(:lft => -gap,false)
           else
             # make a gap where the new node can be inserted
             self.class.all(:rgt.gte => position).adjust(:rgt => 2)
