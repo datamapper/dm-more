@@ -21,7 +21,7 @@ namespace :dm do
       task :load => :merb_start do
         gem 'dm-migrations'
         require 'migration_runner'
-        FileList["db/migrations/*.rb"].each do |migration|
+        FileList["schema/migrations/*.rb"].each do |migration|
           load migration
         end
       end
