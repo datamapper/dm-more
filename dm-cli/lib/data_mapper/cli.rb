@@ -170,7 +170,7 @@ USAGE
         begin
           configure(argv)
           DataMapper.setup(:default, options.dup)
-          load_models if options[:models]
+          load_models if config[:models]
           puts "DataMapper has been loaded using the '#{options[:adapter] || options["adapter"]}' database '#{options[:database] || options["database"]}' on '#{options[:host] || options["host"]}' as '#{options[:username] || options["username"]}'"
           ENV["IRBRC"] = DataMapper::CLI::BinDir + "/.irbrc" # Do not change this please. This should NOT be DataMapper.root
           IRB.start
