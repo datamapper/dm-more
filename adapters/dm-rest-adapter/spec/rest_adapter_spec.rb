@@ -40,6 +40,7 @@ describe "A REST adapter" do
     
       before do
         book_xml = <<-BOOK
+        <?xml version="1.0" encoding="UTF-8"?>
         <book>
           <author>Stephen King</author>
           <created-at type="datetime">2008-06-08T17:03:07Z</created-at>
@@ -70,7 +71,8 @@ describe "A REST adapter" do
       it "should return nil" do
         @id = 1
         @response = mock(Net::HTTPNotFound)
-        @response.stub!(:body).and_return(book_xml)
+        @response.stub!(:content_type).and_return("text/html")
+        @response.stub!(:body).and_return("<html></html>")
         @adapter.stub!(:http_get).and_return(@response)
         id = 4200
         Book.get(id).should be_nil
@@ -81,6 +83,7 @@ describe "A REST adapter" do
   describe "when getting all resource of a particular type" do
     before do      
       books_xml = <<-BOOK
+      <?xml version="1.0" encoding="UTF-8"?>
       <books type='array'>
         <book>
           <author>Ursula K LeGuin</author>

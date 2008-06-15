@@ -58,7 +58,6 @@ module DataMapper
         # TODO: how do we know whether the resource we're talking to is singular or plural?
         res = http_get("/#{resource.pluralize}.xml")
         data = res.body
-        # puts data
         parse_resources(data, resource, query.model, query.fields)
         # TODO: Raise error if cannot reach server
       end
@@ -66,12 +65,7 @@ module DataMapper
       #    GET /books/4200
       def read_set_for_condition(repository, query, resource)
         if is_single_resource_query? query 
-          res = read_set_one(repository, query, resource)
-          if res
-            puts "---" + res
-            puts "=== " + res.inspect
-          end
-          res
+          read_set_one(repository, query, resource)
         else
           # More complex conditions
           raise NotImplementedError.new
@@ -88,10 +82,9 @@ module DataMapper
         # TODO: Again, we're assuming below that we're dealing with a pluralized resource mapping
         res = http_get("/#{resource.pluralize}/#{id}.xml")
         # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
-        return nil if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
+        return [] if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
         
         data = res.body
-        puts "***" + data
         parse_resource(data, resource, query.model, query.fields)
       end
       
@@ -122,17 +115,17 @@ module DataMapper
       def parse_resource(xml, resource_name, dm_model_class, dm_properties)
         doc = REXML::Document::new(xml)
         # TODO: handle singular resource case as well....
+        entity_element = REXML::XPath.first(doc, "/#{resource_name}")
+        return [] unless entity_element
         resource = dm_model_class.new
-        doc.elements.each do |field_element|
+        entity_element.elements.each do |field_element|
           dm_property = dm_properties.find do |p| 
             # *MUST* use Inflection.underscore on the XML as Rails converts '_' to '-' in the XML
             p.name.to_s == Inflection.underscore(field_element.name.to_s)
           end
-          if dm_property
-            resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) 
-          end
+          resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) if dm_property
         end
-        resource || Net::HTTPNotFound.new
+        [] << resource
       end
       
       def parse_resources(xml, resource_name, dm_model_class, dm_properties)
