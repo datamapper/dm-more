@@ -11,8 +11,9 @@ module DataMapper
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @param load <TrueClass,FalseClass>
     # @public
-    def adjust(attributes={}, preload=true)
+    def adjust(attributes={},preload=true)
       return true if attributes.empty?
+      
       adjust_attributes = {}
       # Finding the actual properties to adjust
       model.properties(repository.name).slice(*attributes.keys).each do |property|

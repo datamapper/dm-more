@@ -154,19 +154,19 @@ module DataMapper
             # find out how wide this node is, as we need to make a gap large enough for it to fit in
             gap = self.rgt - self.lft + 1
             # make a gap at position, that is as wide as this node
-            self.class.all(:rgt.gte => position).adjust(:rgt => gap)
-            self.class.all(:lft.gte => position).adjust(:lft => gap)
+            self.class.all(:rgt.gte => position).adjust({:rgt => gap},false)
+            self.class.all(:lft.gte => position).adjust({:lft => gap},false)
             # offset this node (and all its descendants) to the right position
             old_position = self.lft
             offset = position - old_position
-            self.class.all(:rgt => self.lft..self.rgt).adjust(:lft => offset, :rgt => offset)
+            self.class.all(:rgt => self.lft..self.rgt).adjust({:lft => offset, :rgt => offset},false)
             # close the gap this movement left behind.
-            self.class.all(:rgt.gt => old_position).adjust(:rgt => -gap,false)
-            self.class.all(:lft.gt => old_position).adjust(:lft => -gap,false)
+            self.class.all(:rgt.gt => old_position).adjust({:rgt => -gap},false)
+            self.class.all(:lft.gt => old_position).adjust({:lft => -gap},false)
           else
             # make a gap where the new node can be inserted
-            self.class.all(:rgt.gte => position).adjust(:rgt => 2)
-            self.class.all(:lft.gte => position).adjust(:lft => 2)
+            self.class.all(:rgt.gte => position).adjust({:rgt => 2},false)
+            self.class.all(:lft.gte => position).adjust({:lft => 2},false)
             # set the position fields
             self.lft, self.rgt = position, position + 1
           end
