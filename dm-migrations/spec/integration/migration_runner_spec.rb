@@ -58,7 +58,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
         migrate_up!(2)
       end
-
+      
       it 'calling migrate_down! should migrate down all the migrations' do
         # add our expection that migrate_up should be called
         @@migrations.each do |m|
