@@ -45,16 +45,7 @@ module DataMapper
         end
 
       end
-
-      def is_a_nested_set(*args)
-        warn("'is_a_nested_set' is depreciated, use 'is :nested_set' instead.")
-        is_nested_set(*args)
-      end
-
-      ##
-      # all the ClassMethods. They do not get added before / unless calling is_a_nested_set
-      # since we dont want to clutter your model unless you need it.
-      #
+      
       module ClassMethods
 
         ##

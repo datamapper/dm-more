@@ -11,7 +11,7 @@ module DataMapper
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @param load <TrueClass,FalseClass>
     # @public
-    def adjust(attributes={}, load=true)
+    def adjust(attributes={}, preload=true)
       return true if attributes.empty?
       adjust_attributes = {}
       # Finding the actual properties to adjust
@@ -22,7 +22,7 @@ module DataMapper
       # if none of the attributes that are adjusted is part of the collection-query
       # there is no need to load the collection (it will not change after adjustment)
       # special case if it is in a :conditions-statement. can check for that?
-      lazy_load! if load && query.conditions.detect{|c| adjust_attributes.include?(c[1]) }
+      lazy_load if preload && query.conditions.detect{|c| adjust_attributes.include?(c[1]) }
       
       if loaded?
         # Doesnt this make for lots if dirty objects that in reality is not dirty?
@@ -45,7 +45,7 @@ module DataMapper
       end
       
       # Asking the repository (adapter) to do its magic. 
-      affected = repository.adjust(adjust_attributes,scoped_query)
+      repository.adjust(adjust_attributes,scoped_query)
       
       # Reload the objects that was preloaded _and_ affected, unless this collection is loaded
       model.all(keys_to_reload).reload(:fields => attributes.keys) if keys_to_reload && !keys_to_reload.empty?
@@ -55,16 +55,18 @@ module DataMapper
       # can do is update the query of our collection to follow the adjustments. We need to loop 
       # through all conditions of the query, and check if any of our adjusted attributes are 
       # involved. if so, they must be updated to reflect the changes.
+      # Should probably loop through this beforehand to find out if we should load. Will lower
+      # performance.
       query.conditions.each do |c|
         if adjustment = adjust_attributes[c[1]]
           case c[2]
-          when Numeric then c[2] += adjustment
-          when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
+            when Numeric then c[2] += adjustment
+            when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
           end
         end
       end
       
-      return affected
+      return true
       
     end
 
