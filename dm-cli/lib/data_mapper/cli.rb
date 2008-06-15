@@ -1,6 +1,6 @@
 require "yaml"
 require "irb"
-require Pathname('irb/completion')
+require Pathname("irb/completion")
 
 # TODO: error handling for:
 #   missing adapter, host or database
@@ -11,49 +11,41 @@ module DataMapper
     class << self
 
       def usage
-        "\nNote: If exactly one argument is given the CLI assumes it is a connection string.
-        \n#{'='*80}\n= Examples\n#{'='*80}
+        <<-USAGE
 
-        1. Use a connection string to connect to the database
+dm - Data Mapper CLI
 
-          $ dm mysql://root@localhost/test_development
+  Usage Examples\n#{'='*80}
 
-          Notes: The connection string has the format:
+* If exactly one argument is given the CLI assumes it is a connection string:
+  $ dm mysql://root@localhost/test_development
+  
+  The connection string has the format:
+    adapter://user:password@host:port/database
+  Where adapter is in: {mysql, pgsql, sqlite...} and the user/password is optional
 
-            adapter://user:password@host:port/database
+* Load the database by specifying only cli options
+  $ dm -a mysql -u root -h localhost -d test_development -e developemnt
 
-          Where adapter is in: {mysql, pgsql, sqlite...}
+* Load the database using a yaml config file and specifying the environment to use
+  $ dm --yaml config/database.yml -e development
 
-        2. Load the database by specifying only cli options
+* Load everything from a config file, this example is equivalent to the above
+  $ dm --config config/development.yml
 
-          $ dm -a mysql -u root -h localhost -d test_development -e developemnt
+* Load the database and some model files from a directory, specifying the environment
+  $ dm --yaml config/database.yml -e development --models app/models
 
-
-        3. Load the database using a yaml config file and specifying the environment to use
-
-          $ dm --yaml config/database.yml -e development
-
-
-        4. Load everything from a config file, this example is equivalent to the above
-
-          $ dm --config config/development.yml
-
-
-        5. Load the database and some model files from a directory, specifying the environment
-
-          $ dm --yaml config/database.yml -e development --models app/models
-
-
-        6. Load an assumed structure of a typical merb application
-
-          $ dm --merb -e development
-
-        Note: This is similar to merb -i without the merb framework being loaded.
-        ".gsub(/^    /,'')
+* Load an assumed structure of a typical merb application
+  $ dm --merb -e development
+  
+  This is similar to merb -i without the merb framework being loaded.
+  
+USAGE
       end
 
       attr_accessor :options, :config
-
+      
       def parse_args(argv = ARGV)
         @config ||= {}
 
@@ -71,8 +63,8 @@ module DataMapper
           end
 
           opt.on("--merb", "--rails", "Loads application settings: config/database.yml, app/models.") do
-            @config[:models] = Pathname('app/models')
-            @config[:yaml]   = Pathname('config/database.yml')
+            @config[:models] = Pathname("app/models")
+            @config[:yaml]   = Pathname("config/database.yml")
           end
 
           opt.on("-y", "--yaml YAML", "The database connection configuration yaml file.") do |yaml_file|
@@ -170,17 +162,18 @@ module DataMapper
       end
 
       def start(argv = ARGV)
+        if (ARGV.nil? || ARGV.empty?)
+          puts DataMapper::CLI.usage
+          exit 1
+        end
 
         begin
           configure(argv)
-          DataMapper.setup(:default, options)
-
-          load_models if config[:models]
-
+          DataMapper.setup(:default, options.dup)
+          load_models if options[:models]
           puts "DataMapper has been loaded using the '#{options[:adapter] || options["adapter"]}' database '#{options[:database] || options["database"]}' on '#{options[:host] || options["host"]}' as '#{options[:username] || options["username"]}'"
-          ENV["IRBRC"] = DataMapper.root / 'bin' / '.irbrc'
+          ENV["IRBRC"] = DataMapper::CLI::BinDir + "/.irbrc" # Do not change this please. This should NOT be DataMapper.root
           IRB.start
-
         rescue => error
           puts error.message
           exit
