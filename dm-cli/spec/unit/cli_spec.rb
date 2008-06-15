@@ -1,9 +1,9 @@
-require 'rubygems'
+require "rubygems"
 
-gem 'dm-core', '=0.9.2'
-require 'dm-core'
+gem "dm-core", ">=0.9.2"
+require "dm-core"
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib', 'data_mapper', 'cli'))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "data_mapper", "cli"))
 
 describe DataMapper::CLI do
 
