@@ -27,12 +27,14 @@ namespace :dm do
       end
 
       desc "Migrate up using migrations"
-      task :up => :load do
-        migrate_up!(ENV['VERSION'])
+      task :up, :version, :needs => :load do |t, args|
+        version = args[:version] || ENV['VERSION']
+        migrate_up!(version)
       end
       desc "Migrate down using migrations"
-      task :down => :load do
-        migrate_down!(ENV['VERSION'])
+      task :down, :version, :needs => :load do |t, args|
+        version = args[:version] || ENV['VERSION']
+        migrate_down!(version)
       end
     end
   end
