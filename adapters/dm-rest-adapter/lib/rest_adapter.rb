@@ -13,13 +13,28 @@ module DataMapper
   module Adapters
     class RestAdapter < AbstractAdapter
       include Extlib
+
+      # def read_one(query)
+      #   raise NotImplementedError
+      # end
+      # 
+      # def update(attributes, query)
+      #   raise NotImplementedError
+      # end
+      # 
+      # def delete(query)
+      #   raise NotImplementedError
+      # end
       
       # Creates a new resource in the specified repository.
-      def create(repository, resource)
-        result = http_post("/#{resource.class.storage_name}.xml", resource.to_xml)
-        # TODO: Raise error if cannot reach server
-        result.kind_of? Net::HTTPSuccess
-        # TODO: We're not using the response to update the DataMapper::Resource with the newly acquired ID!!!
+      def create(resources)
+        resources.each do |resource|
+          resource_name = Inflection.underscore(resource.class.name.downcase)
+          result = http_post("/#{resource_name.pluralize}.xml", resource.to_xml)
+          # TODO: Raise error if cannot reach server
+          result.kind_of? Net::HTTPSuccess
+          # TODO: We're not using the response to update the DataMapper::Resource with the newly acquired ID!!!
+        end
       end
       
       # read_set
@@ -33,14 +48,29 @@ module DataMapper
       #
       # IN PROGRESS
       # TODO: Need to account for query.conditions (i.e., [[:eql, #<Property:Book:id>, 1]] for books/1)
-      def read_set(repository, query)
-        resource = query.model.name.downcase
+      def read_many(query)
+        resource_name = Inflection.underscore(query.model.name.downcase)
         case query.conditions
         when []
-          read_set_all(repository, query, resource)
+          read_set_all(repository, query, resource_name)
         else
           read_set_for_condition(repository, query, resource)
         end
+      end
+      
+      def read_one(query)
+        id = query.conditions.first[2]
+        # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
+        resource_name = Inflection.underscore(query.model.name.downcase)
+        res = http_get("/#{resource_name.pluralize}/#{id}.xml")
+        
+        # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
+        return nil if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
+        
+        data = res.body
+        res = parse_resource(data, resource_name, query.model, query.fields)
+        puts "=== #{res.inspect} #{res}"
+        res
       end
       
       def update(repository, resource)
@@ -54,35 +84,20 @@ module DataMapper
       end
       
     protected
-      def read_set_all(repository, query, resource)
+      def read_set_all(repository, query, resource_name)
         # TODO: how do we know whether the resource we're talking to is singular or plural?
-        res = http_get("/#{resource.pluralize}.xml")
+        res = http_get("/#{resource_name.pluralize}.xml")
         data = res.body
-        parse_resources(data, resource, query.model, query.fields)
+        parse_resources(data, resource_name, query.model, query.fields)
         # TODO: Raise error if cannot reach server
       end
       
       #    GET /books/4200
-      def read_set_for_condition(repository, query, resource)
-        if is_single_resource_query? query 
-          read_set_one(repository, query, resource)
-        else
-          # More complex conditions
-          raise NotImplementedError.new
-        end
+      def read_set_for_condition(repository, query, resource_name)
+        # More complex conditions
+        raise NotImplementedError.new
       end    
-
-      def read_set_one(repository, query, resource)
-        id = query.conditions.first[2]
-        # TODO: Again, we're assuming below that we're dealing with a pluralized resource mapping
-        res = http_get("/#{resource.pluralize}/#{id}.xml")
-        # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
-        return [] if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
-        
-        data = res.body
-        parse_resource(data, resource, query.model, query.fields)
-      end
-    
+          
       # query.conditions like [[:eql, #<Property:Book:id>, 4200]]
       def is_single_resource_query?(query)
         query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
@@ -112,11 +127,7 @@ module DataMapper
         res
       end  
 
-      def parse_resource(xml, resource_name, dm_model_class, dm_properties)
-        doc = REXML::Document::new(xml)
-        # TODO: handle singular resource case as well....
-        entity_element = REXML::XPath.first(doc, "/#{resource_name}")
-        return [] unless entity_element
+      def resource_from_rexml(entity_element, dm_model_class, dm_properties)
         resource = dm_model_class.new
         entity_element.elements.each do |field_element|
           dm_property = dm_properties.find do |p| 
@@ -125,7 +136,15 @@ module DataMapper
           end
           resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) if dm_property
         end
-        [] << resource
+        resource
+      end
+
+      def parse_resource(xml, resource_name, dm_model_class, dm_properties)
+        doc = REXML::Document::new(xml)
+        # TODO: handle singular resource case as well....
+        entity_element = REXML::XPath.first(doc, "/#{resource_name}")
+        return nil unless entity_element
+        resource_from_rexml(entity_element, dm_model_class, dm_properties)
       end
       
       def parse_resources(xml, resource_name, dm_model_class, dm_properties)
@@ -137,17 +156,7 @@ module DataMapper
         # else
           
         doc.elements.collect("#{resource_name.pluralize}/#{resource_name}") do |entity_element|
-          resource = dm_model_class.new
-          entity_element.elements.each do |field_element|
-            dm_property = dm_properties.find do |p| 
-              # *MUST* use Inflection.underscore on the XML as Rails converts '_' to '-' in the XML
-              p.name.to_s == Inflection.underscore(field_element.name.to_s)
-            end
-            if dm_property
-              resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) 
-            end
-          end
-          resource
+          resource_from_rexml(entity_element, dm_model_class, dm_properties)
         end
       end  
     end

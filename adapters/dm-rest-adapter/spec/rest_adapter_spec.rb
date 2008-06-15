@@ -58,6 +58,7 @@ describe "A REST adapter" do
       it "should return the resource" do
         book = Book.get(@id)
         book.should_not be_nil
+        book.id.should be_an_instance_of(Fixnum)
         book.id.should == 1
       end
       
@@ -116,4 +117,11 @@ describe "A REST adapter" do
     end    
   end
 
+  describe "when updating an existing resource" do
+    # TODO
+  end
+  
+  describe "when deleting an existing resource" do
+    # TODO
+  end
 end
