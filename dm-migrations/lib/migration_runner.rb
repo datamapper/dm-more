@@ -54,7 +54,7 @@ module DataMapper
         if level.nil?
           migration.perform_up()
         else
-          migration.perform_up() if migration.position <= level
+          migration.perform_up() if migration.position <= level.to_i
         end
       end
     end
@@ -68,7 +68,7 @@ module DataMapper
         if level.nil?
           migration.perform_down()
         else
-          migration.perform_down() if migration.position > level
+          migration.perform_down() if migration.position > level.to_i
         end
       end
     end
