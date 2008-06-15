@@ -77,7 +77,7 @@ steps_for :using_rest_adapter do
 
   Then("I should receive that Resource") do
     @resource.should_not be_nil
-    @reourece.id.should == @resource_id
+    @resource.id.should == @resource_id
   end
 
   Then("I should get nothing in return") do
@@ -85,8 +85,7 @@ steps_for :using_rest_adapter do
   end
   
   Then("the Resource will no longer be available") do
-
-    @type.get(@resource_id).should be_nil
+    Book.get(@resource_id).should be_nil
   end
 end
 

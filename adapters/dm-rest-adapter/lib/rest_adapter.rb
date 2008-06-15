@@ -71,12 +71,7 @@ module DataMapper
           raise NotImplementedError.new
         end
       end    
-    
-      # query.conditions like [[:eql, #<Property:Book:id>, 4200]]
-      def is_single_resource_query?(query)
-        query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
-      end
-      
+
       def read_set_one(repository, query, resource)
         id = query.conditions.first[2]
         # TODO: Again, we're assuming below that we're dealing with a pluralized resource mapping
@@ -86,6 +81,11 @@ module DataMapper
         
         data = res.body
         parse_resource(data, resource, query.model, query.fields)
+      end
+    
+      # query.conditions like [[:eql, #<Property:Book:id>, 4200]]
+      def is_single_resource_query?(query)
+        query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
       end
       
       def http_put(uri, data = nil)
