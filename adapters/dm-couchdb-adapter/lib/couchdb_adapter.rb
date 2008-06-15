@@ -8,13 +8,6 @@ require 'json'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_views'
 
-class Time
-  # Converts a Time object to a JSON representation.
-  def to_json(*a)
-    self.to_i.to_json(*a)
-  end
-end
-
 module DataMapper
   module Resource
     # Converts a Resource to a JSON representation.
@@ -23,9 +16,6 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] = instance_variable_get(property.instance_variable_name)
-        if [Date, DateTime].include?(property.type) && !accumulator[property.field].nil?
-          accumulator[property.field] = accumulator[property.field].to_s
-        end
         accumulator
       end).to_json
     end
@@ -125,7 +115,7 @@ module DataMapper
           data = doc["rows"].first
           query.model.load(
             query.fields.map do |property|
-              typecast(property.type, data["value"][property.field.to_s])
+              property.typecast(data["value"][property.field.to_s])
             end,
             query)
         end
@@ -154,7 +144,7 @@ module DataMapper
           docs.each do |doc|
             collection.load(
               query.fields.map do |property|
-                typecast(property.type, doc["value"][property.field.to_s])
+                property.typecast(doc["value"][property.field.to_s])
               end
             )
           end
@@ -186,16 +176,6 @@ module DataMapper
         return Addressable::URI.new(
           "http", user, password, host, port, database, query, nil
         )
-      end
-
-      def typecast(type, value)
-        return value if value.nil?
-        case type.to_s
-        when "Date"       then Date.parse(value)
-        when "DateTime"   then DateTime.parse(value)
-        when "Time"       then Time.at(value.to_i)
-        else value
-        end
       end
 
       def build_javascript_request(query)
