@@ -1,7 +1,7 @@
-class <%= class_name.snake_case.camel_case %> < DataMapper::Migration
-  def self.up
+migration(<%= number %>, :<%= class_name.snake_case %>) do
+  up do
   end
 
-  def self.down
+  down do
   end
 end

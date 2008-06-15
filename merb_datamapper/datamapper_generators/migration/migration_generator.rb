@@ -24,7 +24,7 @@ class MigrationGenerator < RubiGen::Base
       # Create stubs
       highest_migration = Dir[Dir.pwd+'/schema/migrations/*'].map{|f| File.basename(f) =~ /^(\d+)/; $1}.max
       filename = format("%03d_%s", (highest_migration.to_i+1), @name.snake_case)
-      m.template "new_migration.erb", "schema/migrations/#{filename}.rb", :assigns => { :class_name => @name }
+      m.template "new_migration.erb", "schema/migrations/#{filename}.rb", :assigns => { :class_name => @name , :number => (highest_migration.to_i+1) }
 
     end
   end
