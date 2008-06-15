@@ -11,17 +11,19 @@ module DataMapper
         private
 
         def adjust_statement(properties, query)
-          statement = "UPDATE #{quote_table_name(query.model.storage_name(name))}"
-          statement << " SET #{set_adjustment_statement(properties)}"
+          repository = query.repository
+
+          statement = "UPDATE #{quote_table_name(query.model.storage_name(repository.name))}"
+          statement << " SET #{set_adjustment_statement(repository, properties)}"
           statement << " WHERE #{conditions_statement(query)}" if query.conditions.any?
           statement
         rescue => e
            DataMapper.logger.error("QUERY INVALID: #{query.inspect} (#{e})")
            raise e
         end
-        
-        def set_adjustment_statement(properties)
-          properties.map { |p| [quote_column_name(p.field(name))] * 2 * " = " + " + (?)" } * ", "
+
+        def set_adjustment_statement(repository, properties)
+          properties.map { |p| [quote_column_name(p.field(repository.name))] * 2 * " = " + " + (?)" } * ", "
         end
 
       end # module SQL
