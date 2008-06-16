@@ -27,7 +27,7 @@ module DataMapper
 
       if loaded?
         # Doesnt this make for lots if dirty objects that in reality is not dirty?
-        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.attribute_get(a) + v) } }
+        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) } }
 
       elsif !repository.identity_map(model).empty?
 
