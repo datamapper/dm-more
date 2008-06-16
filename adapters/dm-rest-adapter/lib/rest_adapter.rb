@@ -69,16 +69,17 @@ module DataMapper
         
         data = res.body
         res = parse_resource(data, resource_name, query.model, query.fields)
-        puts "=== #{res.inspect} #{res}"
         res
       end
       
-      def update(repository, resource)
+      def update(attributes, query)
+        # TODO update for v0.9.2
         http_put("/#{resource.class.storage_name}.xml", resource.to_xml)
         # TODO: Raise error if cannot reach server
       end
       
-      def delete(repository, resource)
+      def delete(query)
+        # TODO update for v0.9.2
         http_delete("/#{resource.class.storage_name}.xml")
         # TODO: Raise error if cannot reach server
       end
