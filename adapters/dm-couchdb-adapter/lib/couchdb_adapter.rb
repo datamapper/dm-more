@@ -23,6 +23,12 @@ module DataMapper
 end
 
 module DataMapper
+  class Query
+    attr_accessor :view
+  end
+end
+
+module DataMapper
   module Adapters
     class CouchDBAdapter < AbstractAdapter
       # Returns the name of the CouchDB database.
@@ -102,17 +108,25 @@ module DataMapper
       # Reads in a set from a query.
       def read_many(query)
         doc = request do |http|
-          http.request(build_javascript_request(query))
+          http.request(build_request(query))
         end
-        populate_set(query, doc["rows"])
+        Collection.new(query) do |collection|
+          doc['rows'].each do |doc|
+            collection.load(
+              query.fields.map do |property|
+                property.typecast(doc["value"][property.field.to_s])
+              end
+            )
+          end
+        end
       end
 
       def read_one(query)
         doc = request do |http|
-          http.request(build_javascript_request(query))
+          http.request(build_request(query))
         end
         unless doc["total_rows"] == 0
-          data = doc["rows"].first
+          data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
               property.typecast(data["value"][property.field.to_s])
@@ -123,36 +137,9 @@ module DataMapper
 
       # Reads in a set from a stored view.
       def view(resource, proc_name, options = {})
-        if options.empty?
-          options = ''
-        else
-          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
-        end
-        options = URI.encode(options)
-        doc = http_get(
-          "/#{self.escaped_db_name}/_view" +
-          "/#{resource.storage_name(self.name)}/#{proc_name}" +
-          "#{options}"
-        )
         query = Query.new(repository, resource)
-        populate_set(query, doc["rows"])
-      end
-
-      # Populates a set with data from the supplied docs.
-      def populate_set(query, docs)
-        Collection.new(query) do |collection|
-          docs.each do |doc|
-            collection.load(
-              query.fields.map do |property|
-                property.typecast(doc["value"][property.field.to_s])
-              end
-            )
-          end
-        end
-      end
-
-      def delete_set(query)
-        raise NotImplementedError
+        query.view = { :name => proc_name }.merge!(options)
+        read_many(query)
       end
 
     protected
@@ -178,7 +165,15 @@ module DataMapper
         )
       end
 
-      def build_javascript_request(query)
+      def build_request(query)
+        unless query.view
+          ad_hoc_request(query)
+        else
+          view_request(query)
+        end
+      end
+
+      def ad_hoc_request(query)
         if query.order.empty?
           key = "null"
         else
@@ -224,6 +219,23 @@ module DataMapper
           request.body = body.gsub(/^#{space}/, '')
         end
         request
+      end
+
+      def view_request(query)
+        options = query.view.dup
+        proc_name = options.delete(:name)
+        if options.empty?
+          options = ''
+        else
+          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
+        end
+        uri = "/#{self.escaped_db_name}/" +
+              "_view/" +
+              "#{query.model.storage_name(self.name)}/" +
+              "#{proc_name}" +
+              "#{options}"
+        p uri
+        request = Net::HTTP::Get.new(uri)
       end
 
       def like_operator(value)
