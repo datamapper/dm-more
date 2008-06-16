@@ -21,8 +21,8 @@ class User
   property :created_on, Date
 
   # creates methods for accessing stored/indexed views in the CouchDB database
-  view :by_name
-  view :by_age
+  view :by_name, "function(doc) { if (doc.type == 'user') { map(doc.name, doc); } }"
+  view :by_age, "function(doc) { if (doc.type == 'user') { map(doc.age, doc); } }"
 
   before :create do
     self.created_at = DateTime.now
@@ -189,20 +189,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
 
   def create_procedures
-    view = Net::HTTP::Put.new("/test_cdb_adapter/_design/users")
-    view["content-type"] = "text/javascript"
-    view.body = {
-      "language" => "text/javascript",
-      "views" => {
-        "by_name" =>
-          "function(doc) { if (doc.type == 'user') { map(doc.name, doc); } }",
-        "by_age"  =>
-          "function(doc) { if (doc.type == 'user') { map(doc.age, doc); } }"
-      }
-    }.to_json
-    @adapter.send(:request, false) do |http|
-      http.request(view)
-    end
+    User.auto_migrate!
   end
 
   def new_user(options = {})
