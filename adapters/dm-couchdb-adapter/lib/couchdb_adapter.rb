@@ -183,7 +183,12 @@ module DataMapper
           key = "[#{key}]"
         end
 
-        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view")
+        options = []
+        options << "count=#{query.limit}" if query.limit
+        options << "skip=#{query.offset}" if query.offset
+        options = options.empty? ? nil : "?#{options.join('&')}"
+
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{options}")
         request["Content-Type"] = "text/javascript"
 
         if query.conditions.empty?
@@ -224,6 +229,8 @@ module DataMapper
       def view_request(query)
         options = query.view.dup
         proc_name = options.delete(:name)
+        options[:count] = query.limit if query.limit
+        options[:skip] = query.offset if query.offset
         if options.empty?
           options = ''
         else
@@ -234,7 +241,6 @@ module DataMapper
               "#{query.model.storage_name(self.name)}/" +
               "#{proc_name}" +
               "#{options}"
-        p uri
         request = Net::HTTP::Get.new(uri)
       end
 
