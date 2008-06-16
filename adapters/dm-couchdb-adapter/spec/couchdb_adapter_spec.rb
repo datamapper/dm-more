@@ -189,7 +189,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
 
   def create_procedures
-    User.auto_migrate!
+    DataMapper.auto_migrate!
   end
 
   def new_user(options = {})

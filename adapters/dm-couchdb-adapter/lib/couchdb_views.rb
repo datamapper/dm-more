@@ -81,6 +81,7 @@ module DataMapper
       end
 
       def views(repository_name = default_repository_name)
+        @views ||= Hash.new { |h,k| h[k] = {} }
         @views[repository_name]
       end
     end
