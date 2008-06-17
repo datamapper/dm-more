@@ -26,9 +26,8 @@ module DataMapper
       # if the query contains a raw sql-string, we cannot (truly) know, and must load.
       is_affected = !!query.conditions.detect{|c| adjust_attributes.include?(c[1]) || c[0] == :raw }
 
-      lazy_load if preload && is_affected
-
-      if loaded?
+      #is this or loaded, or should it be loaded? (if so, load it)
+      if loaded? || preload && is_affected && lazy_load
         # Doesnt this make for lots if dirty objects that in reality is not dirty?
         each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) } }
 
@@ -40,7 +39,7 @@ module DataMapper
         
         # Get keys of all currently loaded objects that will be altered.
         # If the changed attributes don't interfere with our query, we don't need to prefetch anything.
-        keys_to_reload = all(loaded_keys.merge(:fields => @key_properties)).send(:keys) if is_affected
+        keys_to_reload = all(keys_to_reload.merge(:fields => @key_properties)).send(:keys) if is_affected
       end
 
       # Asking the repository (adapter) to do its magic.
