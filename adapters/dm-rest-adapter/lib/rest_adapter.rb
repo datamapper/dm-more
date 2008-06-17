@@ -28,13 +28,19 @@ module DataMapper
       
       # Creates a new resource in the specified repository.
       def create(resources)
+        success = true
         resources.each do |resource|
           resource_name = Inflection.underscore(resource.class.name.downcase)
           result = http_post("/#{resource_name.pluralize}.xml", resource.to_xml)
           # TODO: Raise error if cannot reach server
-          result.kind_of? Net::HTTPSuccess
+          success = success && result.instance_of?(Net::HTTPCreated)
+          if success
+            updated_resource = parse_resource(result.body, resource.class)
+            resource.id = updated_resource.id
+          end
           # TODO: We're not using the response to update the DataMapper::Resource with the newly acquired ID!!!
         end
+        success
       end
       
       # read_set
@@ -59,6 +65,7 @@ module DataMapper
       end
       
       def read_one(query)
+        # puts "---------------- QUERY: #{query} #{query.inspect}"
         id = query.conditions.first[2]
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
         resource_name = resource_name_from_query(query)
@@ -68,7 +75,7 @@ module DataMapper
         return nil if response.is_a? Net::HTTPNotFound || response.content_type == "text/html"
         
         data = response.body
-        res = parse_resource(data, resource_name, query.model, query.fields)
+        res = parse_resource(data, query.model)
         res
       end
       
@@ -86,6 +93,7 @@ module DataMapper
       end
       
       def delete(query)
+        #puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> QUERY: #{query} #{query.inspect}"
         # TODO update for v0.9.2
         raise NotImplementedError.new unless is_single_resource_query? query
         id = query.conditions.first[2]
@@ -97,7 +105,7 @@ module DataMapper
         # TODO: how do we know whether the resource we're talking to is singular or plural?
         res = http_get("/#{resource_name.pluralize}.xml")
         data = res.body
-        parse_resources(data, resource_name, query.model, query.fields)
+        parse_resources(data, query.model)
         # TODO: Raise error if cannot reach server
       end
       
@@ -136,41 +144,46 @@ module DataMapper
         res
       end  
 
-      def resource_from_rexml(entity_element, dm_model_class, dm_properties)
+      def resource_from_rexml(entity_element, dm_model_class)
         resource = dm_model_class.new
         entity_element.elements.each do |field_element|
-          dm_property = dm_properties.find do |p| 
+          attribute = resource.attributes.find do |name, val| 
             # *MUST* use Inflection.underscore on the XML as Rails converts '_' to '-' in the XML
-            p.name.to_s == Inflection.underscore(field_element.name.to_s)
+            name.to_s == Inflection.underscore(field_element.name.to_s)
           end
-          resource.send("#{Inflection.underscore(dm_property.name)}=", field_element.text) if dm_property
+          resource.send("#{Inflection.underscore(attribute[0])}=", field_element.text) if attribute
         end
+        resource.instance_eval { @new_record= false }
         resource
       end
 
-      def parse_resource(xml, resource_name, dm_model_class, dm_properties)
+      def parse_resource(xml, dm_model_class)
         doc = REXML::Document::new(xml)
         # TODO: handle singular resource case as well....
-        entity_element = REXML::XPath.first(doc, "/#{resource_name}")
+        entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(dm_model_class)}")
         return nil unless entity_element
-        resource_from_rexml(entity_element, dm_model_class, dm_properties)
+        resource_from_rexml(entity_element, dm_model_class)
       end
       
-      def parse_resources(xml, resource_name, dm_model_class, dm_properties)
+      def parse_resources(xml, dm_model_class)
         doc = REXML::Document::new(xml)
         # # TODO: handle singular resource case as well....
         # array = XPath(doc, "/*[@type='array']")
         # if array
         #   parse_resources()
         # else
-          
+        resource_name = resource_name_from_model dm_model_class
         doc.elements.collect("#{resource_name.pluralize}/#{resource_name}") do |entity_element|
-          resource_from_rexml(entity_element, dm_model_class, dm_properties)
+          resource_from_rexml(entity_element, dm_model_class)
         end
       end  
       
+      def resource_name_from_model(model)
+        Inflection.underscore(model.name.downcase)
+      end
+      
       def resource_name_from_query(query)
-        Inflection.underscore(query.model.name.downcase)
+        resource_name_from_model(query.model)
       end
     end
   end

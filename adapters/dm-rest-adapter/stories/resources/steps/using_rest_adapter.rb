@@ -36,7 +36,7 @@ steps_for :using_rest_adapter do
   end
 
   Given("a local representation of a remote Resource") do
-    @resource = Book.get(1)
+    @resource = Book.all.first
   end
   
   When("I try to save the Resource") do
