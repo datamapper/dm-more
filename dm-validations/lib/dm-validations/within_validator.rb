@@ -14,7 +14,7 @@ module DataMapper
       end
 
       def call(target)
-        includes = @options[:set].include?(target.attribute_get(field_name))
+        includes = @options[:set].include?(target.send(field_name))
         return true if includes
 
         s = ''

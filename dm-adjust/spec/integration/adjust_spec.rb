@@ -11,7 +11,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :name, String
         property :salary, Integer, :default => 20000
         property :age, Integer
-        
+
         auto_migrate!(:default)
       end
 
@@ -23,36 +23,36 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Person.create(:name => 'Amadeus',:age => 60)
 
     end
-    
+
     describe 'DataMapper::Resource.adjust' do
-    
+
       it 'should adjust values' do
         repository(:default) do
           p = Person.get(1)
           p.salary.should == 20000
-          Person.adjust(:salary => 1000)  
+          Person.adjust(:salary => 1000)
           Person.all.each{|p| p.salary.should == 21000}
         end
       end
-    
+
     end
-    
+
     describe 'DataMapper::Collection.adjust' do
-    
+
       it 'should adjust values' do
         repository(:default) do |repos|
           @oldies = Person.all(:age.gte => 40)
           @oldies.adjust(:salary => 5000)
           @oldies.each{|p| p.salary.should == 25000}
-          
+
           Person.get(1).salary.should == 20000
-          
+
           @children = Person.all(:age.lte => 18)
           @children.adjust(:salary => -10000)
           @children.each{|p| p.salary.should == 10000}
         end
       end
-      
+
       it 'should load the query if conditions were adjusted' do
         repository(:default) do |repos|
           @specific = Person.all(:salary => 25000)

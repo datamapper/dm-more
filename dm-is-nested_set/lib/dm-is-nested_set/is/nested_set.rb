@@ -45,7 +45,7 @@ module DataMapper
         end
 
       end
-      
+
       module ClassMethods
 
         ##

@@ -29,7 +29,7 @@ module DataMapper
         private
 
         def aggregate_read_statement(aggregate_function, property, query)
-          statement = "SELECT #{aggregate_field_statement(aggregate_function, property, query.links.any?)}"
+          statement = "SELECT #{aggregate_field_statement(query.repository, aggregate_function, property, query.links.any?)}"
           statement << " FROM #{quote_table_name(query.model.storage_name(name))}"
           statement << links_statement(query)                  if query.links.any?
           statement << " WHERE #{conditions_statement(query)}" if query.conditions.any?
@@ -42,11 +42,11 @@ module DataMapper
           raise e
         end
 
-        def aggregate_field_statement(aggregate_function, property, qualify)
+        def aggregate_field_statement(repository, aggregate_function, property, qualify)
           column_name  = if aggregate_function == :count && property.nil?
             '*'
           else
-            property_to_column_name(property, qualify)
+            property_to_column_name(repository, property, qualify)
           end
 
           function_name = case aggregate_function

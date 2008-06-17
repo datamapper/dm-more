@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'base64'
 gem 'dm-core', '=0.9.2'
 require 'dm-core'
 require 'pathname'
@@ -7,13 +6,6 @@ require 'net/http'
 require 'json'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_views'
-
-class Time
-  # Converts a Time object to a JSON representation.
-  def to_json(*a)
-    self.to_i.to_json(*a)
-  end
-end
 
 module DataMapper
   module Resource
@@ -23,12 +15,15 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] = instance_variable_get(property.instance_variable_name)
-        if [Date, DateTime].include?(property.type) && !accumulator[property.field].nil?
-          accumulator[property.field] = accumulator[property.field].to_s
-        end
         accumulator
       end).to_json
     end
+  end
+end
+
+module DataMapper
+  class Query
+    attr_accessor :view
   end
 end
 
@@ -112,20 +107,28 @@ module DataMapper
       # Reads in a set from a query.
       def read_many(query)
         doc = request do |http|
-          http.request(build_javascript_request(query))
+          http.request(build_request(query))
         end
-        populate_set(query, doc["rows"])
+        Collection.new(query) do |collection|
+          doc['rows'].each do |doc|
+            collection.load(
+              query.fields.map do |property|
+                property.typecast(doc["value"][property.field.to_s])
+              end
+            )
+          end
+        end
       end
 
       def read_one(query)
         doc = request do |http|
-          http.request(build_javascript_request(query))
+          http.request(build_request(query))
         end
         unless doc["total_rows"] == 0
-          data = doc["rows"].first
+          data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
-              typecast(property.type, data["value"][property.field.to_s])
+              data["value"][property.field.to_s]
             end,
             query)
         end
@@ -133,36 +136,9 @@ module DataMapper
 
       # Reads in a set from a stored view.
       def view(resource, proc_name, options = {})
-        if options.empty?
-          options = ''
-        else
-          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
-        end
-        options = URI.encode(options)
-        doc = http_get(
-          "/#{self.escaped_db_name}/_view" +
-          "/#{resource.storage_name(self.name)}/#{proc_name}" +
-          "#{options}"
-        )
         query = Query.new(repository, resource)
-        populate_set(query, doc["rows"])
-      end
-
-      # Populates a set with data from the supplied docs.
-      def populate_set(query, docs)
-        Collection.new(query) do |collection|
-          docs.each do |doc|
-            collection.load(
-              query.fields.map do |property|
-                typecast(property.type, doc["value"][property.field.to_s])
-              end
-            )
-          end
-        end
-      end
-
-      def delete_set(query)
-        raise NotImplementedError
+        query.view = { :name => proc_name }.merge!(options)
+        read_many(query)
       end
 
     protected
@@ -188,17 +164,15 @@ module DataMapper
         )
       end
 
-      def typecast(type, value)
-        return value if value.nil?
-        case type.to_s
-        when "Date"       then Date.parse(value)
-        when "DateTime"   then DateTime.parse(value)
-        when "Time"       then Time.at(value.to_i)
-        else value
+      def build_request(query)
+        unless query.view
+          ad_hoc_request(query)
+        else
+          view_request(query)
         end
       end
 
-      def build_javascript_request(query)
+      def ad_hoc_request(query)
         if query.order.empty?
           key = "null"
         else
@@ -208,7 +182,12 @@ module DataMapper
           key = "[#{key}]"
         end
 
-        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view")
+        options = []
+        options << "count=#{query.limit}" if query.limit
+        options << "skip=#{query.offset}" if query.offset
+        options = options.empty? ? nil : "?#{options.join('&')}"
+
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{options}")
         request["Content-Type"] = "text/javascript"
 
         if query.conditions.empty?
@@ -244,6 +223,24 @@ module DataMapper
           request.body = body.gsub(/^#{space}/, '')
         end
         request
+      end
+
+      def view_request(query)
+        options = query.view.dup
+        proc_name = options.delete(:name)
+        options[:count] = query.limit if query.limit
+        options[:skip] = query.offset if query.offset
+        if options.empty?
+          options = ''
+        else
+          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
+        end
+        uri = "/#{self.escaped_db_name}/" +
+              "_view/" +
+              "#{query.model.storage_name(self.name)}/" +
+              "#{proc_name}" +
+              "#{options}"
+        request = Net::HTTP::Get.new(uri)
       end
 
       def like_operator(value)
@@ -282,6 +279,36 @@ module DataMapper
         end
         JSON.parse(res.body) if parse_result
       end
+
+      module Migration
+        def create_model_storage(repository, model)
+          assert_kind_of 'repository', repository, Repository
+          assert_kind_of 'model',      model,      Resource::ClassMethods
+
+          uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"          
+          view = Net::HTTP::Put.new(uri)
+          view['content-type'] = "text/javascript"
+          views = model.views.reject {|key, value| value.nil?}
+          view.body = { :views => model.views }.to_json
+
+          request do |http|
+            http.request(view)
+          end
+        end
+
+        def destroy_model_storage(repository, model)
+          assert_kind_of 'repository', repository, Repository
+          assert_kind_of 'model',      model,      Resource::ClassMethods
+
+          uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
+          response = http_get(uri)
+          unless response['error']
+            uri += "?rev=#{response["_rev"]}"
+            http_delete(uri)
+          end
+        end
+      end
+      include Migration
     end
 
     # Required naming scheme.

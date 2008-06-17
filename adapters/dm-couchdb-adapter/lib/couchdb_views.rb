@@ -73,14 +73,15 @@ end
 module DataMapper
   module Resource
     module ClassMethods
-      def view(name)
+      def view(name, body = nil)
         @views ||= Hash.new { |h,k| h[k] = {} }
         proc = View.new(self, name)
-        @views[repository.name][name] = proc
+        @views[repository.name][name] = body
         proc
       end
 
       def views(repository_name = default_repository_name)
+        @views ||= Hash.new { |h,k| h[k] = {} }
         @views[repository_name]
       end
     end

@@ -19,7 +19,7 @@ dm - Data Mapper CLI
 
 * If exactly one argument is given the CLI assumes it is a connection string:
   $ dm mysql://root@localhost/test_development
-  
+
   The connection string has the format:
     adapter://user:password@host:port/database
   Where adapter is in: {mysql, pgsql, sqlite...} and the user/password is optional
@@ -38,14 +38,14 @@ dm - Data Mapper CLI
 
 * Load an assumed structure of a typical merb application
   $ dm --merb -e development
-  
+
   This is similar to merb -i without the merb framework being loaded.
-  
+
 USAGE
       end
 
       attr_accessor :options, :config
-      
+
       def parse_args(argv = ARGV)
         @config ||= {}
 
