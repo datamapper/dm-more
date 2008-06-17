@@ -25,7 +25,9 @@ describe DataMapper::Serialize, '#to_xml' do
     berta.breed = 'Guernsey'
 
     berta.to_xml.should == <<-EOS.compress_lines(false)
-    <cow composite='34' id='89'>
+    <cow>
+      <id type='integer'>89</id>
+      <composite type='integer'>34</composite>
       <name>Berta</name>
       <breed>Guernsey</breed>
     </cow>
@@ -34,7 +36,7 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it "should serialize a collection to XML" do
     @collection.to_xml.gsub(/[[:space:]]+\n/, "\n").should ==
-      "<cow composite='2' id='1'><name>Betsy</name><breed>Jersey</breed></cow>\n" +
-      "<cow composite='20' id='10'><name>Berta</name><breed>Guernsey</breed></cow>\n"
+      "<cow><id type='integer'>1</id><composite type='integer'>2</composite><name>Betsy</name><breed>Jersey</breed></cow>\n" +
+      "<cow><id type='integer'>10</id><composite type='integer'>20</composite><name>Berta</name><breed>Guernsey</breed></cow>\n"
   end
 end
