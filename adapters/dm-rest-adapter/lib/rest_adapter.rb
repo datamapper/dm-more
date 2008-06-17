@@ -75,14 +75,13 @@ module DataMapper
       def update(attributes, query)
         # TODO update for v0.9.2
         raise NotImplementedError.new unless is_single_resource_query? query
+        id = query.conditions.first[2]
         resource = query.model.new
         attributes.each do |attr, val|
           resource.send("#{attr.name}=", val)
         end
-        # KLUGE
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
-        resource_name = resource_name_from_query(query)
-        http_put("/#{resource_name.pluralize}/#{id}.xml", resource_name.to_xml)
+        http_put("/#{resource_name_from_query(query).pluralize}/#{id}.xml", resource.to_xml)
         # TODO: Raise error if cannot reach server
       end
       
