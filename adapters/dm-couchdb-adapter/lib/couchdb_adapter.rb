@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'base64'
 gem 'dm-core', '=0.9.2'
 require 'dm-core'
 require 'pathname'
@@ -129,7 +128,7 @@ module DataMapper
           data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
-              property.typecast(data["value"][property.field.to_s])
+              data["value"][property.field.to_s]
             end,
             query)
         end
