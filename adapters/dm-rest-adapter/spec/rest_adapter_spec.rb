@@ -122,6 +122,17 @@ describe "A REST adapter" do
   end
   
   describe "when deleting an existing resource" do
-    # TODO
+    before do
+      @response = mock(Net::HTTPSuccess)
+      @adapter.stub!(:http_delete).and_return(@response)
+      @book = Book.new(:title => "Hello, World!", :author => "Anonymous")
+      @book.stub!(:new_record?).and_return(false)
+    end
+    
+    it "should do an HTTP DELETE" do
+      @adapter.should_receive(:http_delete).and_return(@response)
+      @book.destroy
+    end
+      
   end
 end

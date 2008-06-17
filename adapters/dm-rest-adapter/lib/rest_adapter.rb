@@ -61,27 +61,36 @@ module DataMapper
       def read_one(query)
         id = query.conditions.first[2]
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
-        resource_name = Inflection.underscore(query.model.name.downcase)
-        res = http_get("/#{resource_name.pluralize}/#{id}.xml")
+        resource_name = resource_name_from_query(query)
+        response = http_get("/#{resource_name.pluralize}/#{id}.xml")
         
         # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
-        return nil if res.is_a? Net::HTTPNotFound || res.content_type == "text/html"
+        return nil if response.is_a? Net::HTTPNotFound || response.content_type == "text/html"
         
-        data = res.body
+        data = response.body
         res = parse_resource(data, resource_name, query.model, query.fields)
         res
       end
       
       def update(attributes, query)
         # TODO update for v0.9.2
-        http_put("/#{resource.class.storage_name}.xml", resource.to_xml)
+        raise NotImplementedError.new unless is_single_resource_query? query
+        resource = query.model.new
+        attributes.each do |attr, val|
+          resource.send("#{attr.name}=", val)
+        end
+        # KLUGE
+        # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
+        resource_name = resource_name_from_query(query)
+        http_put("/#{resource_name.pluralize}/#{id}.xml", resource_name.to_xml)
         # TODO: Raise error if cannot reach server
       end
       
       def delete(query)
         # TODO update for v0.9.2
-        http_delete("/#{resource.class.storage_name}.xml")
-        # TODO: Raise error if cannot reach server
+        raise NotImplementedError.new unless is_single_resource_query? query
+        id = query.conditions.first[2]
+        http_delete("/#{resource_name_from_query(query).pluralize}/#{id}.xml")
       end
       
     protected
@@ -160,6 +169,10 @@ module DataMapper
           resource_from_rexml(entity_element, dm_model_class, dm_properties)
         end
       end  
+      
+      def resource_name_from_query(query)
+        Inflection.underscore(query.model.name.downcase)
+      end
     end
   end
 end
