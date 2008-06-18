@@ -72,6 +72,9 @@ Example:
 
   If you already have 3 migrations, this will create the Post migration in
   schema/migration/004_create_posts_table.rb
+
+NB: Currently the generator doesn't make any columns for 'belongs_to'-type
+associations.
 EOS
     end
 
