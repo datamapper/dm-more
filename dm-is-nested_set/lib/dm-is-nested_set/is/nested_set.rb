@@ -165,8 +165,8 @@ module DataMapper
             self.class.all(:lft.gt => old_position).adjust(:lft => -gap)
           else
             # make a gap where the new node can be inserted
-            self.class.all(:rgt.gte => position).adjust({:rgt => 2)
-            self.class.all(:lft.gte => position).adjust({:lft => 2)
+            self.class.all(:rgt.gte => position).adjust(:rgt => 2)
+            self.class.all(:lft.gte => position).adjust(:lft => 2)
             # set the position fields
             self.lft, self.rgt = position, position + 1
           end
