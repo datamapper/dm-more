@@ -297,6 +297,7 @@ module DataMapper
       class UnableToPositionError < StandardError; end
       class RecursiveNestingError < StandardError; end
 
+      Model.send(:include, self)
     end # NestedSet
   end # Is
 end # DataMapper

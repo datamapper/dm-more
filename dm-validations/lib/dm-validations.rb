@@ -192,6 +192,7 @@ module DataMapper
         end
       end
 
+      Model.send(:include, self)
     end # module ClassMethods
   end # module Validate
 
@@ -205,9 +206,5 @@ module DataMapper
         model.send(:include, Validate)
       end
     end
-
-    module ClassMethods
-      include Validate::ClassMethods
-    end # module ClassMethods
   end # module Resource
 end # module DataMapper
