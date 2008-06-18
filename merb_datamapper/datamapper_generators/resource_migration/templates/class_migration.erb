@@ -1,0 +1,13 @@
+migration(<%= number %>, :<%= migration_name %>) do
+  up do
+    create_table :<%= klass_name %> do
+<% properties.each do |p| %>
+      column <%= p -%>
+<% end %>
+    end
+  end
+
+  down do
+    drop_table :<%= klass_name %>
+  end
+end
