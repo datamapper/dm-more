@@ -11,7 +11,7 @@ module DataMapper
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @param load <TrueClass,FalseClass>
     # @public
-    def adjust(attributes={},preload=true)
+    def adjust(attributes={},preload=false)
       return true if attributes.empty?
 
       adjust_attributes,keys_to_reload = {},{}
