@@ -111,11 +111,11 @@ module DataMapper
     def to_xml_document(opts={})
       doc = REXML::Document.new
       root = doc.add_element(xml_element_name)
-      
+
       #TODO old code base was converting single quote to double quote on attribs
 
       self.class.properties(repository.name).each do |property|
-          value = send(property.name)    
+          value = send(property.name)
           node = root.add_element(property.name.to_s)
           if property.key?
             node.attributes["type"] = property.type.to_s.downcase

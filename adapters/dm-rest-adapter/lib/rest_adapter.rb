@@ -17,15 +17,15 @@ module DataMapper
       # def read_one(query)
       #   raise NotImplementedError
       # end
-      # 
+      #
       # def update(attributes, query)
       #   raise NotImplementedError
       # end
-      # 
+      #
       # def delete(query)
       #   raise NotImplementedError
       # end
-      
+
       # Creates a new resource in the specified repository.
       def create(resources)
         success = true
@@ -42,7 +42,7 @@ module DataMapper
         end
         success
       end
-      
+
       # read_set
       #
       # Examples of query string:
@@ -63,22 +63,22 @@ module DataMapper
           read_set_for_condition(repository, query, resource)
         end
       end
-      
+
       def read_one(query)
         # puts "---------------- QUERY: #{query} #{query.inspect}"
         id = query.conditions.first[2]
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
         resource_name = resource_name_from_query(query)
         response = http_get("/#{resource_name.pluralize}/#{id}.xml")
-        
+
         # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
         return nil if response.is_a? Net::HTTPNotFound || response.content_type == "text/html"
-        
+
         data = response.body
         res = parse_resource(data, query.model)
         res
       end
-      
+
       def update(attributes, query)
         # TODO update for v0.9.2
         raise NotImplementedError.new unless is_single_resource_query? query
@@ -91,7 +91,7 @@ module DataMapper
         http_put("/#{resource_name_from_query(query).pluralize}/#{id}.xml", resource.to_xml)
         # TODO: Raise error if cannot reach server
       end
-      
+
       def delete(query)
         #puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> QUERY: #{query} #{query.inspect}"
         # TODO update for v0.9.2
@@ -99,7 +99,7 @@ module DataMapper
         id = query.conditions.first[2]
         http_delete("/#{resource_name_from_query(query).pluralize}/#{id}.xml")
       end
-      
+
     protected
       def read_set_all(repository, query, resource_name)
         # TODO: how do we know whether the resource we're talking to is singular or plural?
@@ -108,18 +108,18 @@ module DataMapper
         parse_resources(data, query.model)
         # TODO: Raise error if cannot reach server
       end
-      
+
       #    GET /books/4200
       def read_set_for_condition(repository, query, resource_name)
         # More complex conditions
         raise NotImplementedError.new
-      end    
-          
+      end
+
       # query.conditions like [[:eql, #<Property:Book:id>, 4200]]
       def is_single_resource_query?(query)
         query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
       end
-      
+
       def http_put(uri, data = nil)
         request { |http| http.put(uri, data) }
       end
@@ -142,12 +142,12 @@ module DataMapper
           res = yield(http)
         end
         res
-      end  
+      end
 
       def resource_from_rexml(entity_element, dm_model_class)
         resource = dm_model_class.new
         entity_element.elements.each do |field_element|
-          attribute = resource.attributes.find do |name, val| 
+          attribute = resource.attributes.find do |name, val|
             # *MUST* use Inflection.underscore on the XML as Rails converts '_' to '-' in the XML
             name.to_s == Inflection.underscore(field_element.name.to_s)
           end
@@ -164,7 +164,7 @@ module DataMapper
         return nil unless entity_element
         resource_from_rexml(entity_element, dm_model_class)
       end
-      
+
       def parse_resources(xml, dm_model_class)
         doc = REXML::Document::new(xml)
         # # TODO: handle singular resource case as well....
@@ -176,12 +176,12 @@ module DataMapper
         doc.elements.collect("#{resource_name.pluralize}/#{resource_name}") do |entity_element|
           resource_from_rexml(entity_element, dm_model_class)
         end
-      end  
-      
+      end
+
       def resource_name_from_model(model)
         Inflection.underscore(model.name.downcase)
       end
-      
+
       def resource_name_from_query(query)
         resource_name_from_model(query.model)
       end

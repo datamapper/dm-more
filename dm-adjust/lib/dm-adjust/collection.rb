@@ -13,7 +13,7 @@ module DataMapper
     # @public
     def adjust(attributes={},preload=true)
       return true if attributes.empty?
-      
+
       adjust_attributes,keys_to_reload = {},{}
 
       # Finding the actual properties to adjust
@@ -36,7 +36,7 @@ module DataMapper
         @key_properties.zip(repository.identity_map(model).keys.transpose) do |property,values|
           keys_to_reload[property] = values
         end
-        
+
         # Get keys of all currently loaded objects that will be altered.
         # If the changed attributes don't interfere with our query, we don't need to prefetch anything.
         keys_to_reload = all(keys_to_reload.merge(:fields => @key_properties)).send(:keys) if is_affected
@@ -48,7 +48,7 @@ module DataMapper
       # Reload affected objects in identity-map. if collection was affected, dont use the scope.
       (is_affected ? model : self).all(keys_to_reload).reload(:fields => attributes.keys) unless keys_to_reload.empty?
 
-      # if preload was set to false, and collection was affected by updates, 
+      # if preload was set to false, and collection was affected by updates,
       # something is now officially borked. We'll try the best we can (still many cases this is borked for)
       query.conditions.each do |c|
         if adjustment = adjust_attributes[c[1]]

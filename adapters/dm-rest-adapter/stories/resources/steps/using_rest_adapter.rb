@@ -38,15 +38,15 @@ steps_for :using_rest_adapter do
   Given("a local representation of a remote Resource") do
     @resource = Book.all.first
   end
-  
+
   When("I try to save the Resource") do
     @result = @resource.save
   end
-  
+
   When("I request all of the Resources of that type") do
     @resources = @type.all
   end
-  
+
   When("I request the Resource") do
     @resource = @type.get(@resource_id)
   end
@@ -58,19 +58,19 @@ steps_for :using_rest_adapter do
   When("I make invalid changes to that Resource") do
     @resource.title = nil
   end
-  
+
   When("I destroy the Resource") do
     @resource.destroy
   end
-  
+
   Then("the Resource should save") do
     @result.should be_true
   end
-  
+
   Then("the Resource should not save") do
     @result.should be_false
   end
-  
+
   Then("I should not receive an empty list") do
     @resources.should_not be_empty
   end
@@ -83,7 +83,7 @@ steps_for :using_rest_adapter do
   Then("I should get nothing in return") do
     @resource.should be_nil
   end
-  
+
   Then("the Resource will no longer be available") do
     Book.get(@resource_id).should be_nil
   end
