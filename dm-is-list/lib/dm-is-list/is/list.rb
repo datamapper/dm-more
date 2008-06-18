@@ -1,11 +1,11 @@
 module DataMapper
   module Is
     module List
-      def self.included(base)
-        base.extend(GenerateMethod)
-      end
-      
-      def is_a_list(options={})
+
+      ##
+      #
+      #
+      def is_list(options={})
         defaults = {:property => :position, :scope => [] }
 
         options = defaults.merge(options)
@@ -27,46 +27,18 @@ module DataMapper
             self.position = self.class.next_position_in_list(self)
           end
         end
-
-        before :update do
-
-        end
-
-        after :save do
-          self.class.reload_positions
-        end
-
       end
 
       module ClassMethods
         def next_position_in_list(for_scope)
           (max(:position)||0)+1 # add scope here
         end
-
-        def offset_items_in_list(offset,range) # :nodoc:
-          self.query_set("position=position+(?)","position BETWEEN ?",offset,range)
-        end
-
-        def query_set(set,where,*pars) # :nodoc:
-          query = %Q{UPDATE #{self.storage_name} SET #{set} WHERE #{where}}
-          repository.adapter.execute(query,*pars)
-          puts "#{query} ... #{pars.inspect}"
-        end
-
-        def reload_positions
-          repository.identity_map(self).each_pair{ |key,obj| obj.reload_position }
-        end
-
       end
       
       module InstanceMethods
         
         def list_scope
           
-        end
-        
-        def reload_position
-          self.reload_attributes(:position)
         end
 
         ##
@@ -129,9 +101,9 @@ module DataMapper
           
           if newpos > position
             newpos -= 1 if [:lowest,:above,:to].include?(action)
-            self.class.offset_items_in_list(-1, position..newpos)
+            self.class.all(:position => position..newpos).adjust(:position => -1)
           elsif newpos < position
-            self.class.offset_items_in_list(+1, newpos..position)
+            self.class.all(:position => newpos..position).adjust(:position => +1)
           end
           
           self.position = newpos
