@@ -31,7 +31,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).position=8
           Todo.get(3).dirty?.should == true
           Todo.get(3).attribute_dirty?(:position).should == true
-          Todo.get(3).shadow_attribute_get(:position).should == 3
+          Todo.get(3).original_values[:position].should == 3
         end
       end
       

@@ -13,7 +13,7 @@ module DataMapper
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
 
-        property :position, Integer, :lock => true
+        property options[:property], Integer unless properties.detect{|p| p.name == options[:property]} 
 
         before :create do
           # insert at bottom of list, unless position is specified. If its specified, move silently
