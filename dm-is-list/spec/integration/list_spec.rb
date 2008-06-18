@@ -9,6 +9,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         property :id, Integer, :serial => true
         property :title, String
+        property :position, Integer
         
         is :list
         
