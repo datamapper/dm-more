@@ -49,10 +49,10 @@ class ResourceMigrationGenerator < RubiGen::Base
 
       filename = format("%03d_%s", (highest_migration+1), @migration_name)
 
-      m.template "class_migration.erb", "schema/migrations/#{filename}.rb", 
-      :assigns => { 
-        :migration_name => @migration_name , 
-        :number => (highest_migration+1), 
+      m.template "class_migration.erb", "schema/migrations/#{filename}.rb",
+      :assigns => {
+        :migration_name => @migration_name ,
+        :number => (highest_migration+1),
         :klass_name => klass.storage_name,
         :properties => properties_as_strings
       }
@@ -97,7 +97,7 @@ EOS
     end
 
     def highest_migration
-      @highest_migration ||= Dir[Dir.pwd+'/schema/migrations/*'].map{ |f| 
+      @highest_migration ||= Dir[Dir.pwd+'/schema/migrations/*'].map{ |f|
         File.basename(f) =~ /^(\d+)/
         $1}.max.to_i
     end
@@ -111,8 +111,8 @@ EOS
       options.each do |key, value|
         options_as_array << ":#{key} => #{value}"
       end
-      
-      (options_as_array.empty?) ? ":#{name}, #{type}" : 
+
+      (options_as_array.empty?) ? ":#{name}, #{type}" :
         ":#{name}, #{type}, #{options_as_array.join(', ')}"
     end
 
