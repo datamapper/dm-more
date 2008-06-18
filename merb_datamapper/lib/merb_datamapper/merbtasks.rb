@@ -16,6 +16,27 @@ namespace :dm do
     task :autoupgrade => :merb_start do
       ::DataMapper::AutoMigrator.auto_upgrade
     end
+
+    namespace :migrate do
+      task :load => :merb_start do
+        gem 'dm-migrations'
+        require 'migration_runner'
+        FileList["schema/migrations/*.rb"].each do |migration|
+          load migration
+        end
+      end
+
+      desc "Migrate up using migrations"
+      task :up, :version, :needs => :load do |t, args|
+        version = args[:version] || ENV['VERSION']
+        migrate_up!(version)
+      end
+      desc "Migrate down using migrations"
+      task :down, :version, :needs => :load do |t, args|
+        version = args[:version] || ENV['VERSION']
+        migrate_down!(version)
+      end
+    end
   end
 
   namespace :sessions do
