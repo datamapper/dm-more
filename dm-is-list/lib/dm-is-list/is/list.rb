@@ -6,6 +6,7 @@ module DataMapper
       #
       #
       def is_list(options={})
+
         defaults = {:property => :position, :scope => [] }
 
         options = defaults.merge(options)
@@ -13,7 +14,8 @@ module DataMapper
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
 
-        property options[:property], Integer unless properties.detect{|p| p.name == options[:property]} 
+        @list_property = properties.detect{|p| p.name == options[:property]} || property(options[:property], Integer)
+        @list_scope = options[:scope]
 
         before :create do
           # insert at bottom of list, unless position is specified. If its specified, move silently
@@ -30,15 +32,17 @@ module DataMapper
       end
 
       module ClassMethods
+        attr_reader :list_scope, :list_property
+        
         def next_position_in_list(for_scope)
           (max(:position)||0)+1 # add scope here
         end
       end
       
       module InstanceMethods
-        
+
         def list_scope
-          
+          Hash[ *self.class.list_scope.zip(attributes.values_at(*self.class.list_scope)).flatten ]
         end
 
         ##
@@ -101,9 +105,9 @@ module DataMapper
           
           if newpos > position
             newpos -= 1 if [:lowest,:above,:to].include?(action)
-            self.class.all(:position => position..newpos).adjust(:position => -1)
+            self.class.all(list_scope).all(:position => position..newpos).adjust(:position => -1)
           elsif newpos < position
-            self.class.all(:position => newpos..position).adjust(:position => +1)
+            self.class.all(list_scope).all(:position => newpos..position).adjust(:position => +1)
           end
           
           self.position = newpos
@@ -115,15 +119,15 @@ module DataMapper
         end
         
         def left_sibling
-          self.class.first(:position.lt => position, :order => [:position.desc] ) # scope here
+          self.class.all(list_scope).first(:position.lt => position, :order => [:position.desc]) # scope here
         end
         
         def right_sibling
-          self.class.first(:position.gt => position, :order => [:position.asc] ) # scope here
+          self.class.all(list_scope).first(:position.gt => position, :order => [:position.asc] ) # scope here
         end
         
         def self_and_siblings
-          self.class.all # scope here
+          self.class.all(list_scope)
         end
                 
       end

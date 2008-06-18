@@ -4,14 +4,25 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::List' do
     before :all do
+      class User
+        include DataMapper::Resource
+        
+        property :id, Serial
+        property :title, String
+        
+        has n, :todos
+      end
+      
       class Todo
         include DataMapper::Resource
 
-        property :id, Integer, :serial => true
+        property :id, Serial
         property :title, String
         property :position, Integer
         
-        is :list
+        belongs_to :todo_list
+        
+        is :list, :scope => [:user_id]
         
       end
       
@@ -33,6 +44,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).dirty?.should == true
           Todo.get(3).attribute_dirty?(:position).should == true
           Todo.get(3).original_values[:position].should == 3
+          puts Todo.get(3).list_scope.inspect
         end
       end
       
