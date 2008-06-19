@@ -21,18 +21,16 @@ module DataMapper
     end
 
     def translate(&block)
-      @stack,@value_stac, @conditions = [], [], []
+      @query, @stack,@value_stac, @conditions = {}, [], [], []
 
       self.instance_eval(&block)
 
-      query = {}
-      @conditions.each {|c| query[c[0]] = c[1]}
-      puts query.inspect
-      return query
+      @conditions.each {|c| @query[c[0]] = c[1]}
+      
+      return @query
     end
 
     def method_missing(method,value=nil)
-      puts method
       @stack << method
       self
     end
