@@ -18,7 +18,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         property :id, Serial
         property :title, String
-        property :position, Integer
         
         belongs_to :user
         

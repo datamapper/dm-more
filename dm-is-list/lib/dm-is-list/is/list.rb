@@ -6,12 +6,13 @@ module DataMapper
       #
       #
       def is_list(options={})
-        options = {:property => :position, :scope => [] }.merge(options)
+        options = { :scope => [] }.merge(options)
 
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
+        
+        property :position, Integer unless properties.detect{|p| p.name == :position && p.type == Integer}
 
-        @list_property = properties.detect{|p| p.name == options[:property]} || property(options[:property], Integer)
         @list_scope = options[:scope]
 
 
@@ -38,16 +39,8 @@ module DataMapper
           self.class.list_scope
         end
         
-        def list_property
-          self.class.list_property.name
-        end
-        
         def list_query
-          Hash[ :order, [list_property.asc],*list_scope.zip(attributes.values_at(*list_scope)).flatten ]
-        end
-        
-        def position
-          self.attribute_get(list_property)
+          Hash[ :order, [:position.asc],*list_scope.zip(attributes.values_at(*list_scope)).flatten ]
         end
 
         ##
