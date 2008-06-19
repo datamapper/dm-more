@@ -11,7 +11,7 @@ module DataMapper
       :created_at => lambda { |r| r.created_at ||= DateTime.now },
       :created_on => lambda { |r| r.created_on ||= Date.today   },
     }
-    
+
     def self.included(model)
       model.before :save, :set_timestamp_properties
     end
@@ -24,6 +24,6 @@ module DataMapper
       end
     end
   end # module Timestamp
-  
+
   Resource::append_inclusions Timestamp
 end

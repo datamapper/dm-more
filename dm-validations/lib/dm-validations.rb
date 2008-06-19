@@ -27,7 +27,7 @@ require dir / 'support' / 'object'
 
 module DataMapper
   module Validate
-    
+
     def self.included(model)
       if model.method_defined?(:save) && !model.method_defined?(:save!)
         model.send(:alias_method, :save!, :save)
@@ -200,7 +200,7 @@ module DataMapper
       end
     end # module ClassMethods
   end # module Validate
-  
+
   Resource.append_inclusions Validate
   Model.append_extensions Validate::ClassMethods
 end # module DataMapper
