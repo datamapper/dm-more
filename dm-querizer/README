@@ -17,7 +17,7 @@ You can also use ';' instead of '&&' for even shorter queries.
 User.all{ name == 'john' && age > 20 }
 User.all{ name == 'john'; age > 20 }
 
-The plugin is still very much experimental. != is not working (and might never work). 
+The plugin is still very much experimental. != is not working (and might never work).
 Instead you can use '~';
 
 Old: User.all( :name.not => 'mark' )

@@ -1,5 +1,5 @@
 module DataMapper
-  module Model
+  class Collection
     include Aggregates
 
     private
@@ -10,7 +10,7 @@ module DataMapper
 
       query      = scoped_query(query)
       repository = query.repository
-      property   = properties(repository.name)[property_name] if property_name
+      property   = properties[property_name] if property_name
 
       yield repository, property, query
     end
