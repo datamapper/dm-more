@@ -5,7 +5,7 @@ module DataMapper
       query = scoped_query(query)
       query.repository.read_many(query)
     end
-    
+
     def first(*args)
       query = DataMapper::Querizer.translate(args.pop) if args.last.is_a? Proc
       query = args.last.respond_to?(:merge) ? args.pop : {}

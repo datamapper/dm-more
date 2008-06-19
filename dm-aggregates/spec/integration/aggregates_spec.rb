@@ -7,7 +7,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       # A simplistic example, using with an Integer property
       class Dragon
         include DataMapper::Resource
-        property :id, Integer, :serial => true
+        property :id, Serial
         property :name, String
         property :is_fire_breathing, TrueClass
         property :toes_on_claw, Integer
@@ -18,7 +18,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Dragon.create(:name => 'George', :is_fire_breathing => false, :toes_on_claw => 3)
       Dragon.create(:name => 'Puff',   :is_fire_breathing => true,  :toes_on_claw => 4)
       Dragon.create(:name => nil,      :is_fire_breathing => true,  :toes_on_claw => 5)
-
       # A more complex example, with BigDecimal and Float properties
       # Statistics taken from CIA World Factbook:
       # https://www.cia.gov/library/publications/the-world-factbook/
@@ -75,171 +74,177 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       @approx_by = 0.000001
     end
 
-    describe '.count' do
-      describe 'with no arguments' do
-        it 'should count the results' do
-          Dragon.count.should  == 3
-
-          Country.count.should == 7
-        end
-
-        it 'should count the results with conditions having operators' do
-          Dragon.count(:toes_on_claw.gt => 3).should == 2
-
-          Country.count(:birth_rate.lt => 12).should == 3
-          Country.count(:population.gt => 1000000000).should == 1
-          Country.count(:population.gt => 2000000000).should == 0
-          Country.count(:population.lt => 10).should == 0
-        end
-
-        it 'should count the results with raw conditions' do
-          dragon_statement = 'is_fire_breathing = ?'
-          Dragon.count(:conditions => [ dragon_statement, false ]).should == 1
-          Dragon.count(:conditions => [ dragon_statement, true  ]).should == 2
-        end
-      end
-
-      describe 'with a property name' do
-        it 'should count the results' do
-          Dragon.count(:name).should == 2
-        end
-
-        it 'should count the results with conditions having operators' do
-          Dragon.count(:name, :toes_on_claw.gt => 3).should == 1
-        end
-
-        it 'should count the results with raw conditions' do
-          statement = 'is_fire_breathing = ?'
-          Dragon.count(:name, :conditions => [ statement, false ]).should == 1
-          Dragon.count(:name, :conditions => [ statement, true  ]).should == 1
-        end
-      end
+    def target(klass, target_type)
+      target_type == :collection ? klass.all : klass
     end
 
-    describe '.min' do
-      describe 'with no arguments' do
-        it 'should raise an error' do
-          lambda { Dragon.min }.should raise_error(ArgumentError)
+    [ :model, :collection ].each do |target_type|
+      describe ".count on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should count the results' do
+            target(Dragon, target_type).count.should  == 3
+
+            target(Country, target_type).count.should == 7
+          end
+
+          it 'should count the results with conditions having operators' do
+            target(Dragon, target_type).count(:toes_on_claw.gt => 3).should == 2
+
+            target(Country, target_type).count(:birth_rate.lt => 12).should == 3
+            target(Country, target_type).count(:population.gt => 1000000000).should == 1
+            target(Country, target_type).count(:population.gt => 2000000000).should == 0
+            target(Country, target_type).count(:population.lt => 10).should == 0
+          end
+
+          it 'should count the results with raw conditions' do
+            dragon_statement = 'is_fire_breathing = ?'
+            target(Dragon, target_type).count(:conditions => [ dragon_statement, false ]).should == 1
+            target(Dragon, target_type).count(:conditions => [ dragon_statement, true  ]).should == 2
+          end
+        end
+
+        describe 'with a property name' do
+          it 'should count the results' do
+            target(Dragon, target_type).count(:name).should == 2
+          end
+
+          it 'should count the results with conditions having operators' do
+            target(Dragon, target_type).count(:name, :toes_on_claw.gt => 3).should == 1
+          end
+
+          it 'should count the results with raw conditions' do
+            statement = 'is_fire_breathing = ?'
+            target(Dragon, target_type).count(:name, :conditions => [ statement, false ]).should == 1
+            target(Dragon, target_type).count(:name, :conditions => [ statement, true  ]).should == 1
+          end
         end
       end
 
-      describe 'with a property name' do
-        it 'should provide the lowest value of an Integer property' do
-          Dragon.min(:toes_on_claw).should == 3
-          Country.min(:population).should == 82369548
+      describe ".min on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should raise an error' do
+            lambda { target(Dragon, target_type).min }.should raise_error(ArgumentError)
+          end
         end
 
-        it 'should provide the lowest value of a Float property' do
-          Country.min(:birth_rate).should be_kind_of(Float)
-          Country.min(:birth_rate).should >= 7.87 - @approx_by  # approx match
-          Country.min(:birth_rate).should <= 7.87 + @approx_by  # approx match
-        end
+        describe 'with a property name' do
+          it 'should provide the lowest value of an Integer property' do
+            target(Dragon, target_type).min(:toes_on_claw).should == 3
+            target(Country, target_type).min(:population).should == 82369548
+          end
 
-        it 'should provide the lowest value of a BigDecimal property' do
-          Country.min(:gold_reserve_value).should be_kind_of(BigDecimal)
-          Country.min(:gold_reserve_value).should == BigDecimal('1217050983400.0')
-        end
+          it 'should provide the lowest value of a Float property' do
+            target(Country, target_type).min(:birth_rate).should be_kind_of(Float)
+            target(Country, target_type).min(:birth_rate).should >= 7.87 - @approx_by  # approx match
+            target(Country, target_type).min(:birth_rate).should <= 7.87 + @approx_by  # approx match
+          end
 
-        it 'should provide the lowest value when conditions provided' do
-          Dragon.min(:toes_on_claw, :is_fire_breathing => true).should  == 4
-          Dragon.min(:toes_on_claw, :is_fire_breathing => false).should == 3
-        end
-      end
-    end
+          it 'should provide the lowest value of a BigDecimal property' do
+            target(Country, target_type).min(:gold_reserve_value).should be_kind_of(BigDecimal)
+            target(Country, target_type).min(:gold_reserve_value).should == BigDecimal('1217050983400.0')
+          end
 
-    describe '.max' do
-      describe 'with no arguments' do
-        it 'should raise an error' do
-          lambda { Dragon.max }.should raise_error(ArgumentError)
-        end
-      end
-
-      describe 'with a property name' do
-        it 'should provide the highest value of an Integer property' do
-          Dragon.max(:toes_on_claw).should == 5
-          Country.max(:population).should == 1330044605
-        end
-
-        it 'should provide the highest value of a Float property' do
-          Country.max(:birth_rate).should be_kind_of(Float)
-          Country.max(:birth_rate).should >= 20.04 - @approx_by  # approx match
-          Country.max(:birth_rate).should <= 20.04 + @approx_by  # approx match
-        end
-
-        it 'should provide the highest value of a BigDecimal property' do
-          Country.max(:gold_reserve_value).should == BigDecimal('22589877164500.0')
-        end
-
-        it 'should provide the highest value when conditions provided' do
-          Dragon.max(:toes_on_claw, :is_fire_breathing => true).should  == 5
-          Dragon.max(:toes_on_claw, :is_fire_breathing => false).should == 3
-        end
-      end
-    end
-
-    describe '.avg' do
-      describe 'with no arguments' do
-        it 'should raise an error' do
-          lambda { Dragon.avg }.should raise_error(ArgumentError)
+          it 'should provide the lowest value when conditions provided' do
+            target(Dragon, target_type).min(:toes_on_claw, :is_fire_breathing => true).should  == 4
+            target(Dragon, target_type).min(:toes_on_claw, :is_fire_breathing => false).should == 3
+          end
         end
       end
 
-      describe 'with a property name' do
-        it 'should provide the average value of an Integer property' do
-          Dragon.avg(:toes_on_claw).should be_kind_of(Float)
-          Dragon.avg(:toes_on_claw).should == 4.0
+      describe ".max on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should raise an error' do
+            lambda { target(Dragon, target_type).max }.should raise_error(ArgumentError)
+          end
         end
 
-        it 'should provide the average value of a Float property' do
-          mean_birth_rate = (13.71 + 14.18 + 16.04 + 11.03 + 7.87 + 20.04 + 8.18) / 7
-          Country.avg(:birth_rate).should be_kind_of(Float)
-          Country.avg(:birth_rate).should >= mean_birth_rate - @approx_by  # approx match
-          Country.avg(:birth_rate).should <= mean_birth_rate + @approx_by  # approx match
-        end
+        describe 'with a property name' do
+          it 'should provide the highest value of an Integer property' do
+            target(Dragon, target_type).max(:toes_on_claw).should == 5
+            target(Country, target_type).max(:population).should == 1330044605
+          end
 
-        it 'should provide the average value of a BigDecimal property' do
-          mean_gold_reserve_value = ((600.0 + 8133.50 + 438.20 + 765.20 + 3417.40) * @gold_tonne_price) / 5
-          Country.avg(:gold_reserve_value).should be_kind_of(BigDecimal)
-          Country.avg(:gold_reserve_value).should == BigDecimal(mean_gold_reserve_value.to_s)
-        end
+          it 'should provide the highest value of a Float property' do
+            target(Country, target_type).max(:birth_rate).should be_kind_of(Float)
+            target(Country, target_type).max(:birth_rate).should >= 20.04 - @approx_by  # approx match
+            target(Country, target_type).max(:birth_rate).should <= 20.04 + @approx_by  # approx match
+          end
 
-        it 'should provide the average value when conditions provided' do
-          Dragon.avg(:toes_on_claw, :is_fire_breathing => true).should  == 4.5
-          Dragon.avg(:toes_on_claw, :is_fire_breathing => false).should == 3
-        end
-      end
-    end
+          it 'should provide the highest value of a BigDecimal property' do
+            target(Country, target_type).max(:gold_reserve_value).should == BigDecimal('22589877164500.0')
+          end
 
-    describe '.sum' do
-      describe 'with no arguments' do
-        it 'should raise an error' do
-          lambda { Dragon.sum }.should raise_error(ArgumentError)
+          it 'should provide the highest value when conditions provided' do
+            target(Dragon, target_type).max(:toes_on_claw, :is_fire_breathing => true).should  == 5
+            target(Dragon, target_type).max(:toes_on_claw, :is_fire_breathing => false).should == 3
+          end
         end
       end
 
-      describe 'with a property name' do
-        it 'should provide the sum of values for an Integer property' do
-          Dragon.sum(:toes_on_claw).should == 12
-
-          total_population = 1330044605 + 303824646 + 191908598 + 140702094 +
-                             127288419 + 109955400 + 82369548
-          Country.sum(:population).should == total_population
+      describe ".avg on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should raise an error' do
+            lambda { target(Dragon, target_type).avg }.should raise_error(ArgumentError)
+          end
         end
 
-        it 'should provide the sum of values for a Float property' do
-          total_tonnes = 600.0 + 8133.5 + 438.2 + 765.2 + 3417.4
-          Country.sum(:gold_reserve_tonnes).should be_kind_of(Float)
-          Country.sum(:gold_reserve_tonnes).should >= total_tonnes - @approx_by  # approx match
-          Country.sum(:gold_reserve_tonnes).should <= total_tonnes + @approx_by  # approx match
+        describe 'with a property name' do
+          it 'should provide the average value of an Integer property' do
+            target(Dragon, target_type).avg(:toes_on_claw).should be_kind_of(Float)
+            target(Dragon, target_type).avg(:toes_on_claw).should == 4.0
+          end
+
+          it 'should provide the average value of a Float property' do
+            mean_birth_rate = (13.71 + 14.18 + 16.04 + 11.03 + 7.87 + 20.04 + 8.18) / 7
+            target(Country, target_type).avg(:birth_rate).should be_kind_of(Float)
+            target(Country, target_type).avg(:birth_rate).should >= mean_birth_rate - @approx_by  # approx match
+            target(Country, target_type).avg(:birth_rate).should <= mean_birth_rate + @approx_by  # approx match
+          end
+
+          it 'should provide the average value of a BigDecimal property' do
+            mean_gold_reserve_value = ((600.0 + 8133.50 + 438.20 + 765.20 + 3417.40) * @gold_tonne_price) / 5
+            target(Country, target_type).avg(:gold_reserve_value).should be_kind_of(BigDecimal)
+            target(Country, target_type).avg(:gold_reserve_value).should == BigDecimal(mean_gold_reserve_value.to_s)
+          end
+
+          it 'should provide the average value when conditions provided' do
+            target(Dragon, target_type).avg(:toes_on_claw, :is_fire_breathing => true).should  == 4.5
+            target(Dragon, target_type).avg(:toes_on_claw, :is_fire_breathing => false).should == 3
+          end
+        end
+      end
+
+      describe ".sum on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should raise an error' do
+            lambda { target(Dragon, target_type).sum }.should raise_error(ArgumentError)
+          end
         end
 
-        it 'should provide the sum of values for a BigDecimal property' do
-          Country.sum(:gold_reserve_value).should == BigDecimal('37090059214100.0')
-        end
+        describe 'with a property name' do
+          it 'should provide the sum of values for an Integer property' do
+            target(Dragon, target_type).sum(:toes_on_claw).should == 12
 
-        it 'should provide the average value when conditions provided' do
-          Dragon.sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
-          Dragon.sum(:toes_on_claw, :is_fire_breathing => false).should == 3
+            total_population = 1330044605 + 303824646 + 191908598 + 140702094 +
+                               127288419 + 109955400 + 82369548
+            target(Country, target_type).sum(:population).should == total_population
+          end
+
+          it 'should provide the sum of values for a Float property' do
+            total_tonnes = 600.0 + 8133.5 + 438.2 + 765.2 + 3417.4
+            target(Country, target_type).sum(:gold_reserve_tonnes).should be_kind_of(Float)
+            target(Country, target_type).sum(:gold_reserve_tonnes).should >= total_tonnes - @approx_by  # approx match
+            target(Country, target_type).sum(:gold_reserve_tonnes).should <= total_tonnes + @approx_by  # approx match
+          end
+
+          it 'should provide the sum of values for a BigDecimal property' do
+            target(Country, target_type).sum(:gold_reserve_value).should == BigDecimal('37090059214100.0')
+          end
+
+          it 'should provide the average value when conditions provided' do
+            target(Dragon, target_type).sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
+            target(Dragon, target_type).sum(:toes_on_claw, :is_fire_breathing => false).should == 3
+          end
         end
       end
     end
