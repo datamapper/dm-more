@@ -20,7 +20,7 @@ spec = Gem::Specification.new do |s|
   s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-is-list'
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
-  s.add_dependency('dm-core', '>= 0.9.2')
+  s.add_dependency('dm-core', "=#{s.version}")
 end
 
 task :default => [ :spec ]
@@ -32,9 +32,21 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
 end
 
-desc "Install #{spec.name} #{spec.version}"
+desc "Install #{spec.name} #{spec.version} (default ruby)"
 task :install => [ :package ] do
-  sh "#{SUDO} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+  sh "#{SUDO} gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+end
+
+desc "Uninstall #{spec.name} #{spec.version} (default ruby)"
+task :uninstall => [ :clobber ] do
+  sh "#{SUDO} gem uninstall #{spec.name} -v#{spec.version} -I -x", :verbose => false
+end
+
+namespace :jruby do
+  desc "Install #{spec.name} #{spec.version} with JRuby"
+  task :install => [ :package ] do
+    sh %{#{SUDO} jruby -S gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources}, :verbose => false
+  end
 end
 
 desc 'Run specifications'
