@@ -8,7 +8,7 @@ module DataMapper
     class ValidationErrors
 
       def initialize
-        @errors = Hash.new { |h,k| h[k.to_sym] = [] }
+        @errors = {}
       end
 
       # Clear existing validation errors.
@@ -22,6 +22,7 @@ module DataMapper
       # @param <Symbol> field_name the name of the field that caused the error
       # @param <String> message    the message to add
       def add(field_name, message)
+        @errors[field_name] ||= []
         @errors[field_name] << message
       end
 
@@ -36,7 +37,7 @@ module DataMapper
       #
       # @param <Symbol> field_name the name of the field you want an error for
       def on(field_name)
-        @errors[field_name].empty? ? nil : @errors[field_name]
+        @errors[field_name].nil? ? nil : @errors[field_name]
       end
 
       def each
