@@ -3,28 +3,29 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::List' do
-    before :all do
-      class User
-        include DataMapper::Resource
-        
-        property :id, Serial
-        property :name, String
-        
-        has n, :todos
-      end
+    
+    class User
+      include DataMapper::Resource
       
-      class Todo
-        include DataMapper::Resource
+      property :id, Serial
+      property :name, String
+      
+      has n, :todos
+    end
+    
+    class Todo
+      include DataMapper::Resource
 
-        property :id, Serial
-        property :title, String
-        
-        belongs_to :user
-        
-        is :list, :scope => [:user_id]
-        
-      end
+      property :id, Serial
+      property :title, String
       
+      belongs_to :user
+      
+      is :list, :scope => [:user_id]
+      
+    end
+    
+    before :all do      
       User.auto_migrate!(:default)
       Todo.auto_migrate!(:default)
       
@@ -47,6 +48,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).dirty?.should == true
           Todo.get(3).attribute_dirty?(:position).should == true
           Todo.get(3).original_values[:position].should == 3
+          Todo.get(3).list_scope.should == Todo.get(3).original_list_scope
         end
       end
       
@@ -117,7 +119,48 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(5).position.should == 2
         end
       end
+    end
+    
+    describe 'scoping' do
+      it 'should detach from old list if scope changed' do
+        repository(:default) do |repos|
+          item = Todo.get(4)
+          item.position.should == 1
+          item.user_id = 1
+          item.save
+
+          item.position.should == 4
+          Todo.get(5).position.should == 1
+          
+          item.user_id = 2
+          item.position = 1
+          item.save
+          
+          item.position.should == 1
+          Todo.get(5).position.should == 2
+          
+        end
+      end
       
+      it 'should not allow you to move item into another scope' do
+        repository(:default) do |repos|
+          item = Todo.get(1)
+          item.position.should == 1
+          item.move(:below => Todo.get(5)).should == false
+        end        
+      end
+      
+      it 'should detach from list when deleted' do
+        repository(:default) do |repos|
+          item = Todo.get(4)
+          item.position.should == 1
+          Todo.get(5).position.should == 2
+          item.destroy
+          
+          Todo.get(5).position.should == 1
+          
+        end
+      end
     end
 
   end
