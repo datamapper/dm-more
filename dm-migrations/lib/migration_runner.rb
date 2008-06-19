@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/migration'
 module DataMapper
   module MigrationRunner
     @@migrations ||= []
-    
+
     # Creates a new migration, and adds it to the list of migrations to be run.
     # Migrations can be defined in any order, they will be sorted and run in the
     # correct order.
@@ -28,9 +28,10 @@ module DataMapper
     #   migration( 1, :create_people_table ) do
     #     up do
     #       create_table :people do
-    #       column :id,     Integer, :serial => true
-    #       column :name,   String, :size => 50
-    #       column :age,    Integer
+    #         column :id,     Integer, :serial => true
+    #         column :name,   String, :size => 50
+    #         column :age,    Integer
+    #       end
     #     end
     #     down do
     #       drop_table :people
