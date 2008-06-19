@@ -27,13 +27,20 @@ require dir / 'support' / 'object'
 
 module DataMapper
   module Validate
+    
+    def self.included(model)
+      if model.method_defined?(:save) && !model.method_defined?(:save!)
+        model.send(:alias_method, :save!, :save)
+        model.send(:alias_method, :save,  :save_with_validations)
+      end
+    end
 
     # Validate the resource before saving. Use #save! to save
     # the record without validations.
     #
-    def save(context = :default)
+    def save_with_validations(context = :default)
       return false unless valid?(context)
-      super()
+      save!
     end
 
     # Return the ValidationErrors
@@ -191,20 +198,9 @@ module DataMapper
           end
         end
       end
-
-      Model.send(:include, self)
     end # module ClassMethods
   end # module Validate
-
-  module Resource
-    class << self
-      included = instance_method(:included)
-
-      define_method(:included) do |model|
-        included.bind(self).call(model)
-        model.send(:alias_method, :save!, :save) unless model.method_defined? :save!
-        model.send(:include, Validate)
-      end
-    end
-  end # module Resource
+  
+  Resource.append_inclusions Validate
+  Model.append_extensions Validate::ClassMethods
 end # module DataMapper
