@@ -22,13 +22,16 @@ DIR = Pathname(__FILE__).dirname.expand_path.to_s
 gem_paths = %w[
   adapters/dm-couchdb-adapter
   adapters/dm-rest-adapter
+  dm-adjust
   dm-aggregates
   dm-ar-finders
   dm-cli
+  dm-is-list
   dm-is-nested_set
   dm-is-tree
   dm-migrations
   dm-observer
+  dm-querizer
   dm-serializer
   dm-shorthand
   dm-timestamps
