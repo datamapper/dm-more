@@ -1,37 +1,11 @@
 module DataMapper
   class Querizer
     self.instance_methods.each { |m| send(:undef_method, m) unless m =~ /^(__|instance_eval)/ }
-    
-    def ==(val)
-      @conditions << condition(val,:eql)
-    end
-    
-    def >=(val)
-      @conditions << condition(val,:gte)
-    end
-    
-    def <=(val)
-      @conditions << condition(val,:lte)
-    end
-    
-    def >(val)
-      @conditions << condition(val,:gt)
-    end
-    
-    def <(val)
-      @conditions << condition(val,:gtl)
-    end
-    
-    def |(val) # could be used for OR ?
-      self
-    end
-    
-    def +(val)
-      @value_stack = [:+,@stack.pop,@stack.pop]
-    end
-    
-    def -(val)
-      @value_stack = [:-,@stack.pop,@stack.pop]
+
+    Hash['==',:eql,'=~',:like,'>=',:gte,'<=',:lte,'>',:gt,'<',:lt].each do |opr,to|
+      class_eval <<-EOS, __FILE__, __LINE__
+        def #{opr}(val); @conditions << condition(val,:#{to}); end
+      EOS
     end
 
     def condition(value,opr)
