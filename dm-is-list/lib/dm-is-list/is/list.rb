@@ -6,10 +6,7 @@ module DataMapper
       #
       #
       def is_list(options={})
-
-        defaults = {:property => :position, :scope => [] }
-
-        options = defaults.merge(options)
+        options = {:property => :position, :scope => [] }.merge(options)
 
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
@@ -17,32 +14,40 @@ module DataMapper
         @list_property = properties.detect{|p| p.name == options[:property]} || property(options[:property], Integer)
         @list_scope = options[:scope]
 
-        before :create do
-          # insert at bottom of list, unless position is specified. If its specified, move silently
 
-          if self.position
-            # flytt den til denne posisjonen (dvs rydd vei, flytt inn, og trekk sammen)
-            # skal egentlig bruke 'insert' siden den ikke har vært plassert noe sted før.
-            self.move_without_saving(:to => self.position)
+        before :save do
+          if new_record?
+            # a position has been set before save => open up and make room for item
+            # no position has been set => move to bottom of my scope-list (or keep detached?)
+            self.position ? self.move_without_saving(:to => self.position) : self.move_without_saving(:lowest)
           else
-            # hvis ikke, sett posisjonen til den neste i rekken (innenfor dette scope)
-            self.position = self.class.next_position_in_list(self)
+            # a (new) position has been set => move item to this position (only if position has been set manually)
+            # the scope has changed => detach from old list, and possibly move into position
+            # the scope and position has changed => detach from old, move to pos in new
           end
         end
       end
 
       module ClassMethods
         attr_reader :list_scope, :list_property
-        
-        def next_position_in_list(for_scope)
-          (max(:position)||0)+1 # add scope here
-        end
       end
       
       module InstanceMethods
 
         def list_scope
-          Hash[ *self.class.list_scope.zip(attributes.values_at(*self.class.list_scope)).flatten ]
+          self.class.list_scope
+        end
+        
+        def list_property
+          self.class.list_property.name
+        end
+        
+        def list_query
+          Hash[ :order, [list_property.asc],*list_scope.zip(attributes.values_at(*list_scope)).flatten ]
+        end
+        
+        def position
+          self.attribute_get(list_property)
         end
 
         ##
@@ -79,8 +84,7 @@ module DataMapper
         # @see move_without_saving 
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
-            
-            
+
           # 1. find the new position to move into
           # 2. get the old position (if any)
           # 3. open a gap for the new position (but don't leave one where we have removed one)
@@ -89,7 +93,7 @@ module DataMapper
           # should all this happen when someone does move(:higher)? I don't really think the action should happen just yet?
           # can have a move! function to go instead, where it actually saves..
           #alias offset self.class.offset_items_in_list # can I reference a function like this?
-          maxpos = self.class.next_position_in_list(self)
+          maxpos = list.last ? list.last.position+1 : 1
             
           newpos = case action
             when :highest then 1
@@ -103,32 +107,36 @@ module DataMapper
           
           return false if !newpos || newpos < 1 || newpos == position || (newpos == maxpos && position == maxpos-1)
           
-          if newpos > position
+          if !position
+            
+          elsif newpos > position
             newpos -= 1 if [:lowest,:above,:to].include?(action)
-            self.class.all(list_scope).all(:position => position..newpos).adjust(:position => -1)
+            self.class.all(list_query).all(:position => position..newpos).adjust(:position => -1)
           elsif newpos < position
-            self.class.all(list_scope).all(:position => newpos..position).adjust(:position => +1)
+            self.class.all(list_query).all(:position => newpos..position).adjust(:position => +1)
           end
           
           self.position = newpos
 
         end
         
-        def siblings
-          # all(@list_options[:scope])
+        def detach(scope=list_query)
+          self.class.all(scope).all(:position.gt => position).adjust(:position => -1)
+          position = nil
         end
-        
+                
         def left_sibling
-          self.class.all(list_scope).first(:position.lt => position, :order => [:position.desc]) # scope here
+          self.class.all(list_query).first(:position.lt => position, :order => [:position.desc]) # scope here
         end
         
         def right_sibling
-          self.class.all(list_scope).first(:position.gt => position, :order => [:position.asc] ) # scope here
+          self.class.all(list_query).first(:position.gt => position, :order => [:position.asc] ) # scope here
         end
         
         def self_and_siblings
-          self.class.all(list_scope)
+          self.class.all(list_query)
         end
+        alias_method :list, :self_and_siblings
                 
       end
       

@@ -8,7 +8,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         include DataMapper::Resource
         
         property :id, Serial
-        property :title, String
+        property :name, String
         
         has n, :todos
       end
@@ -20,20 +20,24 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :title, String
         property :position, Integer
         
-        belongs_to :todo_list
+        belongs_to :user
         
         is :list, :scope => [:user_id]
         
       end
       
+      User.auto_migrate!(:default)
       Todo.auto_migrate!(:default)
       
-      Todo.create!(:title => "Write down what is needed in a list-plugin")
-      Todo.create!(:title => "Complete a temporary version of is-list")
-      Todo.create!(:title => "Squash bugs in nested-set")
-      Todo.create!(:title => "Eat tasty cupcake")
-      Todo.create!(:title => "Procrastinate on paid work")
-      Todo.create!(:title => "Go to sleep")
+      u1 = User.create!(:name => "Johnny")
+      Todo.create!(:user => u1, :title => "Write down what is needed in a list-plugin")
+      Todo.create!(:user => u1, :title => "Complete a temporary version of is-list")
+      Todo.create!(:user => u1, :title => "Squash bugs in nested-set")
+
+      u2 = User.create!(:name => "Freddy")
+      Todo.create!(:user => u2, :title => "Eat tasty cupcake")
+      Todo.create!(:user => u2, :title => "Procrastinate on paid work")
+      Todo.create!(:user => u2, :title => "Go to sleep")
       
     end
     
@@ -44,14 +48,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).dirty?.should == true
           Todo.get(3).attribute_dirty?(:position).should == true
           Todo.get(3).original_values[:position].should == 3
-          puts Todo.get(3).list_scope.inspect
         end
       end
       
       it 'should insert items into the list automatically' do
         repository(:default) do |repos|
           Todo.get(3).position.should == 3
-          Todo.get(6).position.should == 6
+          Todo.get(6).position.should == 3
         end
       end
     end
@@ -62,7 +65,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).move :higher
           Todo.get(3).position.should == 2
           Todo.get(2).position.should == 3
-          Todo.get(4).position.should == 4
+          Todo.get(4).position.should == 1
         end
       end
       
@@ -73,29 +76,35 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).move :lower
           Todo.get(3).position.should == 3
           Todo.get(2).position.should == 2
-          Todo.get(4).position.should == 4
+          
+          Todo.get(4).position.should == 1
         end
       end
       
       it 'should rearrange items correctly when moving :highest or :lowest' do
         repository(:default) do |repos|
+          
+          # list 1
           Todo.get(1).position.should == 1
           Todo.get(1).move(:lowest)
-          Todo.get(1).position.should == 6
-          Todo.get(6).position.should == 5
+          Todo.get(1).position.should == 3
+          
+          # list 2
+          Todo.get(6).position.should == 3
           Todo.get(6).move(:highest)
           Todo.get(6).position.should == 1
-          Todo.get(5).position.should == 5
+          Todo.get(5).position.should == 3
         end
       end
       
       it 'should not rearrange when trying to move top-item up, or bottom item down' do
         repository(:default) do |repos|
           Todo.get(6).position.should == 1
-          Todo.get(2).position.should == 2
           Todo.get(6).move(:higher).should == false
           Todo.get(6).position.should == 1
-          Todo.get(1).position.should == 6
+          
+          Todo.get(1).position.should == 3
+          Todo.get(2).position.should == 2
           Todo.get(1).move(:lower).should == false
         end
       end
@@ -103,9 +112,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it 'should rearrange items correctly when moving :above or :below' do
         repository(:default) do |repos|
           Todo.get(6).position.should == 1
-          Todo.get(5).position.should == 5
+          Todo.get(5).position.should == 3
           Todo.get(6).move(:below => Todo.get(5))
-          Todo.get(6).position
+          Todo.get(6).position.should == 3
+          Todo.get(5).position.should == 28
         end
       end
       
