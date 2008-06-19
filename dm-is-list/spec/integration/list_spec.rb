@@ -104,7 +104,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(6).position.should == 1
           
           Todo.get(1).position.should == 3
-          Todo.get(2).position.should == 2
+          Todo.get(2).position.should == 1
           Todo.get(1).move(:lower).should == false
         end
       end
@@ -115,7 +115,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(5).position.should == 3
           Todo.get(6).move(:below => Todo.get(5))
           Todo.get(6).position.should == 3
-          Todo.get(5).position.should == 28
+          Todo.get(5).position.should == 2
         end
       end
       

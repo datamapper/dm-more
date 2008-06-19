@@ -93,7 +93,7 @@ module DataMapper
           # should all this happen when someone does move(:higher)? I don't really think the action should happen just yet?
           # can have a move! function to go instead, where it actually saves..
           #alias offset self.class.offset_items_in_list # can I reference a function like this?
-          maxpos = list.last ? list.last.position+1 : 1
+          maxpos = list.last ? list.last.position + 1 : 1
             
           newpos = case action
             when :highest then 1
@@ -101,7 +101,7 @@ module DataMapper
             when :higher  then position-1
             when :lower   then position+1
             when :above   then object.position
-            when :below   then object.position-1
+            when :below   then object.position+1
             when :to      then object.to_i
           end
           
@@ -110,7 +110,7 @@ module DataMapper
           if !position
             
           elsif newpos > position
-            newpos -= 1 if [:lowest,:above,:to].include?(action)
+            newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
             self.class.all(list_query).all(:position => position..newpos).adjust(:position => -1)
           elsif newpos < position
             self.class.all(list_query).all(:position => newpos..position).adjust(:position => +1)
