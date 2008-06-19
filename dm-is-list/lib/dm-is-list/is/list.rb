@@ -94,9 +94,7 @@ module DataMapper
         # @option :below<Resource> move item below other item. must be in same scope
         # @option :to<Fixnum> move item to a specific location in the list
         #
-        # @return <FalseClass> returns false if it cannot move to the position, or if it is already there
-        # @raise <RecursiveNestingError> if node is asked to position itself into one of its descendants
-        # @raise <UnableToPositionError> if node is unable to calculate a new position for the element
+        # @return <TrueClass, FalseClass> returns false if it cannot move to the position, otherwise true
         # @see move_without_saving
         def move(vector)
           move_without_saving(vector)
@@ -127,8 +125,9 @@ module DataMapper
             when :to          then object.to_i
           end
  
-          return false if !newpos || newpos < 1 || newpos == position || (newpos == maxpos && position == maxpos-1)
+          return false if !newpos || newpos < 1 || newpos > maxpos
           return false if [:above,:below].include?(action) && list_scope != object.list_scope
+          return true if newpos == position || (newpos == maxpos && position == maxpos-1)
           
           if !position
             self.class.all(list_scope).all(:position.gte => newpos).adjust(:position => +1) unless action == :lowest
@@ -140,7 +139,8 @@ module DataMapper
           end
           
           self.position = newpos
-
+          
+          true
         end
         
         def detach(scope=list_scope)
@@ -162,10 +162,6 @@ module DataMapper
         alias_method :list, :self_and_siblings
                 
       end
-      
-      class UnableToPositionError < StandardError; end
-      class RecursiveNestingError < StandardError; end
-      
     end # List
   end # Is
 end # DataMapper
