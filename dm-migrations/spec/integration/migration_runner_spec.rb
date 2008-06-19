@@ -2,6 +2,12 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+  describe 'empty migration runner' do
+    it "should return an empty array if no migrations have been defined" do
+      migrations.should be_kind_of(Array)
+      migrations.should have(0).item
+    end
+  end
   describe 'migration runnner' do
     # set up some 'global' setup and teardown tasks
     before(:each) do

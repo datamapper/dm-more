@@ -2,7 +2,8 @@ require File.dirname(__FILE__) + '/migration'
 
 module DataMapper
   module MigrationRunner
-
+    @@migrations ||= []
+    
     # Creates a new migration, and adds it to the list of migrations to be run.
     # Migrations can be defined in any order, they will be sorted and run in the
     # correct order.
