@@ -14,18 +14,31 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       auto_migrate!
     end
     
-    User.create(:name => 'john', :age => 40)
-    User.create(:name => 'john', :age => 41)
-    User.create(:name => 'john', :age => 42)
+    User.create(:name => 'john', :age => 20)
+    User.create(:name => 'mark', :age => 41)
+    User.create(:name => 'jane', :age => 62)
 
-    User.all(:name => 'john', :age.gt => 20)
-
-    User.all{name == 'john' && age > 20}
-    
-    #User.all{name == 'john' && age > (rating + 10)}
-    
-    #User.all{right == left + 1}
-
+    it "should work just as usual query" do
+      User.all{age == 62}.length.should == 1
+      User.all{age > 20}.length.should == 2
+      User.all{age >= 20}.length.should == 3
+      User.all{age < 30}.length.should == 1
+      User.all{age <= 20}.length.should == 1
+      User.all{age < 45}.length.should == 2
+      
+      User.all{age == 62 && name == 'mark'}.length.should == 0
+      User.all{age == 62 && name == 'jane'}.length.should == 1
+      User.all{name == ['mark','jane'] && age > 20}.length.should == 2
+      
+      User.all{age > 10}[1,2].length.should == 2
+      
+      User.all{name =~ 'j%'}.length.should == 2
+      
+      User.first{name ~ 'mark'}.id.should == 1
+      
+      User.all{name == ['jane','john']}.all{age > 30}.length.should == 1
+      
+    end
 
   end
 end

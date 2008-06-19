@@ -8,16 +8,16 @@ require 'pathname'
 CLEAN.include '{log,pkg}/'
 
 spec = Gem::Specification.new do |s|
-  s.name             = 'dm-is-example'
+  s.name             = 'dm-querizer'
   s.version          = '0.9.2'
   s.platform         = Gem::Platform::RUBY
   s.has_rdoc         = true
   s.extra_rdoc_files = %w[ README LICENSE TODO ]
-  s.summary          = 'Example of a DataMapper plugin'
+  s.summary          = 'DataMapper plugin that provides a short rubyish query-syntax'
   s.description      = s.summary
-  s.author           = 'John Doe'
-  s.email            = 'john [a] doe [d] com' # indexed in google via github, so should obfuscate
-  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-is-example'
+  s.author           = 'Sindre Aarsaether'
+  s.email            = 'sindre [a] identu [d] no' # indexed in google via github, so should obfuscate
+  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-querizer'
   s.require_path     = 'lib'
   s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
   s.add_dependency('dm-core', '=0.9.2')
