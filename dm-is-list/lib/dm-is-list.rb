@@ -13,10 +13,4 @@ require 'dm-aggregates'
 
 require Pathname(__FILE__).dirname.expand_path / 'dm-is-list' / 'is' / 'list.rb'
 
-module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::List
-    end # module ClassMethods
-  end # module Resource
-end # module DataMapper
+DataMapper::Model.append_extensions DataMapper::Is::List

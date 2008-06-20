@@ -28,6 +28,8 @@ module DataMapper
 
         @list_scope = options[:scope]
 
+        
+
         before :save do
           if self.new_record?
             # a position has been set before save => open up and make room for item
@@ -54,6 +56,12 @@ module DataMapper
         before :destroy do
           self.detach
         end
+        
+        # we need to make sure that STI-models will inherit the list_scope.
+        after_class_method :inherited do |target|
+          target.instance_variable_set(:@list_scope, @list_scope.dup)
+        end
+        
       end
 
       module ClassMethods
@@ -63,11 +71,11 @@ module DataMapper
       module InstanceMethods
 
         def list_scope
-          Hash[ *self.class.list_scope.map{|p| [p,attribute_get(p)]}.flatten ]
+          self.class.list_scope.map{|p| [p,attribute_get(p)]}.to_hash
         end
 
         def original_list_scope
-          Hash[ *self.class.list_scope.map{|p| [p,original_values[p]||attribute_get(p)]}.flatten ]
+          self.class.list_scope.map{|p| [p,original_values[p]||attribute_get(p)]}.to_hash
         end
 
         def list_query

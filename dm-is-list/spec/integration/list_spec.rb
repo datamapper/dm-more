@@ -22,7 +22,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       belongs_to :user
 
       is :list, :scope => [:user_id]
-
     end
 
     before :all do
