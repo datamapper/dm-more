@@ -47,7 +47,7 @@ module DataMapper
       end
 
       module ClassMethods
-        
+
         def adjust_gap!(from,adjustment)
           all(:rgt.gt => from).adjust!({:rgt => adjustment},true)
           all(:lft.gt => from).adjust!({:lft => adjustment},true)

@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
-  
+
   class Person
     include DataMapper::Resource
     property :id, Integer, :serial => true
@@ -10,9 +10,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     property :salary, Integer, :default => 20000
     property :age, Integer
   end
-  
+
   describe 'Adjust' do
-  
+
     before :all do
       Person.auto_migrate!(:default)
       Person.create(:name => 'George', :age => 15)
@@ -22,7 +22,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Person.create(:name => 'John',   :age => 49)
       Person.create(:name => 'Amadeus',:age => 60)
     end
-  
+
     describe 'Resource#adjust!' do
       it 'should adjust values' do
         repository(:default) do
@@ -33,7 +33,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
-  
+
     describe 'Collection#adjust!' do
       it 'should adjust values' do
         repository(:default) do |repos|
