@@ -130,12 +130,12 @@ module DataMapper
           return true if newpos == position || (newpos == maxpos && position == maxpos-1)
 
           if !position
-            self.class.all(list_scope).all(:position.gte => newpos).adjust(:position => +1) unless action == :lowest
+            self.class.all(list_scope).all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
           elsif newpos > position
             newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
-            self.class.all(list_scope).all(:position => position..newpos).adjust(:position => -1)
+            self.class.all(list_scope).all(:position => position..newpos).adjust!({:position => -1},true)
           elsif newpos < position
-            self.class.all(list_scope).all(:position => newpos..position).adjust(:position => +1)
+            self.class.all(list_scope).all(:position => newpos..position).adjust!({:position => +1},true)
           end
 
           self.position = newpos
@@ -144,7 +144,7 @@ module DataMapper
         end
 
         def detach(scope=list_scope)
-          self.class.all(scope).all(:position.gt => position).adjust(:position => -1)
+          self.class.all(scope).all(:position.gt => position).adjust!({:position => -1},true)
           self.position = nil
         end
 

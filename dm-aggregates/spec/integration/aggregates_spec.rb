@@ -27,9 +27,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :id,                  Integer, :serial => true
         property :name,                String,  :nullable => false
         property :population,          Integer
-        property :birth_rate,          Float,      :scale => 4,  :precision => 2
-        property :gold_reserve_tonnes, Float,      :scale => 6,  :precision => 2
-        property :gold_reserve_value,  BigDecimal, :scale => 15, :precision => 1  # approx. value in USD
+        property :birth_rate,          Float,      :precision => 4,  :scale => 2
+        property :gold_reserve_tonnes, Float,      :precision => 6,  :scale => 2
+        property :gold_reserve_value,  BigDecimal, :precision => 15, :scale => 1  # approx. value in USD
 
         auto_migrate!(:default)
       end

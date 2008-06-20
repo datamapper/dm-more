@@ -63,7 +63,7 @@ describe DataMapper::Validate::NumericValidator do
     end
 
     describe 'Float' do
-      describe 'with default scale and precision' do
+      describe 'with default precision and scale' do
         before :all do
           class RobotFish < Fish
             property :average_weight, Float
@@ -85,12 +85,12 @@ describe DataMapper::Validate::NumericValidator do
           @robot_fish.should_not be_valid
         end
 
-        it 'should allow 0 digits of precision after the decimal' do
+        it 'should allow 0 digits after the decimal' do
           @robot_fish.average_weight = 0
           @robot_fish.should be_valid
         end
 
-        it 'should allow 1 digit of precision after the decimal if it is a zero' do
+        it 'should allow 1 digit after the decimal if it is a zero' do
           @robot_fish.average_weight = 0.0
           @robot_fish.should be_valid
 
@@ -102,10 +102,10 @@ describe DataMapper::Validate::NumericValidator do
         end
       end
 
-      describe 'with a scale of 4 and a precision of 2' do
+      describe 'with a precision of 4 and a scale of 2' do
         before :all do
           class GoldFish < Fish
-            property :average_weight, Float, :scale => 4, :precision => 2
+            property :average_weight, Float, :precision => 4, :scale => 2
           end
         end
 
@@ -130,7 +130,7 @@ describe DataMapper::Validate::NumericValidator do
           @gold_fish.should_not be_valid
         end
 
-        it 'should allow 2 digits of precision after the decimal' do
+        it 'should allow 2 digits after the decimal' do
           @gold_fish.average_weight = 99.99
           @gold_fish.should be_valid
 
@@ -145,10 +145,10 @@ describe DataMapper::Validate::NumericValidator do
         end
       end
 
-      describe 'with a scale of 2 and a precision of 2' do
+      describe 'with a precision of 2 and a scale of 2' do
         before :all do
           class SilverFish < Fish
-            property :average_weight, Float, :scale => 2, :precision => 2
+            property :average_weight, Float, :precision => 2, :scale => 2
           end
         end
 
@@ -173,7 +173,7 @@ describe DataMapper::Validate::NumericValidator do
           @silver_fish.should_not be_valid
         end
 
-        it 'should allow 2 digits of precision after the decimal' do
+        it 'should allow 2 digits after the decimal' do
           @silver_fish.average_weight = 0.99
           @silver_fish.should be_valid
 
