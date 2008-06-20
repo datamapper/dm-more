@@ -7,16 +7,14 @@ describe DataMapper::Types::Enum do
     class Bug
       include DataMapper::Resource
 
-      def self.default_repository_name; :sqlite3 end
-
       property :id, Integer, :serial => true
       property :status, Enum[:crit, :warn, :info, :unknown]
     end
-    Bug.auto_migrate!(:sqlite3)
+    Bug.auto_migrate!
   end
 
   it "should work" do
-    repository(:sqlite3) do
+    repository(:default) do
       Bug.create!(:status => :crit)
       Bug.create!(:status => :warn)
     end
