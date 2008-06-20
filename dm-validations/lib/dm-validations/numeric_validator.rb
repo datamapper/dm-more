@@ -20,20 +20,20 @@ module DataMapper
         value = value.kind_of?(BigDecimal) ? value.to_s('F') : value.to_s
 
         error_message = @options[:message]
-        scale         = @options[:scale]
         precision     = @options[:precision]
+        scale         = @options[:scale]
 
         if @options[:integer_only]
           return true if value =~ /\A[+-]?\d+\z/
           error_message ||= '%s must be an integer'.t(Extlib::Inflection.humanize(@field_name))
         else
-          if scale && precision
-            if scale == precision
-              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{precision}})?)\z/
-            elsif precision == 0
-              return true if value =~ /\A[+-]?(?:\d{1,#{scale}}(?:\.0)?)\z/
+          if precision && scale
+            if precision == scale
+              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
+            elsif scale == 0
+              return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
             else
-              return true if value =~ /\A[+-]?(?:\d{1,#{scale - precision}}|\d{0,#{scale - precision}}\.\d{1,#{precision}})\z/
+              return true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
             end
           else
             return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
