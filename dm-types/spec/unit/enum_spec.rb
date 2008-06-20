@@ -21,6 +21,10 @@ describe DataMapper::Types::Enum do
     it "should create incremental keys for the @flag_map hash, staring at 1" do
       Enum.new(:one, :two, :three, :four).flag_map.keys.should == (1..4).to_a
     end
+
+    it "should have an Integer primitive type" do
+      Enum.new.primitive.should == Integer
+    end
   end
 
   describe ".[]" do

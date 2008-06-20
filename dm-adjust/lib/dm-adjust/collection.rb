@@ -1,6 +1,10 @@
 module DataMapper
   class Collection
 
+    def adjust(attributes = {}, reload = false)
+      raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
+    end
+
     ##
     # increment or decrement attributes on a collection
     #
@@ -9,67 +13,48 @@ module DataMapper
     #   * Children.all(:age.gte => 18).adjust(:allowance => -100)
     #
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
-    # @param load <TrueClass,FalseClass>
+    # @param reload <FalseClass,TrueClass> If true, affected objects will be reloaded
+    #
     # @public
-    def adjust(attributes={},preload=true)
+    def adjust!(attributes = {}, reload = false)
       return true if attributes.empty?
 
       adjust_attributes = {}
-      # Finding the actual properties to adjust
+
       model.properties(repository.name).slice(*attributes.keys).each do |property|
         adjust_attributes[property] = attributes[property.name] if property
       end
 
+      each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save } if loaded?
+
       # if none of the attributes that are adjusted is part of the collection-query
       # there is no need to load the collection (it will not change after adjustment)
-      # special case if it is in a :conditions-statement. can check for that?
-      lazy_load if preload && query.conditions.detect{|c| adjust_attributes.include?(c[1]) }
+      # if the query contains a raw sql-string, we cannot (truly) know, and must load.
+      altered = query.conditions.detect{|c| adjust_attributes.include?(c[1]) || c[0] == :raw }
 
-      if loaded?
-        # Doesnt this make for lots if dirty objects that in reality is not dirty?
-        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) } }
-
-      elsif !repository.identity_map(model).empty?
-
-        loaded_keys = {}
-        # Get the keys for all models loaded in the identity-map.
-        @key_properties.zip(repository.identity_map(model).keys.transpose) do |property,values|
-          loaded_keys[property] = values
-        end
-
-        # Get keys of all objects that are loaded, _and_ will be changed. Save their keys
-        # (for reloading) this actually fires a select-query. These are the keys of all objects
-        # that will be affected, and are already loaded in the identity-map.
-        # If this collection has no conditions, every object needs to be reloaded anyways.
-        keys_to_reload = query.conditions.empty? ? loaded_keys : all(loaded_keys.merge(:fields => @key_properties)).send(:keys)
-
+      if identity_map.any? && reload
+        reload_query = @key_properties.zip(identity_map.keys.transpose).to_hash
+        reload_query = all(reload_query.merge(:fields => @key_properties)).send(:keys) if altered
       end
 
-      # Asking the repository (adapter) to do its magic.
       repository.adjust(adjust_attributes,scoped_query)
 
-      # Reload the objects that was preloaded _and_ affected, unless this collection is loaded
-      model.all(keys_to_reload).reload(:fields => attributes.keys) if keys_to_reload && !keys_to_reload.empty?
+      # Reload affected objects in identity-map. if collection was affected, dont use the scope.
+      (altered ? model : self).all(reload_query).reload(:fields => attributes.keys) if reload_query && reload_query.any?
 
-      # if the user did not want to load the collection before adjusting (performance-reasons?)
-      # something is now officially borked. Even though its not quite good enough, the least we
-      # can do is update the query of our collection to follow the adjustments. We need to loop
-      # through all conditions of the query, and check if any of our adjusted attributes are
-      # involved. if so, they must be updated to reflect the changes.
-      # Should probably loop through this beforehand to find out if we should load. Will lower
-      # performance.
+      # if preload was set to false, and collection was affected by updates,
+      # something is now officially borked. We'll try the best we can (still many cases this is borked for)
       query.conditions.each do |c|
         if adjustment = adjust_attributes[c[1]]
           case c[2]
             when Numeric then c[2] += adjustment
             when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
-          end
+          end if adjustment = adjust_attributes[c[1]]
         end
-      end
+      end if altered
 
       return true
 
-    end
-
-  end
-end
+    end # adjust
+  end # Collection
+end # DataMapper

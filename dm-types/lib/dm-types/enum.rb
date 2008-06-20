@@ -1,6 +1,9 @@
 module DataMapper
   module Types
     class Enum < DataMapper::Type(Integer)
+      def self.inherited(target)
+        target.instance_variable_set("@primitive", self.primitive)
+      end
 
       def self.flag_map
         @flag_map
@@ -11,7 +14,7 @@ module DataMapper
       end
 
       def self.new(*flags)
-        enum = Enum.dup
+        enum = Class.new(Enum)
         enum.flag_map = {}
 
         flags.each_with_index do |flag, i|

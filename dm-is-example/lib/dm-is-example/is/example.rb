@@ -10,7 +10,7 @@ module DataMapper
       end
 
       ##
-      # Methods that should be included in Resource::ClassMethods.
+      # Methods that should be included in DataMapper::Model.
       # Normally this should just be your generator, so that the namespace
       # does not get cluttered. ClassMethods and InstanceMethods gets added
       # in the specific resources when you fire is :example

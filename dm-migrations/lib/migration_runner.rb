@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/migration'
 
 module DataMapper
   module MigrationRunner
+    @@migrations ||= []
 
     # Creates a new migration, and adds it to the list of migrations to be run.
     # Migrations can be defined in any order, they will be sorted and run in the
@@ -26,10 +27,14 @@ module DataMapper
     #
     #   migration( 1, :create_people_table ) do
     #     up do
-    #       execute "CREATE TABLE people (id serial, name varchar)"
+    #       create_table :people do
+    #         column :id,     Integer, :serial => true
+    #         column :name,   String, :size => 50
+    #         column :age,    Integer
+    #       end
     #     end
     #     down do
-    #       execute "DROP TABLE people"
+    #       drop_table :people
     #     end
     #   end
     #
@@ -46,16 +51,30 @@ module DataMapper
     # Run all migrations that need to be run. In most cases, this would be called by a
     # rake task as part of a larger project, but this provides the ability to run them
     # in a script or test.
-    def migrate_up!
+    #
+    # has an optional argument 'level' which if supplied, only performs the migrations
+    # with a position less than or equal to the level.
+    def migrate_up!(level = nil)
       @@migrations.sort.each do |migration|
-        migration.perform_up()
+        if level.nil?
+          migration.perform_up()
+        else
+          migration.perform_up() if migration.position <= level.to_i
+        end
       end
     end
 
     # Run all the down steps for the migrations that have already been run.
-    def migrate_down!
+    #
+    # has an optional argument 'level' which, if supplied, only performs the
+    # down migrations with a postion greater than the level.
+    def migrate_down!(level = nil)
       @@migrations.sort.reverse.each do |migration|
-        migration.perform_down()
+        if level.nil?
+          migration.perform_down()
+        else
+          migration.perform_down() if migration.position > level.to_i
+        end
       end
     end
 

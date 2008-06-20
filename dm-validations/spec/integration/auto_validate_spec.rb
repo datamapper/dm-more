@@ -20,8 +20,8 @@ class SailBoat
   property :salesman,      String,                                :nullable => false,     :validates       => [:multi_context_1, :multi_context_2]
   property :code,          String,     :format => Proc.new { |code| code =~ /A\d{4}\z/ }, :validates       => :format_test
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
-  property :float,         Float,      :scale => 2, :precision => 1
-  property :big_decimal,   BigDecimal, :scale => 2, :precision => 1
+  property :float,         Float,      :precision => 2, :scale => 1
+  property :big_decimal,   BigDecimal, :precision => 2, :scale => 1
 
   include TypecastBypassSetter
 end

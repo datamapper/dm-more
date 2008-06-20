@@ -48,6 +48,11 @@ module DataMapper
 
       module ClassMethods
 
+        def adjust_gap!(from,adjustment)
+          all(:rgt.gt => from).adjust!({:rgt => adjustment},true)
+          all(:lft.gt => from).adjust!({:lft => adjustment},true)
+        end
+
         ##
         # get the root of the tree. might be changed when support for multiple roots is added.
         #
@@ -154,19 +159,16 @@ module DataMapper
             # find out how wide this node is, as we need to make a gap large enough for it to fit in
             gap = self.rgt - self.lft + 1
             # make a gap at position, that is as wide as this node
-            self.class.all(:rgt.gte => position).adjust({:rgt => gap},false)
-            self.class.all(:lft.gte => position).adjust({:lft => gap},false)
+            self.class.adjust_gap!(position-1,gap)
             # offset this node (and all its descendants) to the right position
             old_position = self.lft
             offset = position - old_position
-            self.class.all(:rgt => self.lft..self.rgt).adjust({:lft => offset, :rgt => offset},false)
+            self.class.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
             # close the gap this movement left behind.
-            self.class.all(:rgt.gt => old_position).adjust({:rgt => -gap},false)
-            self.class.all(:lft.gt => old_position).adjust({:lft => -gap},false)
+            self.class.adjust_gap!(old_position,-gap)
           else
             # make a gap where the new node can be inserted
-            self.class.all(:rgt.gte => position).adjust({:rgt => 2},false)
-            self.class.all(:lft.gte => position).adjust({:lft => 2},false)
+            self.class.adjust_gap!(position-1,2)
             # set the position fields
             self.lft, self.rgt = position, position + 1
           end
@@ -297,6 +299,7 @@ module DataMapper
       class UnableToPositionError < StandardError; end
       class RecursiveNestingError < StandardError; end
 
+      Model.send(:include, self)
     end # NestedSet
   end # Is
 end # DataMapper
