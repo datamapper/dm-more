@@ -10,8 +10,8 @@ module DataMapper
     #
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @public
-    def adjust(attributes)
-      all.adjust(attributes,false)
+    def adjust!(attributes,reload=false)
+      all.adjust!(attributes,reload)
     end
   end
 end
