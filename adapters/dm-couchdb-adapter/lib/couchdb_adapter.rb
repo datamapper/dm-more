@@ -1,9 +1,10 @@
 require 'rubygems'
 gem 'dm-core', '=0.9.2'
+require 'base64'
 require 'dm-core'
-require 'pathname'
-require 'net/http'
 require 'json'
+require 'net/http'
+require 'pathname'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_views'
 
@@ -15,6 +16,9 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] = instance_variable_get(property.instance_variable_name)
+        if property.type == Object
+          accumulator[property.field] = Base64.encode64(Marshal.dump(accumulator[property.field]))
+        end
         accumulator
       end).to_json
     end
