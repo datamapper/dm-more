@@ -15,7 +15,7 @@ module DataMapper
       #   is :list, :scope => [:user_id, :context_id] # also works with multiple params
       #
       # @param options <Hash> a hash of options
-      #   
+      #
       # @option :scope<Array> an array of attributes that should be used to scope lists
       #
       def is_list(options={})
@@ -23,7 +23,7 @@ module DataMapper
 
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
-        
+
         property :position, Integer unless properties.detect{|p| p.name == :position && p.type == Integer}
 
         @list_scope = options[:scope]
@@ -38,7 +38,7 @@ module DataMapper
             if self.list_scope != self.original_list_scope
               oldpos = self.original_values[:position]
               newpos = self.position
-              
+
               self.detach(self.original_list_scope) # removing from old list
               self.move_without_saving(oldpos ? {:to => newpos} : :lowest) # moving to pos or bottom of new list
 
@@ -50,7 +50,7 @@ module DataMapper
             # the scope and position has changed => detach from old, move to pos in new
           end
         end
-        
+
         before :destroy do
           self.detach
         end
@@ -83,7 +83,7 @@ module DataMapper
         #   * node.move :below => other   # moves this node below other resource in the set
         #
         # @param vector <Symbol, Hash> A symbol, or a key-value pair that describes the requested movement
-        #   
+        #
         # @option :higher<Symbol> move item higher
         # @option :up<Symbol> move item higher
         # @option :highest<Symbol> move item to the top of the list
@@ -100,12 +100,12 @@ module DataMapper
           move_without_saving(vector)
           save
         end
-        
+
         ##
         # does all the actual movement in #move, but does not save afterwards. this is used internally in
         # before :save, and will probably be marked private. should not be used by organic beings.
         #
-        # @see move_without_saving 
+        # @see move_without_saving
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
 
@@ -114,7 +114,7 @@ module DataMapper
           # 3. open a gap for the new position (but don't leave one where we have removed one)
           # 4. insert / move this item (set the new position with position=...)
           maxpos = list.last ? list.last.position + 1 : 1
-            
+
           newpos = case action
             when :highest     then 1
             when :lowest      then maxpos
@@ -124,43 +124,43 @@ module DataMapper
             when :below       then object.position+1
             when :to          then object.to_i
           end
- 
+
           return false if !newpos || newpos < 1 || newpos > maxpos
           return false if [:above,:below].include?(action) && list_scope != object.list_scope
           return true if newpos == position || (newpos == maxpos && position == maxpos-1)
-          
+
           if !position
             self.class.all(list_scope).all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
           elsif newpos > position
             newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
-            self.class.all(list_scope).all(:position => position..newpos).adjust!({:position => -1},true)            
+            self.class.all(list_scope).all(:position => position..newpos).adjust!({:position => -1},true)
           elsif newpos < position
             self.class.all(list_scope).all(:position => newpos..position).adjust!({:position => +1},true)
           end
-          
+
           self.position = newpos
-          
+
           true
         end
-        
+
         def detach(scope=list_scope)
           self.class.all(scope).all(:position.gt => position).adjust!({:position => -1},true)
           self.position = nil
         end
-                
+
         def left_sibling
           self.class.all(list_query).reverse.first(:position.lt => position)
         end
-        
+
         def right_sibling
           self.class.all(list_query).first(:position.gt => position)
         end
-        
+
         def self_and_siblings
           self.class.all(list_query)
         end
         alias_method :list, :self_and_siblings
-                
+
       end
     end # List
   end # Is

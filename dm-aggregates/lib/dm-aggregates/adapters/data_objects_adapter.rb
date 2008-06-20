@@ -30,12 +30,12 @@ module DataMapper
 
         def aggregate_read_statement(aggregate_function, property, query)
           statement = "SELECT #{aggregate_field_statement(query.repository, aggregate_function, property, query.links.any?)}"
-          statement << " FROM #{quote_table_name(query.model.storage_name(name))}"
-          statement << links_statement(query)                  if query.links.any?
-          statement << " WHERE #{conditions_statement(query)}" if query.conditions.any?
-          statement << " ORDER BY #{order_statement(query)}"   if query.order.any?
-          statement << " LIMIT #{query.limit}"                 if query.limit
-          statement << " OFFSET #{query.offset}"               if query.offset && query.offset > 0
+          statement << " FROM #{quote_table_name(query.model.storage_name(query.repository.name))}"
+          statement << links_statement(query)                        if query.links.any?
+          statement << " WHERE #{conditions_statement(query)}"       if query.conditions.any?
+          statement << " ORDER BY #{order_statement(query)}"         if query.order.any?
+          statement << " LIMIT #{quote_column_value(query.limit)}"   if query.limit
+          statement << " OFFSET #{quote_column_value(query.offset)}" if query.offset && query.offset > 0
           statement
         rescue => e
           DataMapper.logger.error("QUERY INVALID: #{query.inspect} (#{e})")
