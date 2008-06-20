@@ -4,7 +4,7 @@ module DataMapper
     def adjust(attributes = {}, reload = false)
       raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
     end
-    
+
     ##
     # increment or decrement attributes on a collection
     #
@@ -26,7 +26,7 @@ module DataMapper
       end
 
       each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save } if loaded?
-      
+
       # if none of the attributes that are adjusted is part of the collection-query
       # there is no need to load the collection (it will not change after adjustment)
       # if the query contains a raw sql-string, we cannot (truly) know, and must load.

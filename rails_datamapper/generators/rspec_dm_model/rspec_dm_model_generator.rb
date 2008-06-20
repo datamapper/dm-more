@@ -1,10 +1,10 @@
 require 'rails_generator/generators/components/model/model_generator'
 
 class RspecDmModelGenerator <ModelGenerator
-  
+
   def manifest
     record do |m|
-      
+
       # Check for class naming collisions.
       m.class_collisions class_path, class_name
 
@@ -21,9 +21,9 @@ class RspecDmModelGenerator <ModelGenerator
           :migration_name => "Create#{class_name.pluralize.gsub(/::/, '')}"
         }, :migration_file_name => "create_#{file_path.gsub(/\//, '_').pluralize}"
       end
-      
+
     end
 
   end
-  
+
 end

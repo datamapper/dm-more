@@ -1,7 +1,7 @@
 require 'rails_generator/generators/components/model/model_generator'
 
 class DmModelGenerator <ModelGenerator
-  
+
   def manifest
     record do |m|
       # Check for class naming collisions.
@@ -22,5 +22,5 @@ class DmModelGenerator <ModelGenerator
       end
     end
   end
-  
+
 end

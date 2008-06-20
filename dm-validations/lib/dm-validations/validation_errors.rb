@@ -8,7 +8,7 @@ module DataMapper
     class ValidationErrors
 
       include Enumerable
-      
+
       # Clear existing validation errors.
       def clear!
         errors.clear
@@ -48,11 +48,11 @@ module DataMapper
       def empty?
         entries.empty?
       end
-      
+
       def method_missing(meth, *args, &block)
         errors.send(meth, *args, &block)
       end
-      
+
       private
       def errors
         @errors ||= {}
