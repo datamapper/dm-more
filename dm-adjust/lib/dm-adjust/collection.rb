@@ -33,7 +33,7 @@ module DataMapper
       altered = query.conditions.detect{|c| adjust_attributes.include?(c[1]) || c[0] == :raw }
 
       if identity_map.any? && reload
-        reload_query = @key_properties.zip(identity_map.keys.transpose).to_h
+        reload_query = @key_properties.zip(identity_map.keys.transpose).to_hash
         reload_query = all(reload_query.merge(:fields => @key_properties)).send(:keys) if altered
       end
 
