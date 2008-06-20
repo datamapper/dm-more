@@ -286,9 +286,6 @@ module DataMapper
 
       module Migration
         def create_model_storage(repository, model)
-          assert_kind_of 'repository', repository, Repository
-          assert_kind_of 'model',      model,      Resource::ClassMethods
-
           uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
@@ -301,9 +298,6 @@ module DataMapper
         end
 
         def destroy_model_storage(repository, model)
-          assert_kind_of 'repository', repository, Repository
-          assert_kind_of 'model',      model,      Resource::ClassMethods
-
           uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
           response = http_get(uri)
           unless response['error']
