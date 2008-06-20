@@ -72,7 +72,7 @@ module DataMapper
         #   MyModel.repair_list # repairs the list, given that lists are not scoped
         #   MyModel.repair_list(:user_id => 1) # fixes the list for user 1, given that the scope is [:user_id]
         #
-        # @param scope [Hash] 
+        # @param scope [Hash]
         #
         def repair_list(scope={})
           return false unless scope.keys.all?{|s| list_scope.include?(s) || s == :order }
@@ -139,7 +139,7 @@ module DataMapper
         # @see move_without_saving
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
-          
+
           prepos = self.original_values[:position]||self.position
           maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : 1
           newpos = case action
