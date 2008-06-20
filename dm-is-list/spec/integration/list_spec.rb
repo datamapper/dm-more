@@ -161,6 +161,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
+    
+    describe 'reparation' do
+      it 'should fix them lists' do
+        repository(:default) do |repos|
+          # Need to do this with a batch update, as setting position = 20 wont
+          # work (it will set it to bottom of list, not more)
+          Todo.all(:position => 3).update!(:position => 20)
+          
+          item = Todo.get(6)
+          item.position.should == 20
+          item.repair_list
+          item.position.should == 3
+        end
+      end
+    end
 
   end
 end

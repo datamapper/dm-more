@@ -64,6 +64,20 @@ module DataMapper
 
       module ClassMethods
         attr_reader :list_scope
+
+        ##
+        # use this function to repair / build your lists.
+        #
+        # @example [Usage]
+        #   MyModel.repair_list # repairs the list, given that lists are not scoped
+        #   MyModel.repair_list(:user_id => 1) # fixes the list for user 1, given that the scope is [:user_id]
+        #
+        # @param scope [Hash] 
+        #
+        def repair_list(scope={})
+          return false unless scope.keys.all?{|s| list_scope.include?(s) || s == :order }
+          all({:order => [:position.asc]}.merge(scope)).each_with_index{ |item,i| item.position = i+1; item.save }
+        end
       end
 
       module InstanceMethods
@@ -78,6 +92,17 @@ module DataMapper
 
         def list_query
           list_scope.merge(:order => [:position.asc])
+        end
+
+        def list(scope=list_query)
+          self.class.all(scope)
+        end
+
+        ##
+        # repair the list this item belongs to
+        #
+        def repair_list
+          self.class.repair_list(list_scope)
         end
 
         ##
@@ -114,34 +139,29 @@ module DataMapper
         # @see move_without_saving
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
-
-          # 1. find the new position to move into
-          # 2. get the old position (if any)
-          # 3. open a gap for the new position (but don't leave one where we have removed one)
-          # 4. insert / move this item (set the new position with position=...)
-          maxpos = list.last ? list.last.position + 1 : 1
-
+          
+          prepos = self.original_values[:position]||self.position
+          maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : 1
           newpos = case action
             when :highest     then 1
             when :lowest      then maxpos
-            when :higher,:up  then position-1
-            when :lower,:down then position+1
+            when :higher,:up  then [position-1,1].max
+            when :lower,:down then [position+1,maxpos].min
             when :above       then object.position
             when :below       then object.position+1
-            when :to          then object.to_i
+            when :to          then [object.to_i,maxpos].min
           end
 
-          return false if !newpos || newpos < 1 || newpos > maxpos
-          return false if [:above,:below].include?(action) && list_scope != object.list_scope
+          return false if !newpos || ([:above,:below].include?(action) && list_scope != object.list_scope)
           return true if newpos == position || (newpos == maxpos && position == maxpos-1)
 
           if !position
-            self.class.all(list_scope).all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
+            list.all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
           elsif newpos > position
             newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
-            self.class.all(list_scope).all(:position => position..newpos).adjust!({:position => -1},true)
+            list.all(:position => position..newpos).adjust!({:position => -1},true)
           elsif newpos < position
-            self.class.all(list_scope).all(:position => newpos..position).adjust!({:position => +1},true)
+            list.all(:position => newpos..position).adjust!({:position => +1},true)
           end
 
           self.position = newpos
@@ -150,22 +170,17 @@ module DataMapper
         end
 
         def detach(scope=list_scope)
-          self.class.all(scope).all(:position.gt => position).adjust!({:position => -1},true)
+          list(scope).all(:position.gt => position).adjust!({:position => -1},true)
           self.position = nil
         end
 
         def left_sibling
-          self.class.all(list_query).reverse.first(:position.lt => position)
+          list.reverse.first(:position.lt => position)
         end
 
         def right_sibling
-          self.class.all(list_query).first(:position.gt => position)
+          list.first(:position.gt => position)
         end
-
-        def self_and_siblings
-          self.class.all(list_query)
-        end
-        alias_method :list, :self_and_siblings
 
       end
     end # List
