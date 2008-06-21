@@ -6,16 +6,18 @@ module DataMapper
       # docs in the works
       #
       def is_nested_set(options={})
-        options = { :child_key => :parent_id }.merge(options)
+        options = { :child_key => [:parent_id], :scope => [] }.merge(options)
 
         extend  DataMapper::Is::NestedSet::ClassMethods
         include DataMapper::Is::NestedSet::InstanceMethods
+        
+        @nested_set_scope = options[:scope]
 
         property :lft, Integer, :writer => :private
         property :rgt, Integer, :writer => :private
 
-        belongs_to :parent,   :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
-        has n,     :children, :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
+        belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+        has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
 
         before :create do
           # scenarios:
@@ -47,7 +49,8 @@ module DataMapper
       end
 
       module ClassMethods
-
+        attr_reader :nested_set_scope
+        
         def adjust_gap!(from,adjustment)
           all(:rgt.gt => from).adjust!({:rgt => adjustment},true)
           all(:lft.gt => from).adjust!({:lft => adjustment},true)
@@ -58,6 +61,13 @@ module DataMapper
         #
         def root
           first(:order => [:lft.asc])
+        end
+        
+        ##
+        # not implemented
+        #
+        def roots
+          
         end
 
         def leaves
@@ -83,7 +93,14 @@ module DataMapper
       end
 
       module InstanceMethods
-
+        
+        def nested_set_scope
+          self.class.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
+        end
+        
+        def nested_set
+          self.class.all(nested_set_scope.merge(:order => [:lft.asc]))
+        end
         ##
         # move self / node to a position in the set. position can _only_ be changed through this
         #
@@ -163,7 +180,7 @@ module DataMapper
             # offset this node (and all its descendants) to the right position
             old_position = self.lft
             offset = position - old_position
-            self.class.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
+            nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
             # close the gap this movement left behind.
             self.class.adjust_gap!(old_position,-gap)
           else
@@ -203,7 +220,7 @@ module DataMapper
         #
         # @return <Collection>
         def self_and_ancestors
-          self.class.all(:lft.lte => lft, :rgt.gte => rgt, :order => [:lft.asc])
+          nested_set.all(:lft.lte => lft, :rgt.gte => rgt, :order => [:lft.asc])
         end
 
         ##
@@ -212,7 +229,7 @@ module DataMapper
         # @return <Collection> collection of all parents, with root as first item
         # @see #self_and_ancestors
         def ancestors
-          self.class.all(:lft.lt => lft, :rgt.gt => rgt, :order => [:lft.asc])
+          nested_set.all(:lft.lt => lft, :rgt.gt => rgt, :order => [:lft.asc])
           #self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
 
@@ -238,7 +255,7 @@ module DataMapper
         #
         # @return <Collection> flat collection, sorted according to nested_set positions
         def self_and_descendants
-          self.class.all(:lft => lft..rgt, :order => [:lft.asc])
+          nested_set.all(:lft => lft..rgt, :order => [:lft.asc])
         end
 
         ##
@@ -255,7 +272,7 @@ module DataMapper
         #
         # @return <Collection>
         def leaves
-          self.class.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"], :order => [:lft.asc])
+          nested_set.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"], :order => [:lft.asc])
         end
 
         ##

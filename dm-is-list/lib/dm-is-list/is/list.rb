@@ -104,6 +104,13 @@ module DataMapper
         def repair_list
           self.class.repair_list(list_scope)
         end
+        
+        ##
+        # reorder the list this item belongs to
+        #
+        def reorder_list(order)
+          self.class.repair_list(list_scope.merge(:order => order))
+        end
 
         ##
         # move item to a position in the list. position should _only_ be changed through this
