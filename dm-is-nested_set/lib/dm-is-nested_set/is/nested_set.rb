@@ -46,10 +46,11 @@ module DataMapper
           else
 
             if self.nested_set_scope != self.original_nested_set_scope
-
-            end
-
-            if (self.parent && !self.lft) || (self.parent != self.ancestor)
+              # TODO detach from old list first. many edge-cases here, need good testing
+              self.lft,self.rgt = nil,nil
+              #puts "#{self.root.inspect} - #{[self.nested_set_scope,self.original_nested_set_scope].inspect}"
+              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
+            elsif (self.parent && !self.lft) || (self.parent != self.ancestor)
               # if the parent is set, we try to move this into that parent, otherwise move into root.
               self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
             end
@@ -86,9 +87,8 @@ module DataMapper
           # TODO scoping
           # what should this return if there is a scope? always false, or node if there is only one?
           roots.length > 1 ? false : roots.first
-          
         end
-        
+
         ##
         # not implemented
         #
@@ -136,7 +136,8 @@ module DataMapper
         #
         # @private
         def original_nested_set_scope
-          self.class.nested_set_scope.map{|p| [p,original_values[p]||attribute_get(p)]}.to_hash
+          # TODO commit
+          self.class.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
         
         ##
@@ -183,9 +184,8 @@ module DataMapper
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
 
-          ##
-          # checking what kind of movement has been requested, and calculate the new position node should move to
-          #
+          changed_scope = nested_set_scope != original_nested_set_scope
+
           position = case action
             when :higher  then left_sibling  ? left_sibling.lft    : nil # : "already at the top"
             when :highest then ancestor      ? ancestor.lft+1      : nil # : "is root, or has no parent"
@@ -206,6 +206,8 @@ module DataMapper
           #
           # raise UnableToPositionError unless position.is_a?(Integer) && position > 0
           return false if !position || position < 1
+          # return false if you are trying to move this into another scope
+          return false if [:into, :above,:below].include?(action) && nested_set_scope != object.nested_set_scope
           # if node is already in the requested position
           if self.lft == position || self.rgt == position - 1
             self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
@@ -284,7 +286,6 @@ module DataMapper
         #
         # @return <Resource, NilClass>
         def root
-          # TODO what if root is self?
           nested_set.first
         end
 

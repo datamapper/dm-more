@@ -291,7 +291,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         plasma.user_id = 1
         plasma.save
         
-        #plasma.pos.should == [1,2]
+        plasma.pos.should == [1,2]
       end
     end
     

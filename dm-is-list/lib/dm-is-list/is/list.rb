@@ -87,7 +87,7 @@ module DataMapper
         end
 
         def original_list_scope
-          self.class.list_scope.map{|p| [p,original_values[p]||attribute_get(p)]}.to_hash
+          self.class.list_scope.map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         def list_query
