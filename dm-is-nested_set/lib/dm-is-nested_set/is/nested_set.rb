@@ -38,8 +38,8 @@ module DataMapper
         before :save do
           if self.new_record?
             if !self.parent
-
-              self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
+              # TODO must change for nested sets
+              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
             elsif self.parent && !self.lft
               self.move_without_saving(:into => self.parent)
             end
@@ -80,12 +80,13 @@ module DataMapper
         end
 
         ##
-        # get the root of the tree. might be changed when support for multiple roots is added.
+        # get the root of the tree. if sets are scoped, this will return false
         #
         def root
           # TODO scoping
-          # what should this return if there is a scope?
-          first(:order => [:lft.asc])
+          # what should this return if there is a scope? always false, or node if there is only one?
+          roots.length > 1 ? false : roots.first
+          
         end
         
         ##
@@ -96,7 +97,11 @@ module DataMapper
           all(nested_set_parent.zip([]).to_hash)
         end
 
+        ##
+        #
+        #
         def leaves
+          # TODO scoping, how should it act?
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
@@ -114,7 +119,7 @@ module DataMapper
         # rebuilds the nested set using parent/child relationships and a chosen order
         #
         def rebuild_set_from_tree(order=nil)
-          # pending
+          # TODO pending
         end
       end
 
@@ -280,7 +285,7 @@ module DataMapper
         # @return <Resource, NilClass>
         def root
           # TODO what if root is self?
-          ancestors.first
+          nested_set.first
         end
 
         ##
@@ -304,7 +309,8 @@ module DataMapper
         # @return <Collection> flat collection, sorted according to nested_set positions
         # @see #self_and_descendants
         def descendants
-          self_and_descendants.reject{|r| r.key == self.key } # because identitymap is not used in console
+          # TODO add argument for returning as a nested array.
+          nested_set.all(:lft => (lft+1)..(rgt-1))
         end
 
         ##
