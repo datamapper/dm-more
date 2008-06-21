@@ -139,7 +139,7 @@ module DataMapper
           # TODO commit
           self.class.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
-        
+
         ##
         # the whole nested set this node belongs to. served flat like a pancake!
         #
@@ -239,9 +239,9 @@ module DataMapper
               # set the position fields
               self.lft, self.rgt = position, position + 1
             end
-            
+
             self.parent = self.ancestor
-          
+
           end
         end
 

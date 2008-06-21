@@ -104,7 +104,7 @@ module DataMapper
         def repair_list
           self.class.repair_list(list_scope)
         end
-        
+
         ##
         # reorder the list this item belongs to
         #

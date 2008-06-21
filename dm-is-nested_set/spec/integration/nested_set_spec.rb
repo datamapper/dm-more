@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
-  
+
   class User
     include DataMapper::Resource
 
@@ -22,12 +22,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     is :nested_set, :scope => [:user_id]
 
-    
+
 
     # convenience method only for speccing.
     def pos; [lft,rgt] end
   end
-  
+
   def setup
     repository(:default) do
 
@@ -48,7 +48,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       radios       = Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
     end
   end
-  
+
   setup
 
   # id | lft| rgt| title
@@ -282,7 +282,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
-    
+
     describe 'scoping' do
       it 'should detach from list when changing scope' do
         setup
@@ -290,10 +290,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         plasma.pos.should == [7,8]
         plasma.user_id = 1
         plasma.save
-        
+
         plasma.pos.should == [1,2]
       end
     end
-    
+
   end
 end
