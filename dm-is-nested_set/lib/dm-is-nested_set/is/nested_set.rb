@@ -165,33 +165,36 @@ module DataMapper
             self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
             return false
           end
-
-          ##
-          # if this node is already positioned we need to move it, and close the gap it leaves behind etc
-          # otherwise we only need to open a gap in the set, and smash that buggar in
-          #
-          if self.lft && self.rgt
-            # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
-            raise RecursiveNestingError if position > self.lft && position < self.rgt
-            # find out how wide this node is, as we need to make a gap large enough for it to fit in
-            gap = self.rgt - self.lft + 1
-            # make a gap at position, that is as wide as this node
-            self.class.adjust_gap!(position-1,gap)
-            # offset this node (and all its descendants) to the right position
-            old_position = self.lft
-            offset = position - old_position
-            nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
-            # close the gap this movement left behind.
-            self.class.adjust_gap!(old_position,-gap)
-          else
-            # make a gap where the new node can be inserted
-            self.class.adjust_gap!(position-1,2)
-            # set the position fields
-            self.lft, self.rgt = position, position + 1
+          
+          transaction do |transaction|
+          
+            ##
+            # if this node is already positioned we need to move it, and close the gap it leaves behind etc
+            # otherwise we only need to open a gap in the set, and smash that buggar in
+            #
+            if self.lft && self.rgt
+              # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
+              raise RecursiveNestingError if position > self.lft && position < self.rgt
+              # find out how wide this node is, as we need to make a gap large enough for it to fit in
+              gap = self.rgt - self.lft + 1
+              # make a gap at position, that is as wide as this node
+              self.class.adjust_gap!(position-1,gap)
+              # offset this node (and all its descendants) to the right position
+              old_position = self.lft
+              offset = position - old_position
+              nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
+              # close the gap this movement left behind.
+              self.class.adjust_gap!(old_position,-gap)
+            else
+              # make a gap where the new node can be inserted
+              self.class.adjust_gap!(position-1,2)
+              # set the position fields
+              self.lft, self.rgt = position, position + 1
+            end
+            
+            self.parent = self.ancestor
+          
           end
-
-          self.parent = self.ancestor
-
         end
 
         ##
