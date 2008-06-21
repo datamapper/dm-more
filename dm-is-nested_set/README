@@ -1,13 +1,6 @@
 dm-is-nested_set
 ================
 
-##########################
-#  DO NOT USE THIS PLUGIN
-##########################
-
-After some changes in core, this is temporary 'out of order'.
-Fixes are coming.
-
 DataMapper plugin allowing the creation of nested sets from data models.
 Provides all the same functionality as dm-is-tree, plus tons more! Read on.
 

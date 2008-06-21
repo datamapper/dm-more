@@ -2,6 +2,15 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+  
+  class User
+    include DataMapper::Resource
+
+    property :id, Serial
+    property :name, String
+
+    has n, :categories
+  end
 
   class Category
     include DataMapper::Resource
@@ -9,26 +18,39 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     property :id, Integer, :serial => true
     property :name, String
 
-    is :nested_set
+    belongs_to :user
 
-    auto_migrate!(:default)
+    is :nested_set, :scope => [:user_id]
+
+    
 
     # convenience method only for speccing.
     def pos; [lft,rgt] end
   end
-
-  repository(:default) do
-    electronics  = Category.create!(:id => 1, :name => "Electronics")
-    televisions  = Category.create!(:id => 2, :parent_id => 1,  :name => "Televisions")
-    tube         = Category.create!(:id => 3, :parent_id => 2,  :name => "Tube")
-    lcd          = Category.create!(:id => 4, :parent_id => 2,  :name => "LCD")
-    plasma       = Category.create!(:id => 5, :parent_id => 2,  :name => "Plasma")
-    portable_el  = Category.create!(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
-    mp3_players  = Category.create!(:id => 7, :parent_id => 6,  :name => "MP3 Players")
-    flash        = Category.create!(:id => 8, :parent_id => 7,  :name => "Flash")
-    cd_players   = Category.create!(:id => 9, :parent_id => 6,  :name => "CD Players")
-    radios       = Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
+  
+  def setup
+    repository(:default) do
+      
+      User.auto_migrate!
+      @paul = User.create!(:name => "paul")
+      @john = User.create!(:name => "john")
+      
+      
+      Category.auto_migrate!
+      Category.create!(:id => 1, :name => "Electronics")
+      Category.create!(:id => 2, :parent_id => 1,  :name => "Televisions")
+      Category.create!(:id => 3, :parent_id => 2,  :name => "Tube")
+      Category.create!(:id => 4, :parent_id => 2,  :name => "LCD")
+      Category.create!(:id => 5, :parent_id => 2,  :name => "Plasma")
+      Category.create!(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
+      Category.create!(:id => 7, :parent_id => 6,  :name => "MP3 Players")
+      Category.create!(:id => 8, :parent_id => 7,  :name => "Flash")
+      Category.create!(:id => 9, :parent_id => 6,  :name => "CD Players")
+      Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
+    end
   end
+  
+  setup
 
   # id | lft| rgt| title
   #========================================
@@ -260,5 +282,18 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
+    
+    describe 'scoping' do
+      it 'should detach from list when changing scope' do
+        setup
+        plasma = Category.get(5)
+        plasma.pos.should == [7,8]
+        plasma.user_id = 1
+        plasma.save
+        
+        #plasma.pos.should == [1,2]
+      end
+    end
+    
   end
 end
