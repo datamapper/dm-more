@@ -1,9 +1,10 @@
 require 'rubygems'
 gem 'dm-core', '=0.9.2'
+require 'base64'
 require 'dm-core'
-require 'pathname'
-require 'net/http'
 require 'json'
+require 'net/http'
+require 'pathname'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_views'
 
@@ -15,6 +16,9 @@ module DataMapper
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] = instance_variable_get(property.instance_variable_name)
+        if property.type == Object
+          accumulator[property.field] = Base64.encode64(Marshal.dump(accumulator[property.field]))
+        end
         accumulator
       end).to_json
     end
@@ -282,9 +286,6 @@ module DataMapper
 
       module Migration
         def create_model_storage(repository, model)
-          assert_kind_of 'repository', repository, Repository
-          assert_kind_of 'model',      model,      Resource::ClassMethods
-
           uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
@@ -297,9 +298,6 @@ module DataMapper
         end
 
         def destroy_model_storage(repository, model)
-          assert_kind_of 'repository', repository, Repository
-          assert_kind_of 'model',      model,      Resource::ClassMethods
-
           uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
           response = http_get(uri)
           unless response['error']
