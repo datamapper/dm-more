@@ -22,11 +22,14 @@ describe DataMapper::Types::BCryptHash do
     it "should return nil if nil is passed" do
       BCryptHash.dump(nil, :property).should be_nil
     end
-
   end
 
   describe ".load" do
-    it "should return the password as the password" do
+    it "should return the password as a BCrypt::Password" do
+      BCryptHash.load(@crypted_password, :property).should be_an_instance_of(BCrypt::Password)
+    end
+
+    it "should return the password as a password which matches" do
       BCryptHash.load(@crypted_password, :property).should == @clear_password
     end
 

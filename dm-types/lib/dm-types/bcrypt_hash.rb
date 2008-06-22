@@ -6,6 +6,7 @@ module DataMapper
     class BCryptHash < DataMapper::Type
       primitive String
       size 60
+      scale BCrypt::Engine::DEFAULT_COST
 
       def self.load(value, property)
         if value.nil?
@@ -21,7 +22,7 @@ module DataMapper
         if value.nil?
           nil
         elsif value.is_a?(String)
-          BCrypt::Password.create(value)
+          BCrypt::Password.create(value, :cost => scale)
         else
           raise ArgumentError.new("+value+ must be nil or a String")
         end
