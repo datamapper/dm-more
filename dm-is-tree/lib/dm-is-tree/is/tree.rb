@@ -53,7 +53,7 @@ module DataMapper
       # * <tt>root</tt> - Returns the root of the current node (<tt>root</tt> when called on <tt>grandchild2</tt>)
       #
       # Author:: Timothy Bennett (http://lanaer.com)
-      
+
       # Configuration options are:
       #
       # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
@@ -86,8 +86,7 @@ module DataMapper
         warn('#is_a_tree is depreciated. use #is :tree instead.')
         is :tree, options
       end
-      alias_method :can_has_tree, :is_tree
-      alias_method :can_has_tree, :is_a_tree # just for fun ;)
+      alias_method :can_has_tree, :is_tree # just for fun ;)
 
       module ClassMethods
       end
@@ -126,7 +125,7 @@ module DataMapper
           parent ? parent.children : self.class.roots
         end
         alias_method :self_and_siblings, :generation # for those used to the ActiveRecord acts_as_tree
-        
+
       end
 
       Model.send(:include, self)
