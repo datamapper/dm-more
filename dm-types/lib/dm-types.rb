@@ -16,3 +16,4 @@ require dir / "json"""
 require dir / 'uri'
 require dir / 'yaml'
 require dir / 'serial'
+require dir / 'bcrypt_hash'
