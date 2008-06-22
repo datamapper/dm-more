@@ -94,6 +94,7 @@ module DataMapper
         #
         def roots
           # TODO scoping
+          # TODO supply filtering-option?
           all(nested_set_parent.zip([]).to_hash)
         end
 
@@ -102,6 +103,7 @@ module DataMapper
         #
         def leaves
           # TODO scoping, how should it act?
+          # TODO supply filtering-option?
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
@@ -301,6 +303,7 @@ module DataMapper
         #
         # @return <Collection> flat collection, sorted according to nested_set positions
         def self_and_descendants
+          # TODO supply filtering-option?
           nested_set.all(:lft => lft..rgt)
         end
 
@@ -311,6 +314,7 @@ module DataMapper
         # @see #self_and_descendants
         def descendants
           # TODO add argument for returning as a nested array.
+          # TODO supply filtering-option?
           nested_set.all(:lft => (lft+1)..(rgt-1))
         end
 
@@ -319,6 +323,7 @@ module DataMapper
         #
         # @return <Collection>
         def leaves
+          # TODO supply filtering-option?
           nested_set.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"])
         end
 
@@ -346,6 +351,7 @@ module DataMapper
         # @see #self_and_siblings
         def siblings
           # TODO find a way to return this as a collection?
+          # TODO supply filtering-option?
           self_and_siblings.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
 

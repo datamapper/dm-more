@@ -14,13 +14,12 @@ module DataMapper
       #
       #   class Category
       #     include DataMapper::Resource
-      #     include DataMapper::Is::Tree
       #
       #     property :id, Integer
       #     property :parent_id, Integer
       #     property :name, String
       #
-      #     is_a_tree :order => "name"
+      #     is :tree :order => "name"
       #   end
       #
       #   root
@@ -54,35 +53,43 @@ module DataMapper
       # * <tt>root</tt> - Returns the root of the current node (<tt>root</tt> when called on <tt>grandchild2</tt>)
       #
       # Author:: Timothy Bennett (http://lanaer.com)
-      module ClassMethods
-        # Configuration options are:
-        #
-        # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
-        def is_a_tree(options = {})
-          configuration = { :child_key => :parent_id }
-          configuration.update(options) if Hash === options
+      
+      # Configuration options are:
+      #
+      # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
+      def is_tree(options = {})
+        configuration = { :child_key => :parent_id }
+        configuration.update(options) if Hash === options
 
-          belongs_to :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
-          has n, :children, :class_name => name, :child_key => [ configuration[:child_key] ]
+        belongs_to :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
+        has n, :children, :class_name => name, :child_key => [ configuration[:child_key] ]
 
-          include DataMapper::Is::Tree::InstanceMethods
+        include DataMapper::Is::Tree::InstanceMethods
+        extend  DataMapper::Is::Tree::ClassMethods
 
-          class_eval <<-CLASS, __FILE__, __LINE__
-            def self.roots
-              all :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
-            end
-
-            def self.first_root
-              first :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
-            end
-          CLASS
-
-          class << self
-            alias_method :root, :first_root # for people used to the ActiveRecord acts_as_tree
+        class_eval <<-CLASS, __FILE__, __LINE__
+          def self.roots
+            all :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
           end
-        end
 
-        alias_method :can_has_tree, :is_a_tree # just for fun ;)
+          def self.first_root
+            first :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
+          end
+        CLASS
+
+        class << self
+          alias_method :root, :first_root # for people used to the ActiveRecord acts_as_tree
+        end
+      end
+
+      def is_a_tree(options = {})
+        warn('#is_a_tree is depreciated. use #is :tree instead.')
+        is :tree, options
+      end
+      alias_method :can_has_tree, :is_tree
+      alias_method :can_has_tree, :is_a_tree # just for fun ;)
+
+      module ClassMethods
       end
 
       module InstanceMethods
@@ -103,6 +110,7 @@ module DataMapper
           node = node.parent while node.parent
           node
         end
+        alias_method :first_root, :root
 
         # Returns all siblings of the current node.
         #
@@ -117,10 +125,11 @@ module DataMapper
         def generation
           parent ? parent.children : self.class.roots
         end
-
         alias_method :self_and_siblings, :generation # for those used to the ActiveRecord acts_as_tree
+        
       end
 
+      Model.send(:include, self)
     end # Tree
   end # Is
 end # DataMapper
