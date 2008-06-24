@@ -27,13 +27,16 @@ module DataMapper
           return true if value =~ /\A[+-]?\d+\z/
           error_message ||= '%s must be an integer'.t(Extlib::Inflection.humanize(@field_name))
         else
+          # FIXME: if precision and scale are not specified, can we assume that it is an integer?
           if precision && scale
-            if precision == scale
-              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
-            elsif scale == 0
-              return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
-            else
+            if precision > scale && scale > 0
               return true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
+            elsif precision > scale && scale == 0
+              return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+            elsif precision == scale
+              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
+            else
+              raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
             end
           else
             return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
