@@ -20,6 +20,7 @@ class SailBoat
   property :salesman,      String,                                :nullable => false,     :validates       => [:multi_context_1, :multi_context_2]
   property :code,          String,     :format => Proc.new { |code| code =~ /A\d{4}\z/ }, :validates       => :format_test
   property :allow_nil,     String,     :size => 5..10,            :nullable => true,      :validates       => :nil_test
+  property :build_date,    Date,                                                          :validates       => :primitive_test
   property :float,         Float,      :precision => 2, :scale => 1
   property :big_decimal,   BigDecimal, :precision => 2, :scale => 1
 
@@ -112,6 +113,15 @@ describe "Automatic Validation from Property Definition" do
     t.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
     t.should_not be_valid
     t.errors.full_messages.should include('Name must be less than 50 characters long')
+  end
+
+  it "should auto validate the primitive type" do
+    validator = SailBoat.validators.context(:primitive_test).first
+    validator.should be_kind_of(DataMapper::Validate::PrimitiveValidator)
+    boat = SailBoat.new
+    boat.should be_valid_for_primitive_test
+    boat.build_date = 'ABC'
+    boat.should_not be_valid_for_primitive_test
   end
 
   it "should not auto add any validators if the option :auto_validation => false was given" do

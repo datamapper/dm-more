@@ -87,6 +87,13 @@ module DataMapper
           opts[:precision] = property.precision
           opts[:scale]     = property.scale
           validates_is_number property.name, opts
+        else
+          # We only need this in the case we don't already
+          # have a numeric validator, because otherwise
+          # it will cause duplicate validation errors
+          unless property.custom?
+            validates_is_primitive property.name, opts
+          end
         end
       end
 
