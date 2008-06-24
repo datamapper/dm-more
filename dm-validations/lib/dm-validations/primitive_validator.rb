@@ -44,7 +44,7 @@ module DataMapper
       #
       #     property :birth_date, Date
       #
-      #     validates_is_primitive :required_attribute
+      #     validates_is_primitive :birth_date
       #
       #     # a call to valid? will return false unless
       #     # the birth_date is something that can be properly
