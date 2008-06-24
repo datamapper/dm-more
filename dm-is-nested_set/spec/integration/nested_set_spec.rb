@@ -155,6 +155,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
     end
 
+    describe '#siblings and #self_and_siblings' do
+      it 'should return all siblings of node' do
+        repository(:default) do
+          r = Category.root
+          r.self_and_siblings.length.should == 1
+          r.descendants.length.should == 9
+
+          televisions = r.children[0]
+          televisions.siblings.length.should == 1
+          televisions.siblings.map{|a|a.name}.should == ["Portable Electronics"]
+        end
+      end
+    end
+
     describe '#move' do
 
       # Outset:

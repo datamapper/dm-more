@@ -17,6 +17,10 @@ module DataMapper
         property :lft, Integer, :writer => :private
         property :rgt, Integer, :writer => :private
 
+        # a temporary fix. I need to filter. now I just use parent.children in self_and_siblings, which could
+        # be cut down to 1 instead of 2 queries. this would be the other way, but seems hackish:
+        # options[:child_key].each{|pname| property(pname, Integer) unless properties.detect{|p| p.name == pname}}
+
         belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
         has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
 
@@ -341,7 +345,7 @@ module DataMapper
         #
         # @return <Collection>
         def self_and_siblings
-          parent ? self.class.all( self.class.nested_set_parent.zip(parent.key).to_hash ) : [self]
+          parent ? parent.children : [self]
         end
 
         ##
