@@ -11,7 +11,7 @@ module DataMapper
       end
 
       def self.new(*flags)
-        type = Flag.dup
+        type = Flag.clone  # cannot dup a Class
         type.flag_map = {}
 
         flags.each_with_index do |flag, i|

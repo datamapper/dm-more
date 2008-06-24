@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe "DataMapper::Types::Flag" do
+describe DataMapper::Types::Flag do
   before(:all) do
     class Shirt
       include DataMapper::Resource

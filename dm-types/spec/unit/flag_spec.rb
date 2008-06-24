@@ -24,13 +24,13 @@ describe DataMapper::Types::Flag do
   describe ".[]" do
     it "should be an alias for the new method" do
       DataMapper::Types::Flag.should_receive(:new).with(:uno, :dos, :tres)
-      DataMapper::Types:: Flag[:uno, :dos, :tres]
+      DataMapper::Types::Flag[:uno, :dos, :tres]
     end
   end
 
   describe ".dump" do
     before(:each) do
-      @flag = DataMapper::Types:: Flag[:first, :second, :third, :fourth, :fifth]
+      @flag = DataMapper::Types::Flag[:first, :second, :third, :fourth, :fifth]
     end
 
     it "should return the key of the value match from the flag map" do
@@ -60,7 +60,7 @@ describe DataMapper::Types::Flag do
 
   describe ".load" do
     before(:each) do
-      @flag = DataMapper::Types:: Flag[:uno, :dos, :tres, :cuatro, :cinco]
+      @flag = DataMapper::Types::Flag[:uno, :dos, :tres, :cuatro, :cinco]
     end
 
     it "should return the value of the key match from the flag map" do
