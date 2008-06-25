@@ -136,8 +136,8 @@ module DataMapper
       to_a.to_yaml(opts)
     end
 
-    def to_json
-      to_a.to_json
+    def to_json(opts = {})
+      "[" << map {|e| e.to_json(opts)}.join(",") << "]"
     end
 
     def to_xml

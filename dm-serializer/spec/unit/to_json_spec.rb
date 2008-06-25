@@ -56,6 +56,22 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_collection.should be_empty
   end
 
+  it "handles options given to a collection properly" do
+    deserialized_collection = JSON.parse(@collection.to_json(:only => [:composite]))
+    betsy = deserialized_collection.first
+    berta = deserialized_collection.last
+  
+    betsy["id"].should be_nil
+    betsy["composite"].should == 2
+    betsy["name"].should be_nil
+    betsy["breed"].should be_nil
+    
+    berta["id"].should be_nil
+    berta["composite"].should == 20
+    berta["name"].should be_nil
+    berta["breed"].should be_nil
+  end
+
   it "serializes values returned by methods given to :methods option" do
     deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:methods => [:category, :has_known_form_of_life?]))
 
