@@ -1,8 +1,6 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-include DataMapper::Types
-
 describe DataMapper::Types::FilePath do
 
   before(:each) do
@@ -12,29 +10,29 @@ describe DataMapper::Types::FilePath do
 
   describe ".dump" do
     it "should return the file path as a String" do
-      FilePath.dump(@path_str, :property).should == @path_str
+      DataMapper::Types::FilePath.dump(@path_str, :property).should == @path_str
     end
 
     it "should return nil if the String is nil" do
-      FilePath.dump(nil, :property).should be_nil
+      DataMapper::Types::FilePath.dump(nil, :property).should be_nil
     end
 
     it "should return an empty file path if the String is empty" do
-      FilePath.dump("", :property).should == ""
+      DataMapper::Types::FilePath.dump("", :property).should == ""
     end
   end
 
   describe ".load" do
     it "should return the file path as a Pathname" do
-      FilePath.load(@uri_str, :property).should == @uri
+      DataMapper::Types::FilePath.load(@uri_str, :property).should == @uri
     end
 
     it "should return nil if given nil" do
-      FilePath.load(nil, :property).should be_nil
+      DataMapper::Types::FilePath.load(nil, :property).should be_nil
     end
 
     it "should return an empty Pathname if given an empty String" do
-      FilePath.load("", :property).should == Pathname.new("")
+      DataMapper::Types::FilePath.load("", :property).should == Pathname.new("")
     end
   end
 end
