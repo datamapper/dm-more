@@ -7,7 +7,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     before do
       class Organisation
         include DataMapper::Resource
-        property :id, Integer, :key => true
+        property :id, Serial
         property :name, String
         property :domain, String #, :unique => true
 
@@ -16,7 +16,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       class User
         include DataMapper::Resource
-        property :id, Integer, :key => true
+        property :id, Serial
         property :organisation_id, Integer
         property :user_name, String
 
@@ -39,7 +39,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     it 'should validate the uniqueness of a value on a resource' do
       repository do
-        o = Organisation[1]
+        o = Organisation.get!(1)
         o.should be_valid
 
         o = Organisation.new(:id=>20,:name=>"Org Twenty", :domain=>nil)
@@ -53,7 +53,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     it "should not even check if :allow_nil is true" do
       repository do
-        o = Organisation[1]
+        o = Organisation.get!(1)
         o.should be_valid
 
         o = Organisation.new(:id=>2,:name=>"Org Two", :domain=>"taken")

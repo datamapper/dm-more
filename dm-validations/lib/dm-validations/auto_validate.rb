@@ -68,14 +68,10 @@ module DataMapper
         # uniqueness validator
         if property.options.has_key?(:unique)
           value = property.options[:unique]
-          scope = []
-          scope.concat(value) if value.is_a?(Array)
-          scope << value if value.is_a?(Symbol)
-          opts = {}
-          opts[:scope] = scope if scope.length > 0
-
-          if value.is_a?(TrueClass) || scope.length > 0
-            validates_is_unique property.name, opts
+          if value.is_a?(Array) || value.is_a?(Symbol)
+            validates_is_unique property.name, :scope => Array(value)
+          elsif value.is_a?(TrueClass)
+            validates_is_unique property.name
           end
         end
 
