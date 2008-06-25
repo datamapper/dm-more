@@ -60,12 +60,12 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_collection = JSON.parse(@collection.to_json(:only => [:composite]))
     betsy = deserialized_collection.first
     berta = deserialized_collection.last
-  
+
     betsy["id"].should be_nil
     betsy["composite"].should == 2
     betsy["name"].should be_nil
     betsy["breed"].should be_nil
-    
+
     berta["id"].should be_nil
     berta["composite"].should == 20
     berta["name"].should be_nil
