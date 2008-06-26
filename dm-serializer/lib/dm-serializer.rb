@@ -109,7 +109,7 @@ module DataMapper
     # Return a REXML::Document representing this Resource
     #
     # @return <REXML::Document> an XML representation of this Resource
-    def to_xml_document(opts={})
+    def to_xml_document(opts={}, doc=nil)
       doc ||= REXML::Document.new
       root = doc.add_element(xml_element_name)
 
@@ -141,14 +141,8 @@ module DataMapper
       "[" << map {|e| e.to_json(opts)}.join(",") << "]"
     end
 
-    def to_xml
-      result = ''
-      result << "<#{xml_element_name}>"
-      each do |item|
-        result << item.to_xml
-      end
-      result << "</#{xml_element_name}>"
-      result
+    def to_xml(opts = {})
+      to_xml_document(opts).to_s
     end
 
     def to_csv
@@ -162,6 +156,15 @@ module DataMapper
     protected
     def xml_element_name
       Extlib::Inflection.tableize(self.model.to_s)
+    end
+    
+    def to_xml_document(opts={})
+      doc = REXML::Document.new
+      root = doc.add_element(xml_element_name)
+      each do |item|
+        item.send(:to_xml_document, opts, root)
+      end
+      doc
     end
   end
 
