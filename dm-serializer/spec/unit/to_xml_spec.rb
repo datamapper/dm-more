@@ -8,6 +8,9 @@ describe DataMapper::Serialize, '#to_xml' do
 
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+    
+    @time = DateTime.now
+    
 
     @collection = DataMapper::Collection.new(query) do |c|
       c.load([1, 2, 'Betsy', 'Jersey'])
@@ -36,7 +39,7 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it "should serialize a collection to XML" do
     @collection.to_xml.should == <<-EOS.compress_lines(false)
-      <cows>
+      <cows type='array'>
         <cow>
           <id type='integer'>1</id>
           <composite type='integer'>2</composite>

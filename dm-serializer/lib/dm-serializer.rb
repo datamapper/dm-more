@@ -118,7 +118,7 @@ module DataMapper
       self.class.properties(repository.name).each do |property|
           value = send(property.name)
           node = root.add_element(property.name.to_s)
-          if property.key?
+          unless property.type == String
             node.attributes["type"] = property.type.to_s.downcase
           end
           node << REXML::Text.new(value.to_s) unless value.nil?
@@ -161,6 +161,7 @@ module DataMapper
     def to_xml_document(opts={})
       doc = REXML::Document.new
       root = doc.add_element(xml_element_name)
+      root.attributes["type"] = 'array'
       each do |item|
         item.send(:to_xml_document, opts, root)
       end
