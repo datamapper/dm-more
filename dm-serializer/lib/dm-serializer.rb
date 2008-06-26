@@ -75,6 +75,7 @@ module DataMapper
     #
     # @return <REXML::Document> an XML representation of this Resource
     def to_xml(opts = {})
+      
       to_xml_document(opts).to_s
     end
 
@@ -109,7 +110,7 @@ module DataMapper
     #
     # @return <REXML::Document> an XML representation of this Resource
     def to_xml_document(opts={})
-      doc = REXML::Document.new
+      doc ||= REXML::Document.new
       root = doc.add_element(xml_element_name)
 
       #TODO old code base was converting single quote to double quote on attribs
@@ -141,10 +142,12 @@ module DataMapper
     end
 
     def to_xml
-      result = ""
+      result = ''
+      result << "<#{xml_element_name}>"
       each do |item|
-        result << item.to_xml + "\n"
+        result << item.to_xml
       end
+      result << "</#{xml_element_name}>"
       result
     end
 
@@ -154,6 +157,11 @@ module DataMapper
         result << item.to_csv + "\n"
       end
       result
+    end
+    
+    protected
+    def xml_element_name
+      Extlib::Inflection.tableize(self.model.to_s)
     end
   end
 
