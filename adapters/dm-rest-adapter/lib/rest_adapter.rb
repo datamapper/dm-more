@@ -60,7 +60,7 @@ module DataMapper
         when []
           read_set_all(repository, query, resource_name)
         else
-          read_set_for_condition(repository, query, resource)
+          read_set_for_condition(repository, query, resource_name)
         end
       end
 
