@@ -299,13 +299,26 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'scoping' do
       it 'should detach from list when changing scope' do
-        setup
-        plasma = Category.get(5)
-        plasma.pos.should == [7,8]
-        plasma.user_id = 1
-        plasma.save
-
-        plasma.pos.should == [1,2]
+        repository(:default) do |repos|
+          setup
+          plasma = Category.get(5)
+          plasma.pos.should == [7,8]
+          plasma.user_id = 1
+          plasma.save
+          plasma.pos.should == [1,2]
+        end
+      end
+    end
+    
+    describe 'integrity' do
+      it 'should detach object from list when deleted' do
+        repository(:default) do |repos|
+          setup
+          lcd = Category.get(4)
+          lcd.pos.should == [5,6]
+          Category.get(3).destroy
+          lcd.pos.should == [3,4]
+        end
       end
     end
 

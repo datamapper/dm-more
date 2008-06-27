@@ -61,6 +61,10 @@ module DataMapper
 
           end
         end
+        
+        before :destroy do
+          self.detach
+        end
 
         #before :update do
         #  # scenarios:
@@ -375,6 +379,13 @@ module DataMapper
         # @see #self_and_siblings
         def right_sibling
           self_and_siblings.find{|v| v.lft == rgt+1}
+        end
+        
+       private
+        def detach
+          offset = self.lft - self.rgt - 1
+          self.class.adjust_gap!(nested_set,self.rgt,offset)
+          self.lft,self.rgt = nil,nil
         end
 
       end
