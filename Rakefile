@@ -1,9 +1,9 @@
 module DataMapper
   # Set this to the version of dm-core that you are building against/for
-  VERSION = "0.9.2"
+  VERSION = "0.9.3"
 
   # Set this to the version of dm-more you plan to release
-  MORE_VERSION = "0.9.2"
+  MORE_VERSION = "0.9.3"
 end
 
 require 'pathname'
