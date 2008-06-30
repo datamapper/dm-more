@@ -107,15 +107,15 @@ module DataMapper
     # Note: DataMapper validations can be used on non-DataMapper resources.
     # In such cases, the return value will be nil.
     def validation_property(field_name)
-      if DataMapper::Resource > self.class
-        self.class.properties(self.repository.name)[field_name]
+      if respond_to?(:model) && (properties = model.properties(self.repository.name)) && properties.has_property?(field_name)
+        properties[field_name]
       end
     end
 
     def validation_association_keys(name)
-      if self.class.relationships.has_key?(name)
+      if model.relationships.has_key?(name)
         result = []
-        relation = self.class.relationships[name]
+        relation = model.relationships[name]
         relation.child_key.each do |key|
           result << key.name
         end
