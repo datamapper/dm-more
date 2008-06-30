@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'dm-core', '=0.9.2'
+gem 'dm-core', '=0.9.3'
 require 'dm-core'
 require 'extlib'
 require 'dm-serializer'
@@ -60,7 +60,7 @@ module DataMapper
         when []
           read_set_all(repository, query, resource_name)
         else
-          read_set_for_condition(repository, query, resource)
+          read_set_for_condition(repository, query, resource_name)
         end
       end
 

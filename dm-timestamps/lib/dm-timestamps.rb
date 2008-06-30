@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'dm-core', '=0.9.2'
+gem 'dm-core', '=0.9.3'
 require 'dm-core'
 
 module DataMapper
