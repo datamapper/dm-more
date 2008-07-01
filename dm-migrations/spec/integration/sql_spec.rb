@@ -87,28 +87,29 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       end
 
       it "should be able to find the migration_info record for itself" do
+        puts "hi"
         insert_migration_record
         @migration.send(:migration_record).should_not be_empty
-    end
+      end
 
-    it "should know if a migration needs_up?" do
-      @migration.send(:needs_up?).should be_true
-      insert_migration_record
-      @migration.send(:needs_up?).should be_false
-    end
+      it "should know if a migration needs_up?" do
+        @migration.send(:needs_up?).should be_true
+        insert_migration_record
+        @migration.send(:needs_up?).should be_false
+      end
 
-    it "should know if a migration needs_down?" do
-      @migration.send(:needs_down?).should be_false
-      insert_migration_record
-      @migration.send(:needs_down?).should be_true
-    end
+      it "should know if a migration needs_down?" do
+        @migration.send(:needs_down?).should be_false
+        insert_migration_record
+        @migration.send(:needs_down?).should be_true
+      end
 
-    it "should properly quote the migration_info table for use in queries" do
-      @migration.send(:migration_info_table).should == '"migration_info"'
-  end
+      it "should properly quote the migration_info table for use in queries" do
+        @migration.send(:migration_info_table).should == '"migration_info"'
+      end
 
-  it "should properly quote the migration_info.migration_name column for use in queries" do
-    @migration.send(:migration_name_column).should == '"migration_name"'
+      it "should properly quote the migration_info.migration_name column for use in queries" do
+        @migration.send(:migration_name_column).should == '"migration_name"'
       end
 
       it "should properly quote the migration's name for use in queries"
@@ -144,7 +145,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       end
 
       after do
-        repository.adapter.execute("DELETE FROM migration_info") rescue Sqlite3Error
+        repository.adapter.execute("DELETE FROM migration_info") if @migration.send(:migration_info_table_exists?)
       end
     end
   end
