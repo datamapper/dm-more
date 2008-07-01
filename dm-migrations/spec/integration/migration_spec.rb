@@ -53,7 +53,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
       if HAS_SQLITE3
         it "should extend with SQL::Sqlite3 when adapter is Sqlite3Adapter" do
-          DataMapper.setup(:sqlite3, "sqlite3::memory:")
           migration = DataMapper::Migration.new(1, :sqlite3_adapter_test, :database => :sqlite3) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Sqlite3)
         end
@@ -61,7 +60,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
       if HAS_MYSQL
         it "should extend with SQL::Mysql when adapter is MysqlAdapter" do
-          DataMapper.setup(:mysql, "mysql://localhost/migration_test")
           migration = DataMapper::Migration.new(1, :mysql_adapter_test, :database => :mysql) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Mysql)
         end
@@ -69,7 +67,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
       if HAS_POSTGRES
         it "should extend with SQL::Postgres when adapter is PostgresAdapter" do
-          DataMapper.setup(:postgres, "postgres://localhost/migration_test")
           migration = DataMapper::Migration.new(1, :postgres_adapter_test, :database => :postgres) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Postgresql)
         end

@@ -36,7 +36,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       end
 
       it "should quote the table name for the adapter" do
-        @creator.quoted_table_name.should == '"people"'
+        @creator.quoted_table_name.should == (adapter == :mysql ? '`people`' : '"people"')
       end
 
     end
@@ -87,7 +87,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       end
 
       it "should be able to find the migration_info record for itself" do
-        puts "hi"
         insert_migration_record
         @migration.send(:migration_record).should_not be_empty
       end
