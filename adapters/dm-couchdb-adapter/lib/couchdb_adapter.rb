@@ -26,12 +26,6 @@ module DataMapper
 end
 
 module DataMapper
-  class Query
-    attr_accessor :view
-  end
-end
-
-module DataMapper
   module Adapters
     class CouchDBAdapter < AbstractAdapter
       # Returns the name of the CouchDB database.
@@ -138,13 +132,6 @@ module DataMapper
         end
       end
 
-      # Reads in a set from a stored view.
-      def view(resource, proc_name, options = {})
-        query = Query.new(repository, resource, options)
-        query.view = proc_name
-        read_many(query)
-      end
-
     protected
       # Converts the URI's scheme into a parsed HTTP identifier.
       def normalize_uri(uri_or_options)
@@ -230,7 +217,6 @@ module DataMapper
               "#{query.model.storage_name(self.name)}/" +
               "#{query.view}" +
               "#{query_string(query)}"
-        p uri
         request = Net::HTTP::Get.new(uri)
       end
       
