@@ -1,6 +1,6 @@
 module DataMapper
   class Query
-    attr_accessor :view
+    attr_accessor :view, :key
   end
 end
 
@@ -18,7 +18,9 @@ module DataMapper
     def create_getter
       @model.class_eval <<-EOS, __FILE__, __LINE__
         def self.#{@name}(options = {})
+          key = options.delete(:key)
           query = Query.new(repository, self, options)
+          query.key = key
           query.view = '#{@name}'
           if Hash === options && options.has_key?(:repository)
             repository(options.delete(:repository)).read_many(query)
