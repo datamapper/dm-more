@@ -38,16 +38,3 @@ describe DataMapper::View do
     Zoo.should respond_to(:open)
   end
 end
-
-describe DataMapper::Repository do
-  it "should define a view method" do
-    repository(:couchdb).should respond_to(:view)
-  end
-end
-
-describe DataMapper::Adapters::AbstractAdapter do
-  it "should have a view method" do
-    DataMapper::Adapters::AbstractAdapter.
-      instance_methods.should include("view")
-  end
-end

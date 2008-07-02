@@ -26,12 +26,6 @@ module DataMapper
 end
 
 module DataMapper
-  class Query
-    attr_accessor :view
-  end
-end
-
-module DataMapper
   module Adapters
     class CouchDBAdapter < AbstractAdapter
       # Returns the name of the CouchDB database.
@@ -128,7 +122,7 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        unless doc["total_rows"] == 0
+        unless doc["rows"].empty?
           data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
@@ -136,13 +130,6 @@ module DataMapper
             end,
             query)
         end
-      end
-
-      # Reads in a set from a stored view.
-      def view(resource, proc_name, options = {})
-        query = Query.new(repository, resource)
-        query.view = { :name => proc_name }.merge!(options)
-        read_many(query)
       end
 
     protected
@@ -186,12 +173,7 @@ module DataMapper
           key = "[#{key}]"
         end
 
-        options = []
-        options << "count=#{query.limit}" if query.limit
-        options << "skip=#{query.offset}" if query.offset
-        options = options.empty? ? nil : "?#{options.join('&')}"
-
-        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{options}")
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
         request["Content-Type"] = "text/javascript"
 
         if query.conditions.empty?
@@ -230,21 +212,21 @@ module DataMapper
       end
 
       def view_request(query)
-        options = query.view.dup
-        proc_name = options.delete(:name)
-        options[:count] = query.limit if query.limit
-        options[:skip] = query.offset if query.offset
-        if options.empty?
-          options = ''
-        else
-          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
-        end
         uri = "/#{self.escaped_db_name}/" +
               "_view/" +
               "#{query.model.storage_name(self.name)}/" +
-              "#{proc_name}" +
-              "#{options}"
+              "#{query.view}" +
+              "#{query_string(query)}"
         request = Net::HTTP::Get.new(uri)
+      end
+      
+      def query_string(query)
+        query_string = []
+        query_string << "key=%22#{query.key}%22" if query.key
+        query_string << "count=#{query.limit}" if query.limit
+        query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
+        query_string << "skip=#{query.offset}" if query.offset
+        query_string.empty? ? nil : "?#{query_string.join('&')}"
       end
 
       def like_operator(value)
