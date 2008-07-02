@@ -1,0 +1,25 @@
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+
+class Monica # :nodoc:
+  include DataMapper::Resource
+  property :id, Integer, :serial => true
+  property :birth_date, Date, :auto_validation => false
+  validates_is_primitive :birth_date
+end
+
+describe DataMapper::Validate::PrimitiveValidator do
+  it "should validate a property to check for the type" do
+    b = Monica.new
+    p b.valid?
+    p b.errors
+    b.should be_valid
+
+    b.birth_date = 'ABC'
+    b.should_not be_valid
+    b.birth_date.should eql('ABC')
+    b.birth_date = '2008-01-01'
+    b.should be_valid
+    b.birth_date.should eql(Date.civil(2008,1,1))
+  end
+end

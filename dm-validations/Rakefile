@@ -18,7 +18,7 @@ end
 
 spec = Gem::Specification.new do |s|
   s.name             = 'dm-validations'
-  s.version          = '0.9.2'
+  s.version          = '0.9.3'
   s.platform         = Gem::Platform::RUBY
   s.has_rdoc         = true
   s.extra_rdoc_files = %w[ README LICENSE TODO ]

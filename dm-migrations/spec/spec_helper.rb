@@ -5,24 +5,17 @@ require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-migrations'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/migration_runner'
 
-#require 'fileutils'
-
-#DB_FILE = "#{Dir.pwd}/migration_test.db"
-#FileUtils.touch DB_FILE
-
-#DataMapper.setup(:default, "sqlite3://#{DB_FILE}")
-#DataMapper::Logger.new(nil, :debug)
-
 def load_driver(name, default_uri)
-  return false if ENV['ADAPTER'] != name.to_s
+  #return false if ENV['ADAPTER'] != name.to_s
 
   lib = "do_#{name}"
 
   begin
-    gem lib, '=0.9.2'
+    gem lib, '=0.9.3'
     require lib
-    DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
+    DataMapper.setup(name, default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
+    puts "Loaded #{name}"
     true
   rescue Gem::LoadError => e
     warn "Could not load #{lib}: #{e}"

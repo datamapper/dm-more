@@ -87,7 +87,7 @@ module DataMapper
         end
 
         def original_list_scope
-          self.class.list_scope.map{|p| [p,original_values[p]||attribute_get(p)]}.to_hash
+          self.class.list_scope.map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         def list_query
@@ -103,6 +103,13 @@ module DataMapper
         #
         def repair_list
           self.class.repair_list(list_scope)
+        end
+
+        ##
+        # reorder the list this item belongs to
+        #
+        def reorder_list(order)
+          self.class.repair_list(list_scope.merge(:order => order))
         end
 
         ##

@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'pathname'
 
-gem 'dm-core', '=0.9.2'
+gem 'dm-core', '=0.9.3'
 require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-validations'
@@ -12,6 +12,7 @@ require dir / 'auto_validate'
 
 require dir / 'generic_validator'
 require dir / 'required_field_validator'
+require dir / 'primitive_validator'
 require dir / 'absent_field_validator'
 require dir / 'confirmation_validator'
 require dir / 'format_validator'
@@ -127,6 +128,7 @@ module DataMapper
       include DataMapper::Validate::ValidatesPresent
       include DataMapper::Validate::ValidatesAbsent
       include DataMapper::Validate::ValidatesIsConfirmed
+      include DataMapper::Validate::ValidatesIsPrimitive
       include DataMapper::Validate::ValidatesIsAccepted
       include DataMapper::Validate::ValidatesFormat
       include DataMapper::Validate::ValidatesLength

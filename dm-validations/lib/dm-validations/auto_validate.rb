@@ -68,14 +68,10 @@ module DataMapper
         # uniqueness validator
         if property.options.has_key?(:unique)
           value = property.options[:unique]
-          scope = []
-          scope.concat(value) if value.is_a?(Array)
-          scope << value if value.is_a?(Symbol)
-          opts = {}
-          opts[:scope] = scope if scope.length > 0
-
-          if value.is_a?(TrueClass) || scope.length > 0
-            validates_is_unique property.name, opts
+          if value.is_a?(Array) || value.is_a?(Symbol)
+            validates_is_unique property.name, :scope => Array(value)
+          elsif value.is_a?(TrueClass)
+            validates_is_unique property.name
           end
         end
 
@@ -87,6 +83,13 @@ module DataMapper
           opts[:precision] = property.precision
           opts[:scale]     = property.scale
           validates_is_number property.name, opts
+        else
+          # We only need this in the case we don't already
+          # have a numeric validator, because otherwise
+          # it will cause duplicate validation errors
+          unless property.custom?
+            validates_is_primitive property.name, opts
+          end
         end
       end
 

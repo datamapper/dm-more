@@ -1,8 +1,6 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-include DataMapper::Types
-
 describe DataMapper::Types::IPAddress do
 
   before(:each) do
@@ -12,29 +10,29 @@ describe DataMapper::Types::IPAddress do
 
   describe ".dump" do
     it "should return the IP address as a string" do
-      IPAddress.dump(@ip, :property).should == @ip_str
+      DataMapper::Types::IPAddress.dump(@ip, :property).should == @ip_str
     end
 
     it "should return nil if the string is nil" do
-      IPAddress.dump(nil, :property).should be_nil
+      DataMapper::Types::IPAddress.dump(nil, :property).should be_nil
     end
 
     it "should return an empty IP address if the string is empty" do
-      IPAddress.dump("", :property).should == ""
+      DataMapper::Types::IPAddress.dump("", :property).should == ""
     end
   end
 
   describe ".load" do
     it "should return the IP address string as IPAddr" do
-      IPAddress.load(@ip_str, :property).should == @ip
+      DataMapper::Types::IPAddress.load(@ip_str, :property).should == @ip
     end
 
     it "should return nil if given nil" do
-      IPAddress.load(nil, :property).should be_nil
+      DataMapper::Types::IPAddress.load(nil, :property).should be_nil
     end
 
     it "should return an empty IP address if given an empty string" do
-      IPAddress.load("", :property).should == IPAddr.new("0.0.0.0")
+      DataMapper::Types::IPAddress.load("", :property).should == IPAddr.new("0.0.0.0")
     end
   end
 

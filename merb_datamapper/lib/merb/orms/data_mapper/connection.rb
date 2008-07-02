@@ -1,8 +1,4 @@
-require 'rubygems'
 require 'fileutils'
-
-gem 'dm-core', '=0.9.2'
-require 'dm-core'
 
 module Merb
   module Orms
@@ -21,6 +17,9 @@ module Merb
         end
 
         def config
+          if !Merb::Plugins.config[:merb_datamapper].nil? && Merb::Plugins.config[:merb_datamapper].empty?
+             Merb::Plugins.config[:merb_datamapper] = get_config_for_environment
+          end
           @config ||= Merb::Plugins.config[:merb_datamapper] ||= get_config_for_environment
         end
 

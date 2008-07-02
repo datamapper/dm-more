@@ -6,61 +6,108 @@ module DataMapper
       # docs in the works
       #
       def is_nested_set(options={})
-        options = { :child_key => :parent_id }.merge(options)
+        options = { :child_key => [:parent_id], :scope => [] }.merge(options)
 
         extend  DataMapper::Is::NestedSet::ClassMethods
         include DataMapper::Is::NestedSet::InstanceMethods
 
+        @nested_set_scope = options[:scope]
+        @nested_set_parent = options[:child_key]
+
         property :lft, Integer, :writer => :private
         property :rgt, Integer, :writer => :private
 
-        belongs_to :parent,   :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
-        has n,     :children, :class_name => self.name, :child_key => [ *options[:child_key] ], :order => [:lft.asc]
+        # a temporary fix. I need to filter. now I just use parent.children in self_and_siblings, which could
+        # be cut down to 1 instead of 2 queries. this would be the other way, but seems hackish:
+        # options[:child_key].each{|pname| property(pname, Integer) unless properties.detect{|p| p.name == pname}}
 
-        before :create do
-          # scenarios:
-          # - user creates a new object and does not specify a parent
-          # - user creates a new object with a direct reference to a parent
-          # - user spawnes a new object, and then moves it to a position
-          if !self.parent
-            self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
-            # if this is actually root, it will not move a bit (as lft is already 1)
-          elsif self.parent && !self.lft
-            # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
-            # might be som problems here if the referenced parent is not saved.
-            self.move_without_saving(:into => self.parent)
+        belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+        has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+
+        #before :create do
+        #  # scenarios:
+        #  # - user creates a new object and does not specify a parent
+        #  # - user creates a new object with a direct reference to a parent
+        #  # - user spawnes a new object, and then moves it to a position
+        #  if !self.parent
+        #    self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
+        #    # if this is actually root, it will not move a bit (as lft is already 1)
+        #  elsif self.parent && !self.lft
+        #    # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
+        #    # might be som problems here if the referenced parent is not saved.
+        #    self.move_without_saving(:into => self.parent)
+        #  end
+        #end
+
+        before :save do
+          if self.new_record?
+            if !self.parent
+              # TODO must change for nested sets
+              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
+            elsif self.parent && !self.lft
+              self.move_without_saving(:into => self.parent)
+            end
+          else
+
+            if self.nested_set_scope != self.original_nested_set_scope
+              # TODO detach from old list first. many edge-cases here, need good testing
+              self.lft,self.rgt = nil,nil
+              #puts "#{self.root.inspect} - #{[self.nested_set_scope,self.original_nested_set_scope].inspect}"
+              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
+            elsif (self.parent && !self.lft) || (self.parent != self.ancestor)
+              # if the parent is set, we try to move this into that parent, otherwise move into root.
+              self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
+            end
+
           end
         end
 
-        before :update do
-          # scenarios:
-          # - user moves the object to a position
-          # - user has changed the parent
-          # - user has removed any reference to a parent
-          # - user sets the parent_id to something, and then use #move before saving
-          if (self.parent && !self.lft) || (self.parent != self.ancestor)
-            # if the parent is set, we try to move this into that parent, otherwise move into root.
-            self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
-          end
-        end
+        #before :update do
+        #  # scenarios:
+        #  # - user moves the object to a position
+        #  # - user has changed the parent
+        #  # - user has removed any reference to a parent
+        #  # - user sets the parent_id to something, and then use #move before saving
+        #  if (self.parent && !self.lft) || (self.parent != self.ancestor)
+        #    # if the parent is set, we try to move this into that parent, otherwise move into root.
+        #    self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
+        #  end
+        #end
 
       end
 
       module ClassMethods
+        attr_reader :nested_set_scope, :nested_set_parent
 
-        def adjust_gap!(from,adjustment)
-          all(:rgt.gt => from).adjust!({:rgt => adjustment},true)
-          all(:lft.gt => from).adjust!({:lft => adjustment},true)
+        def adjust_gap!(scoped_set,at,adjustment)
+          scoped_set.all(:rgt.gt => at).adjust!({:rgt => adjustment},true)
+          scoped_set.all(:lft.gt => at).adjust!({:lft => adjustment},true)
         end
 
         ##
-        # get the root of the tree. might be changed when support for multiple roots is added.
+        # get the root of the tree. if sets are scoped, this will return false
         #
         def root
-          first(:order => [:lft.asc])
+          # TODO scoping
+          # what should this return if there is a scope? always false, or node if there is only one?
+          roots.length > 1 ? false : roots.first
         end
 
+        ##
+        # not implemented
+        #
+        def roots
+          # TODO scoping
+          # TODO supply filtering-option?
+          all(nested_set_parent.zip([]).to_hash)
+        end
+
+        ##
+        #
+        #
         def leaves
+          # TODO scoping, how should it act?
+          # TODO supply filtering-option?
           all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
         end
 
@@ -78,11 +125,34 @@ module DataMapper
         # rebuilds the nested set using parent/child relationships and a chosen order
         #
         def rebuild_set_from_tree(order=nil)
-          # pending
+          # TODO pending
         end
       end
 
       module InstanceMethods
+
+        ##
+        #
+        # @private
+        def nested_set_scope
+          self.class.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
+        end
+
+        ##
+        #
+        # @private
+        def original_nested_set_scope
+          # TODO commit
+          self.class.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+        end
+
+        ##
+        # the whole nested set this node belongs to. served flat like a pancake!
+        #
+        def nested_set
+          # TODO add option for serving it as a nested array
+          self.class.all(nested_set_scope.merge(:order => [:lft.asc]))
+        end
 
         ##
         # move self / node to a position in the set. position can _only_ be changed through this
@@ -120,9 +190,8 @@ module DataMapper
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
 
-          ##
-          # checking what kind of movement has been requested, and calculate the new position node should move to
-          #
+          changed_scope = nested_set_scope != original_nested_set_scope
+
           position = case action
             when :higher  then left_sibling  ? left_sibling.lft    : nil # : "already at the top"
             when :highest then ancestor      ? ancestor.lft+1      : nil # : "is root, or has no parent"
@@ -143,38 +212,43 @@ module DataMapper
           #
           # raise UnableToPositionError unless position.is_a?(Integer) && position > 0
           return false if !position || position < 1
+          # return false if you are trying to move this into another scope
+          return false if [:into, :above,:below].include?(action) && nested_set_scope != object.nested_set_scope
           # if node is already in the requested position
           if self.lft == position || self.rgt == position - 1
             self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
             return false
           end
 
-          ##
-          # if this node is already positioned we need to move it, and close the gap it leaves behind etc
-          # otherwise we only need to open a gap in the set, and smash that buggar in
-          #
-          if self.lft && self.rgt
-            # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
-            raise RecursiveNestingError if position > self.lft && position < self.rgt
-            # find out how wide this node is, as we need to make a gap large enough for it to fit in
-            gap = self.rgt - self.lft + 1
-            # make a gap at position, that is as wide as this node
-            self.class.adjust_gap!(position-1,gap)
-            # offset this node (and all its descendants) to the right position
-            old_position = self.lft
-            offset = position - old_position
-            self.class.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
-            # close the gap this movement left behind.
-            self.class.adjust_gap!(old_position,-gap)
-          else
-            # make a gap where the new node can be inserted
-            self.class.adjust_gap!(position-1,2)
-            # set the position fields
-            self.lft, self.rgt = position, position + 1
+          transaction do |transaction|
+
+            ##
+            # if this node is already positioned we need to move it, and close the gap it leaves behind etc
+            # otherwise we only need to open a gap in the set, and smash that buggar in
+            #
+            if self.lft && self.rgt
+              # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
+              raise RecursiveNestingError if position > self.lft && position < self.rgt
+              # find out how wide this node is, as we need to make a gap large enough for it to fit in
+              gap = self.rgt - self.lft + 1
+              # make a gap at position, that is as wide as this node
+              self.class.adjust_gap!(nested_set,position-1,gap)
+              # offset this node (and all its descendants) to the right position
+              old_position = self.lft
+              offset = position - old_position
+              nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
+              # close the gap this movement left behind.
+              self.class.adjust_gap!(nested_set,old_position,-gap)
+            else
+              # make a gap where the new node can be inserted
+              self.class.adjust_gap!(nested_set,position-1,2)
+              # set the position fields
+              self.lft, self.rgt = position, position + 1
+            end
+
+            self.parent = self.ancestor
+
           end
-
-          self.parent = self.ancestor
-
         end
 
         ##
@@ -182,7 +256,79 @@ module DataMapper
         #
         # @return <Integer>
         def level
+          # TODO make a level-property that is cached and intelligently adjusted when saving objects
           ancestors.length
+        end
+
+        ##
+        # get all ancestors of this node, up to (and including) self
+        #
+        # @return <Collection>
+        def self_and_ancestors
+          nested_set.all(:lft.lte => lft, :rgt.gte => rgt)
+        end
+
+        ##
+        # get all ancestors of this node
+        #
+        # @return <Collection> collection of all parents, with root as first item
+        # @see #self_and_ancestors
+        def ancestors
+          nested_set.all(:lft.lt => lft, :rgt.gt => rgt)
+          #self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
+        end
+
+        ##
+        # get the parent of this node. Same as #parent, but finds it from lft/rgt instead of parent-key
+        #
+        # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
+        def ancestor
+          ancestors.reverse.first
+        end
+
+        ##
+        # get the root this node belongs to. this will atm always be the same as Resource.root, but has a
+        # meaning when scoped sets is implemented
+        #
+        # @return <Resource, NilClass>
+        def root
+          nested_set.first
+        end
+
+        ##
+        # check if this node is a root
+        #
+        def root?
+          !parent && !new_record?
+        end
+
+        ##
+        # get all descendants of this node, including self
+        #
+        # @return <Collection> flat collection, sorted according to nested_set positions
+        def self_and_descendants
+          # TODO supply filtering-option?
+          nested_set.all(:lft => lft..rgt)
+        end
+
+        ##
+        # get all descendants of this node
+        #
+        # @return <Collection> flat collection, sorted according to nested_set positions
+        # @see #self_and_descendants
+        def descendants
+          # TODO add argument for returning as a nested array.
+          # TODO supply filtering-option?
+          nested_set.all(:lft => (lft+1)..(rgt-1))
+        end
+
+        ##
+        # get all descendants of this node that does not have any children
+        #
+        # @return <Collection>
+        def leaves
+          # TODO supply filtering-option?
+          nested_set.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"])
         end
 
         ##
@@ -195,76 +341,11 @@ module DataMapper
         end
 
         ##
-        # all methods for finding related nodes following
-        ##
-
-        ##
-        # get all ancestors of this node, up to (and including) self
-        #
-        # @return <Collection>
-        def self_and_ancestors
-          self.class.all(:lft.lte => lft, :rgt.gte => rgt, :order => [:lft.asc])
-        end
-
-        ##
-        # get all ancestors of this node
-        #
-        # @return <Collection> collection of all parents, with root as first item
-        # @see #self_and_ancestors
-        def ancestors
-          self.class.all(:lft.lt => lft, :rgt.gt => rgt, :order => [:lft.asc])
-          #self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
-        end
-
-        ##
-        # get the parent of this node. Same as #parent, but finds it from lft/rgt instead of parent-key
-        #
-        # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
-        def ancestor
-          ancestors.last
-        end
-
-        ##
-        # get the root this node belongs to. this will atm always be the same as Resource.root, but has a
-        # meaning when scoped sets is implemented
-        #
-        # @return <Resource, NilClass>
-        def root
-          ancestors.first
-        end
-
-        ##
-        # get all descendants of this node, including self
-        #
-        # @return <Collection> flat collection, sorted according to nested_set positions
-        def self_and_descendants
-          self.class.all(:lft => lft..rgt, :order => [:lft.asc])
-        end
-
-        ##
-        # get all descendants of this node
-        #
-        # @return <Collection> flat collection, sorted according to nested_set positions
-        # @see #self_and_descendants
-        def descendants
-          self_and_descendants.reject{|r| r.key == self.key } # because identitymap is not used in console
-        end
-
-        ##
-        # get all descendants of this node that does not have any children
-        #
-        # @return <Collection>
-        def leaves
-          self.class.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"], :order => [:lft.asc])
-        end
-
-        ##
         # get all siblings of this node, and include self
         #
         # @return <Collection>
         def self_and_siblings
-          parent_key = self.class.relationships(:default)[:parent].child_key #.to_a.first
-          parent ? self.class.all(Hash[ *parent_key.zip(parent.key).flatten ]) : [self]
+          parent ? parent.children : [self]
         end
 
         ##
@@ -273,6 +354,8 @@ module DataMapper
         # @return <Collection>
         # @see #self_and_siblings
         def siblings
+          # TODO find a way to return this as a collection?
+          # TODO supply filtering-option?
           self_and_siblings.reject{|r| r.key == self.key } # because identitymap is not used in console
         end
 
@@ -282,7 +365,7 @@ module DataMapper
         # @return <Resource, NilClass> the resource to the left, or nil if self is leftmost
         # @see #self_and_siblings
         def left_sibling
-          self_and_siblings.find  {|v| v.rgt == lft-1}
+          self_and_siblings.find{|v| v.rgt == lft-1}
         end
 
         ##
@@ -291,7 +374,7 @@ module DataMapper
         # @return <Resource, NilClass> the resource to the right, or nil if self is rightmost
         # @see #self_and_siblings
         def right_sibling
-          self_and_siblings.find  {|v| v.lft == rgt+1}
+          self_and_siblings.find{|v| v.lft == rgt+1}
         end
 
       end

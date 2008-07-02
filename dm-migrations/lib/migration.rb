@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'dm-core', '=0.9.2'
+gem 'dm-core', '=0.9.3'
 require 'dm-core'
 require 'benchmark'
 require File.dirname(__FILE__) + '/sql'
@@ -144,7 +144,7 @@ module DataMapper
     end
 
     def create_migration_info_table_if_needed
-      save, @verbose = @verbose, true # false
+      save, @verbose = @verbose, false
       unless migration_info_table_exists?
         execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} VARCHAR(255) UNIQUE)")
       end
@@ -157,7 +157,7 @@ module DataMapper
     end
 
     def migration_info_table_exists?
-      adapter.storage_exists?('migration_info')
+      @adapter.storage_exists?('migration_info')
     end
 
     # Fetch the record for this migration out of the migration_info table

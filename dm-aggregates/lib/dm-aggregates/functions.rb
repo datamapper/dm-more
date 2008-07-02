@@ -21,7 +21,7 @@ module DataMapper
     # @public
     def count(*args)
       with_repository_and_property(*args) do |repository,property,query|
-        repository.count(property, query)
+        repository.count(property, query.merge(:limit => 1))
       end
     end
 
@@ -42,7 +42,7 @@ module DataMapper
     def min(*args)
       with_repository_and_property(*args) do |repository,property,query|
         check_property_is_number(property)
-        repository.min(property, query)
+        repository.min(property, query.merge(:limit => 1))
       end
     end
 
@@ -63,7 +63,7 @@ module DataMapper
     def max(*args)
       with_repository_and_property(*args) do |repository,property,query|
         check_property_is_number(property)
-        repository.max(property, query)
+        repository.max(property, query.merge(:limit => 1))
       end
     end
 
@@ -84,7 +84,7 @@ module DataMapper
     def avg(*args)
       with_repository_and_property(*args) do |repository,property,query|
         check_property_is_number(property)
-        repository.avg(property, query)
+        repository.avg(property, query.merge(:limit => 1))
       end
     end
 
@@ -105,7 +105,7 @@ module DataMapper
     def sum(*args)
       with_repository_and_property(*args) do |repository,property,query|
         check_property_is_number(property)
-        repository.sum(property, query)
+        repository.sum(property, query.merge(:limit => 1))
       end
     end
 

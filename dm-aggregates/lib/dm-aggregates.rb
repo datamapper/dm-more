@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'dm-core', '=0.9.2'
+gem 'dm-core', '=0.9.3'
 require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-aggregates'

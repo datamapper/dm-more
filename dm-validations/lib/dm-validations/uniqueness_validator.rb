@@ -6,44 +6,43 @@ module DataMapper
     # @author Guy van den Berg
     # @since  0.9
     class UniquenessValidator < GenericValidator
+      include Assertions
 
-      def initialize(field_name, options={})
+      def initialize(field_name, options = {})
+        assert_kind_of 'scope', options[:scope], Array, Symbol if options.has_key?(:scope)
         super
         @field_name, @options = field_name, options
       end
 
       def call(target)
-        scope = @options.has_key?(:scope) ? @options[:scope] : nil
-        scope = [scope] if !scope.nil? && scope.is_a?(Symbol)
-        raise ArgumentError, '+scope+ must be a symbol or array of symbols' if scope && !scope.is_a?(Array)
+        scope = Array(@options[:scope])
 
-        return true if @options[:allow_nil] && target.send(@field_name).nil?
+        return true if @options[:allow_nil] && target.send(field_name).nil?
 
-        opts = {}
-        opts[@field_name] = target.validation_property_value(@field_name)
-        unless scope.nil?
-          scope.map do |item|
-            if !target.class.properties(target.repository.name)[item].nil?
-              opts[item] = target.validation_property_value(item)
-            elsif target.class.relationships.has_key?(item)
-              target.validation_association_keys(item).map do |key|
-                opts[key] = target.validation_property_value(key)
-              end
+        repository_name = target.repository.name
+
+        opts = { field_name => target.validation_property_value(field_name) }
+
+        scope.each do |item|
+          if !target.model.properties(repository_name)[item].nil?
+            opts[item] = target.validation_property_value(item)
+          elsif target.model.relationships(repository_name).has_key?(item)
+            target.validation_association_keys(item).each do |key|
+              opts[key] = target.validation_property_value(key)
             end
           end
         end
 
-        resource = nil
-        repository(target.repository.name) do
-          resource = target.class.first(opts)
-        end
+        resource = repository(repository_name) { target.model.first(opts) }
 
         return true if resource.nil?
-        # is target and found resource identic? same instance... but not ==
-        return true if resource.class == target.class && resource.repository.name == target.repository.name && resource.key == target.key
 
-        error_message = @options[:message] || "%s is already taken".t(Extlib::Inflection.humanize(@field_name))
-        add_error(target, error_message , @field_name)
+        # is target and found resource identic? same instance... but not ==
+        return true if resource.repository.name == repository_name && resource.model == target.model && resource.key == target.key
+
+        error_message = @options[:message] || "%s is already taken".t(Extlib::Inflection.humanize(field_name))
+        add_error(target, error_message , field_name)
+
         return false
       end
     end # class UniquenessValidator
