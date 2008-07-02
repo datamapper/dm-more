@@ -24,21 +24,6 @@ module DataMapper
         belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
         has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
 
-        #before :create do
-        #  # scenarios:
-        #  # - user creates a new object and does not specify a parent
-        #  # - user creates a new object with a direct reference to a parent
-        #  # - user spawnes a new object, and then moves it to a position
-        #  if !self.parent
-        #    self.class.root ? self.move_without_saving(:into => self.class.root) : self.move_without_saving(:to => 1)
-        #    # if this is actually root, it will not move a bit (as lft is already 1)
-        #  elsif self.parent && !self.lft
-        #    # user has set a parent before saving (and without moving it anywhere). just move into that, and continue
-        #    # might be som problems here if the referenced parent is not saved.
-        #    self.move_without_saving(:into => self.parent)
-        #  end
-        #end
-
         before :save do
           if self.new_record?
             if !self.parent
@@ -61,22 +46,15 @@ module DataMapper
 
           end
         end
-        
+
         before :destroy do
-          self.detach
+          self.send(:detach)
         end
 
-        #before :update do
-        #  # scenarios:
-        #  # - user moves the object to a position
-        #  # - user has changed the parent
-        #  # - user has removed any reference to a parent
-        #  # - user sets the parent_id to something, and then use #move before saving
-        #  if (self.parent && !self.lft) || (self.parent != self.ancestor)
-        #    # if the parent is set, we try to move this into that parent, otherwise move into root.
-        #    self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
-        #  end
-        #end
+        after_class_method :inherited do |target|
+          target.instance_variable_set(:@nested_set_scope, @nested_set_scope.dup)
+          target.instance_variable_set(:@nested_set_parent, @nested_set_parent.dup)
+        end
 
       end
 
@@ -94,7 +72,7 @@ module DataMapper
         def root
           # TODO scoping
           # what should this return if there is a scope? always false, or node if there is only one?
-          roots.length > 1 ? false : roots.first
+          roots.length > 1 ? false : first(nested_set_parent.zip([]).to_hash)
         end
 
         ##
