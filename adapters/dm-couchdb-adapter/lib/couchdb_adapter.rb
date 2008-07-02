@@ -188,6 +188,7 @@ module DataMapper
 
         options = []
         options << "count=#{query.limit}" if query.limit
+        options << "descending=#{query.add_reversed?}" if query.add_reversed?
         options << "skip=#{query.offset}" if query.offset
         options = options.empty? ? nil : "?#{options.join('&')}"
 
@@ -233,12 +234,15 @@ module DataMapper
         options = query.view.dup
         proc_name = options.delete(:name)
         options[:count] = query.limit if query.limit
+        options[:descending] = query.add_reversed? if query.add_reversed?
         options[:skip] = query.offset if query.offset
+
         if options.empty?
           options = ''
         else
           options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
         end
+
         uri = "/#{self.escaped_db_name}/" +
               "_view/" +
               "#{query.model.storage_name(self.name)}/" +
