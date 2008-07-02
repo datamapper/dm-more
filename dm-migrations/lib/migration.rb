@@ -157,7 +157,7 @@ module DataMapper
     end
 
     def migration_info_table_exists?
-      @adapter.storage_exists?('migration_info')
+      adapter.storage_exists?('migration_info')
     end
 
     # Fetch the record for this migration out of the migration_info table
