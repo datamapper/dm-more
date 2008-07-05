@@ -35,7 +35,7 @@ module SQL
       def initialize(adapter, name, type, opts = {})
         @adapter = adapter
         @name = name.to_s
-        @opts = (opts ||= {})
+        @opts = opts
         @type = build_type(type)
       end
 
@@ -62,7 +62,7 @@ module SQL
     def initialize(adapter, table_name, opts = {}, &block)
       @adapter = adapter
       @table_name = table_name.to_s
-      @opts = (opts ||= {})
+      @opts = (opts)
 
       @statements = []
 
