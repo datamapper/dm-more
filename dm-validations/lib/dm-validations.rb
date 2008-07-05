@@ -167,7 +167,7 @@ module DataMapper
       def create_context_instance_methods(context)
         name = "valid_for_#{context.to_s}?"
         if !self.instance_methods.include?(name)
-          class_eval <<-EOS
+          class_eval <<-EOS, __FILE__, __LINE__
             def #{name}
               valid?('#{context.to_s}'.to_sym)
             end
@@ -176,7 +176,7 @@ module DataMapper
 
         all = "all_valid_for_#{context.to_s}?"
         if !self.instance_methods.include?(all)
-          class_eval <<-EOS
+          class_eval <<-EOS, __FILE__, __LINE__
             def #{all}
               all_valid?('#{context.to_s}'.to_sym)
             end

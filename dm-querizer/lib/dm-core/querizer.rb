@@ -2,8 +2,19 @@ module DataMapper
   class Querizer
     self.instance_methods.each { |m| send(:undef_method, m) unless m =~ /^(__|instance_eval)/ }
 
-    {:eql=>'==',:like=>'=~',:gte=>'>=',:lte=>'<=',:gt=>'>',:lt=>'<',:not=>'~'}.each do |dm,real|
-      class_eval "def #{real}(val); @conditions << condition(val,:#{dm}); end"
+    { :eql  => '==',
+      :like => '=~',
+      :gte  => '>=',
+      :lte  => '<=',
+      :gt   => '>',
+      :lt   => '<',
+      :not  => '~'
+    }.each do |dm, real|
+      class_eval <<-EOS, __FILE__, __LINE__
+        def #{real}(val)
+          @conditions << condition(val, :#{dm})
+        end
+      EOS
     end
 
     def condition(value,opr)
