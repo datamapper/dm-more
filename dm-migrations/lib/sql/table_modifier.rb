@@ -20,7 +20,8 @@ module SQL
     def drop_column(name)
       # raise NotImplemented for SQLite3. Can't ALTER TABLE, need to copy table.
       # We'd have to inspect it, and we can't, since we aren't executing any queries yet.
-      # Just write the sql yourself.
+      # TODO instead of building the SQL queries when executing the block, create AddColumn,
+      # AlterColumn and DropColumn objects that get #to_sql'd
       if name.is_a?(Array)
         name.each{ |n| drop_column(n) }
       else
