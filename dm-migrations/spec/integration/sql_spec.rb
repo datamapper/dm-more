@@ -8,6 +8,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
           column :name, String
+          column :long_string, String, :size => 200
         end
       end
 
@@ -31,12 +32,18 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
       it "should have an array of columns" do
         @creator.instance_eval("@columns").should be_kind_of(Array)
-        @creator.instance_eval("@columns").should have(1).item
+        @creator.instance_eval("@columns").should have(2).items
         @creator.instance_eval("@columns").first.should be_kind_of(DataMapper::Migration::TableCreator::Column)
       end
 
       it "should quote the table name for the adapter" do
         @creator.quoted_table_name.should == (adapter == :mysql ? '`people`' : '"people"')
+      end
+      
+      it "should allow for custom options" do
+        columns = @creator.instance_eval("@columns")
+        col = columns.detect{|c| c.name == "long_string"}
+        col.instance_eval("@type").should include("200") 
       end
 
     end
