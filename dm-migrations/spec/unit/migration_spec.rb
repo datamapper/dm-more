@@ -197,17 +197,17 @@ describe 'Migration' do
 
         it 'should create a new TableCreator object' do
           SQL::TableCreator.should_receive(:new).with(@adapter, :users, {}).and_return(@tc)
-          @m.create_table(:users, {}) { }
+          @m.create_table(:users) { }
         end
         
         it 'should convert the TableCreator object to an sql statement' do
           @tc.should_receive(:to_sql).and_return('CREATE TABLE')
-          @m.create_table(:users, {}) { }
+          @m.create_table(:users) { }
         end
 
         it 'should execute the create table sql' do
           @m.should_receive(:execute).with('CREATE TABLE')
-          @m.create_table(:users, {}) { }
+          @m.create_table(:users) { }
         end
 
       end
@@ -227,6 +227,216 @@ describe 'Migration' do
       end
 
       describe '#modify_table' do
+        before do
+          @tm = mock('TableModifier', :statements => [])
+          SQL::TableModifier.stub!(:new).and_return(@tm)
+        end
+
+        it 'should create a new TableModifier object' do
+          SQL::TableModifier.should_receive(:new).with(@adapter, :users, {}).and_return(@tm)
+          @m.modify_table(:users){ }
+        end
+
+        it 'should get the statements from the TableModifier object' do
+          @tm.should_receive(:statements).and_return([])
+          @m.modify_table(:users){ }
+        end
+
+        it 'should iterate over the statements and execute each one' do
+          @tm.should_receive(:statements).and_return(['SELECT 1', 'SELECT 2'])
+          @m.should_receive(:execute).with('SELECT 1')
+          @m.should_receive(:execute).with('SELECT 2')
+          @m.modify_table(:users){ }
+        end
+
+      end
+
+      describe 'sorting' do
+        it 'should order things by position' do
+          m1 = DataMapper::Migration.new(1, :do_nothing){}
+          m2 = DataMapper::Migration.new(2, :do_nothing_else){}
+
+          (m1 <=> m2).should == -1
+        end
+
+        it 'should order things by name when they have the same position' do
+          m1 = DataMapper::Migration.new(1, :do_nothing_a){}
+          m2 = DataMapper::Migration.new(1, :do_nothing_b){}
+
+          (m1 <=> m2).should == -1
+        end
+
+      end
+
+      describe 'formatting output' do
+        describe '#say' do
+          it 'should output the message' do
+            @m.should_receive(:write).with(/Paul/)
+            @m.say("Paul")
+          end
+
+          it 'should indent the message with 4 spaces by default' do
+            @m.should_receive(:write).with(/^\s{4}/)
+            @m.say("Paul")
+          end
+
+          it 'should indext the message with a given number of spaces' do
+            @m.should_receive(:write).with(/^\s{3}/)
+            @m.say("Paul", 3)
+          end
+        end
+
+        describe '#say_with_time' do
+          before do
+            @m.stub!(:say)
+          end
+
+          it 'should say the message with an indent of 2' do
+            @m.should_receive(:say).with("Paul", 2)
+            @m.say_with_time("Paul"){}
+          end
+
+          it 'should output the time it took' do
+            @m.should_receive(:say).with(/\d+/, 2)
+            @m.say_with_time("Paul"){}
+          end
+        end
+
+        describe '#write' do
+          before do
+            # need a new migration object, because the main one had #write stubbed to silence output
+            @m = DataMapper::Migration.new(1, :do_nothing) {}
+          end
+
+          it 'should puts the message' do
+            @m.should_receive(:puts).with("Paul")
+            @m.write("Paul")
+          end
+
+          it 'should not puts the message if @verbose is false' do
+            @m.instance_variable_set(:@verbose, false)
+            @m.should_not_receive(:puts)
+            @m.write("Paul")
+          end
+
+        end
+
+      end
+
+      describe 'working with the migration_info table' do
+        before do
+          @adapter.stub!(:storage_exists?).and_return(true)
+          @adapter.stub!(:quote_table_name).and_return(%{'users'})
+          @adapter.stub!(:quote_column_name).and_return(%{'migration_name'})
+        end
+
+        describe '#update_migration_info' do
+          it 'should add a record of the migration' do
+            @m.should_receive(:execute).with(
+              %Q{INSERT INTO 'users' ('migration_name') VALUES ('do_nothing')}
+            )
+            @m.update_migration_info(:up)
+          end
+
+          it 'should remove the record of the migration' do
+            @m.should_receive(:execute).with(
+              %Q{DELETE FROM 'users' WHERE 'migration_name' = 'do_nothing'}
+            )
+            @m.update_migration_info(:down)
+          end
+
+          it 'should try to create the migration_info table' do
+            @m.should_receive(:create_migration_info_table_if_needed)
+            @m.update_migration_info(:up)
+          end
+        end
+
+        describe '#create_migration_info_table_if_needed' do
+          it 'should create the migration info table' do
+            @m.should_receive(:migration_info_table_exists?).and_return(false)
+            @m.should_receive(:execute).with(
+              %Q{CREATE TABLE 'users' ('migration_name' VARCHAR(255) UNIQUE)}
+            )
+            @m.create_migration_info_table_if_needed
+          end
+
+          it 'should not try to create the migration info table if it already exists' do
+            @m.should_receive(:migration_info_table_exists?).and_return(true)
+            @m.should_not_receive(:execute)
+            @m.create_migration_info_table_if_needed
+          end
+        end
+
+        it 'should quote the name of the migration for use in sql' do
+          @m.quoted_name.should == %{'do_nothing'}
+        end
+
+        it 'should query the adapter to see if the migration_info table exists' do
+          @adapter.should_receive(:storage_exists?).with('migration_info').and_return(true)
+          @m.migration_info_table_exists?.should == true
+        end
+
+        describe '#migration_record' do
+          it 'should query for the migration' do
+            @adapter.should_receive(:query).with(
+              %Q{SELECT 'migration_name' FROM 'users' WHERE 'migration_name' = 'do_nothing'}
+            )
+            @m.migration_record
+          end
+
+          it 'should not try to query if the table does not exist' do
+            @m.stub!(:migration_info_table_exists?).and_return(false)
+            @adapter.should_not_receive(:query)
+            @m.migration_record
+          end
+
+        end
+
+        describe '#needs_up?' do
+          it 'should be true if there is no record' do
+            @m.should_receive(:migration_record).and_return([])
+            @m.needs_up?.should == true
+          end
+
+          it 'should be false if the record exists' do
+            @m.should_receive(:migration_record).and_return([:not_empty])
+            @m.needs_up?.should == false
+          end
+
+          it 'should be true if there is no migration_info table' do
+            @m.should_receive(:migration_info_table_exists?).and_return(false)
+            @m.needs_up?.should == true
+          end
+
+        end
+
+        describe '#needs_down?' do
+          it 'should be false if there is no record' do
+            @m.should_receive(:migration_record).and_return([])
+            @m.needs_down?.should == false
+          end
+
+          it 'should be true if the record exists' do
+            @m.should_receive(:migration_record).and_return([:not_empty])
+            @m.needs_down?.should == true
+          end
+
+          it 'should be false if there is no migration_info table' do
+            @m.should_receive(:migration_info_table_exists?).and_return(false)
+            @m.needs_down?.should == false
+          end
+
+        end
+
+        it 'should have the adapter quote the migration_info table' do
+          @adapter.should_receive(:quote_table_name).with('migration_info').and_return("'migration_info'")
+          @m.migration_info_table.should == "'migration_info'"
+        end
+
+        it 'should have a quoted migration_name_column' do
+          @adapter.should_receive(:quote_column_name).with('migration_name').and_return("'migration_name'")
+          @m.migration_name_column.should == "'migration_name'"
+        end
 
       end
 

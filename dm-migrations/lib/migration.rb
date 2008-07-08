@@ -127,8 +127,6 @@ module DataMapper
       puts text if @verbose
     end
 
-    protected
-
     # Inserts or removes a row into the `migration_info` table, so we can mark this migration as run, or un-done
     def update_migration_info(direction)
       save, @verbose = @verbose, false
@@ -168,13 +166,13 @@ module DataMapper
 
     # True if the migration needs to be run
     def needs_up?
-      create_migration_info_table_if_needed
+      return true unless migration_info_table_exists?
       migration_record.empty?
     end
 
     # True if the migration has already been run
     def needs_down?
-      create_migration_info_table_if_needed
+      return false unless migration_info_table_exists?
       ! migration_record.empty?
     end
 
