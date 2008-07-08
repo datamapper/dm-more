@@ -51,30 +51,30 @@ module DataMapper
 
     # perform the migration by running the code in the #up block
     def perform_up
-      res = nil
+      result = nil
       if needs_up?
         # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Up Migration ##{position}: #{name}", 0 do
-          res = @up_action.call
+          result = @up_action.call
         end
         update_migration_info(:up)
         # end
       end
-      res
+      result
     end
 
     # un-do the migration by running the code in the #down block
     def perform_down
-      res = nil
+      result = nil
       if needs_down?
         # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Down Migration ##{position}: #{name}", 0 do
-          res = @down_action.call
+          result = @down_action.call
         end
         update_migration_info(:down)
         # end
       end
-      res
+      result
     end
 
     # execute raw SQL
