@@ -14,6 +14,10 @@ module DataMapper
         return nil if value.nil?
         value.to_s
       end
+
+      def self.typecast(value, property)
+        value.kind_of?(Addressable::URI) ? value : load(value.to_s, property)
+      end
     end # class URI
   end # module Types
 end # module DataMapper
