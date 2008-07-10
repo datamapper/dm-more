@@ -192,15 +192,15 @@ module DataMapper
 )
         else
           conditions = query.conditions.map do |operator, property, value|
-            value = value.to_json.gsub("\"", "'")
+            json_value = value.to_json.gsub("\"", "'")
             condition = "doc.#{property.field}"
             condition << case operator
-            when :eql   then " == #{value}"
-            when :not   then " != #{value}"
-            when :gt    then " > #{value}"
-            when :gte   then " >= #{value}"
-            when :lt    then " < #{value}"
-            when :lte   then " <= #{value}"
+            when :eql   then " == #{json_value}"
+            when :not   then " != #{json_value}"
+            when :gt    then " > #{json_value}"
+            when :gte   then " >= #{json_value}"
+            when :lt    then " < #{json_value}"
+            when :lte   then " <= #{json_value}"
             when :like  then like_operator(value)
             end
           end
