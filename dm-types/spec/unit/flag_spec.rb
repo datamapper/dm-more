@@ -64,23 +64,23 @@ describe DataMapper::Types::Flag do
     end
 
     it "should return the value of the key match from the flag map" do
-      @flag.load(1, :property).should == [:uno]
-      @flag.load(2, :property).should == [:dos]
-      @flag.load(4, :property).should == [:tres]
-      @flag.load(8, :property).should == [:cuatro]
+      @flag.load(1,  :property).should == [:uno]
+      @flag.load(2,  :property).should == [:dos]
+      @flag.load(4,  :property).should == [:tres]
+      @flag.load(8,  :property).should == [:cuatro]
       @flag.load(16, :property).should == [:cinco]
     end
 
     it "should return an array of all flags matches" do
-      @flag.load(3, :property).should include(:uno, :dos)
+      @flag.load(3,  :property).should include(:uno, :dos)
       @flag.load(10, :property).should include(:dos, :cuatro)
       @flag.load(31, :property).should include(:uno, :dos, :tres, :cuatro, :cinco)
     end
 
     it "should return an empty array if there is no key" do
-      @flag.load(-1, :property).should == []
+      @flag.load(-1,  :property).should == []
       @flag.load(nil, :property).should == []
-      @flag.load(32, :property).should == []
+      @flag.load(32,  :property).should == []
     end
   end
 end

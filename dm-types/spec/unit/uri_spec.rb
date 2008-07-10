@@ -35,4 +35,15 @@ describe DataMapper::Types::URI do
       DataMapper::Types::URI.load("", :property).should == Addressable::URI.parse("")
     end
   end
+
+  describe '.typecast' do
+    it 'should do nothing if an Addressable::URI is provided' do
+      DataMapper::Types::URI.typecast(@uri, :property).should == @uri
+    end
+
+    it 'should defer to .load if a string is provided' do
+      DataMapper::Types::URI.should_receive(:load).with(@uri_str, :property)
+      DataMapper::Types::URI.typecast(@uri_str, :property)
+    end
+  end
 end

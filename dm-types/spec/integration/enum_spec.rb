@@ -17,8 +17,13 @@ describe DataMapper::Types::Enum do
       Bug.create!(:status => :crit)
       Bug.create!(:status => :warn)
     end
+
     bugs = Bug.all
     bugs[0].status.should == :crit
     bugs[1].status.should == :warn
+  end
+
+  it 'should immediately typecast supplied values' do
+    Bug.new(:status => :crit).status.should == :crit
   end
 end

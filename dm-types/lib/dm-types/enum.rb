@@ -35,6 +35,16 @@ module DataMapper
       def self.dump(value, property)
         self.flag_map.invert[value]
       end
+
+      def self.typecast(value, property)
+        # Attempt to typecast using the class of the first item in the map.
+        case self.flag_map[1]
+          when Symbol then value.to_sym
+          when String then value.to_s
+          when Fixnum then value.to_i
+          else               value
+        end
+      end
     end # class Enum
   end # module Types
 end # module DataMapper

@@ -21,6 +21,10 @@ module DataMapper
         return nil if value.nil?
         value.to_s
       end
+
+      def self.typecast(value, property)
+        value.kind_of?(IPAddr) ? value : load(value, property)
+      end
     end # class IPAddress
   end # module Types
 end # module DataMapper
