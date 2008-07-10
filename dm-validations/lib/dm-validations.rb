@@ -97,9 +97,7 @@ module DataMapper
 
 
     def validation_property_value(name)
-      return self.instance_variable_get("@#{name}") if self.instance_variables.include?(name)
-      return self.send(name) if self.respond_to?(name)
-      nil
+      self.respond_to?(name, true) ? self.send(name) : nil
     end
 
     # Get the corresponding Resource property, if it exists.
