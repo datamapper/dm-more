@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'spec'
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-validations'
 

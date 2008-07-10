@@ -9,9 +9,31 @@ describe DataMapper::Validate::ConfirmationValidator do
       property :id,                Integer, :serial => true
       property :name,              String
       property :name_confirmation, String
+      property :size,              Integer
 
       validates_is_confirmed :name
     end
+  end
+  
+  it "should only validate if the attribute is dirty" do
+    class Transformer
+      include DataMapper::Resource
+
+      property :id,                Integer, :serial => true
+      property :name,              String
+      property :assoc,             String
+
+      validates_is_confirmed :name
+      
+      attr_accessor :name_confirmation
+    end
+    Transformer.auto_migrate!
+    # attribute_dirty?
+    tf = Transformer.new(:name => "Optimus Prime", :name_confirmation => "Optimus Prime", :assoc => "Autobot")
+    tf.should be_valid
+    tf.save.should == true
+    tf = Transformer.first
+    tf.update_attributes(:assoc => "Autobot!").should == true
   end
 
   it "should validate the confirmation of a value on an instance of a resource" do
@@ -61,6 +83,6 @@ describe DataMapper::Validate::ConfirmationValidator do
     canoe.name = 'Float'
     canoe.name_check = 'Float'
     canoe.valid?.should == true
-
   end
+  
 end
