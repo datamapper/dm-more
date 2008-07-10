@@ -174,37 +174,41 @@ module DataMapper
         end
 
         request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
-        request["Content-Type"] = "text/javascript"
+        request["Content-Type"] = "application/json"
 
         if query.conditions.empty?
           request.body =
-            "function(doc) {\n" +
-            "  if (doc.type == '#{query.model.name.downcase}') {\n" +
-            "    map(#{key}, doc);\n" +
-            "  }\n" +
-            "}\n"
+%Q({"map":
+  "function(doc) {
+  if (doc.type == '#{query.model.name.downcase}') {
+    emit(#{key}, doc);
+    }
+  }"
+}
+)
         else
           conditions = query.conditions.map do |operator, property, value|
+            value = value.to_json.gsub("\"", "'")
             condition = "doc.#{property.field}"
             condition << case operator
-            when :eql   then " == #{value.to_json}"
-            when :not   then " != #{value.to_json}"
-            when :gt    then " > #{value.to_json}"
-            when :gte   then " >= #{value.to_json}"
-            when :lt    then " < #{value.to_json}"
-            when :lte   then " <= #{value.to_json}"
+            when :eql   then " == #{value}"
+            when :not   then " != #{value}"
+            when :gt    then " > #{value}"
+            when :gte   then " >= #{value}"
+            when :lt    then " < #{value}"
+            when :lte   then " <= #{value}"
             when :like  then like_operator(value)
             end
           end
-          body = <<-JS
-            function(doc) {
-              if (doc.type == '#{query.model.name.downcase}') {
-                if (#{conditions.join(" && ")}) {
-                  map(#{key}, doc);
-                }
-              }
-            }
-          JS
+          request.body =
+%Q({"map":
+  "function(doc) {
+    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) { 
+      emit(#{key}, doc);
+    }
+  }"
+}
+)
           space = body.split("\n")[0].to_s[/^(\s+)/, 0]
           request.body = body.gsub(/^#{space}/, '')
         end
@@ -272,7 +276,13 @@ module DataMapper
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
-          view.body = { :views => model.views }.to_json
+          views = %Q(#{views.map {|key, value| %Q("#{key}": #{value})}.join(",\n  ")})
+          view.body =
+%Q({
+  "views": {
+    #{views}
+  }
+})
 
           request do |http|
             http.request(view)
