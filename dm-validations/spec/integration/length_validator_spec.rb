@@ -25,6 +25,8 @@ describe DataMapper::Validate::LengthValidator do
       validates_length :snickersnack, :within => 3..40, :message => "worble warble"
     end
     wock = Jabberwock.new
+    wock.valid?.should == false
+    wock.errors.full_messages.first.should == 'worble warble'
     wock.snickersnack = "hello"
     wock.id = 1
     wock.valid?.should == true
