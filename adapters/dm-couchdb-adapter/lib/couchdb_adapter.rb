@@ -126,7 +126,7 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        if doc["rows"]
+        unless doc["rows"].empty?
           data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
