@@ -21,8 +21,8 @@ class User
   property :created_on, Date
 
   # creates methods for accessing stored/indexed views in the CouchDB database
-  view :by_name, "function(doc) { if (doc.type == 'user') { map(doc.name, doc); } }"
-  view :by_age, "function(doc) { if (doc.type == 'user') { map(doc.age, doc); } }"
+  view :by_name, %q({ "map" : "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" })
+  view :by_age, %q({ "map" : "function(doc) { if (doc.type == 'user') { emit(doc.age, doc); } }" })
 
   before :create do
     self.created_at = DateTime.now

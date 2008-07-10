@@ -107,14 +107,18 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        Collection.new(query) do |collection|
-          doc['rows'].each do |doc|
-            collection.load(
-              query.fields.map do |property|
-                property.typecast(doc["value"][property.field.to_s])
-              end
-            )
+        if doc['rows']
+          Collection.new(query) do |collection|
+            doc['rows'].each do |doc|
+              collection.load(
+                query.fields.map do |property|
+                  property.typecast(doc["value"][property.field.to_s])
+                end
+              )
+            end
           end
+        else
+          []
         end
       end
 
@@ -122,7 +126,7 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        unless doc["rows"].empty?
+        if doc["rows"]
           data = doc['rows'].first
           query.model.load(
             query.fields.map do |property|
@@ -209,8 +213,6 @@ module DataMapper
   }"
 }
 )
-          space = body.split("\n")[0].to_s[/^(\s+)/, 0]
-          request.body = body.gsub(/^#{space}/, '')
         end
         request
       end
