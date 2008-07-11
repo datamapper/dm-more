@@ -23,6 +23,7 @@ spec = Gem::Specification.new do |s|
   # merb_datamapper now depends on edge merb, see 781d75a7 and #273
   s.add_dependency('merb-core', ">=#{s.version}")
   s.add_dependency('dm-core', '=0.9.3')
+  s.add_dependency('dm-migrations', '=0.9.3')
 end
 
 task :default => [ :spec ]

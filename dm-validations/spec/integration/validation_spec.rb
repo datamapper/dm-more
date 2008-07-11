@@ -336,4 +336,17 @@ describe DataMapper::Validate do
 
     invoice.all_valid?.should == true
   end
+
+  it "should retrieve private instance variables for validation" do
+    class Raft
+      include DataMapper::Resource
+      property :length, Integer, :accessor => :private
+
+      def initialize(length)
+        @length = length
+      end
+    end
+
+    Raft.new(10).validation_property_value("length").should == 10
+  end
 end

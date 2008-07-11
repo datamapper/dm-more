@@ -53,7 +53,7 @@ describe DataMapper::Validate::AcceptanceValidator do
     before(:all) do
       SkimBat.class_eval do
         validators.clear!
-        validates_is_accepted :sailyness, :accept => "true"
+        validates_is_accepted :sailyness, :accept => true
       end
       @s = SkimBat.new
     end

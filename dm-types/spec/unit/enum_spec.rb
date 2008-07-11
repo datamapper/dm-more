@@ -63,4 +63,23 @@ describe DataMapper::Types::Enum do
       @enum.load(-1, :property).should be_nil
     end
   end
+
+  describe ".typecast" do
+    it 'should attempt to use the Enum type' do
+      # Symbol.
+      @sym_enum = DataMapper::Types::Enum[:uno]
+      @sym_enum.typecast(:uno,  :property).should == :uno
+      @sym_enum.typecast("uno", :property).should == :uno
+
+      # String
+      @str_enum = DataMapper::Types::Enum["uno"]
+      @str_enum.typecast(:uno,  :property).should == "uno"
+      @str_enum.typecast("uno", :property).should == "uno"
+
+      # Integer
+      @int_enum = DataMapper::Types::Enum[1, 2, 3]
+      @int_enum.typecast(1,   :property).should == 1
+      @int_enum.typecast(1.1, :property).should == 1
+    end
+  end
 end

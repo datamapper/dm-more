@@ -17,12 +17,21 @@ module DataMapper
 
     def create_getter
       @model.class_eval <<-EOS, __FILE__, __LINE__
-        def self.#{@name}(options = {})
-          key = options.delete(:key)
+        def self.#{@name}(*args)
+          if args.size == 1 && args.last.is_a?(String)
+            options = {}
+            key = args.shift
+          elsif args.empty?
+            options = {}
+            key = nil
+          else
+            options = args.pop
+            key = options.delete(:key)
+          end
           query = Query.new(repository, self, options)
           query.key = key
           query.view = '#{@name}'
-          if Hash === options && options.has_key?(:repository)
+          if options.is_a?(Hash) && options.has_key?(:repository)
             repository(options.delete(:repository)).read_many(query)
           else
             repository.read_many(query)

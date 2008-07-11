@@ -107,14 +107,18 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        Collection.new(query) do |collection|
-          doc['rows'].each do |doc|
-            collection.load(
-              query.fields.map do |property|
-                property.typecast(doc["value"][property.field.to_s])
-              end
-            )
+        if doc['rows']
+          Collection.new(query) do |collection|
+            doc['rows'].each do |doc|
+              collection.load(
+                query.fields.map do |property|
+                  property.typecast(doc["value"][property.field.to_s])
+                end
+              )
+            end
           end
+        else
+          []
         end
       end
 
@@ -174,39 +178,41 @@ module DataMapper
         end
 
         request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
-        request["Content-Type"] = "text/javascript"
+        request["Content-Type"] = "application/json"
 
         if query.conditions.empty?
           request.body =
-            "function(doc) {\n" +
-            "  if (doc.type == '#{query.model.name.downcase}') {\n" +
-            "    map(#{key}, doc);\n" +
-            "  }\n" +
-            "}\n"
+%Q({"map":
+  "function(doc) {
+  if (doc.type == '#{query.model.name.downcase}') {
+    emit(#{key}, doc);
+    }
+  }"
+}
+)
         else
           conditions = query.conditions.map do |operator, property, value|
+            json_value = value.to_json.gsub("\"", "'")
             condition = "doc.#{property.field}"
             condition << case operator
-            when :eql   then " == #{value.to_json}"
-            when :not   then " != #{value.to_json}"
-            when :gt    then " > #{value.to_json}"
-            when :gte   then " >= #{value.to_json}"
-            when :lt    then " < #{value.to_json}"
-            when :lte   then " <= #{value.to_json}"
+            when :eql   then " == #{json_value}"
+            when :not   then " != #{json_value}"
+            when :gt    then " > #{json_value}"
+            when :gte   then " >= #{json_value}"
+            when :lt    then " < #{json_value}"
+            when :lte   then " <= #{json_value}"
             when :like  then like_operator(value)
             end
           end
-          body = <<-JS
-            function(doc) {
-              if (doc.type == '#{query.model.name.downcase}') {
-                if (#{conditions.join(" && ")}) {
-                  map(#{key}, doc);
-                }
-              }
-            }
-          JS
-          space = body.split("\n")[0].to_s[/^(\s+)/, 0]
-          request.body = body.gsub(/^#{space}/, '')
+          request.body =
+%Q({"map":
+  "function(doc) {
+    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) { 
+      emit(#{key}, doc);
+    }
+  }"
+}
+)
         end
         request
       end
@@ -272,7 +278,13 @@ module DataMapper
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
-          view.body = { :views => model.views }.to_json
+          views = %Q(#{views.map {|key, value| %Q("#{key}": #{value})}.join(",\n  ")})
+          view.body =
+%Q({
+  "views": {
+    #{views}
+  }
+})
 
           request do |http|
             http.request(view)

@@ -26,4 +26,8 @@ describe DataMapper::Types::Flag do
       Shirt.get(2).sizes.should == [:xs, :small]
     end
   end
+
+  it 'should immediately typecast supplied values' do
+    Shirt.new(:sizes => [:large, :xl]).sizes.should == [:large, :xl]
+  end
 end

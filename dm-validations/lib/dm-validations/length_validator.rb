@@ -55,7 +55,7 @@ module DataMapper
           end
         end
 
-        error_message ||= @options[:message]
+        error_message = @options[:message] || error_message
 
         add_error(target, error_message, @field_name) unless valid
 
