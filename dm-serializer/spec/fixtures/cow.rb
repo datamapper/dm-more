@@ -6,15 +6,7 @@ class Cow
   property :name,      String
   property :breed,     String
   
-  def self.serialize_properties(*args)
-    [:extra, :another]
-  end
-  
-  def extra
-    "Extra"
-  end
-  
-  def another
-    42
+  def serialize_properties
+    {:extra => "Extra", :another => 42}
   end
 end

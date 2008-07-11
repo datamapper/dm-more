@@ -27,18 +27,19 @@ module DataMapper
       excluded_properties = Array(options[:exclude])
       exclude_read_only   = options[:without_read_only_attributes] || false
 
-      propset = self.class.properties(repository.name).dup
-      if self.class.respond_to?(:serialize_properties)
-        self.class.serialize_properties(repository.name).each {|p| propset << Property.new(self.class, p, String) }
-      end
-
-      propset = propset.reject do |p|
+      propset = self.class.properties.reject do |p|
         next if only_properties.include? p.name
         excluded_properties.include?(p.name) || !(only_properties.empty? || only_properties.include?(p.name))
       end
 
       fields += propset.map do |property|
         "#{property.name.to_json}: #{send(property.getter).to_json}"
+      end
+      
+      if self.respond_to?(:serialize_properties)
+        self.serialize_properties.each do |k,v|
+          fields << "#{k.to_json}: #{v.to_json}"
+        end
       end
 
       if self.class.respond_to?(:read_only_attributes) && exclude_read_only
