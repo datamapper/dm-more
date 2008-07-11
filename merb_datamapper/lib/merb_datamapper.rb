@@ -4,7 +4,7 @@ if defined?(Merb::Plugins)
   gem 'dm-core', '=0.9.3'
   require 'dm-core'
 
-  if File.file?(Merb.root / "config" / "database.yml")
+  if File.file?(Merb.dir_for(:config) / "database.yml")
     require File.join(File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection")
 
     Merb::Orms::DataMapper.connect
