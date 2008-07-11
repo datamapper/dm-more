@@ -278,13 +278,7 @@ module DataMapper
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
-          views = %Q(#{views.map {|key, value| %Q("#{key}": #{value})}.join(",\n  ")})
-          view.body =
-%Q({
-  "views": {
-    #{views}
-  }
-})
+          view.body = { :views => views }.to_json
 
           request do |http|
             http.request(view)
