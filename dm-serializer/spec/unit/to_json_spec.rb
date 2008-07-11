@@ -51,6 +51,13 @@ describe DataMapper::Serialize, '#to_json' do
     berta["breed"].should     == "Guernsey"
   end
 
+  it "handles extra properties" do
+    deserialized_hash = JSON.parse(Cow.new(:id => 1, :name => "Harry", :breed => "Angus").to_json)
+
+    deserialized_hash["extra"].should == "Extra"
+    deserialized_hash["another"].should == 42
+  end
+
   it "handles empty collections just fine" do
     deserialized_collection = JSON.parse(@empty_collection.to_json)
     deserialized_collection.should be_empty
