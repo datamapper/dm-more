@@ -1,9 +1,0 @@
-Story: remote app wants to delete a Resource
-  As a remote app
-  I want to delete a Resource
-  So that the information will no longer be available
-
-  Scenario: remote app attempts to delete a Resource by ID
-    Given a local representation of a remote Resource
-    When I destroy the Resource
-    Then the Resource will no longer be available
