@@ -1,0 +1,16 @@
+<h1>Editing shelf</h1>
+
+<% form_for(@shelf) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @shelf %> |
+<%= link_to 'Back', shelves_path %>
