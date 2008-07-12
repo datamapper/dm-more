@@ -77,7 +77,6 @@ SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 desc "Install it all"
 task :install => [:install_gems, :package] do
   sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::MORE_VERSION}.gem  --no-update-sources}
-#  sh %{#{SUDO} gem install --local pkg/dm-#{DataMapper::MORE_VERSION}.gem --no-update-sources}
 end
 
 desc "Uninstall it all"
@@ -122,7 +121,6 @@ end
 desc "Bundle up all the dm-more gems"
 task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
-#  cp "pkg/dm-#{DataMapper::MORE_VERSION}.gem", "bundle"
   cp "pkg/dm-more-#{DataMapper::MORE_VERSION}.gem", "bundle"
   gem_paths.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
