@@ -27,7 +27,7 @@ module DataMapper
       excluded_properties = Array(options[:exclude])
       exclude_read_only   = options[:without_read_only_attributes] || false
 
-      propset = self.class.properties.reject do |p|
+      propset = self.class.properties(repository.name).reject do |p|
         next if only_properties.include? p.name
         excluded_properties.include?(p.name) || !(only_properties.empty? || only_properties.include?(p.name))
       end

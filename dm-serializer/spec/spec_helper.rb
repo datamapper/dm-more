@@ -17,6 +17,7 @@ def load_driver(name, default_uri)
     require lib
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
+    DataMapper::Repository.adapters[:alternate] = DataMapper::Repository.adapters[name]
     true
   rescue Gem::LoadError => e
     warn "Could not load #{lib}: #{e}"
