@@ -11,14 +11,14 @@ describe 'Merb datamapper' do
 
     config = {
       'development' => {
-        'adapter' => 'myadapter',
-        'more_stuff' => 'more_stuff',
- 'repositories' => {
-   'repo1' => {
-     'adapter' => 'mysql'
-          }
-        }
-      }
+        'adapter'      => 'myadapter',
+        'more_stuff'   => 'more_stuff',
+        'repositories' => {
+          'repo1' => {
+            'adapter' => 'mysql',
+          },
+        },
+      },
     }
 
     Merb::Orms::DataMapper.should_receive(:full_config).once.and_return(config)
