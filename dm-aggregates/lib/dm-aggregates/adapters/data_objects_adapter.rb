@@ -1,51 +1,66 @@
 module DataMapper
   module Adapters
     class DataObjectsAdapter
-      def count(property, query)
-        query(aggregate_read_statement(:count, property, query), *query.bind_values).first
+      def aggregate(query)
+        with_reader(read_statement(query), query.bind_values) do |reader|
+          results = []
+
+          while(reader.next!) do
+            row = query.fields.zip(reader.values).map do |field,value|
+              if field.respond_to?(:operator)
+                send(field.operator, field.target, value)
+              else
+                field.typecast(value)
+              end
+            end
+
+            results << (query.fields.size > 1 ? row : row[0])
+          end
+
+          results
+        end
       end
 
-      def min(property, query)
-        min = query(aggregate_read_statement(:min, property, query), *query.bind_values).first
-        property.typecast(min)
+      private
+
+      def count(property, value)
+        value.to_i
       end
 
-      def max(property, query)
-        max = query(aggregate_read_statement(:max, property, query), *query.bind_values).first
-        property.typecast(max)
+      def min(property, value)
+        property.typecast(value)
       end
 
-      def avg(property, query)
-        avg = query(aggregate_read_statement(:avg, property, query), *query.bind_values).first
-        property.type == Integer ? avg.to_f : property.typecast(avg)
+      def max(property, value)
+        property.typecast(value)
       end
 
-      def sum(property, query)
-        sum = query(aggregate_read_statement(:sum, property, query), *query.bind_values).first
-        property.typecast(sum)
+      def avg(property, value)
+        property.type == Integer ? value.to_f : property.typecast(value)
+      end
+
+      def sum(property, value)
+        property.typecast(value)
       end
 
       module SQL
         private
 
-        def aggregate_read_statement(aggregate_function, property, query)
-          statement = "SELECT #{aggregate_field_statement(query.repository, aggregate_function, property, query.links.any?)}"
-          statement << ", #{fields_statement(query)}"                unless query.fields.empty?
-          statement << " FROM #{quote_table_name(query.model.storage_name(query.repository.name))}"
-          statement << links_statement(query)                        if query.links.any?
-          statement << " WHERE #{conditions_statement(query)}"       if query.conditions.any?
-          statement << " GROUP BY #{fields_statement(query)}"        if query.unique?
-          statement << " ORDER BY #{order_statement(query)}"         if query.order.any?
-          statement << " LIMIT #{quote_column_value(query.limit)}"   if query.limit
-          statement << " OFFSET #{quote_column_value(query.offset)}" if query.offset && query.offset > 0
-          statement
-        rescue => e
-          DataMapper.logger.error("QUERY INVALID: #{query.inspect} (#{e})")
-          raise e
+        alias original_property_to_column_name property_to_column_name
+
+        def property_to_column_name(repository, property, qualify)
+          case property
+            when Query::Operator
+              aggregate_field_statement(repository, property.operator, property.target, qualify)
+            when Property
+              original_property_to_column_name(repository, property, qualify)
+            else
+              raise ArgumentError, "+property+ must be a DataMapper::Query::Operator or a DataMapper::Property, but was a #{property.class} (#{property.inspect})"
+          end
         end
 
         def aggregate_field_statement(repository, aggregate_function, property, qualify)
-          column_name  = if aggregate_function == :count && property.nil?
+          column_name = if aggregate_function == :count && property == :all
             '*'
           else
             property_to_column_name(repository, property, qualify)

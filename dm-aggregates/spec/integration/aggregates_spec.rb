@@ -7,32 +7,39 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       # A simplistic example, using with an Integer property
       class Dragon
         include DataMapper::Resource
-        property :id, Serial
-        property :name, String
-        property :is_fire_breathing, TrueClass
-        property :toes_on_claw, Integer
 
-        auto_migrate!(:default)
+        property :id,                Serial
+        property :name,              String
+        property :is_fire_breathing, TrueClass
+        property :toes_on_claw,      Integer
+        property :birth_at,          DateTime
+        property :birth_on,          Date
+        property :birth_time,        Time
       end
 
-      Dragon.create(:name => 'George', :is_fire_breathing => false, :toes_on_claw => 3)
-      Dragon.create(:name => 'Puff',   :is_fire_breathing => true,  :toes_on_claw => 4)
-      Dragon.create(:name => nil,      :is_fire_breathing => true,  :toes_on_claw => 5)
       # A more complex example, with BigDecimal and Float properties
       # Statistics taken from CIA World Factbook:
       # https://www.cia.gov/library/publications/the-world-factbook/
       class Country
         include DataMapper::Resource
 
-        property :id,                  Integer, :serial => true
-        property :name,                String,  :nullable => false
+        property :id,                  Serial
+        property :name,                String,     :nullable => false
         property :population,          Integer
         property :birth_rate,          Float,      :precision => 4,  :scale => 2
         property :gold_reserve_tonnes, Float,      :precision => 6,  :scale => 2
         property :gold_reserve_value,  BigDecimal, :precision => 15, :scale => 1  # approx. value in USD
-
-        auto_migrate!(:default)
       end
+
+      [ Dragon, Country ].each { |m| m.auto_migrate! }
+
+      @birth_at   = DateTime.now
+      @birth_on   = Date.parse(@birth_at.to_s)
+      @birth_time = Time.parse(@birth_at.to_s)
+
+      Dragon.create(:name => 'George', :is_fire_breathing => false, :toes_on_claw => 3, :birth_at => @birth_at, :birth_on => @birth_on, :birth_time => @birth_time)
+      Dragon.create(:name => 'Puff',   :is_fire_breathing => true,  :toes_on_claw => 4, :birth_at => @birth_at, :birth_on => @birth_on, :birth_time => @birth_time)
+      Dragon.create(:name => nil,      :is_fire_breathing => true,  :toes_on_claw => 5, :birth_at => nil,       :birth_on => nil,       :birth_time => nil)
 
       gold_kilo_price  = 277738.70
       @gold_tonne_price = gold_kilo_price * 10000
@@ -144,6 +151,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
             target(Country, target_type).min(:gold_reserve_value).should == BigDecimal('1217050983400.0')
           end
 
+          it 'should provide the lowest value of a DateTime property' do
+            target(Dragon, target_type).min(:birth_at).should be_kind_of(DateTime)
+            target(Dragon, target_type).min(:birth_at).to_s.should == @birth_at.to_s
+          end
+
+          it 'should provide the lowest value of a Date property' do
+            target(Dragon, target_type).min(:birth_on).should be_kind_of(Date)
+            target(Dragon, target_type).min(:birth_on).to_s.should == @birth_on.to_s
+          end
+
+          it 'should provide the lowest value of a Time property' do
+            target(Dragon, target_type).min(:birth_time).should be_kind_of(Time)
+            target(Dragon, target_type).min(:birth_time).to_s.should == @birth_time.to_s
+          end
+
           it 'should provide the lowest value when conditions provided' do
             target(Dragon, target_type).min(:toes_on_claw, :is_fire_breathing => true).should  == 4
             target(Dragon, target_type).min(:toes_on_claw, :is_fire_breathing => false).should == 3
@@ -172,6 +194,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           it 'should provide the highest value of a BigDecimal property' do
             target(Country, target_type).max(:gold_reserve_value).should == BigDecimal('22589877164500.0')
+          end
+
+          it 'should provide the highest value of a DateTime property' do
+            target(Dragon, target_type).min(:birth_at).should be_kind_of(DateTime)
+            target(Dragon, target_type).min(:birth_at).to_s.should == @birth_at.to_s
+          end
+
+          it 'should provide the highest value of a Date property' do
+            target(Dragon, target_type).min(:birth_on).should be_kind_of(Date)
+            target(Dragon, target_type).min(:birth_on).to_s.should == @birth_on.to_s
+          end
+
+          it 'should provide the highest value of a Time property' do
+            target(Dragon, target_type).min(:birth_time).should be_kind_of(Time)
+            target(Dragon, target_type).min(:birth_time).to_s.should == @birth_time.to_s
           end
 
           it 'should provide the highest value when conditions provided' do
@@ -244,6 +281,28 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           it 'should provide the average value when conditions provided' do
             target(Dragon, target_type).sum(:toes_on_claw, :is_fire_breathing => true).should  == 9
             target(Dragon, target_type).sum(:toes_on_claw, :is_fire_breathing => false).should == 3
+          end
+        end
+      end
+
+      describe ".aggregate on a #{target_type}" do
+        describe 'with no arguments' do
+          it 'should raise an error' do
+            lambda { target(Dragon, target_type).aggregate }.should raise_error(ArgumentError)
+          end
+        end
+
+        describe 'with only aggregate fields specified' do
+          it 'should provide aggregate results' do
+            results = target(Dragon, target_type).aggregate(:all.count, :name.count, :toes_on_claw.min, :toes_on_claw.max, :toes_on_claw.avg, :toes_on_claw.sum)
+            results.should == [ 3, 2, 3, 5, 4.0, 12 ]
+          end
+        end
+
+        describe 'with aggregate fields and a property to group by' do
+          it 'should provide aggregate results' do
+            results = target(Dragon, target_type).aggregate(:all.count, :name.count, :toes_on_claw.min, :toes_on_claw.max, :toes_on_claw.avg, :toes_on_claw.sum, :is_fire_breathing)
+            results.should == [ [ 1, 1, 3, 3, 3.0, 3, false ], [ 2, 1, 4, 5, 4.5, 9, true ] ]
           end
         end
       end
