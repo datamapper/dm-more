@@ -30,14 +30,12 @@ module DataMapper
 
         def aggregate_read_statement(aggregate_function, property, query)
           statement = "SELECT #{aggregate_field_statement(query.repository, aggregate_function, property, query.links.any?)}"
+          statement << ", #{fields_statement(query)}"                unless query.fields.empty?
           statement << " FROM #{quote_table_name(query.model.storage_name(query.repository.name))}"
           statement << links_statement(query)                        if query.links.any?
           statement << " WHERE #{conditions_statement(query)}"       if query.conditions.any?
-
-          # TODO: when GROUP BY support added, uncomment this, and (by default) have
-          # it sort on the non-aggregate fields being SELECTed
-          #statement << " ORDER BY #{order_statement(query)}"         if query.order.any?
-
+          statement << " GROUP BY #{fields_statement(query)}"        if query.unique?
+          statement << " ORDER BY #{order_statement(query)}"         if query.order.any?
           statement << " LIMIT #{quote_column_value(query.limit)}"   if query.limit
           statement << " OFFSET #{quote_column_value(query.offset)}" if query.offset && query.offset > 0
           statement
