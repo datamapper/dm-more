@@ -228,7 +228,16 @@ module DataMapper
       
       def query_string(query)
         query_string = []
-        query_string << "key=%22#{query.key}%22" if query.key
+        if query.view_options
+          query_string +=
+            query.view_options.map do |key, value|
+              if [:endkey, :key, :startkey].include? key
+                URI.escape(%Q(#{key}="#{value}"))
+              else
+                URI.escape("#{key}=#{value}")
+              end
+            end
+        end
         query_string << "count=#{query.limit}" if query.limit
         query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
         query_string << "skip=#{query.offset}" if query.offset
