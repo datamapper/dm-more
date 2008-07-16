@@ -56,7 +56,7 @@ module DataMapper
         end
 
         # we need to make sure that STI-models will inherit the list_scope.
-        after_class_method :inherited do |target|
+        after_class_method :inherited do |retval, target|
           target.instance_variable_set(:@list_scope, @list_scope.dup)
         end
 

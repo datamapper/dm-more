@@ -51,7 +51,7 @@ module DataMapper
           self.send(:detach)
         end
 
-        after_class_method :inherited do |target|
+        after_class_method :inherited do |retval,target|
           target.instance_variable_set(:@nested_set_scope, @nested_set_scope.dup)
           target.instance_variable_set(:@nested_set_parent, @nested_set_parent.dup)
         end
