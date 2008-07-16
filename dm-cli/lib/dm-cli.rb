@@ -1,1 +1,1 @@
-require File.join(File.dirname(__FILE__), "data_mapper", "cli")
+require File.join(File.dirname(__FILE__), "dm-cli", "cli")

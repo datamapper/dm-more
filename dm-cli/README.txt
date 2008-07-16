@@ -1,5 +1,4 @@
-dm-cli
-======
+= dm-cli
 
 DataMapper plugin allowing interaction with models through a Command-Line
 Interface (CLI).
