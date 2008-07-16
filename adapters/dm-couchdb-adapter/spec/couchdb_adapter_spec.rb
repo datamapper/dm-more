@@ -74,6 +74,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
 
   it "should create a record with a specified id" do
+    pending("No CouchDB connection.") if @no_connection    
     user_with_id = new_user
     user_with_id.id = 'user_id'
     user_with_id.save.should == true
