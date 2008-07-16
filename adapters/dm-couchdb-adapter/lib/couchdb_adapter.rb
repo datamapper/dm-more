@@ -199,16 +199,23 @@ module DataMapper
 )
         else
           conditions = query.conditions.map do |operator, property, value|
-            json_value = value.to_json.gsub("\"", "'")
-            condition = "doc.#{property.field}"
-            condition << case operator
-            when :eql   then " == #{json_value}"
-            when :not   then " != #{json_value}"
-            when :gt    then " > #{json_value}"
-            when :gte   then " >= #{json_value}"
-            when :lt    then " < #{json_value}"
-            when :lte   then " <= #{json_value}"
-            when :like  then like_operator(value)
+            if operator == :eql && value.is_a?(Array)
+              value.map do |sub_value|
+                json_sub_value = sub_value.to_json.gsub("\"", "'")
+                "doc.#{property.field} == #{json_sub_value}"
+              end.join(" || ")
+            else
+              json_value = value.to_json.gsub("\"", "'")
+              condition = "doc.#{property.field}"
+              condition << case operator
+              when :eql   then " == #{json_value}"
+              when :not   then " != #{json_value}"
+              when :gt    then " > #{json_value}"
+              when :gte   then " >= #{json_value}"
+              when :lt    then " < #{json_value}"
+              when :lte   then " <= #{json_value}"
+              when :like  then like_operator(value)
+              end
             end
           end
           request.body =
