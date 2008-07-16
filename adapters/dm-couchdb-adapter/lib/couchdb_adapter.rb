@@ -6,7 +6,7 @@ require 'json'
 require 'net/http'
 require 'pathname'
 require 'uri'
-require Pathname(__FILE__).dirname + 'couchdb_views'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 
 module DataMapper
   module Resource
