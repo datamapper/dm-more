@@ -1,5 +1,4 @@
-dm-is-list
-==========
+= dm-is-list
 
 DataMapper plugin for creating and organizing lists.
 

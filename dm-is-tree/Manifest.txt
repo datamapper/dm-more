@@ -1,0 +1,10 @@
+History.txt
+LICENSE
+Manifest.txt
+README.txt
+Rakefile
+TODO
+lib/dm-is-tree.rb
+lib/dm-is-tree/is/tree.rb
+lib/dm-is-tree/is/version.rb
+spec/spec.opts

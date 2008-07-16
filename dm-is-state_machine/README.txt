@@ -1,5 +1,4 @@
-dm-state-machine
-================
+= dm-state-machine
 
 DataMapper plugin that adds state machine functionality.
 
