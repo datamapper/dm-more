@@ -74,7 +74,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
 
   it "should create a record with a specified id" do
-    pending("No CouchDB connection.") if @no_connection    
+    pending("No CouchDB connection.") if @no_connection
     user_with_id = new_user
     user_with_id.id = 'user_id'
     user_with_id.save.should == true
@@ -195,6 +195,12 @@ describe DataMapper::Adapters::CouchdbAdapter do
     pending("No CouchDB connection.") if @no_connection
     User.by_name.first.should == User.all(:order => [:name]).first
     User.by_age.first.should == User.all(:order => [:age]).first
+  end
+
+  it "should be able to call stored views with keys" do
+    pending("No CouchDB connection.") if @no_connection
+    User.by_name("Aaron").first == User.all(:name => "Aaron").first
+    User.by_age(30).first == User.all(:age => 30).first
   end
 
   def create_procedures
