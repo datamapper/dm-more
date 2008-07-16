@@ -1,40 +1,33 @@
 require 'rubygems'
 require 'spec'
-require 'rake/clean'
-require 'rake/gempackagetask'
 require 'spec/rake/spectask'
 require 'pathname'
 
-CLEAN.include '{log,pkg}/'
+ROOT = Pathname(__FILE__).dirname.expand_path
+require ROOT + 'lib/rest_adapter/version'
 
-spec = Gem::Specification.new do |s|
-  s.name             = 'dm-rest-adapter'
-  s.version          = '0.9.3'
-  s.platform         = Gem::Platform::RUBY
-  s.has_rdoc         = true
-  s.extra_rdoc_files = %w[ README LICENSE TODO ]
-  s.summary          = 'REST Adapter for DataMapper'
-  s.description      = s.summary
-  s.author           = 'Potomac Ruby Hackers'
-  s.email            = 'potomac-ruby-hackers@googlegroups.com'
-  s.homepage         = 'http://github.com/pjb3/dm-more/tree/master/adapters/dm-rest-adapter'
-  s.require_path     = 'lib'
-  s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
-  s.add_dependency('dm-core', "=#{s.version}")
-end
+AUTHOR = "Potomac Ruby Hackers"
+EMAIL  = "potomac-ruby-hackers@googlegroups.com"
+GEM_NAME = "dm-rest-adapter"
+GEM_VERSION = DataMapper::Adapters::RestAdapter::VERSION
+GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_CLEAN = ["log", "pkg"]
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
+
+PROJECT_NAME = "dm-more"
+PROJECT_URL  = "http://github.com/pjb3/dm-more/tree/master/adapters/dm-rest-adapter"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY = "REST Adapter for DataMapper"
+
+require ROOT.parent.parent + 'tasks/hoe'
 
 task :default => [ :spec ]
 
 WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
-
-desc "Install #{spec.name} #{spec.version}"
+desc "Install #{GEM_NAME} #{GEM_VERSION}"
 task :install => [ :package ] do
-  sh "#{SUDO} gem install pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+  sh "#{SUDO} gem install pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources", :verbose => false
 end
 
 desc 'Run specifications'
