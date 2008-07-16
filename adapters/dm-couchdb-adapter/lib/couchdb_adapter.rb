@@ -239,7 +239,7 @@ module DataMapper
           query_string +=
             query.view_options.map do |key, value|
               if [:endkey, :key, :startkey].include? key
-                URI.escape(%Q(#{key}="#{value}"))
+                URI.escape(%Q(#{key}=#{value.to_json}))
               else
                 URI.escape("#{key}=#{value}")
               end
@@ -247,7 +247,8 @@ module DataMapper
         end
         query_string << "count=#{query.limit}" if query.limit
         query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
-        query_string << "skip=#{query.offset}" if query.offset
+        query_string << "skip=#{query.offset}" if query.offset != 0
+        p query_string.empty? ? nil : "?#{query_string.join('&')}"        
         query_string.empty? ? nil : "?#{query_string.join('&')}"
       end
 
