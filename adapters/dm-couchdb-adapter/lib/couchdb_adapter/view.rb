@@ -19,7 +19,7 @@ module DataMapper
       @model.class_eval <<-EOS, __FILE__, __LINE__
         def self.#{@name}(*args)
           options = {}
-          if args.size == 1 && !args.is_a?(Hash)
+          if args.size == 1 && !args.first.is_a?(Hash)
             options[:key] = args.shift
           else
             options = args.pop
