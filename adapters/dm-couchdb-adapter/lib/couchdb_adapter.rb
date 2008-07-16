@@ -50,7 +50,14 @@ module DataMapper
       def create(resources)
         created = 0
         resources.each do |resource|
-          result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          if key.compact.empty?
+            result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+          else
+            result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json(true))
+          end
           if result["ok"]
             key = resource.class.key(self.name)
             if key.size == 1
