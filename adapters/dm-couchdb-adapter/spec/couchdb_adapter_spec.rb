@@ -201,6 +201,8 @@ describe DataMapper::Adapters::CouchdbAdapter do
     pending("No CouchDB connection.") if @no_connection
     User.by_name("Aaron").first == User.all(:name => "Aaron").first
     User.by_age(30).first == User.all(:age => 30).first
+    User.by_name("Aaron").first == User.by_name(:key => "Aaron").first
+    User.by_age(30).first == User.by_age(:key => 30).first
   end
 
   def create_procedures
