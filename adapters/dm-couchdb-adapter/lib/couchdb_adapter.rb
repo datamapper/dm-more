@@ -214,7 +214,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) { 
+    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) {
       emit(#{key}, doc);
     }
   }"
@@ -232,7 +232,7 @@ module DataMapper
               "#{query_string(query)}"
         request = Net::HTTP::Get.new(uri)
       end
-      
+
       def query_string(query)
         query_string = []
         if query.view_options
@@ -248,7 +248,6 @@ module DataMapper
         query_string << "count=#{query.limit}" if query.limit
         query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
         query_string << "skip=#{query.offset}" if query.offset != 0
-        p query_string.empty? ? nil : "?#{query_string.join('&')}"        
         query_string.empty? ? nil : "?#{query_string.join('&')}"
       end
 
