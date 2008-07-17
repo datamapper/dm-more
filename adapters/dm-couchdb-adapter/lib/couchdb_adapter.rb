@@ -15,10 +15,12 @@ module DataMapper
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
-        accumulator[property.field] = instance_variable_get(property.instance_variable_name)
-        if property.type == Object
-          accumulator[property.field] = Base64.encode64(Marshal.dump(accumulator[property.field]))
-        end
+        accumulator[property.field] =
+          unless property.type.respond_to?(:dump)
+            instance_variable_get(property.instance_variable_name)
+          else
+            property.type.dump(instance_variable_get(property.instance_variable_name), property)
+          end
         accumulator
       end).to_json
     end
