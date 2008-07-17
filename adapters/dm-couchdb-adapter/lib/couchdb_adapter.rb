@@ -119,7 +119,7 @@ module DataMapper
             doc['rows'].each do |doc|
               collection.load(
                 query.fields.map do |property|
-                  property.typecast(doc["value"][property.field.to_s])
+                  doc["value"][property.field.to_s]
                 end
               )
             end
