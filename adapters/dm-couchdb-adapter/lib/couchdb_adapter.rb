@@ -6,6 +6,7 @@ require 'json'
 require 'net/http'
 require 'pathname'
 require 'uri'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/json_object'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 
 module DataMapper
