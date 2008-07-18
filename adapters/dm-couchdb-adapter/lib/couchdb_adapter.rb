@@ -18,9 +18,9 @@ module DataMapper
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] =
           unless property.type.respond_to?(:dump)
-            instance_variable_get(property.instance_variable_name)
+            property.get!(self)
           else
-            property.type.dump(instance_variable_get(property.instance_variable_name), property)
+            property.type.dump(property.get!(self), property)
           end
         accumulator
       end).to_json
