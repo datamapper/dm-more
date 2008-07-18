@@ -1,12 +1,11 @@
-dm-shorthand
-============
+= dm-shorthand
 
 DataMapper plugin providing shortcut usage of models in multiple repositories.
 
 When using this plugin, every time you define a new model M, a method with the same
 name as the model is defined inside the module where you defined M.
 
-=Example
+== Example
 
 Let's say you have repositories :default, :one and :two.
 

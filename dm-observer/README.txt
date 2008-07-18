@@ -1,5 +1,5 @@
-README
-======
+== README
+
 DataMapper::Observer allows you to add callback hooks to many models. This is
 similar to observers in ActiveRecord.
 

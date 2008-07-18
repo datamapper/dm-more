@@ -1,5 +1,4 @@
-dm-querizer
-===========
+= dm-querizer
 
 DataMapper plugin that provides a short rubyish query-syntax.
 

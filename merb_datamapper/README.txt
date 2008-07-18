@@ -1,5 +1,4 @@
-merb_datamapper
-===============
+= merb_datamapper
 
 A plugin for the Merb framework that provides DataMapper access
 
