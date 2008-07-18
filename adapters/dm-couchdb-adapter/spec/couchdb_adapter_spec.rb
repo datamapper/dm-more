@@ -92,6 +92,12 @@ describe DataMapper::Adapters::CouchdbAdapter do
     user.age.should == 67
   end
 
+  it "should not get records of the wrong type by id" do
+    pending("No CouchDB connection.") if @no_connection
+    Company.get(new_user.id).should == nil
+    lambda { Company.get!(new_user.id) }.should raise_error(DataMapper::ObjectNotFoundError)
+  end
+
   it "should update a record" do
     pending("No CouchDB connection.") if @no_connection
     created_user = new_user

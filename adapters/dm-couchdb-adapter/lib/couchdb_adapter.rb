@@ -128,7 +128,7 @@ module DataMapper
               )
             end
           end
-        else
+        elsif doc['type'] && doc['type'].downcase == query.model.name.downcase
           data = doc
           Collection.new(query) do |collection|
             collection.load(
@@ -147,7 +147,7 @@ module DataMapper
         if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
         elsif !doc['rows']
-          data = doc
+          data = doc if doc['type'] && doc['type'].downcase == query.model.name.downcase
         end
         if data
           query.model.load(
