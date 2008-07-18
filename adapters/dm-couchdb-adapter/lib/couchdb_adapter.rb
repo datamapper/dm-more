@@ -136,11 +136,11 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        unless doc["rows"].empty?
-          data = doc['rows'].first
+        unless doc['rows'].empty?
+          data = doc['rows'].first['value']
           query.model.load(
             query.fields.map do |property|
-              data["value"][property.field.to_s]
+              data[property.field.to_s]
             end,
             query)
         end
