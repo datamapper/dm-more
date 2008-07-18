@@ -120,15 +120,23 @@ module DataMapper
         if doc['rows']
           Collection.new(query) do |collection|
             doc['rows'].each do |doc|
+              data = doc["value"]
               collection.load(
                 query.fields.map do |property|
-                  doc["value"][property.field.to_s]
+                  data[property.field.to_s]
                 end
               )
             end
           end
         else
-          []
+          data = doc
+          Collection.new(query) do |collection|
+            collection.load(
+              query.fields.map do |property|
+                data[property.field.to_s]
+              end
+            )
+          end
         end
       end
 
@@ -136,13 +144,18 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        unless doc['rows'].empty?
+        if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
+        elsif !doc['rows']
+          data = doc
+        end
+        if data
           query.model.load(
             query.fields.map do |property|
               data[property.field.to_s]
             end,
-            query)
+            query
+          )
         end
       end
 
@@ -170,11 +183,29 @@ module DataMapper
       end
 
       def build_request(query)
-        unless query.view
-          ad_hoc_request(query)
-        else
+        if query.view
           view_request(query)
+        elsif query.conditions.length == 1 &&
+              query.conditions.first[0] == :eql &&
+              query.conditions.first[1].key?
+          get_request(query)
+        else
+          ad_hoc_request(query)
         end
+      end
+
+      def view_request(query)
+        uri = "/#{self.escaped_db_name}/" +
+              "_view/" +
+              "#{query.model.storage_name(self.name)}/" +
+              "#{query.view}" +
+              "#{query_string(query)}"
+        request = Net::HTTP::Get.new(uri)
+      end
+
+      def get_request(query)
+        uri = "/#{self.escaped_db_name}/#{query.conditions.first[2]}"
+        request = Net::HTTP::Get.new(uri)
       end
 
       def ad_hoc_request(query)
@@ -232,15 +263,6 @@ module DataMapper
 )
         end
         request
-      end
-
-      def view_request(query)
-        uri = "/#{self.escaped_db_name}/" +
-              "_view/" +
-              "#{query.model.storage_name(self.name)}/" +
-              "#{query.view}" +
-              "#{query_string(query)}"
-        request = Net::HTTP::Get.new(uri)
       end
 
       def query_string(query)
