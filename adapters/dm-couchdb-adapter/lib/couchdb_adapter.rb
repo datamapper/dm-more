@@ -160,28 +160,6 @@ module DataMapper
       end
 
     protected
-      # Converts the URI's scheme into a parsed HTTP identifier.
-      def normalize_uri(uri_or_options)
-        if String === uri_or_options
-          uri_or_options = Addressable::URI.parse(uri_or_options)
-        end
-        if Addressable::URI === uri_or_options
-          return uri_or_options.normalize
-        end
-
-        user = uri_or_options.delete(:username)
-        password = uri_or_options.delete(:password)
-        host = (uri_or_options.delete(:host) || "")
-        port = uri_or_options.delete(:port)
-        database = uri_or_options.delete(:database)
-        query = uri_or_options.to_a.map { |pair| pair.join('=') }.join('&')
-        query = nil if query == ""
-
-        return Addressable::URI.new(
-          "http", user, password, host, port, database, query, nil
-        )
-      end
-
       def build_request(query)
         if query.view
           view_request(query)
