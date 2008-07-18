@@ -19,6 +19,7 @@ class User
   property :wealth, Float
   property :created_at, DateTime
   property :created_on, Date
+  property :location, JsonObject
 
   # creates methods for accessing stored/indexed views in the CouchDB database
   view :by_name, { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" }
@@ -195,6 +196,15 @@ describe DataMapper::Adapters::CouchdbAdapter do
     user.save
     date = user.created_on
     User.get!(user.id).created_on.should == date
+  end
+
+  it "should handle JsonObject" do
+    pending("No CouchDB connection.") if @no_connection
+    user = new_user
+    location = { 'city' => 'San Francisco', 'state' => 'California' }
+    user.location = location
+    user.save
+    User.get!(user.id).location.should == location
   end
 
   it "should be able to call stored views" do
