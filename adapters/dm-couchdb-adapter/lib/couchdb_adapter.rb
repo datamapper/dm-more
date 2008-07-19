@@ -118,14 +118,20 @@ module DataMapper
           http.request(build_request(query))
         end
         if doc['rows']
-          Collection.new(query) do |collection|
-            doc['rows'].each do |doc|
-              data = doc["value"]
-              collection.load(
-                query.fields.map do |property|
-                  data[property.field.to_s]
-                end
-              )
+          if doc['rows'].empty?
+            []
+          elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
+            doc['rows'].first['value']
+          else
+            Collection.new(query) do |collection|
+              doc['rows'].each do |doc|
+                data = doc["value"]
+                  collection.load(
+                    query.fields.map do |property|
+                      data[property.field.to_s]
+                    end
+                  )
+              end
             end
           end
         elsif doc['type'] && doc['type'].downcase == query.model.name.downcase

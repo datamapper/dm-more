@@ -24,6 +24,8 @@ class User
   # creates methods for accessing stored/indexed views in the CouchDB database
   view :by_name, { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" }
   view :by_age,  { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.age, doc); } }" }
+  view :count,   { "map" => "function(doc) { if (doc.type == 'user') { emit(null, 1); } }",
+                    "reduce" => "function(keys, values) { return sum(values); }" }
 
   before :create do
     self.created_at = DateTime.now
@@ -219,6 +221,11 @@ describe DataMapper::Adapters::CouchdbAdapter do
     User.by_age(30).first == User.all(:age => 30).first
     User.by_name("Aaron").first == User.by_name(:key => "Aaron").first
     User.by_age(30).first == User.by_age(:key => 30).first
+  end
+
+  it "should return a value from a view with reduce defined" do
+    pending("No CouchDB connection.") if @no_connection
+    User.count.should == User.all.length
   end
 
   def create_procedures
