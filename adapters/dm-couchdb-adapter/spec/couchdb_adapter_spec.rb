@@ -225,7 +225,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
 
   it "should return a value from a view with reduce defined" do
     pending("No CouchDB connection.") if @no_connection
-    User.count.should == User.all.length
+    User.count.should == [ { "value" => User.all.length, "key" => nil } ]
   end
 
   def create_procedures

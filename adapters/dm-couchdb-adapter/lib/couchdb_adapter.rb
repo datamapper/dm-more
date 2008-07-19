@@ -121,7 +121,7 @@ module DataMapper
           if doc['rows'].empty?
             []
           elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
-            doc['rows'].first['value']
+            doc['rows']
           else
             Collection.new(query) do |collection|
               doc['rows'].each do |doc|
