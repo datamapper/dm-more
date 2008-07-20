@@ -16,4 +16,10 @@ require dir / "json"""
 require dir / 'uri'
 require dir / 'yaml'
 require dir / 'serial'
-require dir / 'bcrypt_hash'
+
+# this looks a little ugly, but everyone who uses dm-types shouldn't have to have ruby-bcrypt installed
+module DataMapper
+  module Types
+    autoload(:BCryptHash, File.join(Pathname(__FILE__).dirname.expand_path, 'dm-types', 'bcrypt_hash'))
+  end
+end
