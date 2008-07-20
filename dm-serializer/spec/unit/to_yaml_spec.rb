@@ -58,5 +58,19 @@ describe DataMapper::Serialize, '#to_yaml' do
   it "handles empty collections just fine" do
     YAML.load(@empty_collection.to_yaml).should be_empty
   end
+  
+  describe "multiple repositories" do
+    before(:all) do
+      QuantumCat.auto_migrate!
+      repository(:alternate){QuantumCat.auto_migrate!}
+    end
+    
+    it "should use the repsoitory for the model" do
+      gerry = QuantumCat.create(:name => "gerry")
+      george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}
+      gerry.to_yaml.should_not match(/is_dead/)
+      george.to_yaml.should match(/is_dead/)
+    end
+  end
 
 end

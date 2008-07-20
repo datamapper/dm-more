@@ -11,24 +11,22 @@ steps_for :using_rest_adapter do
     :port => '3001'
   })
 
-  class Book
-    include DataMapper::Resource
-    property :id,         Integer, :serial => true
-    property :title,      String
-    property :author,     String
-    property :created_at, DateTime
-  end
-
   Given("a valid DataMapper::Resource") do
+    # TODO refactor
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
     @resource = new_book
   end
 
-  Given("a DataMapper::Resource representing a type of Resource") do
-    @type = Book
+  Given("a type of Resource") do
+    # TODO refactor
+#    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
+#    Book = Book
   end
 
   Given("the ID of an existing Resource") do
-    @resource_id = 1
+    # TODO refactor
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
+    @resource_id = Book.first.id
   end
 
   Given("the ID of a nonexistent Resource") do
@@ -36,19 +34,24 @@ steps_for :using_rest_adapter do
   end
 
   Given("a local representation of a remote Resource") do
-    @resource = Book.all.first
+    # TODO refactor
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
+    @resource = Book.first
+    @resource_id = @resource.id
   end
-
+  
   When("I try to save the Resource") do
     @result = @resource.save
   end
-
+  
   When("I request all of the Resources of that type") do
-    @resources = @type.all
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
+    @resources = Book.all
   end
-
+  
   When("I request the Resource") do
-    @resource = @type.get(@resource_id)
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')    
+    @resource = Book.get(@resource_id)
   end
 
   When("I make valid changes to that Resource") do
@@ -58,19 +61,19 @@ steps_for :using_rest_adapter do
   When("I make invalid changes to that Resource") do
     @resource.title = nil
   end
-
+  
   When("I destroy the Resource") do
     @resource.destroy
   end
-
+  
   Then("the Resource should save") do
     @result.should be_true
   end
-
+  
   Then("the Resource should not save") do
     @result.should be_false
   end
-
+  
   Then("I should not receive an empty list") do
     @resources.should_not be_empty
   end
@@ -83,12 +86,14 @@ steps_for :using_rest_adapter do
   Then("I should get nothing in return") do
     @resource.should be_nil
   end
-
+  
   Then("the Resource will no longer be available") do
+    # TODO refactor
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
     Book.get(@resource_id).should be_nil
   end
 end
 
 def new_book(options={})
-  Book.new(options.merge({:title => "Hello, World!", :author => "Anonymous"}))
+  Book.new(options.merge({:title => "Hello, World!", :author => "Some dude"}))
 end

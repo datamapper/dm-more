@@ -1,21 +1,9 @@
-module DataMapper
-  # Set this to the version of dm-core that you are building against/for
-  VERSION = "0.9.3"
-
-  # Set this to the version of dm-more you plan to release
-  MORE_VERSION = "0.9.3"
-end
-
 require 'pathname'
-require 'rake/clean'
-require 'rake/gempackagetask'
-require 'rake/contrib/rubyforgepublisher'
 require 'spec/rake/spectask'
 require 'rake/rdoctask'
 require 'fileutils'
+require 'lib/dm-more/version.rb'
 include FileUtils
-
-DIR = Pathname(__FILE__).dirname.expand_path.to_s
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
@@ -41,48 +29,34 @@ gem_paths = %w[
 ]
 gems = gem_paths.map { |p| File.basename(p) }
 
-PROJECT = "dm-more"
+ROOT = Pathname(__FILE__).dirname.expand_path
 
-dm_more_spec = Gem::Specification.new do |s|
-  s.platform = Gem::Platform::RUBY
-  s.name = PROJECT
-  s.summary = "An Object/Relational Mapper for Ruby"
-  s.description = "Faster, Better, Simpler."
-  s.version = DataMapper::MORE_VERSION
+AUTHOR = "Sam Smoot"
+EMAIL  = "ssmoot@gmail.com"
+GEM_NAME = "dm-more"
+GEM_VERSION = DataMapper::More::VERSION
+GEM_DEPENDENCIES = [["dm-core", GEM_VERSION], *(gems - %w[ merb_datamapper ]).collect { |g| [g, GEM_VERSION] }]
+GEM_CLEAN = ['**/*.{gem,DS_Store}', '*.db', "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
+GEM_EXTRAS = { :has_rdoc => false }
 
-  s.authors = "Sam Smoot"
-  s.email = "ssmoot@gmail.com"
-  s.rubyforge_project = PROJECT
-  s.homepage = "http://datamapper.org"
+PROJECT_NAME = "dm-more"
+PROJECT_URL  = "http://datamapper.org"
+PROJECT_DESCRIPTION = "Faster, Better, Simpler."
+PROJECT_SUMMARY = "An Object/Relational Mapper for Ruby"
 
-  s.files = %w[ MIT-LICENSE README Rakefile TODO lib/dm-more.rb ]
-  s.add_dependency('dm-core', "=#{DataMapper::VERSION}")
-  s.add_dependency('merb_datamapper', '=0.9.3')
-  (gems - %w[ merb_datamapper ]).each do |gem|
-    s.add_dependency gem, "=#{DataMapper::VERSION}"
-  end
-end
-
-Rake::GemPackageTask.new(dm_more_spec) do |p|
-  p.gem_spec = dm_more_spec
-  p.need_tar = true
-  p.need_zip = true
-end
-
-CLEAN.include ["**/.*.sw?", "pkg", "lib/*.bundle", "*.gem", "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
+require ROOT + 'tasks/hoe'
 
 WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::MORE_VERSION}.gem  --no-update-sources}
-#  sh %{#{SUDO} gem install --local pkg/dm-#{DataMapper::MORE_VERSION}.gem --no-update-sources}
+  sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::More::VERSION}.gem  --no-update-sources}
 end
 
 desc "Uninstall it all"
 task :uninstall => [ :uninstall_gems, :clobber ] do
-  sh "#{SUDO} gem uninstall dm-more -v#{DataMapper::MORE_VERSION} -I -x", :verbose => false rescue "dm-more not installed"
+  sh "#{SUDO} gem uninstall dm-more -v#{DataMapper::More::VERSION} -I -x", :verbose => false rescue "dm-more not installed"
 end
 
 desc "Build the dm-more gems"
@@ -122,8 +96,7 @@ end
 desc "Bundle up all the dm-more gems"
 task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
-#  cp "pkg/dm-#{DataMapper::MORE_VERSION}.gem", "bundle"
-  cp "pkg/dm-more-#{DataMapper::MORE_VERSION}.gem", "bundle"
+  cp "pkg/dm-more-#{DataMapper::More::VERSION}.gem", "bundle"
   gem_paths.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
       rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
@@ -176,7 +149,7 @@ namespace :ci do
     gem_names.each do |gem_name|
       Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
         t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
-        t.spec_files = Pathname.glob(ENV['FILES'] || DIR + "/#{gem_name}/spec/**/*_spec.rb")
+        t.spec_files = Pathname.glob(ENV['FILES'] || ROOT + "/#{gem_name}/spec/**/*_spec.rb")
         unless ENV['NO_RCOV']
           t.rcov = true
           t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"

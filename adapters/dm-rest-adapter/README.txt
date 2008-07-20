@@ -1,0 +1,3 @@
+= dm-rest-adapter
+
+A DataMapper adapter for REST Web Services

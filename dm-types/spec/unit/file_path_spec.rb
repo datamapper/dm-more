@@ -35,4 +35,15 @@ describe DataMapper::Types::FilePath do
       DataMapper::Types::FilePath.load("", :property).should == Pathname.new("")
     end
   end
+
+  describe '.typecast' do
+    it 'should do nothing if a Pathname is provided' do
+      DataMapper::Types::FilePath.typecast(@path, :property).should == @path
+    end
+
+    it 'should defer to .load if a string is provided' do
+      DataMapper::Types::FilePath.should_receive(:load).with(@path_str, :property)
+      DataMapper::Types::FilePath.typecast(@path_str, :property)
+    end
+  end
 end

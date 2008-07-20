@@ -6,7 +6,7 @@ require 'pathname'
 gem 'dm-core', '=0.9.3'
 require 'dm-core'
 
-dir = Pathname(__FILE__).dirname.expand_path / 'dm-core'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-querizer'
 
 require dir / 'querizer'
 require dir / 'model'

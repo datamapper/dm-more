@@ -19,10 +19,13 @@ class User
   property :wealth, Float
   property :created_at, DateTime
   property :created_on, Date
+  property :location, JsonObject
 
   # creates methods for accessing stored/indexed views in the CouchDB database
-  view :by_name, "function(doc) { if (doc.type == 'user') { map(doc.name, doc); } }"
-  view :by_age, "function(doc) { if (doc.type == 'user') { map(doc.age, doc); } }"
+  view :by_name, { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" }
+  view :by_age,  { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.age, doc); } }" }
+  view :count,   { "map" => "function(doc) { if (doc.type == 'user') { emit(null, 1); } }",
+                    "reduce" => "function(keys, values) { return sum(values); }" }
 
   before :create do
     self.created_at = DateTime.now
@@ -73,6 +76,15 @@ describe DataMapper::Adapters::CouchdbAdapter do
     company.id.should_not == nil
   end
 
+  it "should create a record with a specified id" do
+    pending("No CouchDB connection.") if @no_connection
+    user_with_id = new_user
+    user_with_id.id = 'user_id'
+    user_with_id.save.should == true
+    User.get!('user_id').should == user_with_id
+    user_with_id.destroy
+  end
+
   it "should get a record" do
     pending("No CouchDB connection.") if @no_connection
     created_user = new_user
@@ -81,6 +93,12 @@ describe DataMapper::Adapters::CouchdbAdapter do
     user.id.should_not be_nil
     user.name.should == "Jamie"
     user.age.should == 67
+  end
+
+  it "should not get records of the wrong type by id" do
+    pending("No CouchDB connection.") if @no_connection
+    Company.get(new_user.id).should == nil
+    lambda { Company.get!(new_user.id) }.should raise_error(DataMapper::ObjectNotFoundError)
   end
 
   it "should update a record" do
@@ -182,13 +200,36 @@ describe DataMapper::Adapters::CouchdbAdapter do
     User.get!(user.id).created_on.should == date
   end
 
+  it "should handle JsonObject" do
+    pending("No CouchDB connection.") if @no_connection
+    user = new_user
+    location = { 'city' => 'San Francisco', 'state' => 'California' }
+    user.location = location
+    user.save
+    User.get!(user.id).location.should == location
+  end
+
   it "should be able to call stored views" do
     pending("No CouchDB connection.") if @no_connection
     User.by_name.first.should == User.all(:order => [:name]).first
     User.by_age.first.should == User.all(:order => [:age]).first
   end
 
+  it "should be able to call stored views with keys" do
+    pending("No CouchDB connection.") if @no_connection
+    User.by_name("Aaron").first == User.all(:name => "Aaron").first
+    User.by_age(30).first == User.all(:age => 30).first
+    User.by_name("Aaron").first == User.by_name(:key => "Aaron").first
+    User.by_age(30).first == User.by_age(:key => 30).first
+  end
+
+  it "should return a value from a view with reduce defined" do
+    pending("No CouchDB connection.") if @no_connection
+    User.count.should == [ { "value" => User.all.length, "key" => nil } ]
+  end
+
   def create_procedures
+    DataMapper.auto_migrate!
     DataMapper.auto_migrate!
   end
 

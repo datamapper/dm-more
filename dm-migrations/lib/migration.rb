@@ -51,30 +51,30 @@ module DataMapper
 
     # perform the migration by running the code in the #up block
     def perform_up
-      res = nil
+      result = nil
       if needs_up?
         # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Up Migration ##{position}: #{name}", 0 do
-          res = @up_action.call
+          result = @up_action.call
         end
         update_migration_info(:up)
         # end
       end
-      res
+      result
     end
 
     # un-do the migration by running the code in the #down block
     def perform_down
-      res = nil
+      result = nil
       if needs_down?
         # DataMapper.database.adapter.transaction do
         say_with_time "== Performing Down Migration ##{position}: #{name}", 0 do
-          res = @down_action.call
+          result = @down_action.call
         end
         update_migration_info(:down)
         # end
       end
-      res
+      result
     end
 
     # execute raw SQL
@@ -127,8 +127,6 @@ module DataMapper
       puts text if @verbose
     end
 
-    protected
-
     # Inserts or removes a row into the `migration_info` table, so we can mark this migration as run, or un-done
     def update_migration_info(direction)
       save, @verbose = @verbose, false
@@ -144,7 +142,7 @@ module DataMapper
     end
 
     def create_migration_info_table_if_needed
-      save, @verbose = @verbose, true # false
+      save, @verbose = @verbose, false
       unless migration_info_table_exists?
         execute("CREATE TABLE #{migration_info_table} (#{migration_name_column} VARCHAR(255) UNIQUE)")
       end
@@ -168,13 +166,13 @@ module DataMapper
 
     # True if the migration needs to be run
     def needs_up?
-      create_migration_info_table_if_needed
+      return true unless migration_info_table_exists?
       migration_record.empty?
     end
 
     # True if the migration has already been run
     def needs_down?
-      create_migration_info_table_if_needed
+      return false unless migration_info_table_exists?
       ! migration_record.empty?
     end
 

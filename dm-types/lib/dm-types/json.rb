@@ -26,6 +26,15 @@ module DataMapper
           ::JSON.dump(value)
         end
       end
+
+      def self.typecast(value, property)
+        # Arrays and hashes are left alone, while strings are parsed as JSON.
+        if value.kind_of?(Array) || value.kind_of?(Hash)
+          value
+        else
+          ::JSON.load(value.to_s)
+        end
+      end
     end # class Json
   end # module Types
 end # module DataMapper

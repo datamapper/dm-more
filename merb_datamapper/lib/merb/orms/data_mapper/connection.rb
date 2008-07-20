@@ -1,8 +1,4 @@
-require 'rubygems'
 require 'fileutils'
-
-gem 'dm-core', '=0.9.3'
-require 'dm-core'
 
 module Merb
   module Orms

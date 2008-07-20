@@ -9,9 +9,6 @@ module SQL
       SQL::Postgresql::Table.new(self, table_name)
     end
 
-    def drop_database
-    end
-
     def recreate_database
       execute "DROP SCHEMA IF EXISTS test CASCADE"
       execute "CREATE SCHEMA test"
@@ -37,19 +34,21 @@ module SQL
 
     class Table < SQL::Table
       def initialize(adapter, table_name)
+        @adapter, @name = adapter, table_name
         @columns = []
         adapter.query_table(table_name).each do |col_struct|
           @columns << SQL::Postgresql::Column.new(col_struct)
         end
 
-        puts "+=+++++++++++++++++++++++++++++++++++++++"
-        # detect column constraints
-        adapter.query(
-          "SELECT * FROM information_schema.table_constraints WHERE table_name='#{table_name}' AND table_schema=current_schema()"
+        query_column_constraints
+      end
+
+      def query_column_constraints
+        @adapter.query(
+          "SELECT * FROM information_schema.table_constraints WHERE table_name='#{@name}' AND table_schema=current_schema()"
         ).each do |table_constraint|
-          puts table_constraint.inspect
-          adapter.query(
-            "SELECT * FROM information_schema.constraint_column_usage WHERE table_name='#{table_name}' AND table_schema=current_schema()"
+          @adapter.query(
+            "SELECT * FROM information_schema.constraint_column_usage WHERE constraint_name='#{table_constraint.constraint_name}' AND table_schema=current_schema()"
           ).each do |constrained_column|
             @columns.each do |column|
               if column.name == constrained_column.column_name
@@ -61,6 +60,7 @@ module SQL
             end
           end
         end
+
       end
 
     end

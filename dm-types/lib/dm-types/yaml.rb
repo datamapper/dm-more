@@ -26,6 +26,11 @@ module DataMapper
           ::YAML.dump(value)
         end
       end
+
+      def self.typecast(value, property)
+        # No typecasting; leave values exactly as they're provided.
+        value
+      end
     end # class Yaml
   end # module Types
 end # module DataMapper

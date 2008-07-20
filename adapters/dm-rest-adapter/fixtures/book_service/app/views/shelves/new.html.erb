@@ -1,0 +1,15 @@
+<h1>New shelf</h1>
+
+<% form_for(@shelf) do |f| %>
+  <%= f.error_messages %>
+
+  <p>
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </p>
+  <p>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>
+
+<%= link_to 'Back', shelves_path %>

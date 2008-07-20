@@ -1,12 +1,14 @@
 require 'rubygems'
-gem 'dm-core', '=0.9.3'
-require 'base64'
+require 'pathname'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
+gem 'dm-core', DataMapper::More::CouchDBAdapter::VERSION
 require 'dm-core'
+require 'base64'
 require 'json'
 require 'net/http'
-require 'pathname'
 require 'uri'
-require Pathname(__FILE__).dirname + 'couchdb_views'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/json_object'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 
 module DataMapper
   module Resource
@@ -15,19 +17,15 @@ module DataMapper
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       inferred_fields = {:type => self.class.name.downcase}
       return (property_list.inject(inferred_fields) do |accumulator, property|
-        accumulator[property.field] = instance_variable_get(property.instance_variable_name)
-        if property.type == Object
-          accumulator[property.field] = Base64.encode64(Marshal.dump(accumulator[property.field]))
-        end
+        accumulator[property.field] =
+          unless property.type.respond_to?(:dump)
+            property.get!(self)
+          else
+            property.type.dump(property.get!(self), property)
+          end
         accumulator
       end).to_json
     end
-  end
-end
-
-module DataMapper
-  class Query
-    attr_accessor :view
   end
 end
 
@@ -56,7 +54,14 @@ module DataMapper
       def create(resources)
         created = 0
         resources.each do |resource|
-          result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+          key = resource.class.key(self.name).map do |property|
+            resource.instance_variable_get(property.instance_variable_name)
+          end
+          if key.compact.empty?
+            result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+          else
+            result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json(true))
+          end
           if result["ok"]
             key = resource.class.key(self.name)
             if key.size == 1
@@ -113,11 +118,29 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        Collection.new(query) do |collection|
-          doc['rows'].each do |doc|
+        if doc['rows']
+          if doc['rows'].empty?
+            []
+          elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
+            doc['rows']
+          else
+            Collection.new(query) do |collection|
+              doc['rows'].each do |doc|
+                data = doc["value"]
+                  collection.load(
+                    query.fields.map do |property|
+                      data[property.field.to_s]
+                    end
+                  )
+              end
+            end
+          end
+        elsif doc['type'] && doc['type'].downcase == query.model.name.downcase
+          data = doc
+          Collection.new(query) do |collection|
             collection.load(
               query.fields.map do |property|
-                property.typecast(doc["value"][property.field.to_s])
+                data[property.field.to_s]
               end
             )
           end
@@ -128,52 +151,46 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        unless doc["total_rows"] == 0
-          data = doc['rows'].first
+        if doc['rows'] && !doc['rows'].empty?
+          data = doc['rows'].first['value']
+        elsif !doc['rows']
+          data = doc if doc['type'] && doc['type'].downcase == query.model.name.downcase
+        end
+        if data
           query.model.load(
             query.fields.map do |property|
-              data["value"][property.field.to_s]
+              data[property.field.to_s]
             end,
-            query)
+            query
+          )
         end
-      end
-
-      # Reads in a set from a stored view.
-      def view(resource, proc_name, options = {})
-        query = Query.new(repository, resource)
-        query.view = { :name => proc_name }.merge!(options)
-        read_many(query)
       end
 
     protected
-      # Converts the URI's scheme into a parsed HTTP identifier.
-      def normalize_uri(uri_or_options)
-        if String === uri_or_options
-          uri_or_options = Addressable::URI.parse(uri_or_options)
+      def build_request(query)
+        if query.view
+          view_request(query)
+        elsif query.conditions.length == 1 &&
+              query.conditions.first[0] == :eql &&
+              query.conditions.first[1].key?
+          get_request(query)
+        else
+          ad_hoc_request(query)
         end
-        if Addressable::URI === uri_or_options
-          return uri_or_options.normalize
-        end
-
-        user = uri_or_options.delete(:username)
-        password = uri_or_options.delete(:password)
-        host = (uri_or_options.delete(:host) || "")
-        port = uri_or_options.delete(:port)
-        database = uri_or_options.delete(:database)
-        query = uri_or_options.to_a.map { |pair| pair.join('=') }.join('&')
-        query = nil if query == ""
-
-        return Addressable::URI.new(
-          "http", user, password, host, port, database, query, nil
-        )
       end
 
-      def build_request(query)
-        unless query.view
-          ad_hoc_request(query)
-        else
-          view_request(query)
-        end
+      def view_request(query)
+        uri = "/#{self.escaped_db_name}/" +
+              "_view/" +
+              "#{query.model.storage_name(self.name)}/" +
+              "#{query.view}" +
+              "#{query_string(query)}"
+        request = Net::HTTP::Get.new(uri)
+      end
+
+      def get_request(query)
+        uri = "/#{self.escaped_db_name}/#{query.conditions.first[2]}"
+        request = Net::HTTP::Get.new(uri)
       end
 
       def ad_hoc_request(query)
@@ -186,65 +203,69 @@ module DataMapper
           key = "[#{key}]"
         end
 
-        options = []
-        options << "count=#{query.limit}" if query.limit
-        options << "skip=#{query.offset}" if query.offset
-        options = options.empty? ? nil : "?#{options.join('&')}"
-
-        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{options}")
-        request["Content-Type"] = "text/javascript"
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
+        request["Content-Type"] = "application/json"
 
         if query.conditions.empty?
           request.body =
-            "function(doc) {\n" +
-            "  if (doc.type == '#{query.model.name.downcase}') {\n" +
-            "    map(#{key}, doc);\n" +
-            "  }\n" +
-            "}\n"
+%Q({"map":
+  "function(doc) {
+  if (doc.type == '#{query.model.name.downcase}') {
+    emit(#{key}, doc);
+    }
+  }"
+}
+)
         else
           conditions = query.conditions.map do |operator, property, value|
-            condition = "doc.#{property.field}"
-            condition << case operator
-            when :eql   then " == #{value.to_json}"
-            when :not   then " != #{value.to_json}"
-            when :gt    then " > #{value.to_json}"
-            when :gte   then " >= #{value.to_json}"
-            when :lt    then " < #{value.to_json}"
-            when :lte   then " <= #{value.to_json}"
-            when :like  then like_operator(value)
+            if operator == :eql && value.is_a?(Array)
+              value.map do |sub_value|
+                json_sub_value = sub_value.to_json.gsub("\"", "'")
+                "doc.#{property.field} == #{json_sub_value}"
+              end.join(" || ")
+            else
+              json_value = value.to_json.gsub("\"", "'")
+              condition = "doc.#{property.field}"
+              condition << case operator
+              when :eql   then " == #{json_value}"
+              when :not   then " != #{json_value}"
+              when :gt    then " > #{json_value}"
+              when :gte   then " >= #{json_value}"
+              when :lt    then " < #{json_value}"
+              when :lte   then " <= #{json_value}"
+              when :like  then like_operator(value)
+              end
             end
           end
-          body = <<-JS
-            function(doc) {
-              if (doc.type == '#{query.model.name.downcase}') {
-                if (#{conditions.join(" && ")}) {
-                  map(#{key}, doc);
-                }
-              }
-            }
-          JS
-          space = body.split("\n")[0].to_s[/^(\s+)/, 0]
-          request.body = body.gsub(/^#{space}/, '')
+          request.body =
+%Q({"map":
+  "function(doc) {
+    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) {
+      emit(#{key}, doc);
+    }
+  }"
+}
+)
         end
         request
       end
 
-      def view_request(query)
-        options = query.view.dup
-        proc_name = options.delete(:name)
-        options[:count] = query.limit if query.limit
-        options[:skip] = query.offset if query.offset
-        if options.empty?
-          options = ''
-        else
-          options = "?" + options.to_a.map {|option| "#{option[0]}=#{option[1].to_json}"}.join("&")
+      def query_string(query)
+        query_string = []
+        if query.view_options
+          query_string +=
+            query.view_options.map do |key, value|
+              if [:endkey, :key, :startkey].include? key
+                URI.escape(%Q(#{key}=#{value.to_json}))
+              else
+                URI.escape("#{key}=#{value}")
+              end
+            end
         end
-        uri = "/#{self.escaped_db_name}/" +
-              "_view/" +
-              "#{query.model.storage_name(self.name)}/" +
-              "#{proc_name}" +
-              "#{options}"
-        request = Net::HTTP::Get.new(uri)
+        query_string << "count=#{query.limit}" if query.limit
+        query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
+        query_string << "skip=#{query.offset}" if query.offset != 0
+        query_string.empty? ? nil : "?#{query_string.join('&')}"
       end
 
       def like_operator(value)
@@ -290,7 +311,7 @@ module DataMapper
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
-          view.body = { :views => model.views }.to_json
+          view.body = { :views => views }.to_json
 
           request do |http|
             http.request(view)

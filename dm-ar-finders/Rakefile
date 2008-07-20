@@ -1,51 +1,44 @@
 require 'rubygems'
 require 'spec'
-require 'rake/clean'
-require 'rake/gempackagetask'
 require 'spec/rake/spectask'
 require 'pathname'
 
-CLEAN.include '{log,pkg}/'
+ROOT = Pathname(__FILE__).dirname.expand_path
+require ROOT + 'lib/dm-ar-finders/version'
 
-spec = Gem::Specification.new do |s|
-  s.name             = 'dm-ar-finders'
-  s.version          = '0.9.3'
-  s.platform         = Gem::Platform::RUBY
-  s.has_rdoc         = true
-  s.extra_rdoc_files = %w[ README LICENSE TODO ]
-  s.summary          = 'DataMapper plugin providing ActiveRecord-style finders'
-  s.description      = s.summary
-  s.author           = 'John W Higgins'
-  s.email            = 'john@wishVPS.com'
-  s.homepage         = 'http://github.com/sam/dm-more/tree/master/dm-ar-finders'
-  s.require_path     = 'lib'
-  s.files            = FileList[ '{lib,spec}/**/*.rb', 'spec/spec.opts', 'Rakefile', *s.extra_rdoc_files ]
-  s.add_dependency('dm-core', "=#{s.version}")
-end
+AUTHOR = "John W Higgins"
+EMAIL  = "john@wishVPS.com"
+GEM_NAME = "dm-ar-finders"
+GEM_VERSION = DataMapper::ARFinders::VERSION
+GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_CLEAN = ["log", "pkg"]
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
+
+PROJECT_NAME = "dm-more"
+PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/dm-ar-finders"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY = "DataMapper plugin providing ActiveRecord-style finders"
+
+require ROOT.parent + 'tasks/hoe'
 
 task :default => [ :spec ]
 
 WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.gem_spec = spec
-end
-
-desc "Install #{spec.name} #{spec.version} (default ruby)"
+desc "Install #{GEM_NAME} #{GEM_VERSION} (default ruby)"
 task :install => [ :package ] do
-  sh "#{SUDO} gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources", :verbose => false
+  sh "#{SUDO} gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources", :verbose => false
 end
 
-desc "Uninstall #{spec.name} #{spec.version} (default ruby)"
+desc "Uninstall #{GEM_NAME} #{GEM_VERSION} (default ruby)"
 task :uninstall => [ :clobber ] do
-  sh "#{SUDO} gem uninstall #{spec.name} -v#{spec.version} -I -x", :verbose => false
+  sh "#{SUDO} gem uninstall #{GEM_NAME} -v#{GEM_VERSION} -I -x", :verbose => false
 end
 
 namespace :jruby do
-  desc "Install #{spec.name} #{spec.version} with JRuby"
+  desc "Install #{GEM_NAME} #{GEM_VERSION} with JRuby"
   task :install => [ :package ] do
-    sh %{#{SUDO} jruby -S gem install --local pkg/#{spec.name}-#{spec.version} --no-update-sources}, :verbose => false
+    sh %{#{SUDO} jruby -S gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}, :verbose => false
   end
 end
 

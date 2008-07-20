@@ -1,0 +1,11 @@
+TODO
+====
+
+* Should skipping to a new state automatically trigger :enter Proc?
+* Add loopback checking (i.e. when transitioning from a state back to itself)
+* Add support for callbacks
+* Consider using DataMapper's Enum type.
+* Consider trying out a nested state machine.
+* Not real happy with spec/unit/dsl:
+  - specs are brittle
+  - specs don't actually test much

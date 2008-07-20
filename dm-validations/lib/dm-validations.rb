@@ -97,9 +97,7 @@ module DataMapper
 
 
     def validation_property_value(name)
-      return self.instance_variable_get("@#{name}") if self.instance_variables.include?(name)
-      return self.send(name) if self.respond_to?(name)
-      nil
+      self.respond_to?(name, true) ? self.send(name) : nil
     end
 
     # Get the corresponding Resource property, if it exists.
@@ -107,15 +105,15 @@ module DataMapper
     # Note: DataMapper validations can be used on non-DataMapper resources.
     # In such cases, the return value will be nil.
     def validation_property(field_name)
-      if DataMapper::Resource > self.class
-        self.class.properties(self.repository.name)[field_name]
+      if respond_to?(:model) && (properties = model.properties(self.repository.name)) && properties.has_property?(field_name)
+        properties[field_name]
       end
     end
 
     def validation_association_keys(name)
-      if self.class.relationships.has_key?(name)
+      if model.relationships.has_key?(name)
         result = []
-        relation = self.class.relationships[name]
+        relation = model.relationships[name]
         relation.child_key.each do |key|
           result << key.name
         end
@@ -167,7 +165,7 @@ module DataMapper
       def create_context_instance_methods(context)
         name = "valid_for_#{context.to_s}?"
         if !self.instance_methods.include?(name)
-          class_eval <<-EOS
+          class_eval <<-EOS, __FILE__, __LINE__
             def #{name}
               valid?('#{context.to_s}'.to_sym)
             end
@@ -176,7 +174,7 @@ module DataMapper
 
         all = "all_valid_for_#{context.to_s}?"
         if !self.instance_methods.include?(all)
-          class_eval <<-EOS
+          class_eval <<-EOS, __FILE__, __LINE__
             def #{all}
               all_valid?('#{context.to_s}'.to_sym)
             end
