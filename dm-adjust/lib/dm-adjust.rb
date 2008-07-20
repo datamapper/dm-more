@@ -1,6 +1,9 @@
 require 'rubygems'
+require 'pathname'
 
-gem 'dm-core', '=0.9.3'
+require Pathname(__FILE__).dirname + 'dm-adjust/version'
+
+gem 'dm-core', DataMapper::More::Adjust::VERSION
 require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-adjust'

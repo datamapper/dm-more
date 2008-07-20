@@ -1,5 +1,5 @@
 module DataMapper
-  module Adapters
+  module More
     class RestAdapter
       VERSION = "0.9.3"
     end

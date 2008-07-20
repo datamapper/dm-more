@@ -1,9 +1,10 @@
 require 'rubygems'
-gem 'dm-core', '=0.9.3'
+require 'pathname'
+require Pathname(__FILE__).dirname + 'rest_adapter/version'
+gem 'dm-core', DataMapper::More::RestAdapter::VERSION
 require 'dm-core'
 require 'extlib'
 require 'dm-serializer'
-require 'pathname'
 require 'net/http'
 require 'rexml/document'
 
