@@ -26,6 +26,6 @@ module DataMapper
           raise ArgumentError.new("+value+ must be nil or a String")
         end
       end
-    end # class Yaml
+    end # class BCryptHash
   end # module Types
 end # module DataMapper
