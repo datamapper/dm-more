@@ -5,6 +5,7 @@ README.txt
 Rakefile
 TODO
 lib/dm-types.rb
+lib/dm-types/bcrypt_hash.rb
 lib/dm-types/csv.rb
 lib/dm-types/enum.rb
 lib/dm-types/epoch_time.rb
@@ -16,6 +17,7 @@ lib/dm-types/serial.rb
 lib/dm-types/uri.rb
 lib/dm-types/version.rb
 lib/dm-types/yaml.rb
+spec/integration/bcrypt_hash_spec.rb
 spec/integration/enum_spec.rb
 spec/integration/file_path_spec.rb
 spec/integration/flag_spec.rb
@@ -25,6 +27,7 @@ spec/integration/uri_spec.rb
 spec/integration/yaml_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+spec/unit/bcrypt_hash_spec.rb
 spec/unit/csv_spec.rb
 spec/unit/enum_spec.rb
 spec/unit/epoch_time_spec.rb
