@@ -1,7 +1,7 @@
 # An invalid example.
 class InvalidStates
   include DataMapper::Resource
-  
+
   property :id, Serial
 
   is :state_machine do

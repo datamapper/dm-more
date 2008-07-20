@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe "StateMachine" do
-  
+
   describe "is_state_machine" do
 
     before(:each) do
@@ -18,13 +18,13 @@ describe "StateMachine" do
         stub!(:pop_state_machine_context)
       end
     end
-    
+
     it "declaration should succeed" do
       class Earth
         is_state_machine
       end
     end
-    
+
   end
 end
 

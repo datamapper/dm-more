@@ -8,7 +8,7 @@ class TrafficLight
     state :green,  :enter => Proc.new { |o| o.log << "G" }
     state :yellow, :enter => Proc.new { |o| o.log << "Y" }
     state :red,    :enter => Proc.new { |o| o.log << "R" }
-    
+
     event :forward do
       transitions :from => :green,  :to => :yellow
       transitions :from => :yellow, :to => :red
@@ -21,7 +21,7 @@ class TrafficLight
       transitions :from => :red,    :to => :yellow
     end
   end
-  
+
   def log;     @log ||= [] end
   def log=(x); @log ||= [] end
 

@@ -27,7 +27,7 @@ module DataMapper
         extend DataMapper::Is::StateMachine::EventDsl
         extend DataMapper::Is::StateMachine::StateDsl
         include DataMapper::Is::StateMachine::InstanceMethods
-    
+
         # ===== Setup context =====
         options = { :column => :state, :initial => nil }.merge(options)
         column  = options[:column]
@@ -59,9 +59,9 @@ module DataMapper
         # ===== Teardown context =====
         pop_state_machine_context
       end
-      
+
       protected
-      
+
       def push_state_machine_context(label)
         ((@is_state_machine ||= {})[:context] ||= []) << label
 
@@ -70,18 +70,18 @@ module DataMapper
         # @is_state_machine[:context] ||= []
         # @is_state_machine[:context] << label
       end
-      
+
       def pop_state_machine_context
         @is_state_machine[:context].pop
       end
-      
+
       def state_machine_context?(label)
         (i = @is_state_machine) && (c = i[:context]) &&
         c.respond_to?(:include?) && c.include?(label)
       end
 
       module InstanceMethods
-        
+
         def initialize(*args)
           super
           # ===== Call :enter Proc if present =====
