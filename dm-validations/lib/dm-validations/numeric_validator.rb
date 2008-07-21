@@ -28,7 +28,16 @@ module DataMapper
           error_message ||= '%s must be an integer'.t(Extlib::Inflection.humanize(@field_name))
         else
           # FIXME: if precision and scale are not specified, can we assume that it is an integer?
+          #        probably not, as floating point numbers don't have hard
+          #        defined scale. the scale floats with the length of the
+          #        integral and precision. Ie. if precision = 10 and integral
+          #        portion of the number is 9834 (4 digits), the max scale will
+          #        be 6 (10 - 4). But if the integral length is 1, max scale
+          #        will be (10 - 1) = 9, so 1.234567890.
+          #        In MySQL somehow you can hard-define scale on floats. Not
+          #        quite sure how that works...
           if precision && scale
+            #handles both Float when it has scale specified and BigDecimal
             if precision > scale && scale > 0
               return true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
             elsif precision > scale && scale == 0
@@ -38,6 +47,14 @@ module DataMapper
             else
               raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
             end
+          elsif precision && scale.nil?
+            # for floats, if scale is not set
+            
+            #total number of digits is less or equal precision
+            return true if value.gsub(/[^\d]/,'').length <= precision
+            
+            #number of digits before decimal == precision, and the number is x.0. same as scale = 0
+            return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
           else
             return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
           end
