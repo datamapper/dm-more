@@ -31,6 +31,11 @@ end
 module DataMapper
   module Adapters
     class CouchDBAdapter < AbstractAdapter
+      def initialize(name, uri_or_options)
+        super(name, uri_or_options)
+        @resource_naming_convention = NamingConventions::Underscored
+      end
+
       # Returns the name of the CouchDB database.
       #
       # Raises an exception if the CouchDB database name is invalid.
