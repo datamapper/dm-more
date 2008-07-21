@@ -14,7 +14,7 @@ module DataMapper
     # Converts a Resource to a JSON representation.
     def to_json(dirty = false)
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
-      inferred_fields = {:type => self.class.name.downcase}
+      inferred_fields = {:type => self.class.storage_name(repository.name)}
       return (property_list.inject(inferred_fields) do |accumulator, property|
         accumulator[property.field] =
           unless property.type.respond_to?(:dump)
@@ -134,7 +134,7 @@ module DataMapper
               end
             end
           end
-        elsif doc['type'] && doc['type'].downcase == query.model.name.downcase
+        elsif doc['type'] && doc['type'] == query.model.storage_name(repository.name)
           data = doc
           Collection.new(query) do |collection|
             collection.load(
@@ -153,7 +153,7 @@ module DataMapper
         if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
         elsif !doc['rows']
-          data = doc if doc['type'] && doc['type'].downcase == query.model.name.downcase
+          data = doc if doc['type'] && doc['type'] == query.model.storage_name(repository.name)
         end
         if data
           query.model.load(
@@ -209,7 +209,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-  if (doc.type == '#{query.model.name.downcase}') {
+  if (doc.type == '#{query.model.storage_name(repository.name)}') {
     emit(#{key}, doc);
     }
   }"
@@ -239,7 +239,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (doc.type == '#{query.model.name.downcase}' && #{conditions.join(" && ")}) {
+    if (doc.type == '#{query.model.storage_name(repository.name)}' && #{conditions.join(" && ")}) {
       emit(#{key}, doc);
     }
   }"
