@@ -4,6 +4,7 @@ require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
 gem 'dm-core', DataMapper::More::CouchDBAdapter::VERSION
 require 'dm-core'
 require 'json'
+require 'ostruct'
 require 'net/http'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/json_object'
@@ -126,7 +127,7 @@ module DataMapper
           if doc['rows'].empty?
             []
           elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
-            doc['rows']
+            doc['rows'].map {|row| OpenStruct.new(row)}
           else
             Collection.new(query) do |collection|
               doc['rows'].each do |doc|
