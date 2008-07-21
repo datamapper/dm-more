@@ -3,7 +3,6 @@ require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
 gem 'dm-core', DataMapper::More::CouchDBAdapter::VERSION
 require 'dm-core'
-require 'base64'
 require 'json'
 require 'net/http'
 require 'uri'
