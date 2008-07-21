@@ -9,7 +9,7 @@ require ROOT + 'lib/dm-adjust/version'
 AUTHOR = "Sindre Aarsaether"
 EMAIL  = "sindre [a] identu [d] no"
 GEM_NAME = "dm-adjust"
-GEM_VERSION = DataMapper::Adjust::VERSION
+GEM_VERSION = DataMapper::More::Adjust::VERSION
 GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }

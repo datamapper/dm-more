@@ -15,10 +15,10 @@ module DataMapper
         #       state :green,  :enter => Proc.new { |o| o.log("G") }
         #       state :yellow, :enter => Proc.new { |o| o.log("Y") }
         #       state :red,    :enter => Proc.new { |o| o.log("R") }
-        #       
+        #
         #       # event definitions go here...
         #     end
-        #   
+        #
         #     def log(string)
         #       Merb::Logger.info(string)
         #     end
@@ -33,7 +33,7 @@ module DataMapper
           state = Data::State.new(name, machine, options)
           machine.states << state
         end
-  
+
       end # StateDsl
     end # StateMachine
   end # Is

@@ -2,20 +2,20 @@ module DataMapper
   module Is
     module StateMachine
       module Data
-    
+
         # Represents one state machine
         class Machine
 
           attr_reader :column, :initial
           attr_accessor :current_state_name
           attr_accessor :events, :states
-          
+
           def initialize(column, initial)
             @column, @initial   = column, initial
             @events, @states    = [], []
             @current_state_name = initial
           end
-          
+
           # Fire (activate) the event with name +event_name+
           #
           # @api public
@@ -44,7 +44,7 @@ module DataMapper
             find_state(@current_state_name)
             # TODO: add caching, i.e. with `@current_state ||= ...`
           end
-          
+
           # Find event whose name is +event_name+
           #
           # @api semipublic
@@ -52,7 +52,7 @@ module DataMapper
             @events.find { |event| event.name.to_s == event_name.to_s }
             # TODO: use a data structure that prevents duplicates
           end
-          
+
           # Find state whose name is +event_name+
           #
           # @api semipublic
@@ -60,9 +60,9 @@ module DataMapper
             @states.find { |state| state.name.to_s == state_name.to_s }
             # TODO: use a data structure that prevents duplicates
           end
-          
+
         end
-        
+
       end # Data
     end # StateMachine
   end # Is

@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent.parent + 'spec_helper'
 
 describe "EventDsl" do
-  
+
   describe "event" do
 
     before(:each) do
@@ -23,7 +23,7 @@ describe "EventDsl" do
     end
 
   end
-  
+
   describe "transitions" do
 
     before(:each) do
@@ -52,5 +52,5 @@ describe "EventDsl" do
     end
 
   end
-  
+
 end

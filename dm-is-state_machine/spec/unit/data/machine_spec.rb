@@ -5,11 +5,11 @@ module MachineHelper
   def new_machine(*args)
     DataMapper::Is::StateMachine::Data::Machine.new(*args)
   end
-  
+
   def new_state(name, machine, options = {})
     mock(name, :name => name, :machine => machine, :options => options)
   end
-  
+
   def new_event(name, machine)
     mock(name, :name => name, :machine => machine)
   end
@@ -17,7 +17,7 @@ end
 
 describe DataMapper::Is::StateMachine::Data::Machine do
   include MachineHelper
-  
+
   describe "new Machine, no events" do
     before(:each) do
       @machine = new_machine(:power, :off)
@@ -82,7 +82,7 @@ describe DataMapper::Is::StateMachine::Data::Machine do
     it "#current_state_name should work" do
       @machine.current_state_name.should == :off
     end
-    
+
     it "#find_event should return nothing" do
       @machine.find_event(:turn_on).should == @turn_on
     end
@@ -93,5 +93,5 @@ describe DataMapper::Is::StateMachine::Data::Machine do
       @machine.current_state_name.should == :on
     end
   end
-  
+
 end

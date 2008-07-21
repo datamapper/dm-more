@@ -8,6 +8,12 @@ namespace :dm do
   end
 
   namespace :db do
+    desc "Create a sample database.yml file"
+    task :database_yaml => :merb_start do
+      sample_location = File.join(File.dirname(__FILE__), "..", "merb", "orms", "data_mapper", "database.yml.sample")
+      target_location = Merb.dir_for(:config)
+      FileUtils.cp sample_location, target_location
+    end
     desc "Perform automigration"
     task :automigrate => :merb_start do
       ::DataMapper::AutoMigrator.auto_migrate

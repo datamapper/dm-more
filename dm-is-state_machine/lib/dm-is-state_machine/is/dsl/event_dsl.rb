@@ -61,7 +61,7 @@ module DataMapper
           end
           event_name   = @is_state_machine[:event][:name]
           event_object = @is_state_machine[:event][:object]
-          
+
           from = options[:from]
           to   = options[:to]
           event_object.add_transition(from, to)

@@ -9,7 +9,7 @@ require ROOT + 'lib/dm-aggregates/version'
 AUTHOR = "Foy Savas"
 EMAIL  = "foysavas@gmail.com"
 GEM_NAME = "dm-aggregates"
-GEM_VERSION = DataMapper::Aggregates::VERSION
+GEM_VERSION = DataMapper::More::Aggregates::VERSION
 GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }

@@ -1,5 +1,5 @@
 module DataMapper
-  module Adapters
+  module More
     class CouchDBAdapter
       VERSION = "0.9.3"
     end

@@ -1,7 +1,8 @@
 if defined?(Merb::Plugins)
   require 'rubygems'
+  require 'merb_datamapper/version'
 
-  gem 'dm-core', '=0.9.3'
+  gem 'dm-core', DataMapper::MerbDataMapper::VERSION
   require 'dm-core'
 
   if File.file?(Merb.dir_for(:config) / "database.yml")

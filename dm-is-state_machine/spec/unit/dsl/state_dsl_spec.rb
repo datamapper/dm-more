@@ -2,7 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent.parent + 'spec_helper'
 
 describe "StateDsl" do
-  
+
   describe "state" do
 
     before(:each) do
