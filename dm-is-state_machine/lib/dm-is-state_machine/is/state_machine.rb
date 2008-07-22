@@ -31,7 +31,7 @@ module DataMapper
         # ===== Setup context =====
         options = { :column => :state, :initial => nil }.merge(options)
         column  = options[:column]
-        initial = options[:initial]
+        initial = options[:initial].to_s
         unless properties.detect { |p| p.name == column }
           property column, String, :default => initial
         end
