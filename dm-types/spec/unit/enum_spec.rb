@@ -81,5 +81,16 @@ describe DataMapper::Types::Enum do
       @int_enum.typecast(1,   :property).should == 1
       @int_enum.typecast(1.1, :property).should == 1
     end
+
+    it "should not throw an error when value is nil" do
+      @sym_enum = DataMapper::Types::Enum[:uno]
+      @sym_enum.typecast( nil, :property).should == nil
+
+      @str_enum = DataMapper::Types::Enum["uno"]
+      @str_enum.typecast( nil, :property).should == nil
+
+      @int_enum = DataMapper::Types::Enum[1, 2, 3]
+      @int_enum.typecast( nil, :property ).should == nil
+    end
   end
 end
