@@ -7,7 +7,7 @@ describe DataMapper::Types::URI do
       include DataMapper::Resource
 
       property :id, Integer, :serial => true
-      property :uri, URI
+      property :uri, DM::URI
     end
     URITest.auto_migrate!
   end
