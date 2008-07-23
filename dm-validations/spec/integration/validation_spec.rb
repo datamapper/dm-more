@@ -88,6 +88,26 @@ describe DataMapper::Validate do
     end
   end
 
+  describe '#create!' do
+    before do
+      Yacht.auto_migrate!
+    end
+
+    it "should save object without running validations" do
+      Yacht.create!.should be_a_kind_of(Yacht)
+    end
+  end
+
+  describe "#create" do
+    before do
+      Yacht.auto_migrate!
+    end
+
+    it "should run validations" do
+      Yacht.create.new_record?.should be_true
+    end
+  end
+
   it "should respond to validatable? (for recursing assocations)" do
     Yacht.new.should be_validatable
     Class.new.new.should_not be_validatable

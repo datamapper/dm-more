@@ -34,6 +34,23 @@ module DataMapper
         model.send(:alias_method, :save!, :save)
         model.send(:alias_method, :save,  :save_with_validations)
       end
+      model.class_eval <<-EOS
+      class << self
+        method_defined?(:create) && !method_defined?(:create!)
+          def create(attributes = {}, context = :default)
+            resource = new(attributes)
+            return resource unless resource.valid?(context)
+            resource.save
+            resource
+          end
+
+          def create!(attributes = {})
+            resource = new(attributes)
+            resource.save!
+            resource
+          end
+        end
+      EOS
     end
 
     # Validate the resource before saving. Use #save! to save
@@ -187,13 +204,18 @@ module DataMapper
       #
       def add_validator_to_context(opts, fields, klazz)
         fields.each do |field|
+          validator = klazz.new(field, opts)
           if opts[:context].is_a?(Symbol)
-            validators.context(opts[:context]) << klazz.new(field, opts)
-            create_context_instance_methods(opts[:context])
+            unless validators.context(opts[:context]).include?(validator)
+              validators.context(opts[:context]) << validator
+              create_context_instance_methods(opts[:context])
+            end
           elsif opts[:context].is_a?(Array)
             opts[:context].each do |c|
-              validators.context(c) << klazz.new(field, opts)
-              create_context_instance_methods(c)
+              unless validators.context(c).include?(validator)
+                validators.context(c) << validator
+                create_context_instance_methods(c)
+              end
             end
           end
         end
