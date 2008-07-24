@@ -26,7 +26,7 @@ describe DataMapper::Validate::LengthValidator do
     end
     wock = Jabberwock.new
     wock.valid?.should == false
-    wock.errors.full_messages.first.should == 'worble warble'
+    wock.errors.full_messages.sort.last.should == 'worble warble'
     wock.snickersnack = "hello"
     wock.id = 1
     wock.valid?.should == true
