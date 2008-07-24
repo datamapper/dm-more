@@ -23,7 +23,6 @@ class TrafficLight
   end
 
   def log;     @log ||= [] end
-  def log=(x); @log ||= [] end
 
   attr_reader :init
   def initialize(*args)

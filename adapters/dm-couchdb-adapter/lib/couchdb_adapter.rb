@@ -125,7 +125,7 @@ module DataMapper
         end
         if doc['rows']
           if doc['rows'].empty?
-            []
+            Collection.new(query) { [] }
           elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
             doc['rows'].map {|row| OpenStruct.new(row)}
           else
@@ -177,7 +177,8 @@ module DataMapper
           view_request(query)
         elsif query.conditions.length == 1 &&
               query.conditions.first[0] == :eql &&
-              query.conditions.first[1].key?
+              query.conditions.first[1].key? &&
+              !query.conditions.first[2].is_a?(Array)
           get_request(query)
         else
           ad_hoc_request(query)

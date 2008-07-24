@@ -54,6 +54,8 @@ module DataMapper
               aggregate_field_statement(repository, property.operator, property.target, qualify)
             when Property
               original_property_to_column_name(repository, property, qualify)
+						when Query::Path
+							 original_property_to_column_name(repository, property, qualify)
             else
               raise ArgumentError, "+property+ must be a DataMapper::Query::Operator or a DataMapper::Property, but was a #{property.class} (#{property.inspect})"
           end

@@ -38,6 +38,7 @@ module DataMapper
 
       def self.typecast(value, property)
         # Attempt to typecast using the class of the first item in the map.
+        return value if value.nil?
         case self.flag_map[1]
           when Symbol then value.to_sym
           when String then value.to_s

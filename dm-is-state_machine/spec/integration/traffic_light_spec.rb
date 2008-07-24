@@ -21,7 +21,7 @@ describe TrafficLight do
   end
 
   it "should start off in the green state" do
-    @t.color.should == :green
+    @t.color.should == "green"
   end
 
   it "should allow the color to be set" do
@@ -45,7 +45,7 @@ describe TrafficLight do
     end
 
     it "should transition to :yellow, :red, :green" do
-      @t.color.should == :green
+      @t.color.should == "green"
       @t.forward!
       @t.color.should == "yellow"
       @t.log.should == %w(G Y)
@@ -99,7 +99,7 @@ describe TrafficLight do
     end
 
     it "should transition to :red, :yellow, :green" do
-      @t.color.should == :green
+      @t.color.should == "green"
       @t.log.should == %w(G)
       @t.backward!
       @t.color.should == "red"

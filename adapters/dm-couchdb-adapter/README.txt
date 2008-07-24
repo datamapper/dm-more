@@ -21,7 +21,7 @@ class User
   include DataMapper::Resource
 
   property :name, String
-  view :by_name, "function(doc) { if (doc.type == 'user') map(doc.name, doc) }"
+  view :by_name, { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" }
 end
 
 You could then call User.by_name to get a listing of users ordered by name, or pass a key to try and find a specific user by their name, ie User.by_name(:key => 'username').

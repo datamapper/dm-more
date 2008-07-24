@@ -65,8 +65,52 @@ describe DataMapper::Validate::NumericValidator do
     describe 'Float' do
       describe 'with default precision and scale' do
         before :all do
-          class RobotFish < Fish
+          class CloudFish < Fish
             property :average_weight, Float
+          end
+        end
+
+        before do
+          @cloud_fish = CloudFish.new
+        end
+
+        it 'should allow up to 10 digits before the decimal' do
+          @cloud_fish.average_weight = 0
+          @cloud_fish.should be_valid
+
+          @cloud_fish.average_weight = 9_999_999_999
+          @cloud_fish.should be_valid
+
+          @cloud_fish.average_weight = 10_000_000_000
+          @cloud_fish.should_not be_valid
+        end
+
+        it 'should allow 0 digits after the decimal' do
+          @cloud_fish.average_weight = 0
+          @cloud_fish.should be_valid
+        end
+        
+        it 'should allow any digits after the decimal' do
+          @cloud_fish.average_weight = 1.2
+          @cloud_fish.should be_valid
+          
+          @cloud_fish.average_weight = 123.456
+          @cloud_fish.should be_valid
+        end
+        
+        it "should only allow up to 10 digits overall" do
+          @cloud_fish.average_weight = 1.234567890
+          @cloud_fish.should be_valid
+          
+          @cloud_fish.average_weight = 1.2345678901
+          @cloud_fish.should_not be_valid
+        end
+      end
+
+      describe 'with default precision and scaleof 0' do
+        before :all do
+          class RobotFish < Fish
+            property :average_weight, Float, :scale => 0
           end
         end
 
@@ -111,6 +155,10 @@ describe DataMapper::Validate::NumericValidator do
 
         before do
           @gold_fish = GoldFish.new
+        end
+        
+        it "should have scale of 2" do
+          @gold_fish.model.average_weight.scale.should == 2
         end
 
         it 'should allow up to 2 digits before the decimal' do
