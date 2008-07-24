@@ -36,10 +36,10 @@ EMAIL  = "ssmoot@gmail.com"
 GEM_NAME = "dm-more"
 GEM_VERSION = DataMapper::More::VERSION
 GEM_DEPENDENCIES = [["dm-core", GEM_VERSION], *(gems - %w[ merb_datamapper ]).collect { |g| [g, GEM_VERSION] }]
-GEM_CLEAN = ['**/*.{gem,DS_Store}', '*.db', "doc/rdoc", ".config", "coverage", "cache", "lib/merb-more.rb"]
+GEM_CLEAN = ['**/*.{gem,DS_Store}', '*.db', "doc/rdoc", ".config", "**/coverage", "cache", "lib/merb-more.rb"]
 GEM_EXTRAS = { :has_rdoc => false }
 
-PROJECT_NAME = "dm-more"
+PROJECT_NAME = "datamapper"
 PROJECT_URL  = "http://datamapper.org"
 PROJECT_DESCRIPTION = "Faster, Better, Simpler."
 PROJECT_SUMMARY = "An Object/Relational Mapper for Ruby"
@@ -102,6 +102,13 @@ task :bundle => [:package, :build_gems] do
       rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
       sh %{cp #{gem}/pkg/#{File.basename(gem)}-#{$1}.gem bundle/}
     end
+  end
+end
+
+desc "Release all dm-more gems"
+task :release_all => [:release] do
+  gem_paths.each do |dir|
+    Dir.chdir(dir){ sh "rake release VERSION=#{DataMapper::More::VERSION}" }
   end
 end
 

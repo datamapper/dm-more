@@ -14,7 +14,7 @@ GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 
-PROJECT_NAME = "dm-more"
+PROJECT_NAME = "datamapper"
 PROJECT_URL  = "http://github.com/pjb3/dm-more/tree/master/adapters/dm-rest-adapter"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = "REST Adapter for DataMapper"
 

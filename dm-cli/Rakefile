@@ -15,7 +15,7 @@ GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ],
                :executables => %w[ dm ], :bindir => "bin" }
 
-PROJECT_NAME = "dm-more"
+PROJECT_NAME = "datamapper"
 PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/dm-cli"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = "DataMapper plugin allowing interaction with models through a CLI"
 
