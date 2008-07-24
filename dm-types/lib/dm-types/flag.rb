@@ -1,6 +1,9 @@
 module DataMapper
   module Types
     class Flag < DataMapper::Type(Integer)
+      def self.inherited(target)
+        target.instance_variable_set("@primitive", self.primitive)
+      end
 
       def self.flag_map
         @flag_map
@@ -11,7 +14,7 @@ module DataMapper
       end
 
       def self.new(*flags)
-        type = Flag.clone  # cannot dup a Class
+        type = Class.new(Flag)
         type.flag_map = {}
 
         flags.each_with_index do |flag, i|
@@ -45,6 +48,13 @@ module DataMapper
         flags = value.is_a?(Array) ? value : [value]
         flags.map!{ |f| f.to_sym }
         flag_map.invert.values_at(*flags.flatten).compact.inject(0) { |sum, i| sum + i }
+      end
+
+      def self.typecast(value, property)
+        case value
+        when Array then value.map {|v| v.to_sym}
+        else value.to_sym
+        end
       end
     end # class Flag
   end # module Types
