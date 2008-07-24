@@ -65,7 +65,7 @@ module DataMapper
       #       with custom ones. For instance:
       #       :messages => {:presence => "Field is required",
       #                     :format => "Field has invalid format"}
-      #       Hash keys are: :presence, :format, :length, :is_unique, 
+      #       Hash keys are: :presence, :format, :length, :is_unique,
       #                      :is_number, :is_primitive
       #
       #   :message => "Some message"

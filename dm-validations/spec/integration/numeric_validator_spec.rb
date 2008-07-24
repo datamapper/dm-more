@@ -89,19 +89,19 @@ describe DataMapper::Validate::NumericValidator do
           @cloud_fish.average_weight = 0
           @cloud_fish.should be_valid
         end
-        
+
         it 'should allow any digits after the decimal' do
           @cloud_fish.average_weight = 1.2
           @cloud_fish.should be_valid
-          
+
           @cloud_fish.average_weight = 123.456
           @cloud_fish.should be_valid
         end
-        
+
         it "should only allow up to 10 digits overall" do
           @cloud_fish.average_weight = 1.234567890
           @cloud_fish.should be_valid
-          
+
           @cloud_fish.average_weight = 1.2345678901
           @cloud_fish.should_not be_valid
         end
@@ -156,7 +156,7 @@ describe DataMapper::Validate::NumericValidator do
         before do
           @gold_fish = GoldFish.new
         end
-        
+
         it "should have scale of 2" do
           @gold_fish.model.average_weight.scale.should == 2
         end
