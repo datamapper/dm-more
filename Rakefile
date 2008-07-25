@@ -16,6 +16,7 @@ gem_paths = %w[
   dm-cli
   dm-is-list
   dm-is-nested_set
+  dm-is-state_machine
   dm-is-tree
   dm-migrations
   dm-observer
