@@ -108,7 +108,7 @@ describe DataMapper::Validate do
     end
   end
 
-  it "should respond to validatable? (for recursing assocations)" do
+  it "should respond to validatable? (for recursing associations)" do
     Yacht.new.should be_validatable
     Class.new.new.should_not be_validatable
   end
