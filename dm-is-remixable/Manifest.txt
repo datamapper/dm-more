@@ -1,0 +1,12 @@
+History.txt
+LICENSE
+Manifest.txt
+README.txt
+Rakefile
+TODO
+lib/dm-is-remixable.rb
+lib/dm-is-remixable/is/remixable.rb
+lib/dm-is-remixable/is/version.rb
+spec/integration/remixable_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
