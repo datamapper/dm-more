@@ -3,8 +3,7 @@ FIXME
 - 's' table and Anonymous classes (created when two Classes remix the same Remixable?)
 
 TODO
-====
-- Many-To-Many :through => Resource
+====  
 - Test nested remix with M:M through Remixable, :for => Class
 - Test with Namespaced Models
 - Test remix 'non-remixables' (Could be cool) Author.remix(Book) => author_books
@@ -51,3 +50,14 @@ CONSIDERATIONS
   
   Benefit: On remixing you dont end up with crazy amounts of classes/names UserAddress, AccountAddress, etc
   Problem: How does enhancing work (since all Address's will use same class)
+
+- Many-To-Many :through => Resource
+  Article.remix Taggable, :through => Resource
+  Video.remix Taggable, :through => Resource
+  -This would create a M:M relationship with tags through article_tags and video_tags
+  -This is stubbed out already in remixable.rb
+  -Does this make sense as a feature or does just doing a normal 'has n, :tags, :through => Resource' fit the bill
+  -Note: in this case 'tags' would be a table shared amongst all remixers, rather than a dedicated table
+    for a single remixer
+    
+    
