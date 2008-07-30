@@ -18,6 +18,10 @@ module DataMapper
         add_error(target,message,@method_name) if !result
         result
       end
+
+      def ==(other)
+        @method_name == other.instance_variable_get(:@method_name) && super
+      end
     end # class MethodValidator
 
     module ValidatesWithMethod
