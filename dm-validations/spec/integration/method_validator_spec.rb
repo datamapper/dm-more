@@ -10,6 +10,7 @@ describe DataMapper::Validate::MethodValidator do
 
       validates_with_method :fail_validation, :when => [:testing_failure]
       validates_with_method :pass_validation, :when => [:testing_success]
+      validates_with_method :first_validation, :second_validation, :when => [:multiple_validations]
 
       def fail_validation
         return false, 'Validation failed'
@@ -17,6 +18,14 @@ describe DataMapper::Validate::MethodValidator do
 
       def pass_validation
         return true
+      end
+
+      def first_validation
+        return true
+      end
+
+      def second_validation
+        return false, 'Second Validation was false'
       end
     end
   end
@@ -27,5 +36,11 @@ describe DataMapper::Validate::MethodValidator do
     ship = Ship.new
     ship.valid_for_testing_failure?.should == false
     ship.errors.full_messages.include?('Validation failed').should == true
+  end
+
+  it "should run multiple validation methods" do
+    ship = Ship.new
+    ship.valid_for_multiple_validations?.should == false
+    ship.errors.full_messages.should include('Second Validation was false')
   end
 end
