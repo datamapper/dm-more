@@ -20,6 +20,7 @@ require dir / 'length_validator'
 require dir / 'within_validator'
 require dir / 'numeric_validator'
 require dir / 'method_validator'
+require dir / 'block_validator'
 require dir / 'uniqueness_validator'
 require dir / 'acceptance_validator'
 require dir / 'custom_validator'
@@ -150,6 +151,7 @@ module DataMapper
       include DataMapper::Validate::ValidatesWithin
       include DataMapper::Validate::ValidatesIsNumber
       include DataMapper::Validate::ValidatesWithMethod
+      include DataMapper::Validate::ValidatesWithBlock
       include DataMapper::Validate::ValidatesIsUnique
       include DataMapper::Validate::AutoValidate
 
