@@ -116,52 +116,22 @@ module DataMapper
           
           unless Object.const_defined? options[:class_name]
             puts " ~ Generating Remixed Model: #{options[:class_name]}"
-          
-            #Create Remixed Model          
-            klass = Class.new Object do
-              include DataMapper::Resource
-            end
-          
-            #Give remixed model a name and create its constant
-            model = Object.const_set options[:class_name], klass
-
-            #Get instance methods & validators
-            model.send(:include,remixable)
-
-            #port the properties over...
-            remixable.properties.each do |prop|
-              model.property(prop.name, prop.type, prop.options)
-            end
-                                     
+            model = generate_remixed_model(remixable, options)
+            
             #Create relationships between Remixer and remixed class          
             if options[:other_model] 
               # M:M Class-To-Class w/ Remixable Module as intermediate table
               # has n and belongs_to (or One-To-Many)
-              options[:other_model] = Object.const_get options[:other_model]
-            
-              self.has cardinality, options[:table_name].intern
-              options[:other_model].has cardinality, options[:table_name].intern
-            
-              model.belongs_to  Extlib::Inflection.tableize(self.name).intern
-              model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
-            
+              remix_many_to_many cardinality, model, options
             else 
+              remix_one_to_many cardinality, model, options
               # 1:M Class-To-Remixable
               # has n and belongs_to (or One-To-Many)
-            
-              self.has cardinality, options[:table_name].intern
-              model.belongs_to Extlib::Inflection.tableize(self.name).intern
-
             end
 
             #Add accessor alias
-            unless options[:accessor].nil?
-              self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-                alias #{options[:accessor].intern} #{options[:table_name].intern}
-                alias #{options[:accessor].intern}= #{options[:table_name].intern}=
-              EOS
-            end
-          
+            attach_accessor(options) unless options[:accessor].nil?
+
             #Add the remixed model to the remixables list
             @remixables = {} if @remixables.nil?
             @remixables[remixable] = model
@@ -194,6 +164,77 @@ module DataMapper
             raise Exception, "#{remixable} must be remixed before it can be enhanced"
           end
         end
+        
+        private
+        
+        # - attach_accessor
+        # ==== Description
+        #   Creates additional alias for r/w accessor
+        # ==== Parameters
+        #   options <Hash> options hash
+        def attach_accessor(options)
+          self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+            alias #{options[:accessor].intern} #{options[:table_name].intern}
+            alias #{options[:accessor].intern}= #{options[:table_name].intern}=
+          EOS
+        end
+        
+        # - remix_one_to_many
+        # ==== Description
+        #   creates a one to many relationship Class has many of remixed model
+        # ==== Parameters
+        #   cardinality <Fixnum> cardinality of relationship
+        #   model       <Class> remixed model that 'self' is relating to
+        #   options     <Hash> options hash
+        def remix_one_to_many(cardinality, model, options)
+          self.has cardinality, options[:table_name].intern
+          model.belongs_to Extlib::Inflection.tableize(self.name).intern
+        end
+        
+        # - remix_many_to_many
+        # ==== Description
+        #   creates a many to many relationship between two DataMapper models THROUGH a Remixable module
+        # ==== Parameters
+        #   cardinality <Fixnum> cardinality of relationship
+        #   model       <Class> remixed model that 'self' is relating through
+        #   options     <Hash> options hash
+        def remix_many_to_many(cardinality, model, options)
+          options[:other_model] = Object.const_get options[:other_model]
+        
+          self.has cardinality, options[:table_name].intern
+          options[:other_model].has cardinality, options[:table_name].intern
+        
+          model.belongs_to  Extlib::Inflection.tableize(self.name).intern
+          model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
+        end
+        
+        # - generate_remixed_model
+        # ==== Description
+        #   Generates a Remixed Model Class from a Remixable Module and options
+        # ==== Parameters
+        #   remixable <Module> module that is being remixed
+        #   options   <Hash> options hash
+        # ==== Returns
+        #   <Class> remixed model
+        def generate_remixed_model(remixable,options)
+          #Create Remixed Model          
+          klass = Class.new Object do
+            include DataMapper::Resource
+          end
+        
+          #Give remixed model a name and create its constant
+          model = Object.const_set options[:class_name], klass
+
+          #Get instance methods & validators
+          model.send(:include,remixable)
+
+          #port the properties over...
+          remixable.properties.each do |prop|
+            model.property(prop.name, prop.type, prop.options)
+          end
+          
+          model
+        end
                  
       end # RemixerClassMethods
       
@@ -201,6 +242,11 @@ module DataMapper
       # ==== Description
       #   Methods available to any model that is :remixable
       module RemixeeClassMethods
+        # - suffix
+        # ==== Description
+        #   modifies the storage name suffix, which is by default based on the Remixable Module name
+        # ==== Parameters
+        #   suffix <String> storage name suffix to use (singular)
         def suffix(sfx=nil)
           @suffix = sfx unless sfx.nil?
           @suffix
