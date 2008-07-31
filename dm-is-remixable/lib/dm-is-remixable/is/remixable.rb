@@ -220,7 +220,7 @@ module DataMapper
         
           #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
           # attach a validates_is_unique if the validator is included.
-          puts " ~ options[:unique] is not yet supported"
+          puts " ~ options[:unique] is not yet supported" if options[:unique]
           
           model.belongs_to  Extlib::Inflection.tableize(self.name).intern
           model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
