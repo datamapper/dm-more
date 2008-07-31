@@ -10,18 +10,22 @@ class Article
   property :title, String
   property :url, String
   
-  remix 1,  Image,
-    :accessor => "pics"
-    
-  remix n,  Viewable, :accessor => "views"
   
-  remix    n,  Commentable, 
-    :accessor => "comments",
-    :for      => 'User'
+  remix 1, :images, :as => "pics"
+  #remix 1,  Image,
+  #  :accessor => "pics"
     
-  enhance Viewable do
+  remix n, :viewables, :as => "views"
+  #remix n,  Viewable, :accessor => "views"
+  
+  remix n, :commentables, :as => "comments", :for => "User"
+  #remix    n,  Commentable, 
+  #  :accessor => "comments",
+  #  :for      => 'User'
+    
+  enhance :viewables do
+  #enhance Viewable do
     belongs_to :user
-    
   end
   
   def viewed_by(usr)

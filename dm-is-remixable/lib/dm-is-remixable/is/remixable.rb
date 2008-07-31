@@ -70,22 +70,27 @@ module DataMapper
         #   Remixes a Remixable Module
         # ==== Parameters
         #   cardinality <~Fixnum> 1, n, x ...
-        #   remixable   <Module> Module to remix
+        #   remixable   <Symbol> plural of remixable; i.e. Comment => :comments
         #   options     <Hash>   options hash
         #                       :class_name <String> Remixed Model name (Also creates a storage_name as tableize(:class_name))
+        #                                   This is the class that will be created from the Remixable Module
         #                                   The storage_name can be changed via 'enhance' in the class that is remixing
         #                                   Default: self.name.downcase + "_" + remixable.suffix.pluralize
-        #                       :accessor   <String> Alias to access associated data
+        #                       :as         <String> Alias to access associated data
         #                                   Default: tableize(:class_name)
         #                       :for|:on    <String> Class name to join to through Remixable
+        #                                   This will create a M:M relationship THROUGH the remixable, rather than
+        #                                   a 1:M with the remixable
+        #                       :unique     <Boolean> Only works with :for|:on; creates a unique composite key
+        #                                   over the two table id's
         # ==== Examples
         # Given: User (Class), Addressable (Module)
         #   
         #   One-To-Many; Class-To-Remixable
         #
-        #   remix n, Addressable,
+        #   remix n, :addressables,
         #     :class_name => "UserAddress", 
-        #     :accessor   => "addresses"       
+        #     :as         => "addresses"       
         #   
         #   Tables: users, user_addresses
         #   Classes: User, UserAddress
@@ -98,25 +103,35 @@ module DataMapper
         #
         #   Many-To-Many; Class-To-Class through RemixableIntermediate (Video allows Commentable for User)
         # 
-        #   Video.remix n, Commentable
+        #   Video.remix n, :commentables
         #     :for        => 'User'    #:for & :on have same effect, just a choice of wording...
         def remix(cardinality, remixable, options={})
+          #A map for remixable names to Remixed Models
+          @remixables = {} if @remixables.nil?
+          
+          remixable_module = Object.const_get(Extlib::Inflection.classify(remixable))
           
           #Merge defaults/options
           options = {
-            :accessor   => nil,
-            :class_name => Extlib::Inflection.classify(self.name + "_" + remixable.suffix.pluralize),
+            :as         => nil,
+            :class_name => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
             :for        => nil,
-            :on         => nil
+            :on         => nil,
+            :unique     => false
           }.merge(options)
-          
-          #Other model to mix with in case of M:M through Remixable
-          options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
-          options[:other_model] = options[:for] || options[:on]
-          
+             
+          #Make sure the class hasn't been remixed already
           unless Object.const_defined? options[:class_name]
+            
+            #Other model to mix with in case of M:M through Remixable
+            options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
+            options[:other_model] = options[:for] || options[:on]
+            
             puts " ~ Generating Remixed Model: #{options[:class_name]}"
-            model = generate_remixed_model(remixable, options)
+            model = generate_remixed_model(remixable_module, options)
+
+            #map the remixable to the remixed model
+            @remixables[remixable] = model
             
             #Create relationships between Remixer and remixed class          
             if options[:other_model] 
@@ -124,17 +139,13 @@ module DataMapper
               # has n and belongs_to (or One-To-Many)
               remix_many_to_many cardinality, model, options
             else 
-              remix_one_to_many cardinality, model, options
               # 1:M Class-To-Remixable
               # has n and belongs_to (or One-To-Many)
+              remix_one_to_many cardinality, model, options
             end
 
             #Add accessor alias
-            attach_accessor(options) unless options[:accessor].nil?
-
-            #Add the remixed model to the remixables list
-            @remixables = {} if @remixables.nil?
-            @remixables[remixable] = model
+            attach_accessor(options) unless options[:as].nil?
           else  
             puts "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
           end
@@ -143,13 +154,16 @@ module DataMapper
         # - enhance
         # ==== Description
         #   Enhance a remix; allows nesting remixables, adding columns & functions to a remixed resource
+        # ==== Parameters
+        #   remixable <Symbol> Name of remixable to enhance
+        #   block     <Proc>    Enhancements to perform
         # ==== Examples
         #   class Video
         #     include DataMapper::Resource
         #     remix Comment
         #
-        #     enhance Comment do
-        #       remix Vote        #This would result in something like YouTubes Voting comments up/down
+        #     enhance :comments do
+        #       remix n, :votes        #This would result in something like YouTubes Voting comments up/down
         #       
         #       property :updated_at, DateTime
         #
@@ -174,8 +188,8 @@ module DataMapper
         #   options <Hash> options hash
         def attach_accessor(options)
           self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-            alias #{options[:accessor].intern} #{options[:table_name].intern}
-            alias #{options[:accessor].intern}= #{options[:table_name].intern}=
+            alias #{options[:as].intern} #{options[:table_name].intern}
+            alias #{options[:as].intern}= #{options[:table_name].intern}=
           EOS
         end
         
@@ -204,6 +218,10 @@ module DataMapper
           self.has cardinality, options[:table_name].intern
           options[:other_model].has cardinality, options[:table_name].intern
         
+          #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
+          # attach a validates_is_unique if the validator is included.
+          puts " ~ options[:unique] is not yet supported"
+          
           model.belongs_to  Extlib::Inflection.tableize(self.name).intern
           model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
         end

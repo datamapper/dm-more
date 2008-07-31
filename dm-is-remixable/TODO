@@ -1,10 +1,21 @@
+FIXME
+====
+Add ability to have a unique relationship when joining through remixable
+  This is stubbed at remixable.rb @~ line 223; waiting on stategic eager loading
+  M:M Video.remix n, :commentables, :as => "comments", :for => "User", :unique => false
+  M:M Article.remix n, :views, :for => "User", :unique => true
+    in the generated table article_views article_id and user_id would be a unique key, 
+      only counting a users viewing of an article once
+
+
 TODO
 ====  
-- Test nested remix with M:M through Remixable, :for => Class
+- Test Unary remixes User.remix n, :comments, :for => "User"
+- Test nested remix with M:M through Remixable, :for => "Class"
 - Test with Namespaced Models
-- Test remix 'non-remixables' (Could be cool) Author.remix(Book) => author_books
-  - Look into unary remixes and infinite loops
-    User.remix n, Commentable, :for => User (User can comment on another user)
+
+- Remixing a non-remixable just throws an exception . . . should have a .remixable? on DataMapper::Resource's
+  and if its not remixable raise Exception, "XXX is not remixable"
 
 - Harvest Class methods (including it into Remixed Model gets the instance methods, but not class methods...)
 
@@ -26,15 +37,15 @@ CONSIDERATIONS
       #instead of using table_name? Too Many Options or having Remixable default class name...
 
   EXAMPLE:
-  User.remix Addressable,
+  User.remix :addressables,
     :table_name => "user_addresses"
-    :accessor => "addresses"
+    :as => "addresses"
     :class_name => "address"
     
 - Remixable Module defines class name
 
   EXAMPLE:
-  module Addressable
+  module :addressables
     is :remixable, 
       :suffix => "address",
       :class_name => "address"

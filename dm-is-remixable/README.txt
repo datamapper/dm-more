@@ -48,7 +48,7 @@ class Location
   include DataMapper::Resource
   
   #Location can have 1 address
-  remix 1, Addressable
+  remix 1, :addressables
   
   # This does the following:
   # - creates a class called LocationAddress 
@@ -65,7 +65,7 @@ class User
   include DataMapper::Resource
   
   #User can have many addresses
-  remix n, Addressable, :accessor => "addresses"
+  remix n, :addressables, :as => "addresses"
   # - creates a class called UserAddress 
       (default name would be UserAddressable, but Addressable#suffix was specified)
   # - duplicates the properties of Addressable within UserAddress
@@ -73,7 +73,7 @@ class User
   # - creates User#user_addresses accessor
   # - creates an accessor alias User#addresses
   
-  enhance Addressable do
+  enhance :addressables do
     storage_names[:default] = "a_different_table_name"
     property :label, Enum.new("work","home")
     
@@ -86,7 +86,7 @@ end
 class Article
   include DataMapper::Resource
   
-  remix n, Comment, :for => User
+  remix n, :comments, :for => "User"
   # - creates a class called ArticleComment
   # - duplicates the properties of Comment within ArticleComment
   # - a table called article_comments
@@ -100,7 +100,7 @@ end
 class Video
   include DataMapper::Resource
   
-  remix n, Comment, :for => User, :accessor => "comments"
+  remix n, :comments, :for => "User", :as => "comments"
   # - creates a class called VideoComment
   # - duplicates the properties of Comment within VideoComment
   # - a table called video_comments
@@ -108,14 +108,14 @@ class Video
   # - creates User#video_comments
   # - create Video#comments
   
-  enhance Comment do
+  enhance :comments do
     # VideoComment now has the method #reverse
     def reverse
       return self.body.reverse
     end
     
     #I like YouTubes ability for users to vote comments up and down
-    remix 1, Vote, :for => User
+    remix 1, :votes, :for => "User"
     # - creates a class called VideoCommentVote
     # - duplicates the properties of Vote within VideoCommentVote
     # - a table called video_comment_votes

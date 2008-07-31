@@ -28,7 +28,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
         
     it "should allow enhancing a model that is remixed" do
-      Article.enhance Image do
+      Article.enhance :images do
         def self.test_enhance
           puts "Testing"
         end
@@ -42,14 +42,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
         
     it "should allow specifying an alternate class name" do
-      User.remixables[Billable].name.should_not == "UserBillable"
-      User.remixables[Billable].name.should == "Account"
+      User.remixables[:billables].name.should_not == "UserBillable"
+      User.remixables[:billables].name.should == "Account"
     end
     
     it "should create a storage name based on the class name" do
 
-      Article.remixables[Image].storage_names[:default].should == "article_images"
-      User.remixables[Billable].storage_names[:default].should == "accounts"
+      Article.remixables[:images].storage_names[:default].should == "article_images"
+      User.remixables[:billables].storage_names[:default].should == "accounts"
     end
         
     it "should allow creating an accessor alias" do

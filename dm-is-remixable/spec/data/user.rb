@@ -17,11 +17,17 @@ class User
     :nullable     => false, 
     :length       => 2..50
       
-  remix    n, Viewable   
-  remix    n, Billable, :class_name => "Account"
-  remix    n, Addressable
+  remix n, :viewables
+  #remix    n, Viewable   
   
-  enhance Addressable do
+  remix n, :billables, :class_name => "Account"
+  #remix    n, Billable, :class_name => "Account"
+  
+  remix n, :addressables
+  #remix    n, Addressable
+  
+  enhance :addressables do
+  #enhance Addressable do
     property :label, Enum.new('home','work')
   end
 end
