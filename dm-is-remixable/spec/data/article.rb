@@ -17,7 +17,7 @@ class Article
   
   remix    n,  Commentable, 
     :accessor => "comments",
-    :for      => User
+    :for      => 'User'
     
   enhance Viewable do
     belongs_to :user

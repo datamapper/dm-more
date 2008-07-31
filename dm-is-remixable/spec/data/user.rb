@@ -20,5 +20,8 @@ class User
   remix    n, Viewable   
   remix    n, Billable, :class_name => "Account"
   remix    n, Addressable
-    
+  
+  enhance Addressable do
+    property :label, Enum.new('home','work')
+  end
 end

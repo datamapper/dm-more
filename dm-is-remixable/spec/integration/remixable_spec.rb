@@ -136,11 +136,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       
       article.comments.first.should be(ac)
       user.article_comments.first.should be(ac)
-    end
-    
-    it "should allow M:M relationships through a DM::Resource or a :model" do
-      pending
-    end
-    
+    end    
   end
 end

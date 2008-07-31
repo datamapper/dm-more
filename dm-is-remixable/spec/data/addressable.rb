@@ -5,9 +5,7 @@ module Addressable
     :suffix => "address"
   
   property :id,         Integer, :key => true, :serial => true
-  
-  property :label,      String #home, work, etc...
-  
+    
   property :address1,   String, :length => 255
   property :address2,   String, :length => 255
   

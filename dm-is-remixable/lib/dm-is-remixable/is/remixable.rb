@@ -77,7 +77,7 @@ module DataMapper
         #                                   Default: self.name.downcase + "_" + remixable.suffix.pluralize
         #                       :accessor   <String> Alias to access associated data
         #                                   Default: tableize(:class_name)
-        #                       :for|:on    <Module|Array<Module>> M:M Relationships
+        #                       :for|:on    <String> Class name to join to through Remixable
         # ==== Examples
         # Given: User (Class), Addressable (Module)
         #   
@@ -92,32 +92,20 @@ module DataMapper
         #     User.user_addresses << UserAddress.new
         #     User.addresses << UserAddress.new
         #   --------------------------------------------
-        #
-        #   Many-To-Many; Class-To-Remixable :through => Resource || "intermediate_of_choice"
-        #
-        #   remix n, Addressable,
-        #     :class_name => "UserAddress", 
-        #     :accessor   => "addresses"       
-        #     :through    => Resource
-        #   
-        #   Tables:   ...
-        #   Classes:  ...
-        #     User.   ...
         #   --------------------------------------------
         # 
-        # Given: User (Class), Video (Class), Profile(Class), Blog(Class), Commentable (Module)
+        # Given: User (Class), Video (Class), Commentable (Module)
         #
-        #   Many-To-Many; Class-To-Class :through => RemixableIntermediate (User => Videos :through UserVideos)
+        #   Many-To-Many; Class-To-Class through RemixableIntermediate (Video allows Commentable for User)
         # 
-        #   remix n, Commentable
-        #     :for        => Video    #:for & :on have same effect, just a choice of wording...
+        #   Video.remix n, Commentable
+        #     :for        => 'User'    #:for & :on have same effect, just a choice of wording...
         def remix(cardinality, remixable, options={})
           
           #Merge defaults/options
           options = {
             :accessor   => nil,
             :class_name => Extlib::Inflection.classify(self.name + "_" + remixable.suffix.pluralize),
-            :through    => nil,
             :for        => nil,
             :on         => nil
           }.merge(options)
@@ -126,75 +114,60 @@ module DataMapper
           options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
           options[:other_model] = options[:for] || options[:on]
           
-          puts " ~ Generating Remixed Model: #{options[:class_name]}"
+          unless Object.const_defined? options[:class_name]
+            puts " ~ Generating Remixed Model: #{options[:class_name]}"
           
-          if options[:through] && options[:other_model]
-            raise Exception, ":through and :for|:on should not be specified together for #remix"
-          end
+            #Create Remixed Model          
+            klass = Class.new Object do
+              include DataMapper::Resource
+            end
           
-          #Create Remixed Model          
-          klass = Class.new Object do
-            include DataMapper::Resource
-          end
-          
-          #Give remixed model a name and create its constant
-          model = Object.const_set options[:class_name], klass
+            #Give remixed model a name and create its constant
+            model = Object.const_set options[:class_name], klass
 
-          #Get instance methods & validators
-          model.send(:include,remixable)
+            #Get instance methods & validators
+            model.send(:include,remixable)
 
-          #port the properties over...
-          remixable.properties.each do |prop|
-            model.property(prop.name, prop.type, prop.options)
-          end
+            #port the properties over...
+            remixable.properties.each do |prop|
+              model.property(prop.name, prop.type, prop.options)
+            end
                                      
-          #Create relationships between Remixer and remixed class          
-          if options[:through].is_a?(Symbol)
-            # M:M Class-To-Remixable :through => :model
-            #has n, :through (or One-To-Many-Through)
+            #Create relationships between Remixer and remixed class          
+            if options[:other_model] 
+              # M:M Class-To-Class w/ Remixable Module as intermediate table
+              # has n and belongs_to (or One-To-Many)
+              options[:other_model] = Object.const_get options[:other_model]
+            
+              self.has cardinality, options[:table_name].intern
+              options[:other_model].has cardinality, options[:table_name].intern
+            
+              model.belongs_to  Extlib::Inflection.tableize(self.name).intern
+              model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
+            
+            else 
+              # 1:M Class-To-Remixable
+              # has n and belongs_to (or One-To-Many)
+            
+              self.has cardinality, options[:table_name].intern
+              model.belongs_to Extlib::Inflection.tableize(self.name).intern
 
-            raise Exception, ":through is not currently supported"
-            #self.has  cardinality, options[:table_name].intern, :through => options[:through]
-            #model.has cardinality, Extlib::Inflection.tableize(self.name).intern, :through => options[:through]
-            
-          elsif options[:through].is_a?(Module)
-            # M:M Class-To-Remixable :through => Resource
-            # Has, and belongs to, many (Or Many-To-Many)
-            
-            raise Exception, ":through is not currently supported"
-            #self.has  cardinality, options[:table_name].intern, :through => options[:through]
-            #model.has cardinality, Extlib::Inflection.tableize(self.name).intern, :through => options[:through]
-            
-          elsif options[:other_model] 
-            # M:M Class-To-Class w/ Remixable Module as intermediate table
-            # has n and belongs_to (or One-To-Many)
-            
-            self.has cardinality, options[:table_name].intern
-            options[:other_model].has cardinality, options[:table_name].intern
-            
-            model.belongs_to  Extlib::Inflection.tableize(self.name).intern
-            model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
-            
-          else 
-            # 1:M Class-To-Remixable
-            # has n and belongs_to (or One-To-Many)
-            
-            self.has cardinality, options[:table_name].intern
-            model.belongs_to Extlib::Inflection.tableize(self.name).intern
+            end
 
-          end
-
-          #Add accessor alias
-          unless options[:accessor].nil?
-            self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-              alias #{options[:accessor].intern} #{options[:table_name].intern}
-              alias #{options[:accessor].intern}= #{options[:table_name].intern}=
-            EOS
-          end
+            #Add accessor alias
+            unless options[:accessor].nil?
+              self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
+                alias #{options[:accessor].intern} #{options[:table_name].intern}
+                alias #{options[:accessor].intern}= #{options[:table_name].intern}=
+              EOS
+            end
           
-          #Add the remixed model to the remixables list
-          @remixables = {} if @remixables.nil?
-          @remixables[remixable] = model
+            #Add the remixed model to the remixables list
+            @remixables = {} if @remixables.nil?
+            @remixables[remixable] = model
+          else  
+            puts "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
+          end
         end
         
         # - enhance
