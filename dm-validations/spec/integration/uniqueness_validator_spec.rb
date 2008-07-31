@@ -65,6 +65,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
     end
 
+    it 'should validate uniqueness on a string key' do
+      class Department
+        include DataMapper::Resource
+        property :name, String, :key => true
+
+        validates_is_unique :name
+        auto_migrate!
+      end
+
+      hr = Department.create(:name => "HR")
+      hr2 = Department.new(:name => "HR")
+      hr2.valid?.should == false
+    end
+
     it 'should validate the uniqueness of a value with scope' do
       repository do
         u = User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')

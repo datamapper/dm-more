@@ -38,7 +38,7 @@ module DataMapper
         return true if resource.nil?
 
         # is target and found resource identic? same instance... but not ==
-        return true if resource.repository.name == repository_name && resource.model == target.model && resource.key == target.key
+        return true if !target.new_record? && resource.repository.name == repository_name && resource.model == target.model && resource.key == target.key
 
         error_message = @options[:message] || "%s is already taken".t(Extlib::Inflection.humanize(field_name))
         add_error(target, error_message , field_name)
