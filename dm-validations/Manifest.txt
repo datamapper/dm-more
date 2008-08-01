@@ -8,6 +8,7 @@ lib/dm-validations.rb
 lib/dm-validations/absent_field_validator.rb
 lib/dm-validations/acceptance_validator.rb
 lib/dm-validations/auto_validate.rb
+lib/dm-validations/block_validator.rb
 lib/dm-validations/confirmation_validator.rb
 lib/dm-validations/contextual_validators.rb
 lib/dm-validations/custom_validator.rb
@@ -27,6 +28,7 @@ lib/dm-validations/within_validator.rb
 spec/integration/absent_field_validator_spec.rb
 spec/integration/acceptance_validator_spec.rb
 spec/integration/auto_validate_spec.rb
+spec/integration/block_validator_spec.rb
 spec/integration/confirmation_validator_spec.rb
 spec/integration/contextual_validators_spec.rb
 spec/integration/custom_validator_spec.rb
