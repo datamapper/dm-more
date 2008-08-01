@@ -14,6 +14,9 @@ describe DataMapper::Validate::ValidatesWithBlock do
       validates_with_block :when => [:testing_success] do
         true
       end
+      validates_with_block :name, :when => [:testing_name_validation] do
+        [false, 'Name is invalid']
+      end
     end
   end
 
@@ -23,5 +26,11 @@ describe DataMapper::Validate::ValidatesWithBlock do
     ship = Ship.new
     ship.valid_for_testing_failure?.should == false
     ship.errors.full_messages.include?('Validation failed').should == true
+  end
+
+  it "should validate via a block and add error to field" do
+    ship = Ship.new
+    ship.should_not be_valid_for_testing_name_validation
+    ship.errors.on(:name).should include('Name is invalid')
   end
 end
