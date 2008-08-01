@@ -21,6 +21,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     after do
      repository(:default).adapter.execute('DELETE from green_smoothies');
     end
+    
+    it "should not set the created_at/on fields if they're already set" do
+      repository(:default) do
+        green_smoothie = GreenSmoothie.new(:name => 'Banana')
+        time = (DateTime.now - 100)
+        green_smoothie.created_at = time
+        green_smoothie.created_on = time
+        green_smoothie.save
+        green_smoothie.created_at.should == time
+        green_smoothie.created_on.should == time
+        green_smoothie.created_at.should be_a_kind_of(DateTime)
+        green_smoothie.created_on.should be_a_kind_of(Date)
+      end
+    end
 
     it "should set the created_at/on fields on creation" do
       repository(:default) do
