@@ -6,8 +6,8 @@ require 'pathname'
 ROOT = Pathname(__FILE__).dirname.expand_path
 require ROOT + 'lib/dm-is-versioned/is/version'
 
-AUTHOR = "Nolan Darilek"
-EMAIL  = "nolan@thewordnerd.info"
+AUTHOR = "Bernerd Schaefer"
+EMAIL  = "bj.schaefer@gmail.com"
 GEM_NAME = "dm-is-versioned"
 GEM_VERSION = DataMapper::Is::Versioned::VERSION
 GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
