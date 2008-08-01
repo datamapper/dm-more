@@ -10,7 +10,6 @@ Add ability to have a unique relationship when joining through remixable
 
 TODO
 ====  
-- Test Unary remixes User.remix n, :comments, :for => "User"
 - Test nested remix with M:M through Remixable, :for => "Class"
 - Test with Namespaced Models
 

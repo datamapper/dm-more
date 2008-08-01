@@ -245,8 +245,8 @@ module DataMapper
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
             
             self.has cardinality, options[:table_name].intern
-            model.belongs_to :user
-            model.belongs_to :commentor, :class_name => 'User', :child_key => [:commentor_id]
+            model.belongs_to Extlib::Inflection.tableize(self.name).intern
+            model.belongs_to options[:via].intern, :class_name => options[:other_model].name, :child_key => ["#{options[:via]}_id".intern]
           end
         end
         
