@@ -1,7 +1,7 @@
 module DataMapper
   class Property
     # for options_with_message
-    PROPERTY_OPTIONS << :message << :messages
+    PROPERTY_OPTIONS << :message << :messages << :set
   end
 
   module Validate
@@ -45,6 +45,10 @@ module DataMapper
       #
       #   :format => :predefined / lambda / Proc
       #       Setting the :format option causes a validates_format_of
+      #       validator to be automatically created on the property
+      #
+      #   :set => ["foo", "bar", "baz"]
+      #       Setting the :set option causes a validates_within
       #       validator to be automatically created on the property
       #
       #   Integer type
@@ -116,6 +120,11 @@ module DataMapper
             # validates_is_unique property.name
             validates_is_unique property.name, options_with_message({}, property, :is_unique)
           end
+        end
+
+        # within validator
+        if property.options.has_key?(:set)
+          validates_within property.name, options_with_message({:set => property.options[:set]}, property, :within)
         end
 
         # numeric validator

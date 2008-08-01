@@ -260,6 +260,30 @@ describe "Automatic Validation from Property Definition" do
     end
   end
 
+  describe 'for within validator' do
+    before :all do
+      class LimitedBoat
+        include DataMapper::Resource
+        property :id,       Integer,  :serial => true
+        property :limited,  String,   :set => ['foo', 'bar', 'bang'], :default => 'foo'
+      end
+    end
+
+    before do
+      @boat = LimitedBoat.new
+    end
+
+    it 'should set default value' do
+      @boat.should be_valid
+    end
+
+    it 'should not accept value not in range' do
+      @boat.limited = "blah"
+      @boat.should_not be_valid
+    end
+
+  end
+
   describe 'for custom messages' do
     it "should have correct error message" do
       custom_boat = Class.new do
