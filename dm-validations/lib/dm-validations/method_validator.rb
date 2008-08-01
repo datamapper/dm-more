@@ -7,20 +7,20 @@ module DataMapper
     # @since  0.9
     class MethodValidator < GenericValidator
 
-      def initialize(method_name, options={})
+      def initialize(field_name, options={})
         super
-        @method_name, @options = method_name, options
-        @options[:integer_only] = false unless @options.has_key?(:integer_only)
+        @field_name, @options = field_name, options.clone
+        @options[:method] = @field_name unless @options.has_key?(:method)
       end
 
       def call(target)
-        result,message = target.send(@method_name)
-        add_error(target,message,@method_name) if !result
+        result,message = target.send(@options[:method])
+        add_error(target,message,@field_name) if !result
         result
       end
 
       def ==(other)
-        @method_name == other.instance_variable_get(:@method_name) && super
+        @options[:method] == other.instance_variable_get(:@options)[:method] && super
       end
     end # class MethodValidator
 
@@ -51,6 +51,12 @@ module DataMapper
       #     # A call to valid? will return false and
       #     # populate the object's errors with "You're in the
       #     # wrong zip code" unless zip_code == "94301"
+      #
+      #     # You can also specify field:
+      #
+      #     validates_with_method :zip_code, :in_the_right_location?
+      #
+      #     # it will add returned error message to :zip_code field
       #
       def validates_with_method(*fields)
         opts = opts_from_validator_args(fields)

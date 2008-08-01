@@ -7,6 +7,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
     describe DataMapper::Migration, "#create_table helper" do
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
+          column :id, Integer, :serial => true
           column :name, String
           column :long_string, String, :size => 200
         end
@@ -32,7 +33,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
       it "should have an array of columns" do
         @creator.instance_eval("@columns").should be_kind_of(Array)
-        @creator.instance_eval("@columns").should have(2).items
+        @creator.instance_eval("@columns").should have(3).items
         @creator.instance_eval("@columns").first.should be_kind_of(DataMapper::Migration::TableCreator::Column)
       end
 

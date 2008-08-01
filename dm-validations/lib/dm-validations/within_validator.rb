@@ -17,13 +17,25 @@ module DataMapper
         includes = @options[:set].include?(target.send(field_name))
         return true if includes
 
-        s = ''
-        @options[:set].each {|item| s = s + "#{item}, "}
-        s = '[' + s[0..(s.length-3)] + ']'
+        if @options[:set].is_a?(Range)
+          if @options[:set].first != -n && @options[:set].last != n
+            message = "%s must be between #{@options[:set].first} and #{@options[:set].last}"
+          elsif @options[:set].first == -n
+            message = "%s must be less than #{@options[:set].last}"
+          elsif @options[:set].last == n
+            message = "%s must be greater than #{@options[:set].first}"
+          end
+        else
+          message = "%s must be one of [#{ @options[:set].join(', ')}]"
+        end
 
-        error_message = @options[:message] || "%s must be one of #{s}".t(Extlib::Inflection.humanize(@field_name))
+        error_message = @options[:message] || message.t(Extlib::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
         return false
+      end
+
+      def n
+        1.0/0
       end
     end # class WithinValidator
 

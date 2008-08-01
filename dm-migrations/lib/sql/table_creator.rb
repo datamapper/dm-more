@@ -36,6 +36,8 @@ module SQL
 
       def build_type(type_class)
         schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
+        schema[:serial?] ||= schema[:serial]
+        schema[:nullable?] ||= schema[:nullable]
         schema = @adapter.class.type_map[type_class].merge(schema)
         @adapter.property_schema_statement(schema)
       end

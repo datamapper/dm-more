@@ -10,6 +10,17 @@ describe DataMapper::Validate::WithinValidator do
       validates_within :type_of_number, :set => ['Home','Work','Cell']
     end
 
+    class Inf
+      include DataMapper::Resource
+      property :id, Integer, :serial => true
+      property :greater_than, String, :auto_validation => false
+      property :less_than, String, :auto_validation => false
+      property :between, String, :auto_validation => false
+      validates_within :greater_than, :set => (10..n)
+      validates_within :less_than, :set => (-n..10)
+      validates_within :between, :set => (10..20)
+    end
+
     class Reciever
       include DataMapper::Resource
       property :id, Integer, :serial => true
@@ -26,6 +37,14 @@ describe DataMapper::Validate::WithinValidator do
 
     tel.type_of_number = 'Cell'
     tel.valid?.should == true
+  end
+
+  it "should validate a value within range with infinity" do
+    inf = Inf.new
+    inf.should_not be_valid
+    inf.errors.on(:greater_than).first.should == 'Greater than must be greater than 10'
+    inf.errors.on(:less_than).first.should == 'Less than must be less than 10'
+    inf.errors.on(:between).first.should == 'Between must be between 10 and 20'
   end
 
   it "should validate a value by its default" do
