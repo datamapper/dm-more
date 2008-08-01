@@ -18,16 +18,14 @@ class User
     :length       => 2..50
       
   remix n, :viewables
-  #remix    n, Viewable   
   
   remix n, :billables, :class_name => "Account"
-  #remix    n, Billable, :class_name => "Account"
   
   remix n, :addressables
-  #remix    n, Addressable
   
+  remix n, :commentables, :as => "comments", :for => "User", :via => "commentor"
+
   enhance :addressables do
-  #enhance Addressable do
     property :label, Enum.new('home','work')
   end
 end

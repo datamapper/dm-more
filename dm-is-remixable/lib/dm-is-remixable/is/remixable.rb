@@ -81,6 +81,9 @@ module DataMapper
         #                       :for|:on    <String> Class name to join to through Remixable
         #                                   This will create a M:M relationship THROUGH the remixable, rather than
         #                                   a 1:M with the remixable
+        #                       :via        <String> changes the name of the second id in a unary relationship
+        #                                   see example below; only used when remixing a module between the same class twice
+        #                                   ie: self.class.to_s == options[:for||:on]
         #                       :unique     <Boolean> Only works with :for|:on; creates a unique composite key
         #                                   over the two table id's
         # ==== Examples
@@ -105,6 +108,15 @@ module DataMapper
         # 
         #   Video.remix n, :commentables
         #     :for        => 'User'    #:for & :on have same effect, just a choice of wording...
+        #   --------------------------------------------
+        #   --------------------------------------------
+        #
+        # Given: User (Class), User (Class), Commentable (Module)
+        #
+        #   Many-To-Many Unary relationship between User & User through comments
+        #   User.remix n, :commentables, :as => "comments", :for => 'User', :via => "commentor"
+        #   => This would create user_id and commentor_id as the 
+        #
         def remix(cardinality, remixable, options={})
           #A map for remixable names to Remixed Models
           @remixables = {} if @remixables.nil?
@@ -117,14 +129,17 @@ module DataMapper
             :class_name => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
             :for        => nil,
             :on         => nil,
-            :unique     => false
+            :unique     => false,
+            :via        => nil
           }.merge(options)
              
           #Make sure the class hasn't been remixed already
           unless Object.const_defined? options[:class_name]
             
-            #Other model to mix with in case of M:M through Remixable
+            #Storage name of our remixed model
             options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
+            
+            #Other model to mix with in case of M:M through Remixable
             options[:other_model] = options[:for] || options[:on]
             
             puts " ~ Generating Remixed Model: #{options[:class_name]}"
@@ -214,16 +229,35 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_many_to_many(cardinality, model, options)
           options[:other_model] = Object.const_get options[:other_model]
-        
-          self.has cardinality, options[:table_name].intern
-          options[:other_model].has cardinality, options[:table_name].intern
-        
+                
           #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
           # attach a validates_is_unique if the validator is included.
           puts " ~ options[:unique] is not yet supported" if options[:unique]
           
-          model.belongs_to  Extlib::Inflection.tableize(self.name).intern
-          model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
+          # Is M:M between two different classes or the same class
+          unless self.name == options[:other_model].name          
+            self.has cardinality, options[:table_name].intern
+            options[:other_model].has cardinality, options[:table_name].intern
+        
+            model.belongs_to  Extlib::Inflection.tableize(self.name).intern
+            model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
+          else
+            raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
+            
+            self.has cardinality, options[:table_name].intern
+            model.belongs_to :user
+            model.belongs_to :commentor, :class_name => 'User', :child_key => [:commentor_id]            
+            
+#MISSING STATEME
+
+            #model.has n, :users
+            
+            #model.has 1, options[:via].intern, :class_name => options[:other_model].name
+            #model.has n, :commentor, :class_name => "User"
+            #model.has n, :commentor, :through => :user_comments
+
+            #model.belongs_to Extlib::Inflection.tableize(self.name).intern
+          end
         end
         
         # - generate_remixed_model

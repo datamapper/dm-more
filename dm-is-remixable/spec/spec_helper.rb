@@ -3,7 +3,7 @@ gem 'rspec', '>=1.1.3'
 require 'spec'
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-is-remixable'
-
+require "ruby-debug"
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
 

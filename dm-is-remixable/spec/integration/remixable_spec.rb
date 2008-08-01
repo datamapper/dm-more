@@ -10,6 +10,8 @@ require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'image'
 require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'user'
 require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'viewable'
 
+DataMapper.auto_migrate!
+
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::Remixable' do
     it "should not allow enhancements of modules that aren't remixed" do
@@ -114,6 +116,22 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       
       article.pics = image2
       article.pics.path.should == image2.path
+    end
+    
+    it "should allow M:M unary relationships through the Remixable Module" do
+      #User => Commentable => User
+      user = User.new
+      user.first_name = "Tester"
+      user2 = User.new
+      user2.first_name = "Testy"
+      
+      comment = UserComment.new
+      comment.comment = "YOU SUCK!"
+      comment.commentor = user2
+      user.user_comments << comment
+      
+      comment.commentor.first_name.should == "Testy"
+      user.user_comments.length.should be(1)
     end
     
     it "should allow M:M relationships through the Remixable Module" do

@@ -1,1 +1,6 @@
+=== 0.9.3 / 2008-07-31
+
+* 1 major enhancement
+
+  * Pre-Release, super beta.
 
