@@ -246,17 +246,7 @@ module DataMapper
             
             self.has cardinality, options[:table_name].intern
             model.belongs_to :user
-            model.belongs_to :commentor, :class_name => 'User', :child_key => [:commentor_id]            
-            
-#MISSING STATEME
-
-            #model.has n, :users
-            
-            #model.has 1, options[:via].intern, :class_name => options[:other_model].name
-            #model.has n, :commentor, :class_name => "User"
-            #model.has n, :commentor, :through => :user_comments
-
-            #model.belongs_to Extlib::Inflection.tableize(self.name).intern
+            model.belongs_to :commentor, :class_name => 'User', :child_key => [:commentor_id]
           end
         end
         

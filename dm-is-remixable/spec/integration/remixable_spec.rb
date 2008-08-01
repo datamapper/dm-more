@@ -130,6 +130,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       comment.commentor = user2
       user.user_comments << comment
       
+      user2.user_comments.length.should be(0)
+      
       comment.commentor.first_name.should == "Testy"
       user.user_comments.length.should be(1)
     end
