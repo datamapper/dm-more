@@ -10,19 +10,19 @@ class TrafficLight
     state :red,    :enter => Proc.new { |o| o.log << "R" }
 
     event :forward do
-      transitions :from => :green,  :to => :yellow
-      transitions :from => :yellow, :to => :red
-      transitions :from => :red,    :to => :green
+      transition :from => :green,  :to => :yellow
+      transition :from => :yellow, :to => :red
+      transition :from => :red,    :to => :green
     end
 
     event :backward do
-      transitions :from => :green,  :to => :red
-      transitions :from => :yellow, :to => :green
-      transitions :from => :red,    :to => :yellow
+      transition :from => :green,  :to => :red
+      transition :from => :yellow, :to => :green
+      transition :from => :red,    :to => :yellow
     end
   end
 
-  def log;     @log ||= [] end
+  def log; @log ||= [] end
 
   attr_reader :init
   def initialize(*args)

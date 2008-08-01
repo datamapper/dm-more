@@ -16,14 +16,14 @@ module DataMapper
         #       # state definitions go here...
         #
         #       event :forward do
-        #         transitions :from => :green,  :to => :yellow
-        #         transitions :from => :yellow, :to => :red
-        #         transitions :from => :red,    :to => :green
+        #         transition :from => :green,  :to => :yellow
+        #         transition :from => :yellow, :to => :red
+        #         transition :from => :red,    :to => :green
         #       end
         #     end
         #   end
         #
-        # +transitions+ takes a hash where <tt>:to</tt> is the state to transition
+        # +transition+ takes a hash where <tt>:to</tt> is the state to transition
         # to and <tt>:from</tt> is a state (or Array of states) from which this
         # event can be fired.
         def event(name, &block)
@@ -55,7 +55,7 @@ module DataMapper
           pop_state_machine_context
         end
 
-        def transitions(options)
+        def transition(options)
           unless state_machine_context?(:event)
             raise InvalidContext, "Valid only in 'event' block"
           end

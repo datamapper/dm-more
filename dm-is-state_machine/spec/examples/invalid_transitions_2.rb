@@ -13,9 +13,9 @@ class InvalidTransitions2
 
   # The next lines are intentionally incorrect.
   #
-  # 'transitions' is only valid when nested beneath 'event'
-  transitions :to => :happy, :from => :sad
-  transitions :to => :sad,   :from => :happy
+  # 'transition' is only valid when nested beneath 'event'
+  transition :to => :happy, :from => :sad
+  transition :to => :sad,   :from => :happy
 
 end
 

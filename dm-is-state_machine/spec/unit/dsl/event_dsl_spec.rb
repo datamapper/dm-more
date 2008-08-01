@@ -24,7 +24,7 @@ describe "EventDsl" do
 
   end
 
-  describe "transitions" do
+  describe "transition" do
 
     before(:each) do
 
@@ -45,9 +45,9 @@ describe "EventDsl" do
       })
     end
 
-    it "transitions definition should succeed" do
+    it "transition definition should succeed" do
       class Earth
-        transitions :from => :night, :to => :day
+        transition :from => :night, :to => :day
       end
     end
 
