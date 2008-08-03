@@ -48,4 +48,20 @@ module DataMapper
       end
     end # class Enum
   end # module Types
+
+  if defined?(Validate)
+    module Validate
+      module AutoValidate
+        alias :orig_auto_generate_validations :auto_generate_validations
+        def auto_generate_validations(property)
+          orig_auto_generate_validations(property)
+          return unless property.options[:auto_validation]
+
+          if property.type.ancestors.include?(Types::Enum)
+           validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
+          end
+        end
+      end
+    end
+  end
 end # module DataMapper

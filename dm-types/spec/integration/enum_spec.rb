@@ -26,4 +26,21 @@ describe DataMapper::Types::Enum do
   it 'should immediately typecast supplied values' do
     Bug.new(:status => :crit).status.should == :crit
   end
+
+  if defined?(Validate)
+    describe 'with validation' do
+      it "should accept crit status" do
+        bug = Bug.new
+        bug.status = :crit
+        bug.should be_valid
+      end
+
+      it "should not accept blah status" do
+        bug = Bug.new
+        bug.status = :blah
+        bug.should_not be_valid
+        bug.errors.on(:status).should_not be_empty
+      end
+    end
+  end
 end
