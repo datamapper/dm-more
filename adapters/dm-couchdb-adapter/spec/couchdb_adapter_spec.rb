@@ -27,6 +27,8 @@ class User
   view :count,   { "map" => "function(doc) { if (doc.type == 'user') { emit(null, 1); } }",
                     "reduce" => "function(keys, values) { return sum(values); }" }
 
+  belongs_to :company
+
   before :create do
     self.created_at = DateTime.now
     self.created_on = Date.today
@@ -43,6 +45,8 @@ class Company
   # This class happens to have similar properties
   property :name, String
   property :age, Integer
+
+  has n, :users
 end
 
 describe DataMapper::Adapters::CouchdbAdapter do
@@ -226,6 +230,23 @@ describe DataMapper::Adapters::CouchdbAdapter do
   it "should return a value from a view with reduce defined" do
     pending("No CouchDB connection.") if @no_connection
     User.count.should == [ OpenStruct.new({ "value" => User.all.length, "key" => nil }) ]
+  end
+
+  describe "associations" do
+    before :all do
+      @company = Company.create(:name => "ExCorp")
+      @user = User.create(:name => 'John', :company => @company)
+    end
+
+    it "should work with belongs_to associations" do
+      User.get(@user.id).company.should == @company
+    end
+
+    it "should work with has n associations" do
+      pending do
+        @company.users.should include(@user)
+      end
+    end
   end
 
   def create_procedures
