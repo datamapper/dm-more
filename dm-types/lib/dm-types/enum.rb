@@ -33,7 +33,10 @@ module DataMapper
       end
 
       def self.dump(value, property)
-        self.flag_map.invert[value]
+        case value
+        when Array then value.collect { |v| self.dump(v, property) }
+        else            self.flag_map.invert[value]
+        end
       end
 
       def self.typecast(value, property)

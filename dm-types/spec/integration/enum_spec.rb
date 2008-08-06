@@ -14,8 +14,8 @@ describe DataMapper::Types::Enum do
 
   it "should work" do
     repository(:default) do
-      Bug.create!(:status => :crit)
-      Bug.create!(:status => :warn)
+      Bug.create(:status => :crit)
+      Bug.create(:status => :warn)
     end
 
     bugs = Bug.all
@@ -25,6 +25,18 @@ describe DataMapper::Types::Enum do
 
   it 'should immediately typecast supplied values' do
     Bug.new(:status => :crit).status.should == :crit
+  end
+
+  describe "with finders" do
+    before(:all) do
+      @info = Bug.create(:status => :info)
+    end
+    it "should work with equality opeand" do
+      Bug.all(:status => [:info, :unknown]).entries.should == [@info]
+    end
+    it "should work with inequality operand" do
+      Bug.all(:status.not => [:crit, :warn]).entries.should == [@info]
+    end
   end
 
   if defined?(Validate)
