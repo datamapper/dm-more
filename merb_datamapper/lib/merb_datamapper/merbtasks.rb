@@ -43,6 +43,28 @@ namespace :dm do
         migrate_down!(version)
       end
     end
+
+    desc "Migrate the database to the latest version"
+    task :migrate => 'dm:db:migrate:up'
+
+    desc "Create the database (postgres only)"
+    task :create do
+      db = Connection.config[:database]
+      user = Connection.config[:username]
+      puts "Creating '#{db}'"
+      `createdb -U #{user} #{db}`
+    end
+
+    desc "Drop the database (postgres only)"
+    task :drop do
+      db = Connection.config[:database]
+      user = Connection.config[:username]
+      puts "Droping '#{db}'"
+      `dropdb -U #{user} #{db}`
+    end
+
+    desc "Drop the database, and migrate from scratch"
+    task :reset => [:drop, :create, :migrate]
   end
 
   namespace :sessions do
