@@ -44,11 +44,11 @@ module DataMapper
         target.errors.clear!
         result = true
         context(named_context).each do |validator|
-          if validator.execute?(target)
-            result = false if !validator.call(target)
-          end
+          next unless validator.execute?(target)
+          result = false unless validator.call(target)
         end
-        return result
+
+        result
       end
 
     end # module ContextualValidators

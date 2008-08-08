@@ -31,13 +31,13 @@ module DataMapper
   module Validate
 
     def self.included(model)
-      if model.method_defined?(:save) && !model.method_defined?(:save!)
-        model.send(:alias_method, :save!, :save)
-        model.send(:alias_method, :save,  :save_with_validations)
-      end
-      model.class_eval <<-EOS
-      class << self
-        method_defined?(:create) && !method_defined?(:create!)
+      model.class_eval <<-EOS, __FILE__, __LINE__
+        if method_defined?(:save) && !method_defined?(:save!)
+          alias save! save
+          alias save  save_with_validations
+        end
+
+        class << self
           def create(attributes = {}, context = :default)
             resource = new(attributes)
             return resource unless resource.valid?(context)

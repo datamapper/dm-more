@@ -21,7 +21,10 @@ module DataMapper
 
         repository_name = target.repository.name
 
-        opts = { field_name => target.validation_property_value(field_name) }
+        opts = {
+          :fields    => target.model.key,
+          field_name => target.validation_property_value(field_name)
+        }
 
         scope.each do |item|
           if target.model.properties(repository_name).has_property?(item)
