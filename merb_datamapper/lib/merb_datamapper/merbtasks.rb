@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'merb/orms/data_mapper/connection'
 
 namespace :dm do
 
@@ -49,18 +50,26 @@ namespace :dm do
 
     desc "Create the database (postgres only)"
     task :create do
-      db = Connection.config[:database]
-      user = Connection.config[:username]
-      puts "Creating '#{db}'"
-      `createdb -U #{user} #{db}`
+      config = Merb::Orms::DataMapper.config
+      puts "Creating database '#{config[:database]}'"
+      case config[:adapter]
+      when 'postgres'
+        `createdb -U #{config[:username]} #{config[:database]}`
+      else
+        raise "Adapter #{config[:adapter]} not supported yet."
+      end
     end
 
     desc "Drop the database (postgres only)"
     task :drop do
-      db = Connection.config[:database]
-      user = Connection.config[:username]
-      puts "Droping '#{db}'"
-      `dropdb -U #{user} #{db}`
+      config = Merb::Orms::DataMapper.config
+      puts "Droping database '#{config[:database]}'"
+      case config[:adapter]
+      when 'postgres'
+        `dropdb -U #{config[:username]} #{config[:database]}`
+      else
+        raise "Adapter #{config[:adapter]} not supported yet."
+      end
     end
 
     desc "Drop the database, and migrate from scratch"
