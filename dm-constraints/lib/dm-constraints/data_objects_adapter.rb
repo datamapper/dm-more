@@ -5,31 +5,40 @@ module DataMapper
         def create_constraints_statements(repository_name, model)
           model.many_to_one_relationships.map do |relationship|
             table_name      = model.storage_name(repository_name)
-            keys            = relationship.child_key.map { |key| property_to_column_name(model.repository(repository_name), key, false) }
-            parent          = relationship.parent_model
-            foreign_table   = parent.storage_name(repository_name)
-            foreign_keys    = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
-            <<-EOS.compress_lines
-              ALTER TABLE #{quote_table_name(table_name)}
-              ADD CONSTRAINT #{quote_constraint_name(constraint_name(table_name, relationship.name))}
-              FOREIGN KEY (#{keys * ', '})
-              REFERENCES #{quote_table_name(foreign_table)} (#{foreign_keys * ', '})
-              ON DELETE NO ACTION
-              ON UPDATE NO ACTION
-            EOS
-          end
+            constraint_name = constraint_name(table_name, relationship.name)
+            next if constraint_exists?(table_name, constraint_name)
+
+            keys          = relationship.child_key.map { |key| property_to_column_name(model.repository(repository_name), key, false) }
+            parent        = relationship.parent_model
+            foreign_table = parent.storage_name(repository_name)
+            foreign_keys  = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
+
+            create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys)
+          end.compact
         end
 
         def destroy_constraints_statements(repository_name, model)
           model.many_to_one_relationships.map do |relationship|
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
-            next unless constraint_exists?(model.storage_name, constraint_name)
+            next unless constraint_exists?(table_name, constraint_name)
+
             destroy_constraints_statement(table_name, constraint_name)
           end.compact
         end
 
         private
+
+        def create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys)
+          <<-EOS.compress_lines
+            ALTER TABLE #{quote_table_name(table_name)}
+            ADD CONSTRAINT #{quote_constraint_name(constraint_name)}
+            FOREIGN KEY (#{keys * ', '})
+            REFERENCES #{quote_table_name(foreign_table)} (#{foreign_keys * ', '})
+            ON DELETE NO ACTION
+            ON UPDATE NO ACTION
+          EOS
+        end
 
         def destroy_constraints_statement(table_name, constraint_name)
           <<-EOS.compress_lines
