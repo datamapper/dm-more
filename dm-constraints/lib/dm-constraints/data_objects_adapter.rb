@@ -4,23 +4,40 @@ module DataMapper
       module SQL
         def create_constraints_statements(repository_name, model)
           model.many_to_one_relationships.map do |relationship|
-            parent        = relationship.parent_model
-            foreign_table = parent.storage_name(repository_name)
-            foreign_keys  = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) } * ', '
-            keys          = relationship.child_key.map { |key| property_to_column_name(model.repository(repository_name), key, false) } * ', '
-            "ALTER TABLE #{quote_table_name(model.storage_name(repository_name))}
-             ADD CONSTRAINT #{relationship.name}_fk FOREIGN KEY (#{keys}) REFERENCES #{foreign_table} (#{foreign_keys})"
+            table_name      = model.storage_name(repository_name)
+            keys            = relationship.child_key.map { |key| property_to_column_name(model.repository(repository_name), key, false) }
+            parent          = relationship.parent_model
+            foreign_table   = parent.storage_name(repository_name)
+            foreign_keys    = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
+            <<-EOS.compress_lines
+              ALTER TABLE #{quote_table_name(table_name)}
+              ADD CONSTRAINT #{quote_constraint_name(constraint_name(table_name, relationship.name))}
+              FOREIGN KEY (#{keys * ', '})
+              REFERENCES #{quote_table_name(foreign_table)} (#{foreign_keys * ', '})
+            EOS
           end
         end
 
         def destroy_constraints_statements(repository_name, model)
           model.many_to_one_relationships.map do |relationship|
-            if constraint_exists?(model.storage_name, "#{relationship.name}_fk")
-              foreign_table = relationship.parent_model.storage_name(repository_name)
-              "ALTER TABLE #{quote_table_name(model.storage_name(repository_name))} 
-               DROP CONSTRAINT #{relationship.name}_fk"
-            end
+            table_name      = model.storage_name(repository_name)
+            constraint_name = constraint_name(table_name, relationship.name)
+            next unless constraint_exists?(model.storage_name, constraint_name)
+            <<-EOS.compress_lines
+              ALTER TABLE #{quote_table_name(model.storage_name(repository_name))}
+              DROP CONSTRAINT #{quote_constraint_name(constraint_name)}
+            EOS
           end.compact
+        end
+
+        private
+
+        def constraint_name(table_name, relationship_name)
+          "#{table_name}_#{relationship_name}_fk"
+        end
+
+        def quote_constraint_name(foreign_key)
+          quote_table_name(foreign_key)
         end
       end
 

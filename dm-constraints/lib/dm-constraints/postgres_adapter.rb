@@ -8,8 +8,8 @@ module DataMapper
             SELECT COUNT(*)
             FROM "information_schema"."table_constraints"
             WHERE "table_schema" = current_schema()
-              AND "table_name" = ?
-              AND "constraint_name" = ?
+            AND "table_name" = ?
+            AND "constraint_name" = ?
           EOS
           query(statement, storage_name, constraint_name).first > 0
         end

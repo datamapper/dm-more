@@ -5,21 +5,24 @@ module DataMapper
 
         def destroy_constraints_statements(repository_name, model)
           model.many_to_one_relationships.map do |relationship|
-            if constraint_exists?(model.storage_name, "#{relationship.name}_fk")
-              foreign_table = relationship.parent_model.storage_name(repository_name)
-              "ALTER TABLE #{quote_table_name(model.storage_name(repository_name))}
-              DROP FOREIGN KEY #{relationship.name}_fk"
-            end
+            table_name      = model.storage_name(repository_name)
+            constraint_name = constraint_name(table_name, relationship.name)
+            next unless constraint_exists?(model.storage_name, constraint_name)
+            <<-EOS.compress_lines
+              ALTER TABLE #{quote_table_name(table_name)}
+              DROP FOREIGN KEY #{quote_constraint_name(constraint_name)}
+            EOS
           end.compact
         end
 
         def constraint_exists?(storage_name, constraint_name)
           statement = <<-EOS.compress_lines
             SELECT COUNT(*)
-            FROM #{quote_table_name('information_schema')}.#{quote_table_name('table_constraints')}
-            WHERE #{quote_column_name('table_schema')} = ?
-              AND #{quote_column_name('table_name')} = ?
-              AND #{quote_column_name('constraint_name')} = ?
+            FROM `information_schema`.`table_constraints`
+            WHERE `constraint_type` = 'FOREIGN KEY'
+            AND `table_schema` = ?
+            AND `table_name` = ?
+            AND `constraint_name` = ?
           EOS
           query(statement, db_name, storage_name, constraint_name).first > 0
         end
