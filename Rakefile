@@ -14,6 +14,7 @@ gem_paths = %w[
   dm-aggregates
   dm-ar-finders
   dm-cli
+  dm-constraints
   dm-is-list
   dm-is-nested_set
   dm-is-state_machine
