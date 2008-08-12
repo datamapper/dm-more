@@ -16,7 +16,7 @@ describe DataMapper::Types::FilePath do
     repository(:default) do
       FilePathTest.create!(:path => '/usr')
     end
-    
+
     FilePathTest.first.path.should == Pathname.new('/usr')
   end
 

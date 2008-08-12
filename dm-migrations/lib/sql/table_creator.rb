@@ -54,4 +54,3 @@ module SQL
   end
 
 end
-

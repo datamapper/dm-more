@@ -23,7 +23,7 @@ describe 'SQL module' do
       it 'should set @opts to the options hash' do
         @tc.instance_variable_get("@opts").should == {}
       end
-       
+
       it 'should set @statements to an empty array' do
         @tc.instance_variable_get("@statements").should == []
       end

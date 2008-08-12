@@ -21,7 +21,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     after do
      repository(:default).adapter.execute('DELETE from green_smoothies');
     end
-    
+
     it "should not set the created_at/on fields if they're already set" do
       repository(:default) do
         green_smoothie = GreenSmoothie.new(:name => 'Banana')

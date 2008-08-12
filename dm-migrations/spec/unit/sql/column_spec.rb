@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname + '../../spec_helper'
 require Pathname(__FILE__).dirname + '../../../lib/sql/column'
 
 describe SQL::Column do
-  before do 
+  before do
     @column = SQL::Column.new
   end
 
@@ -15,4 +15,3 @@ describe SQL::Column do
   end
 
 end
-

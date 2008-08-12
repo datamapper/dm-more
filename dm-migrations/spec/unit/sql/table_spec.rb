@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname + '../../spec_helper'
 require Pathname(__FILE__).dirname + '../../../lib/sql/table'
 
 describe SQL::Table do
-  before do 
+  before do
     @table = SQL::Table.new
   end
 
@@ -23,7 +23,7 @@ describe SQL::Table do
     column_a = mock('column', :name => 'id')
     column_b = mock('column', :name => 'login')
     @table.columns = [column_a, column_b]
-    
+
     @table.column('id').should == column_a
   end
 

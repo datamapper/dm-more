@@ -46,7 +46,7 @@ describe 'Migration' do
       @adapter.should_receive(:class).and_return(DataMapper::Adapters::Sqlite3Adapter)
       DataMapper::Migration.new(1, :do_nothing, {}) {}
     end
-    
+
     it 'should extend the adapter with the right module' do
       @adapter.should_receive(:extend).with(SQL::Sqlite3)
       DataMapper::Migration.new(1, :do_nothing, {}) {}
@@ -64,10 +64,10 @@ describe 'Migration' do
       m.instance_variable_get(:@verbose).should be_false
     end
 
-    it 'should set @verbose to true by default' do 
+    it 'should set @verbose to true by default' do
       @m.instance_variable_get(:@verbose).should be_true
     end
-  
+
     it 'should set the @up_action to an empty block' do
       @m.instance_variable_get(:@up_action).should be_kind_of(Proc)
     end
@@ -77,7 +77,7 @@ describe 'Migration' do
     end
 
     it 'should evaluate the given block'
-      
+
   end
 
   it 'should set the @up_action when #up is called with a block' do
@@ -166,7 +166,7 @@ describe 'Migration' do
 
   end
 
-  describe 'methods used in the action blocks' do 
+  describe 'methods used in the action blocks' do
 
     describe '#execute' do
       before do
@@ -199,7 +199,7 @@ describe 'Migration' do
           SQL::TableCreator.should_receive(:new).with(@adapter, :users, {}).and_return(@tc)
           @m.create_table(:users) { }
         end
-        
+
         it 'should convert the TableCreator object to an sql statement' do
           @tc.should_receive(:to_sql).and_return('CREATE TABLE')
           @m.create_table(:users) { }
@@ -444,4 +444,3 @@ describe 'Migration' do
 
   end
 end
-

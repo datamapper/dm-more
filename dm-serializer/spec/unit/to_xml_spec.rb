@@ -8,9 +8,9 @@ describe DataMapper::Serialize, '#to_xml' do
 
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    
+
     @time = DateTime.now
-    
+
 
     @collection = DataMapper::Collection.new(query) do |c|
       c.load([1, 2, 'Betsy', 'Jersey'])
@@ -55,13 +55,13 @@ describe DataMapper::Serialize, '#to_xml' do
       </cows>
   EOS
   end
-  
+
   describe "multiple repositories" do
     before(:all) do
       QuantumCat.auto_migrate!
       repository(:alternate){QuantumCat.auto_migrate!}
     end
-    
+
     it "should use the repsoitory for the model" do
       gerry = QuantumCat.create(:name => "gerry")
       george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}

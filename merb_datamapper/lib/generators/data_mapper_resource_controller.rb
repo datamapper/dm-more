@@ -15,7 +15,7 @@ Merb::Generators::ResourceControllerGenerator.template :controller_datamapper, :
   source(File.dirname(__FILE__), "templates/resource_controller.rb")
   destination("app/controllers", base_path, "#{file_name}.rb")
 end
- 
+
 [:index, :show, :edit, :new].each do |view|
   Merb::Generators::ResourceControllerGenerator.template "view_#{view}_datamapper".to_sym,
       :orm => :datamapper, :template_engine => :erb do

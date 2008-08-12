@@ -191,7 +191,7 @@ module DataMapper
         query    = nil if query == ''
 
         return Addressable::URI.new(adapter, user, password, host, port, database, query, nil)
-      end    
+      end
 
       def build_request(query)
         if query.view
