@@ -2,35 +2,43 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::FormatValidator do
-  before(:all) do
+  before :all do
     class BillOfLading
       include DataMapper::Resource
-      property :id, Integer, :key => true
-      property :doc_no, String, :auto_validation => false
-      property :email, String, :auto_validation => false
+
+      property :id,       Serial
+      property :doc_no,   String, :auto_validation => false
+      property :email,    String, :auto_validation => false
+      property :username, String, :auto_validation => false
 
       # this is a trivial example
       validates_format :doc_no, :with => lambda { |code|
-        (code =~ /A\d{4}/) || (code =~ /[B-Z]\d{6}X12/)
+        code =~ /\AA\d{4}\z/ || code =~ /\A[B-Z]\d{6}X12\z/
       }
 
       validates_format :email, :as => :email_address
+
+      validates_format :username, :with => /[a-z]/, :message => 'Username must have at least one letter', :allow_nil => true
     end
   end
 
+  def valid_attributes
+    { :id => 1, :doc_no => 'A1234', :email => 'user@example.com' }
+  end
+
   it 'should validate the format of a value on an instance of a resource' do
-    bol = BillOfLading.new
+    bol = BillOfLading.new(valid_attributes)
+    bol.should be_valid
+
     bol.doc_no = 'BAD CODE :)'
     bol.should_not be_valid
     bol.errors.on(:doc_no).should include('Doc no has an invalid format')
 
     bol.doc_no = 'A1234'
-    bol.valid?
-    bol.errors.on(:doc_no).should be_nil
+    bol.should be_valid
 
     bol.doc_no = 'B123456X12'
-    bol.valid?
-    bol.errors.on(:doc_no).should be_nil
+    bol.should be_valid
   end
 
   it 'should have a pre-defined e-mail format' do
@@ -55,7 +63,7 @@ describe DataMapper::Validate::FormatValidator do
             'guy@123.com'
            ]
 
-    bol = BillOfLading.new
+    bol = BillOfLading.new(valid_attributes.except(:email))
     bol.should_not be_valid
     bol.errors.on(:email).should include('Email has an invalid format')
 
@@ -73,7 +81,37 @@ describe DataMapper::Validate::FormatValidator do
 
   end
 
-  it 'should have pre-defined formats'
+  describe 'with a regexp' do
+    before do
+      @bol = BillOfLading.new(valid_attributes)
+      @bol.should be_valid
+    end
+
+    describe 'if matched' do
+      before do
+        @bol.username = 'a12345'
+      end
+
+      it 'should validate' do
+        @bol.should be_valid
+      end
+    end
+
+    describe 'if not matched' do
+      before do
+        @bol.username = '12345'
+      end
+
+      it 'should not validate' do
+        @bol.should_not be_valid
+      end
+
+      it 'should set an error message' do
+        @bol.valid?
+        @bol.errors.on(:username).should include('Username must have at least one letter')
+      end
+    end
+  end
 end
 
 =begin
