@@ -14,6 +14,8 @@ module DataMapper
               ADD CONSTRAINT #{quote_constraint_name(constraint_name(table_name, relationship.name))}
               FOREIGN KEY (#{keys * ', '})
               REFERENCES #{quote_table_name(foreign_table)} (#{foreign_keys * ', '})
+              ON DELETE NO ACTION
+              ON UPDATE NO ACTION
             EOS
           end
         end
