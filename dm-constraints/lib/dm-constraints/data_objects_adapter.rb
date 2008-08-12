@@ -25,14 +25,18 @@ module DataMapper
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
             next unless constraint_exists?(model.storage_name, constraint_name)
-            <<-EOS.compress_lines
-              ALTER TABLE #{quote_table_name(model.storage_name(repository_name))}
-              DROP CONSTRAINT #{quote_constraint_name(constraint_name)}
-            EOS
+            destroy_constraints_statement(table_name, constraint_name)
           end.compact
         end
 
         private
+
+        def destroy_constraints_statement(table_name, constraint_name)
+          <<-EOS.compress_lines
+            ALTER TABLE #{quote_table_name(table_name)}
+            DROP CONSTRAINT #{quote_constraint_name(constraint_name)}
+          EOS
+        end
 
         def constraint_name(table_name, relationship_name)
           "#{table_name}_#{relationship_name}_fk"
@@ -44,7 +48,6 @@ module DataMapper
       end
 
       module Migration
-
         def self.included(migrator)
           migrator.extend(ClassMethods)
           migrator.before_class_method :auto_migrate_down, :auto_migrate_constraints_down
@@ -52,7 +55,6 @@ module DataMapper
         end
 
         module ClassMethods
-
           def auto_migrate_constraints_down(repository_name, *descendants)
             descendants = DataMapper::Resource.descendants.to_a if descendants.empty?
             descendants.each do |model|

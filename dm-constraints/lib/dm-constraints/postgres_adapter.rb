@@ -2,6 +2,7 @@ module DataMapper
   module Constraints
     module PostgresAdapter
       module SQL
+        private
 
         def constraint_exists?(storage_name, constraint_name)
           statement = <<-EOS.compress_lines
@@ -13,7 +14,6 @@ module DataMapper
           EOS
           query(statement, storage_name, constraint_name).first > 0
         end
-
       end
     end
   end
