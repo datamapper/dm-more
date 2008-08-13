@@ -71,7 +71,7 @@ end
 desc "Install the dm-more gems"
 task :install_gems => :build_gems do
   gem_paths.each do |dir|
-    Dir.chdir(dir){ sh "#{SUDO} rake install" }
+    Dir.chdir(dir){ sh "rake install" }
   end
 end
 
