@@ -72,14 +72,40 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         green_smoothie.updated_on.should be_a_kind_of(Date)
         original_updated_at = green_smoothie.updated_at
         original_updated_on = green_smoothie.updated_on
-        sleep 1
-        tomorrow = Date.today + 1
-        Date.should_receive(:today).and_return(tomorrow)
+        time_tomorrow = DateTime.now + 1
+        date_tomorrow = Date.today + 1
+        DateTime.stub!(:now).and_return { time_tomorrow }
+        Date.stub!(:today).and_return { date_tomorrow }
         green_smoothie.name = 'Cranberry Mango'
         green_smoothie.save
         green_smoothie.updated_at.should_not eql(original_updated_at)
         green_smoothie.updated_on.should_not eql(original_updated_on)
+        green_smoothie.updated_at.should eql(time_tomorrow)
+        green_smoothie.updated_on.should eql(date_tomorrow)
       end
     end
+
+    it "should only set the updated_at/on fields on dirty objects" do
+      repository(:default) do
+        green_smoothie = GreenSmoothie.new(:name => 'Mango')
+        green_smoothie.updated_at.should be_nil
+        green_smoothie.updated_on.should be_nil
+        green_smoothie.save
+        green_smoothie.updated_at.should be_a_kind_of(DateTime)
+        green_smoothie.updated_on.should be_a_kind_of(Date)
+        original_updated_at = green_smoothie.updated_at
+        original_updated_on = green_smoothie.updated_on
+        time_tomorrow = DateTime.now + 1
+        date_tomorrow = Date.today + 1
+        DateTime.stub!(:now).and_return { time_tomorrow }
+        Date.stub!(:today).and_return { date_tomorrow }
+        green_smoothie.save
+        green_smoothie.updated_at.should_not eql(time_tomorrow)
+        green_smoothie.updated_on.should_not eql(date_tomorrow)
+        green_smoothie.updated_at.should eql(original_updated_at)
+        green_smoothie.updated_on.should eql(original_updated_on)
+      end
+    end
+
   end
 end

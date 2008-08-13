@@ -19,8 +19,10 @@ module DataMapper
     private
 
     def set_timestamp_properties
-      self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).compact.each do |property|
-        TIMESTAMP_PROPERTIES[property.name][self]
+      if dirty?
+        self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).compact.each do |property|
+          TIMESTAMP_PROPERTIES[property.name][self]
+        end
       end
     end
   end # module Timestamp
