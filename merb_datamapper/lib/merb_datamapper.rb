@@ -17,4 +17,8 @@ if defined?(Merb::Plugins)
   require File.join(File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "resource")
 
   Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
+
+  Merb.add_generators File.join(File.dirname(__FILE__), 'generators', 'data_mapper_model')
+  Merb.add_generators File.join(File.dirname(__FILE__), 'generators', 'data_mapper_resource_controller')
+  Merb.add_generators File.join(File.dirname(__FILE__), 'generators', 'data_mapper_migration')
 end

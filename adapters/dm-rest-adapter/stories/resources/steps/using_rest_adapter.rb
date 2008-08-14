@@ -39,18 +39,18 @@ steps_for :using_rest_adapter do
     @resource = Book.first
     @resource_id = @resource.id
   end
-  
+
   When("I try to save the Resource") do
     @result = @resource.save
   end
-  
+
   When("I request all of the Resources of that type") do
     require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
     @resources = Book.all
   end
-  
+
   When("I request the Resource") do
-    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')    
+    require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')
     @resource = Book.get(@resource_id)
   end
 
@@ -61,19 +61,19 @@ steps_for :using_rest_adapter do
   When("I make invalid changes to that Resource") do
     @resource.title = nil
   end
-  
+
   When("I destroy the Resource") do
     @resource.destroy
   end
-  
+
   Then("the Resource should save") do
     @result.should be_true
   end
-  
+
   Then("the Resource should not save") do
     @result.should be_false
   end
-  
+
   Then("I should not receive an empty list") do
     @resources.should_not be_empty
   end
@@ -86,7 +86,7 @@ steps_for :using_rest_adapter do
   Then("I should get nothing in return") do
     @resource.should be_nil
   end
-  
+
   Then("the Resource will no longer be available") do
     # TODO refactor
     require File.join(File.dirname(__FILE__), '..', 'helpers', 'book')

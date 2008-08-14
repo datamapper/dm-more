@@ -67,24 +67,23 @@ module DataMapper
       # @param <Object> target the resource that we check against
       # @return <Boolean> true if should be run, otherwise false
       def execute?(target)
-        return true if self.if_clause.nil? && self.unless_clause.nil?
-
-        if self.unless_clause
-          if self.unless_clause.is_a?(Symbol)
-            return false if target.send(self.unless_clause)
-          elsif self.unless_clause.respond_to?(:call)
-            return false if self.unless_clause.call(target)
+        if unless_clause = self.unless_clause
+          if unless_clause.is_a?(Symbol)
+            return false if target.send(unless_clause)
+          elsif unless_clause.respond_to?(:call)
+            return false if unless_clause.call(target)
           end
         end
 
-        if self.if_clause
-          if self.if_clause.is_a?(Symbol)
-            return target.send(self.if_clause)
-          elsif self.if_clause.respond_to?(:call)
-            return self.if_clause.call(target)
+        if if_clause = self.if_clause
+          if if_clause.is_a?(Symbol)
+            return target.send(if_clause)
+          elsif if_clause.respond_to?(:call)
+            return if_clause.call(target)
           end
         end
-        return true
+
+        true
       end
 
       def ==(other)

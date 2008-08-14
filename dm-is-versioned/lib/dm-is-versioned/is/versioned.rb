@@ -3,46 +3,46 @@ module DataMapper
     ##
     # = Is Versioned
     # The Versioned module will configure a model to be versioned.
-    # 
+    #
     # The is-versioned plugin functions differently from other versioning
     # solutions (such as acts_as_versioned), but can be configured to
     # function like it if you so desire.
-    # 
+    #
     # The biggest difference is that there is not an incrementing 'version'
     # field, but rather, any field of your choosing which will be unique
     # on update.
-    # 
+    #
     # == Setup
     # For simplicity, I will assume that you have loaded dm-timestamps to
     # automatically update your :updated_at field. See versioned_spec for
     # and example of updating the versioned field yourself.
-    # 
+    #
     #   class Story
     #     include DataMapper::Resource
     #     property :id, Serial
     #     property :title, String
     #     property :updated_at, DateTime
-    # 
+    #
     #     is_versioned :on => [:updated_at]
     #   end
-    # 
+    #
     # == Auto Upgrading and Auto Migrating
-    # 
+    #
     #   Story.auto_migrate! # => will run auto_migrate! on Story::Version, too
     #   Story.auto_upgrade! # => will run auto_upgrade! on Story::Version, too
-    # 
+    #
     # == Usage
-    # 
+    #
     #   story = Story.get(1)
     #   story.title = "New Title"
     #   story.save # => Saves this story and creates a new version with the
     #              #    original values.
     #   story.versions.size # => 1
-    # 
+    #
     #   story.title = "A Different New Title"
     #   story.save
     #   story.versions.size # => 2
-    # 
+    #
     # TODO: enable replacing a current version with an old version.
     module Versioned
       def self.included(base)
@@ -95,7 +95,7 @@ module DataMapper
         # Returns a hash of original values to be stored in the
         # versions table when a new version is created. It is
         # cleared after a version model is created.
-        # 
+        #
         # --
         # @return <Hash>
         def pending_version_attributes
@@ -106,7 +106,7 @@ module DataMapper
         # Returns a collection of other versions of this resource.
         # The versions are related on the models keys, and ordered
         # by the version field.
-        # 
+        #
         # --
         # @return <Collection>
         def versions

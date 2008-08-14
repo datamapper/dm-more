@@ -4,7 +4,7 @@ Add ability to have a unique relationship when joining through remixable
   This is stubbed at remixable.rb @~ line 223; waiting on stategic eager loading
   M:M Video.remix n, :commentables, :as => "comments", :for => "User", :unique => false
   M:M Article.remix n, :views, :for => "User", :unique => true
-    in the generated table article_views article_id and user_id would be a unique key, 
+    in the generated table article_views article_id and user_id would be a unique key,
       only counting a users viewing of an article once
       
 When 'remix 1' a one to one relationship is created, but ownership is in the remixed model
@@ -12,7 +12,7 @@ When 'remix 1' a one to one relationship is created, but ownership is in the rem
   changed the relationship from 1 to n
 
 TODO
-====  
+====
 - Test nested remix with M:M through Remixable, :for => "Class"
 - Test with Namespaced Models
 
@@ -22,9 +22,9 @@ TODO
 - Harvest Class methods (including it into Remixed Model gets the instance methods, but not class methods...)
 
 - Squash protection;
-  IF    ClassA => remix ModuleB, :table_name => "squashme" 
+  IF    ClassA => remix ModuleB, :table_name => "squashme"
   AND   ClassC => remix ModuleB, :table_name => "squashme" #SQUASHED THAT TABLE
-  
+
 - Remixable.related(*remixed_models)
   Taggable.related(Article, JobPostings)
 
@@ -35,7 +35,7 @@ CONSIDERATIONS
 - Adding Conditions to Associations (http://datamapper.org/docs/associations.html)
 
 - Defining class name specifically during remix (rather than implied from :table_name)
-  remix, :class_name => "MyClassName" 
+  remix, :class_name => "MyClassName"
       #instead of using table_name? Too Many Options or having Remixable default class name...
 
   EXAMPLE:
@@ -43,19 +43,18 @@ CONSIDERATIONS
     :table_name => "user_addresses"
     :as => "addresses"
     :class_name => "address"
-    
+
 - Remixable Module defines class name
 
   EXAMPLE:
   module :addressables
-    is :remixable, 
+    is :remixable,
       :suffix => "address",
       :class_name => "address"
-  
+
   a = Address.new  #Instead of a = UserAddress.new
   User.user_addresses << a
   User.addresses << a
-  
+
   Benefit: On remixing you dont end up with crazy amounts of classes/names UserAddress, AccountAddress, etc
   Problem: How does enhancing work (since all Address's will use same class)
-   

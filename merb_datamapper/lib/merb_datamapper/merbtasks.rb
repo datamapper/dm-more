@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'merb/orms/data_mapper/connection'
 
 namespace :dm do
 
@@ -43,6 +44,36 @@ namespace :dm do
         migrate_down!(version)
       end
     end
+
+    desc "Migrate the database to the latest version"
+    task :migrate => 'dm:db:migrate:up'
+
+    desc "Create the database (postgres only)"
+    task :create do
+      config = Merb::Orms::DataMapper.config
+      puts "Creating database '#{config[:database]}'"
+      case config[:adapter]
+      when 'postgres'
+        `createdb -U #{config[:username]} #{config[:database]}`
+      else
+        raise "Adapter #{config[:adapter]} not supported yet."
+      end
+    end
+
+    desc "Drop the database (postgres only)"
+    task :drop do
+      config = Merb::Orms::DataMapper.config
+      puts "Droping database '#{config[:database]}'"
+      case config[:adapter]
+      when 'postgres'
+        `dropdb -U #{config[:username]} #{config[:database]}`
+      else
+        raise "Adapter #{config[:adapter]} not supported yet."
+      end
+    end
+
+    desc "Drop the database, and migrate from scratch"
+    task :reset => [:drop, :create, :migrate]
   end
 
   namespace :sessions do

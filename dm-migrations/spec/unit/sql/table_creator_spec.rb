@@ -46,7 +46,7 @@ describe 'SQL module' do
       @adapter.should_receive(:quote_table_name).with('users').and_return(%{'users'})
       @tc.quoted_table_name.should == %{'users'}
     end
-    
+
     it 'should initialze a new column and add it to the list of columns' do
       col = mock('column')
       SQL::TableCreator::Column.should_receive(:new).with(@adapter, :foo, :bar, {}).and_return(col)
@@ -55,7 +55,7 @@ describe 'SQL module' do
     end
 
     it 'should output an SQL CREATE statement to build itself' do
-      @tc.to_sql.should == 
+      @tc.to_sql.should ==
         %{CREATE TABLE 'users' ()}
     end
 

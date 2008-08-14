@@ -14,6 +14,7 @@ gem_paths = %w[
   dm-aggregates
   dm-ar-finders
   dm-cli
+  dm-constraints
   dm-is-list
   dm-is-nested_set
   dm-is-state_machine
@@ -70,7 +71,7 @@ end
 desc "Install the dm-more gems"
 task :install_gems => :build_gems do
   gem_paths.each do |dir|
-    Dir.chdir(dir){ sh "#{SUDO} rake install" }
+    Dir.chdir(dir){ sh "rake install" }
   end
 end
 

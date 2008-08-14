@@ -31,13 +31,13 @@ describe DataMapper::Serialize, '#to_csv' do
       "1,2,Betsy,Jersey\n" +
       "10,20,Berta,Guernsey\n"
   end
-  
+
   describe "multiple repositories" do
     before(:all) do
       QuantumCat.auto_migrate!
       repository(:alternate){QuantumCat.auto_migrate!}
     end
-    
+
     it "should use the repsoitory for the model" do
       gerry = QuantumCat.create(:name => "gerry")
       george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}

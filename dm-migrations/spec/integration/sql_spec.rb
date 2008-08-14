@@ -40,11 +40,11 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       it "should quote the table name for the adapter" do
         @creator.quoted_table_name.should == (adapter == :mysql ? '`people`' : '"people"')
       end
-      
+
       it "should allow for custom options" do
         columns = @creator.instance_eval("@columns")
         col = columns.detect{|c| c.name == "long_string"}
-        col.instance_eval("@type").should include("200") 
+        col.instance_eval("@type").should include("200")
       end
 
     end

@@ -35,7 +35,7 @@ module DataMapper
       fields += propset.map do |property|
         "#{property.name.to_json}: #{send(property.getter).to_json}"
       end
-      
+
       if self.respond_to?(:serialize_properties)
         self.serialize_properties.each do |k,v|
           fields << "#{k.to_json}: #{v.to_json}"
@@ -77,7 +77,7 @@ module DataMapper
     #
     # @return <REXML::Document> an XML representation of this Resource
     def to_xml(opts = {})
-      
+
       to_xml_document(opts).to_s
     end
 
@@ -154,12 +154,12 @@ module DataMapper
       end
       result
     end
-    
+
     protected
     def xml_element_name
       Extlib::Inflection.tableize(self.model.to_s)
     end
-    
+
     def to_xml_document(opts={})
       doc = REXML::Document.new
       root = doc.add_element(xml_element_name)

@@ -358,7 +358,7 @@ module DataMapper
         def right_sibling
           self_and_siblings.find{|v| v.lft == rgt+1}
         end
-        
+
        private
         def detach
           offset = self.lft - self.rgt - 1

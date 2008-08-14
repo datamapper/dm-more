@@ -95,5 +95,3 @@ describe "SQLite3 Extensions" do
 
 
 end
- 
-
