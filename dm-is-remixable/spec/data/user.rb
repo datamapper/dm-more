@@ -1,6 +1,7 @@
 require Pathname(__FILE__).dirname / "viewable"
 require Pathname(__FILE__).dirname / "billable"
 require Pathname(__FILE__).dirname / "addressable"
+require Pathname(__FILE__).dirname / "rating"
 
 class User
   include DataMapper::Resource
@@ -24,6 +25,8 @@ class User
   remix n, :addressables
 
   remix n, :commentables, :as => "comments", :for => "User", :via => "commentor"
+  
+  remix n, "My::Nested::Remixable::Rating"
 
   enhance :addressables do
     property :label, Enum.new('home','work')

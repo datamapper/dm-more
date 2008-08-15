@@ -43,8 +43,10 @@ module DataMapper
       def is_remixable(options={})
         extend  DataMapper::Is::Remixable::RemixeeClassMethods
         include DataMapper::Is::Remixable::RemixeeInstanceMethods
-
-        suffix(options.delete(:suffix) || self.name.downcase.singular)
+        
+        # support clean suffixes for nested modules
+        default_suffix = self.name.split('::').last.singular.snake_case
+        suffix(options.delete(:suffix) || default_suffix)
       end
 
 
@@ -121,16 +123,19 @@ module DataMapper
           #A map for remixable names to Remixed Models
           @remixables = {} if @remixables.nil?
 
-          remixable_module = Object.const_get(Extlib::Inflection.classify(remixable))
-
+          # Allow nested modules to be remixable to better support using dm-is-remixable in gems
+          # Example (from my upcoming dm-is-rateable gem)
+          # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
+          remixable_module = classify_remixable(remixable)
+          
           #Merge defaults/options
           options = {
-            :as         => nil,
-            :class_name => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
-            :for        => nil,
-            :on         => nil,
-            :unique     => false,
-            :via        => nil
+            :as              => nil,
+            :class_name      => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
+            :for             => nil,
+            :on              => nil,
+            :unique          => false,
+            :via             => nil
           }.merge(options)
 
           #Make sure the class hasn't been remixed already
@@ -145,8 +150,11 @@ module DataMapper
             puts " ~ Generating Remixed Model: #{options[:class_name]}"
             model = generate_remixed_model(remixable_module, options)
 
-            #map the remixable to the remixed model
-            @remixables[remixable] = model
+            # map the remixable to the remixed model            
+            # since this will be used from 'enhance api' i think it makes perfect sense to
+            # always refer to a remixable by its snake_cased innermost constant name
+            remixable_key = remixable_module.name.split('::').last.snake_case.to_sym
+            populate_remixables_mapping(model, options.merge(:remixable_key => remixable_key))
 
             #Create relationships between Remixer and remixed class
             if options[:other_model]
@@ -170,7 +178,7 @@ module DataMapper
         # ==== Description
         #   Enhance a remix; allows nesting remixables, adding columns & functions to a remixed resource
         # ==== Parameters
-        #   remixable <Symbol> Name of remixable to enhance
+        #   remixable <Symbol> Name of remixable to enhance (plural or singular name of is :remixable module)
         #   block     <Proc>    Enhancements to perform
         # ==== Examples
         #   class Video
@@ -185,7 +193,8 @@ module DataMapper
         #       def backwards; self.test.reverse; end;
         #     end
         def enhance(remixable,&block)
-          model = @remixables[remixable]
+          # always use innermost singular snake_cased constant name
+          model = @remixables[remixable.to_s.singular.snake_case.to_sym][:model]
 
           unless model.nil?
             model.class_eval &block
@@ -203,9 +212,42 @@ module DataMapper
         #   options <Hash> options hash
         def attach_accessor(options)
           self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-            alias #{options[:as].intern} #{options[:table_name].intern}
-            alias #{options[:as].intern}= #{options[:table_name].intern}=
+            alias #{options[:as].to_sym} #{options[:table_name].to_sym}
+            alias #{options[:as].to_sym}= #{options[:table_name].to_sym}=
           EOS
+        end
+        
+        # - populate_remixables_mapping
+        # ==== Description
+        #   Populates the Hash of remixables with information about the remixable
+        # ==== Parameters
+        #   remixable 
+        #   options <Hash> options hash
+        def populate_remixables_mapping(remixable_model, options)
+          key = options[:remixable_key]
+          accessor_name = options[:as] ? options[:as] : options[:table_name]
+          @remixables[key] ||= {}              
+          @remixables[key][:model] ||= remixable_model              
+          @remixables[key][:reader] ||= accessor_name.to_sym
+          @remixables[key][:writer] ||= "#{accessor_name}=".to_sym
+        end
+        
+        # - classify_remixable
+        # ==== Description
+        #   Classifies (nested) modules
+        #   I didn't find a helper method (string extension) in merb that does that?
+        #   I admit I didn't really look long, so I could be wrong here
+        # ==== Parameters
+        #   remixable <Symbol> <String>
+        def classify_remixable(remixable)
+          if remixable.to_s.include?('::')
+            remixable.to_s.split('::').inject(Object) do |scope, const_name|
+              scope.const_get(const_name)
+            end
+          else
+            # previously present default case
+            Object.const_get(Extlib::Inflection.classify(remixable))
+          end
         end
 
         # - remix_one_to_many
@@ -217,6 +259,7 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
           self.has cardinality, options[:table_name].intern
+          model.property "#{self.name.singularize.snake_case}_id".intern, Integer, :nullable => false
           model.belongs_to Extlib::Inflection.tableize(self.name).intern
         end
 

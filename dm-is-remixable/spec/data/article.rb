@@ -16,6 +16,8 @@ class Article
   remix n, :viewables, :as => "views"
 
   remix n, :commentables, :as => "comments", :for => "User"
+  
+  remix n, "My::Nested::Remixable::Rating", :as => :ratings
 
   enhance :viewables do
     belongs_to :user

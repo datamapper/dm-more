@@ -9,6 +9,8 @@ require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'article'
 require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'image'
 require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'user'
 require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'viewable'
+require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'topic'
+require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'rating'
 
 DataMapper.auto_migrate!
 
@@ -16,7 +18,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::Remixable' do
     it "should not allow enhancements of modules that aren't remixed" do
       begin
-        User.enhance Commentable do
+        User.enhance Image do
           puts "I can enhance something I didn't remix"
         end
         false
@@ -38,20 +40,57 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       ArticleImage.should respond_to("test_enhance")
     end
+    
+    it "should allow enhancing a model that was remixed from a nested module" do
+      Article.enhance :ratings do
+        def self.test_enhance
+          puts "Testing"
+        end
+      end
 
+      ArticleRating.should respond_to("test_enhance")
+      ArticleRating.should respond_to("total_rating")
+      ArticleRating.new.should respond_to("user_id")
+      ArticleRating.new.should respond_to("rating")
+    end
+    
     it "should provided a map of Remixable Modules to Remixed Models names" do
       User.remixables.should_not be(nil)
     end
 
+    it "should store the remixed model in the map of Remixable Modules to Remixed Models" do
+      User.remixables[:billable][:model].should == Account
+      # nested remixables
+      User.remixables[:rating][:model].should == UserRating
+      Article.remixables[:rating][:model].should == ArticleRating
+      Topic.remixables[:rating][:model].should == Rating
+    end
+    
+    it "should store the remixee reader name in the map of Remixable Modules to Remixed Models" do
+      User.remixables[:billable][:reader].should == :accounts
+      # nested remixables
+      User.remixables[:rating][:reader].should == :user_ratings
+      Article.remixables[:rating][:reader].should == :ratings
+      Topic.remixables[:rating][:reader].should == :ratings_for_topic
+    end
+    
+    it "should store the remixee writer name in the map of Remixable Modules to Remixed Models" do
+      User.remixables[:billable][:writer].should == :accounts=
+      # nested remixables
+      User.remixables[:rating][:writer].should == :user_ratings=
+      Article.remixables[:rating][:writer].should == :ratings=
+      Topic.remixables[:rating][:writer].should == :ratings_for_topic=
+    end
+    
     it "should allow specifying an alternate class name" do
-      User.remixables[:billables].name.should_not == "UserBillable"
-      User.remixables[:billables].name.should == "Account"
+      User.remixables[:billable][:model].name.should_not == "UserBillable"
+      User.remixables[:billable][:model].name.should == "Account"
     end
 
     it "should create a storage name based on the class name" do
 
-      Article.remixables[:images].storage_names[:default].should == "article_images"
-      User.remixables[:billables].storage_names[:default].should == "accounts"
+      Article.remixables[:image][:model].storage_names[:default].should == "article_images"
+      User.remixables[:billable][:model].storage_names[:default].should == "accounts"
     end
 
     it "should allow creating an accessor alias" do
