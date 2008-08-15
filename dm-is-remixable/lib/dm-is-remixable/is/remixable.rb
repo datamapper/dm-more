@@ -130,12 +130,12 @@ module DataMapper
           
           #Merge defaults/options
           options = {
-            :as              => nil,
-            :class_name      => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
-            :for             => nil,
-            :on              => nil,
-            :unique          => false,
-            :via             => nil
+            :as         => nil,
+            :class_name => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
+            :for        => nil,
+            :on         => nil,
+            :unique     => false,
+            :via        => nil
           }.merge(options)
 
           #Make sure the class hasn't been remixed already
