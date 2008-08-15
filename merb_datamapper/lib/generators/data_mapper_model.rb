@@ -1,5 +1,14 @@
 Merb::Generators::ModelGenerator.option :migration, :as => :boolean, :desc => 'Also generate a dm-migration for the model'
 
+class Merb::Generators::ModelGenerator
+  ##
+  # Corrects case of common datamapper arguments.
+  def datamapper_type(type)
+    return 'DateTime' if type == 'datetime'
+    return type.camel_case
+  end
+end
+
 Merb::Generators::ModelGenerator.template :model_datamapper, :orm => :datamapper do
   source(File.dirname(__FILE__), "templates", "model.rb")
   destination("app/models", base_path, "#{file_name}.rb")
