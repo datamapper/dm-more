@@ -294,8 +294,16 @@ module DataMapper
           @suffix
         end
 
-        #Squash auto_migrate!
-        def auto_migrate!(args=nil)
+        # Squash auto_migrate!
+        # model.auto_migrate! never gets called directly from dm-core/auto_migrations.rb
+        # The models are explicitly migrated down and up again.
+        # Maybe this could be refactored in dm-core so that overriding auto_migrate! alone
+        # really does what one would expect? 
+        def auto_migrate_up!(args=nil)
+          DataMapper.logger.warn("Remixable modules (#{self.name}) cannot be auto migrated")
+        end
+        
+        def auto_migrate_down!(args=nil)
           DataMapper.logger.warn("Remixable modules (#{self.name}) cannot be auto migrated")
         end
 
