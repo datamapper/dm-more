@@ -1,3 +1,16 @@
+# reopen sam/extlib/lib/extlib/object.rb
+class Object
+
+  def full_const_defined?(name)
+    !!full_const_get(name)
+  rescue
+    false
+  end
+  
+end
+
+English::Inflect.rule 'ess', 'esses'
+
 module DataMapper
   module Is
     module Remixable
@@ -45,7 +58,7 @@ module DataMapper
         include DataMapper::Is::Remixable::RemixeeInstanceMethods
         
         # support clean suffixes for nested modules
-        default_suffix = self.name.split('::').last.singular.snake_case
+        default_suffix = Extlib::Inflection.demodulize(self.name).singular.snake_case
         suffix(options.delete(:suffix) || default_suffix)
       end
 
@@ -126,12 +139,12 @@ module DataMapper
           # Allow nested modules to be remixable to better support using dm-is-remixable in gems
           # Example (from my upcoming dm-is-rateable gem)
           # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
-          remixable_module = classify_remixable(remixable)
+          remixable_module = Object.full_const_get(Extlib::Inflection.classify(remixable))
           
           #Merge defaults/options
           options = {
             :as         => nil,
-            :class_name => Extlib::Inflection.classify(self.name + "_" + remixable_module.suffix.pluralize),
+            :class_name => Extlib::Inflection.classify(self.name.snake_case + "_" + remixable_module.suffix.pluralize),
             :for        => nil,
             :on         => nil,
             :unique     => false,
@@ -139,7 +152,7 @@ module DataMapper
           }.merge(options)
 
           #Make sure the class hasn't been remixed already
-          unless Object.const_defined? options[:class_name]
+          unless Object.full_const_defined?(Extlib::Inflection.classify(options[:class_name]))
 
             #Storage name of our remixed model
             options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
@@ -152,8 +165,8 @@ module DataMapper
 
             # map the remixable to the remixed model            
             # since this will be used from 'enhance api' i think it makes perfect sense to
-            # always refer to a remixable by its snake_cased innermost constant name
-            remixable_key = remixable_module.name.split('::').last.snake_case.to_sym
+            # always refer to a remixable by its demodulized snake_cased constant name
+            remixable_key = Extlib::Inflection.demodulize(remixable_module.name).snake_case.to_sym
             populate_remixables_mapping(model, options.merge(:remixable_key => remixable_key))
 
             #Create relationships between Remixer and remixed class
@@ -231,24 +244,6 @@ module DataMapper
           @remixables[key][:reader] ||= accessor_name.to_sym
           @remixables[key][:writer] ||= "#{accessor_name}=".to_sym
         end
-        
-        # - classify_remixable
-        # ==== Description
-        #   Classifies (nested) modules
-        #   I didn't find a helper method (string extension) in merb that does that?
-        #   I admit I didn't really look long, so I could be wrong here
-        # ==== Parameters
-        #   remixable <Symbol> <String>
-        def classify_remixable(remixable)
-          if remixable.to_s.include?('::')
-            remixable.to_s.split('::').inject(Object) do |scope, const_name|
-              scope.const_get(const_name)
-            end
-          else
-            # previously present default case
-            Object.const_get(Extlib::Inflection.classify(remixable))
-          end
-        end
 
         # - remix_one_to_many
         # ==== Description
@@ -259,7 +254,7 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
           self.has cardinality, options[:table_name].intern
-          model.property "#{self.name.singularize.snake_case}_id".intern, Integer, :nullable => false
+          model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :nullable => false
           model.belongs_to Extlib::Inflection.tableize(self.name).intern
         end
 
@@ -271,7 +266,7 @@ module DataMapper
         #   model       <Class> remixed model that 'self' is relating through
         #   options     <Hash> options hash
         def remix_many_to_many(cardinality, model, options)
-          options[:other_model] = Object.const_get options[:other_model]
+          options[:other_model] = Object.full_const_get(Extlib::Inflection.classify(options[:other_model]))
 
           #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
           # attach a validates_is_unique if the validator is included.
@@ -308,7 +303,7 @@ module DataMapper
           end
 
           #Give remixed model a name and create its constant
-          model = Object.const_set options[:class_name], klass
+          model = Object.full_const_set(options[:class_name], klass)
 
           #Get instance methods & validators
           model.send(:include,remixable)
@@ -343,16 +338,16 @@ module DataMapper
         # Maybe this could be refactored in dm-core so that overriding auto_migrate! alone
         # really does what one would expect? 
         def auto_migrate_up!(args=nil)
-          DataMapper.logger.warn("Remixable modules (#{self.name}) cannot be auto migrated")
+          DataMapper.logger.warn("Skipping auto_migrate_up! for remixable module (#{self.name})")
         end
         
         def auto_migrate_down!(args=nil)
-          DataMapper.logger.warn("Remixable modules (#{self.name}) cannot be auto migrated")
+          DataMapper.logger.warn("Skipping auto_migrate_down! for remixable module (#{self.name})")
         end
 
         #Squash auto_upgrade!
         def auto_upgrade!(args=nil)
-          DataMapper.logger.warn("Remixable modules (#{self.name}) cannot be auto updated")
+          DataMapper.logger.warn("Skipping auto_upgrade! for remixable module (#{self.name})")
         end
       end # RemixeeClassMethods
 
