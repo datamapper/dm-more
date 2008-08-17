@@ -8,7 +8,7 @@ class Topic
   property :name, String
   property :description, String
   
-  remix n, "My::Nested::Remixable::Rating",
+  remix n, My::Nested::Remixable::Rating,
     :as => :ratings_for_topic,
     :class_name => "Rating"
 
