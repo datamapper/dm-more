@@ -2,9 +2,7 @@
 class Object
 
   def full_const_defined?(name)
-    !!full_const_get(name)
-  rescue
-    false
+    !!full_const_get(name) rescue false
   end
   
 end
@@ -183,7 +181,7 @@ module DataMapper
             #Add accessor alias
             attach_accessor(options) unless options[:as].nil?
           else
-            puts "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
+            DataMapper.logger.warn "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
           end
         end
 
