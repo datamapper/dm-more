@@ -158,7 +158,7 @@ module DataMapper
             #Other model to mix with in case of M:M through Remixable
             options[:other_model] = options[:for] || options[:on]
 
-            puts " ~ Generating Remixed Model: #{options[:class_name]}"
+            DataMapper.logger.info "Generating Remixed Model: #{options[:class_name]}"
             model = generate_remixed_model(remixable_module, options)
 
             # map the remixable to the remixed model            
