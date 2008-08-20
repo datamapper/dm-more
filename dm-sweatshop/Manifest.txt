@@ -1,0 +1,13 @@
+History.txt
+LICENSE
+Manifest.txt
+README.textile
+Rakefile
+TODO
+lib/dm-sweatshop.rb
+lib/dm-sweatshop/sweatshop.rb
+lib/dm-sweatshop/model.rb
+lib/dm-sweatshop/version.rb
+spec/sweatshop_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
