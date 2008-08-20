@@ -168,6 +168,22 @@ To keep track of all of our new fixtures, we can even give them a context.
 
 Go forth, and populate your data.
 
+h2. Best Practices
+
+h3. Specs
+
+The suggested way to use dm-sweatshop with test specs is to create a @spec/spec_fixtures.rb@ file, then declare your fixtures in there.  Next, @require@ it in your @spec/spec_helper.rb@ file, after your models have loaded.
+
+<pre>
+<code>
+  Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
+
+  require File.join(File.dirname(__FILE__), 'spec_fixtures')
+</code>
+</pre>
+
+Add the @.generate@ calls in your @before@ setup.  Make sure to clear your tables or @auto_migrate@ your models after each spec!
+
 h2. Possible Improvements
 
 h3. Enforcing Validations
