@@ -160,9 +160,27 @@ To keep track of all of our new fixtures, we can even give them a context.
   }}
   
   Tweet.fix(:conversation) {{
-    :message  => /\@#{Tweet.pick(:at_reply).user.name} [:sentence:]/.gen[0..140],
-    :tags     => (0..10).of {Tag.pick}
+    :message  => /\@#{(tweet = Tweet.pick(:at_reply)).user.name} [:sentence:]/.gen[0..140],
+    :tags     => tweet.tags
   }}
+</code>
+</pre>
+
+h3. Overriding a fixture
+
+Sometimes you will want to change one of your fixtures a little bit.  You create a new fixture with a whole new context, but this can be overkill.  The other option is to specify attributes in the call to @generate@.
+
+<pre>
+<code>
+  User.gen(:username => 'datamapper')  #uses 'datamapper' as the user name instead of the randomly generated word
+</code>
+</pre>
+
+This works with contexts too.
+
+<pre>
+<code>
+  User.gen(:conversation, :tags => Tag.all)       #a very, very broad conversation
 </code>
 </pre>
 
