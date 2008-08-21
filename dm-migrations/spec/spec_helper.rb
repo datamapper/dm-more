@@ -11,7 +11,7 @@ def load_driver(name, default_uri)
   lib = "do_#{name}"
 
   begin
-    gem lib, '=0.9.4'
+    gem lib, '=0.9.5'
     require lib
     DataMapper.setup(name, default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]

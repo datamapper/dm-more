@@ -28,6 +28,7 @@ gem_paths = %w[
   dm-types
   dm-validations
   merb_datamapper
+  dm-more
 ]
 gems = gem_paths.map { |p| File.basename(p) }
 
@@ -108,9 +109,9 @@ task :bundle => [:package, :build_gems] do
 end
 
 desc "Release all dm-more gems"
-task :release_all => [:release] do
+task :release_all do
   gem_paths.each do |dir|
-    Dir.chdir(dir){ sh "rake release VERSION=#{DataMapper::More::VERSION}" }
+    Dir.chdir(dir) { sh "rake release VERSION=#{DataMapper::More::VERSION}; true" }
   end
 end
 

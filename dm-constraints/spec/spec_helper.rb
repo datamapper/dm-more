@@ -3,14 +3,14 @@ gem 'rspec', '>=1.1.3'
 require 'spec'
 require 'pathname'
 
-gem 'dm-core', '>=0.9.4'
+gem 'dm-core', '>=0.9.5'
 require 'dm-core'
 
 def load_driver(name, default_uri)
 
   lib = "do_#{name}"
   begin
-    gem lib, '>=0.9.4'
+    gem lib, '>=0.9.5'
     require lib
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]

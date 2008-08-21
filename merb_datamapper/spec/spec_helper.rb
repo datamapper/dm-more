@@ -3,7 +3,7 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
 
-gem 'dm-core', '=0.9.4'
+gem 'dm-core', '=0.9.5'
 require 'dm-core'
 
 module Merb
