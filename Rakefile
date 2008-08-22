@@ -28,7 +28,6 @@ gem_paths = %w[
   dm-types
   dm-validations
   merb_datamapper
-  dm-more
 ]
 gems = gem_paths.map { |p| File.basename(p) }
 
@@ -110,6 +109,7 @@ end
 
 desc "Release all dm-more gems"
 task :release_all do
+  sh "rake release VERSION=#{DataMapper::More::Version}; true"
   gem_paths.each do |dir|
     Dir.chdir(dir) { sh "rake release VERSION=#{DataMapper::More::VERSION}; true" }
   end
