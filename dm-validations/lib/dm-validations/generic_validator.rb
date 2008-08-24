@@ -88,6 +88,7 @@ module DataMapper
 
       def ==(other)
         self.field_name == other.field_name &&
+        self.class == other.class &&
         self.if_clause == other.if_clause &&
         self.unless_clause == other.unless_clause &&
         self.instance_variable_get(:@options) == other.instance_variable_get(:@options)
