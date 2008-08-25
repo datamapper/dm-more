@@ -15,7 +15,7 @@ module DataMapper
       def call(target)
         value = target.validation_property_value(@field_name)
         property = target.validation_property(@field_name)
-        return true if value.nil? || value.kind_of?(property.primitive)
+        return true if value.nil? || value.kind_of?(property.primitive) || property.primitive == TrueClass && value.kind_of?(FalseClass)
 
         error_message = @options[:message] || default_error(property)
         add_error(target, error_message, @field_name)
