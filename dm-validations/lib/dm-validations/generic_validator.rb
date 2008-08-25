@@ -87,6 +87,7 @@ module DataMapper
       end
 
       def ==(other)
+        self.class == other.class &&
         self.field_name == other.field_name &&
         self.if_clause == other.if_clause &&
         self.unless_clause == other.unless_clause &&
