@@ -109,7 +109,7 @@ end
 
 desc "Release all dm-more gems"
 task :release_all do
-  sh "rake release VERSION=#{DataMapper::More::Version}; true"
+  sh "rake release VERSION=#{DataMapper::More::VERSION}; true"
   gem_paths.each do |dir|
     Dir.chdir(dir) { sh "rake release VERSION=#{DataMapper::More::VERSION}; true" }
   end
