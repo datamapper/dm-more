@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'dm-core', '=0.9.5'
+gem 'dm-core', '=0.9.6'
 require 'dm-core'
 require 'benchmark'
 require File.dirname(__FILE__) + '/sql'
