@@ -9,7 +9,7 @@ module DataMapper
 
       def self.dump(value, property)
         return nil if value.nil?
-        value.to_s
+        value.source
       end
 
       def self.typecast(value, property)
