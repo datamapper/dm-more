@@ -16,6 +16,7 @@ require dir / "json"""
 require dir / 'uri'
 require dir / 'yaml'
 require dir / 'serial'
+require dir / 'regexp'
 
 # this looks a little ugly, but everyone who uses dm-types shouldn't have to have ruby-bcrypt installed
 module DataMapper
