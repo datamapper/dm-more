@@ -17,15 +17,19 @@ dm - Data Mapper CLI
 
   Usage Examples\n#{'='*80}
 
-* If exactly one argument is given the CLI assumes it is a connection string:
+* If one argument is given the CLI assumes it is a connection string:
   $ dm mysql://root@localhost/test_development
 
   The connection string has the format:
     adapter://user:password@host:port/database
   Where adapter is in: {mysql, pgsql, sqlite...} and the user/password is optional
 
-* Load the database by specifying only cli options
-  $ dm -a mysql -u root -h localhost -d test_development -e developemnt
+  Note that if there are any non-optional arguments specified, the first is
+  assumed to be a database connection string which will be used instead of any
+  database specified by options.
+
+* Load the database by specifying cli options
+  $ dm -a mysql -u root -h localhost -d test_development
 
 * Load the database using a yaml config file and specifying the environment to use
   $ dm --yaml config/database.yml -e development
@@ -123,38 +127,30 @@ USAGE
       end
 
       def configure(args)
-        if args[0] && args[0].match(/^(.+):\/\/(?:(.*)(?::(.+))?@)?(.+)\/(.+)$/)
-          @options = {
-            :adapter  => $1,
-            :username => $2,
-            :password => $3,
-            :host     => $4,
-            :database => $5
-          }
-          @config = @options.merge(:connection_string => ARGV.shift)
+
+        parse_args(args)
+
+        @config[:environment] ||= "development"
+        if @config[:config]
+          @config.merge!(YAML::load_file(@config[:config]))
+          @options = @config[:options]
+        elsif @config[:yaml]
+          @config.merge!(YAML::load_file(@config[:yaml]))
+          @options = @config[@config[:environment]] || @config[@config[:environment].to_sym]
+          raise "Options for environment '#{@config[:environment]}' are missing." if @options.nil?
         else
-
-          parse_args(args)
-
-          @config[:environment] ||= "development"
-          if @config[:config]
-            @config.merge!(YAML::load_file(@config[:config]))
-            @options = @config[:options]
-          elsif @config[:yaml]
-            @config.merge!(YAML::load_file(@config[:yaml]))
-            @options = @config[@config[:environment]] || @config[@config[:environment].to_sym]
-            raise "Options for environment '#{@config[:environment]}' are missing." if @options.nil?
-          else
-            @options = {
-              :adapter  => @config[:adapter],
-              :username => @config[:username],
-              :password => @config[:password],
-              :host     => @config[:host],
-              :database => @config[:database]
-            }
-          end
-
+          @options = {
+            :adapter  => @config[:adapter],
+            :username => @config[:username],
+            :password => @config[:password],
+            :host     => @config[:host],
+            :database => @config[:database]
+          }
         end
+        if !ARGV.empty?
+          @config[:connection_string] = ARGV.shift
+        end
+
       end
 
       def load_models
@@ -169,9 +165,14 @@ USAGE
 
         begin
           configure(argv)
-          DataMapper.setup(:default, options.dup)
+          if config[:connection_string]
+            DataMapper.setup(:default, config[:connection_string])
+            puts "DataMapper has been loaded using '#{config[:connection_string]}'"
+          else
+            DataMapper.setup(:default, options.dup)
+            puts "DataMapper has been loaded using the '#{options[:adapter] || options["adapter"]}' database '#{options[:database] || options["database"]}' on '#{options[:host] || options["host"]}' as '#{options[:username] || options["username"]}'"
+          end
           load_models if config[:models]
-          puts "DataMapper has been loaded using the '#{options[:adapter] || options["adapter"]}' database '#{options[:database] || options["database"]}' on '#{options[:host] || options["host"]}' as '#{options[:username] || options["username"]}'"
           ENV["IRBRC"] = DataMapper::CLI::BinDir + "/.irbrc" # Do not change this please. This should NOT be DataMapper.root
           IRB.start
         rescue => error
