@@ -45,6 +45,12 @@ dm - Data Mapper CLI
 
   This is similar to merb -i without the merb framework being loaded.
 
+* Load the dm-validations and dm-timestamps plugins before connecting to the db
+  $ dm -P validations,dm-timestamps mysql://root@localhost/test_development
+
+  If dm- isn't at the start of the file, it will be prepended.
+
+
 USAGE
       end
 
@@ -117,6 +123,10 @@ USAGE
             @config[:database] = database_name
           end
 
+          opt.on("-P", "--plugins PLUGIN,PLUGIN...", "Name of the database to connect to.", Array) do |plugins|
+            @config[:plugins] = plugins
+          end
+
           opt.on("-?", "-H", "--help", "Show this help message") do
             puts opt
             exit
@@ -157,6 +167,19 @@ USAGE
         Pathname.glob("#{config[:models]}/**/*.rb") { |file| load file }
       end
 
+      def require_plugins
+        # make sure we're loading dm plugins!
+        plugins = config[:plugins].map {|p| (p =~ /dm/) ? p : "dm-" + p }
+        plugins.each do |plugin|
+          begin
+            require plugin
+            puts "required #{plugin}."
+          rescue LoadError => e
+            puts "couldn't load #{plugin}."
+          end
+        end
+      end
+
       def start(argv = ARGV)
         if (ARGV.nil? || ARGV.empty?)
           puts DataMapper::CLI.usage
@@ -165,6 +188,11 @@ USAGE
 
         begin
           configure(argv)
+
+          if config.has_key?(:plugins)
+            require_plugins
+          end
+
           if config[:connection_string]
             DataMapper.setup(:default, config[:connection_string])
             puts "DataMapper has been loaded using '#{config[:connection_string]}'"
