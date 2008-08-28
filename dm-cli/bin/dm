@@ -3,8 +3,7 @@ require "rubygems"
 
 gem "dm-core", ">=0.9.5"
 require "dm-core"
-require "pathname"
-require Pathname("data_mapper/cli")
+require "dm-cli"
 require "optparse"
 
 DataMapper::CLI::BinDir = File.dirname(__FILE__)
