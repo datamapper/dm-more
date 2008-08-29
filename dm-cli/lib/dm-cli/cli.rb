@@ -87,8 +87,8 @@ USAGE
             end
           end
 
-          opt.on("-l", "--log LOGFILE", "A string representing the logfile to use.") do |log_file|
-            @config[:log_file] = Pathname(log_file)
+          opt.on("-l", "--log LOGFILE", "A string representing the logfile to use. Also accepts STDERR and STDOUT") do |log_file|
+            @config[:log_file] = log_file
           end
 
           opt.on("-e", "--environment STRING", "Run merb in the correct mode(development, production, testing)") do |environment|
@@ -180,6 +180,16 @@ USAGE
         end
       end
 
+      def setup_logger
+        if config[:log_file] =~ /^std(?:out|err)$/i
+          log = Object.full_const_get(config[:log_file].upcase)
+        else
+          log = Pathname(config[:log_file])
+        end
+
+        DataMapper::Logger.new(log, :debug)
+      end
+
       def start(argv = ARGV)
         if (ARGV.nil? || ARGV.empty?)
           puts DataMapper::CLI.usage
@@ -192,6 +202,8 @@ USAGE
           if config.has_key?(:plugins)
             require_plugins
           end
+
+          setup_logger if config[:log_file]
 
           if config[:connection_string]
             DataMapper.setup(:default, config[:connection_string])
