@@ -123,7 +123,7 @@ USAGE
             @config[:database] = database_name
           end
 
-          opt.on("-P", "--plugins PLUGIN,PLUGIN...", "Name of the database to connect to.", Array) do |plugins|
+          opt.on("-P", "--plugins PLUGIN,PLUGIN...", "A list of dm-plugins to require", Array) do |plugins|
             @config[:plugins] = plugins
           end
 
