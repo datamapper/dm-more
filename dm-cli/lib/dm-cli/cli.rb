@@ -201,7 +201,7 @@ USAGE
             puts "DataMapper has been loaded using the '#{options[:adapter] || options["adapter"]}' database '#{options[:database] || options["database"]}' on '#{options[:host] || options["host"]}' as '#{options[:username] || options["username"]}'"
           end
           load_models if config[:models]
-          ENV["IRBRC"] = DataMapper::CLI::BinDir + "/.irbrc" # Do not change this please. This should NOT be DataMapper.root
+          ENV["IRBRC"] ||= DataMapper::CLI::BinDir + "/.irbrc" # Do not change this please. This should NOT be DataMapper.root
           IRB.start
         rescue => error
           puts error.message
