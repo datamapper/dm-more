@@ -169,7 +169,7 @@ USAGE
 
       def require_plugins
         # make sure we're loading dm plugins!
-        plugins = config[:plugins].map {|p| (p =~ /dm/) ? p : "dm-" + p }
+        plugins = config[:plugins].map {|p| (p =~ /^dm/) ? p : "dm-" + p }
         plugins.each do |plugin|
           begin
             require plugin
