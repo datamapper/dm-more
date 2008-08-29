@@ -199,9 +199,7 @@ USAGE
         begin
           configure(argv)
 
-          if config.has_key?(:plugins)
-            require_plugins
-          end
+          require_plugins if config[:plugins]
 
           setup_logger if config[:log_file]
 
