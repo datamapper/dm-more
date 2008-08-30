@@ -24,6 +24,7 @@ gem_paths = %w[
   dm-querizer
   dm-serializer
   dm-shorthand
+  dm-sweatshop
   dm-timestamps
   dm-types
   dm-validations
