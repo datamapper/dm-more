@@ -56,7 +56,7 @@ namespace :dm do
       when 'postgres'
         `createdb -U #{config[:username]} #{config[:database]}`
       else
-        raise "Adapter #{config[:adapter]} not supported yet."
+        raise "Adapter #{config[:adapter]} not supported for creating databases yet."
       end
     end
 
@@ -68,7 +68,7 @@ namespace :dm do
       when 'postgres'
         `dropdb -U #{config[:username]} #{config[:database]}`
       else
-        raise "Adapter #{config[:adapter]} not supported yet."
+        raise "Adapter #{config[:adapter]} not supported for dropping databases yet.\ntry dm:db:automigrate"
       end
     end
 
