@@ -2,18 +2,16 @@
 
 <p>Edit this file in <tt>app/views/<%= file_name %>/new.html.erb</tt></p>
 
-<%%= error_messages_for :<%= singular_model %> %>
-
-<%% form_for(@<%= singular_model %>, :action => url(:<%= plural_model %>) ) do |f| %>
+<%%= form_for(@<%= singular_model %>, :action => url(:<%= plural_model %>) ) do %>
 <% for property in properties.select{|p| !p.key?} -%>
   <p>
-    <%%= text_control :<%= property.getter %>, :label => "<%= Extlib::Inflection.humanize(property.field) %>"  %>
+    <%%= text_field :<%= property %>, :label => "<%= Extlib::Inflection.humanize(property) %>"  %>
   </p>
 
 <% end -%>
   <p>
-    <%%= submit_button "Create" %>
+    <%%= submit "Create" %>
   </p>
-<%% end %>
+<%% end =%>
 
 <%%= link_to 'Back', url(:<%= plural_model %>) %>
