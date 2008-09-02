@@ -26,10 +26,12 @@ gem_paths = %w[
   dm-shorthand
   dm-sweatshop
   dm-timestamps
+  dm-sweatshop
   dm-types
   dm-validations
   merb_datamapper
 ]
+
 gems = gem_paths.map { |p| File.basename(p) }
 
 ROOT = Pathname(__FILE__).dirname.expand_path
