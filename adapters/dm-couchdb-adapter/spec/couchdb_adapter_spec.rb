@@ -243,9 +243,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     end
 
     it "should work with has n associations" do
-      pending do
-        @company.users.should include(@user)
-      end
+      @company.users.should include(@user)
     end
   end
 
