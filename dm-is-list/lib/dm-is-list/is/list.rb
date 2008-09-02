@@ -19,31 +19,33 @@ module DataMapper
       # @option :scope<Array> an array of attributes that should be used to scope lists
       #
       def is_list(options={})
-        options = { :scope => [] }.merge(options)
+        options = { :scope => [], :first => 1 }.merge(options)
 
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
 
         property :position, Integer unless properties.detect{|p| p.name == :position && p.type == Integer}
-
-        @list_scope = options[:scope]
+        
+        @list_options = options
 
         before :save do
           if self.new_record?
             # a position has been set before save => open up and make room for item
             # no position has been set => move to bottom of my scope-list (or keep detached?)
-            self.position ? self.move_without_saving(:to => self.position) : self.move_without_saving(:lowest)
+            self.send(:move_without_saving, (self.position || :lowest))
           else
             # if the scope has changed, we need to detach our item from the old list
             if self.list_scope != self.original_list_scope
-              oldpos = self.original_values[:position]
               newpos = self.position
 
               self.detach(self.original_list_scope) # removing from old list
-              self.move_without_saving(oldpos ? {:to => newpos} : :lowest) # moving to pos or bottom of new list
+              self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
 
-            elsif self.attribute_dirty?(:position)
-              self.move_without_saving(:to => self.position)
+            elsif self.attribute_dirty?(:position) && !self.moved
+              puts "WILL MOVE MANUALLY TO #{self.position} FROM #{self.original_values[:position]}"
+              self.send(:move_without_saving, self.position)
+            else
+              self.moved = false
             end
             # a (new) position has been set => move item to this position (only if position has been set manually)
             # the scope has changed => detach from old list, and possibly move into position
@@ -57,13 +59,14 @@ module DataMapper
 
         # we need to make sure that STI-models will inherit the list_scope.
         after_class_method :inherited do |retval, target|
+          target.instance_variable_set(:@list_options, @list_options.dup)
           target.instance_variable_set(:@list_scope, @list_scope.dup)
         end
 
       end
 
       module ClassMethods
-        attr_reader :list_scope
+        attr_reader :list_options, :list_scope
 
         ##
         # use this function to repair / build your lists.
@@ -75,19 +78,20 @@ module DataMapper
         # @param scope [Hash]
         #
         def repair_list(scope={})
-          return false unless scope.keys.all?{|s| list_scope.include?(s) || s == :order }
+          return false unless scope.keys.all?{|s| list_options[:scope].include?(s) || s == :order }
           all({:order => [:position.asc]}.merge(scope)).each_with_index{ |item,i| item.position = i+1; item.save }
         end
       end
 
       module InstanceMethods
+        attr_accessor :moved
 
         def list_scope
-          self.class.list_scope.map{|p| [p,attribute_get(p)]}.to_hash
+          self.class.list_options[:scope].map{|p| [p,attribute_get(p)]}.to_hash
         end
 
         def original_list_scope
-          self.class.list_scope.map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          self.class.list_options[:scope].map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         def list_query
@@ -110,6 +114,19 @@ module DataMapper
         #
         def reorder_list(order)
           self.class.repair_list(list_scope.merge(:order => order))
+        end
+        
+        def detach(scope=list_scope)
+          list(scope).all(:position.gt => position).adjust!({:position => -1},true)
+          self.position = nil
+        end
+
+        def left_sibling
+          list.reverse.first(:position.lt => position)
+        end
+
+        def right_sibling
+          list.first(:position.gt => position)
         end
 
         ##
@@ -143,52 +160,41 @@ module DataMapper
         # does all the actual movement in #move, but does not save afterwards. this is used internally in
         # before :save, and will probably be marked private. should not be used by organic beings.
         #
-        # @see move_without_saving
+        # @see move
+       private
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
-
-          prepos = self.original_values[:position]||self.position
-          maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : 1
+          
+          minpos = self.class.list_options[:first]
+          prepos = self.original_values[:position] || self.position
+          maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : minpos
           newpos = case action
-            when :highest     then 1
+            when :highest     then minpos
             when :lowest      then maxpos
-            when :higher,:up  then [position-1,1].max
+            when :higher,:up  then [position-1,minpos].max
             when :lower,:down then [position+1,maxpos].min
             when :above       then object.position
             when :below       then object.position+1
             when :to          then [object.to_i,maxpos].min
+            else [action.to_i,maxpos].min
           end
 
           return false if !newpos || ([:above,:below].include?(action) && list_scope != object.list_scope)
-          return true if newpos == position || (newpos == maxpos && position == maxpos-1)
+          return true if newpos == position && position == prepos || (newpos == maxpos && position == maxpos-1)
 
           if !position
             list.all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
-          elsif newpos > position
+          elsif newpos > prepos
             newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
-            list.all(:position => position..newpos).adjust!({:position => -1},true)
-          elsif newpos < position
-            list.all(:position => newpos..position).adjust!({:position => +1},true)
+            list.all(:position => prepos..newpos).adjust!({:position => -1},true)
+          elsif newpos < prepos
+            list.all(:position => newpos..prepos).adjust!({:position => +1},true)
           end
 
           self.position = newpos
-
+          self.moved = true
           true
         end
-
-        def detach(scope=list_scope)
-          list(scope).all(:position.gt => position).adjust!({:position => -1},true)
-          self.position = nil
-        end
-
-        def left_sibling
-          list.reverse.first(:position.lt => position)
-        end
-
-        def right_sibling
-          list.first(:position.gt => position)
-        end
-
       end
     end # List
   end # Is

@@ -57,15 +57,23 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(6).position.should == 3
         end
       end
+      
+      it 'should rearrange items when setting position yourself' do
+        repository(:default) do |repos|
+          Todo.get(2).update_attributes(:position => 1)
+          Todo.get(2).position.should == 1
+          Todo.get(1).position.should == 2
+        end
+      end
     end
 
     describe 'movement' do
       it 'should rearrange items correctly when moving :higher' do
         repository(:default) do |repos|
           Todo.get(3).move :higher
+          Todo.get(4).position.should == 1
           Todo.get(3).position.should == 2
           Todo.get(2).position.should == 3
-          Todo.get(4).position.should == 1
         end
       end
 
@@ -127,8 +135,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           item.position.should == 1
           item.user_id = 1
           item.save
-
-          item.position.should == 4
+          
+          item.list_scope.should != item.original_list_scope
+          item.position.should == 1
+          Todo.get(1).position.should == 2
           Todo.get(5).position.should == 1
 
           item.user_id = 2
