@@ -11,6 +11,7 @@ Then when initializing datamapper:
   - port should be specified (couchdb defaults to port 5984)
 
 You should now be able to use resources and their properties and have them stored to couchdb.
+NOTE: 'type' is currently a reserved property, used to map couch documents to ruby models.
 
 == Views
 Special consideration has been made to help work with couch views.  You can define them in the model using the view function and then use Model.auto_migrate! to add the views for Model to the database, or DataMapper.auto_migrate! to add the views for all models to the database.
