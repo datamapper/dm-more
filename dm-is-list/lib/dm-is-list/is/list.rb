@@ -42,7 +42,6 @@ module DataMapper
               self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
 
             elsif self.attribute_dirty?(:position) && !self.moved
-              puts "WILL MOVE MANUALLY TO #{self.position} FROM #{self.original_values[:position]}"
               self.send(:move_without_saving, self.position)
             else
               self.moved = false
@@ -175,7 +174,7 @@ module DataMapper
             when :lower,:down then [position+1,maxpos].min
             when :above       then object.position
             when :below       then object.position+1
-            when :to          then [object.to_i,maxpos].min
+            when :to          then [minpos,[object.to_i,maxpos].min].max
             else [action.to_i,maxpos].min
           end
 
