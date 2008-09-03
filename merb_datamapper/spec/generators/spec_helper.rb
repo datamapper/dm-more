@@ -1,6 +1,6 @@
 # require merb-gen and the spec helpers
 require 'merb-gen'
-require 'merb-gen/spec_helper'
+require 'templater/spec/helpers'
 
 # require our other spec helpers
 require File.join(File.dirname(__FILE__), '..', 'spec_helper')
@@ -12,7 +12,7 @@ require 'generators/data_mapper_resource_controller'
 
 # include the helpers
 Spec::Runner.configure do |config|
-  config.include Merb::Test::GeneratorHelper
+  config.include Templater::Spec::Helpers
 end
 
 # copied from merb-more/merb-gen/spec/spec_helpers.rb
