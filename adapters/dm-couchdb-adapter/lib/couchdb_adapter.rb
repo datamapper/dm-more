@@ -237,7 +237,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-  if (doc.type == '#{query.model.storage_name(repository.name)}') {
+  if (doc.type == '#{query.model.storage_name(self.name)}') {
     emit(#{key}, doc);
     }
   }"
@@ -267,7 +267,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (doc.type == '#{query.model.storage_name(repository.name)}' && #{conditions.join(" && ")}) {
+    if (doc.type == '#{query.model.storage_name(self.name)}' && #{conditions.join(" && ")}) {
       emit(#{key}, doc);
     }
   }"
