@@ -5,11 +5,5 @@ require 'rubygems'
 
 gem 'dm-core', '=0.9.6'
 require 'dm-core'
+require 'merb-core'
 
-module Merb
-  module Plugins
-    def self.config
-      @config ||= {}
-    end
-  end
-end
