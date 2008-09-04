@@ -1,9 +1,10 @@
+# require our other spec helpers
+require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+
 # require merb-gen and the spec helpers
 require 'merb-gen'
 require 'templater/spec/helpers'
 
-# require our other spec helpers
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 # require the generators
 require 'generators/data_mapper_migration'
