@@ -57,6 +57,8 @@ namespace :dm do
         `createdb -U #{config[:username]} #{config[:database]}`
       when 'mysql'
         `mysqladmin -u #{config[:username]} #{config[:password] ? "-p'#{config[:password]}'" : ''} create #{config[:database]}`
+      when 'sqlite3'
+        Rake::Task['rake:dm:db:automigrate'].invoke
       else
         raise "Adapter #{config[:adapter]} not supported for creating databases yet."
       end
