@@ -48,13 +48,17 @@ namespace :dm do
     desc "Migrate the database to the latest version"
     task :migrate => 'dm:db:migrate:up'
 
-    desc "Create the database (postgres only)"
+    desc "Create the database"
     task :create do
       config = Merb::Orms::DataMapper.config
       puts "Creating database '#{config[:database]}'"
       case config[:adapter]
       when 'postgres'
         `createdb -U #{config[:username]} #{config[:database]}`
+      when 'mysql'
+        `mysqladmin -u #{config[:username]} #{config[:password] ? "-p'#{config[:password]}'" : ''} create #{config[:database]}`
+      when 'sqlite3'
+        Rake::Task['rake:dm:db:automigrate'].invoke
       else
         raise "Adapter #{config[:adapter]} not supported for creating databases yet."
       end
