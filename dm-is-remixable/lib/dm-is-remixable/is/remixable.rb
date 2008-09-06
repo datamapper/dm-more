@@ -54,7 +54,7 @@ module DataMapper
       def is_remixable(options={})
         extend  DataMapper::Is::Remixable::RemixeeClassMethods
         include DataMapper::Is::Remixable::RemixeeInstanceMethods
-        
+        @is_remixable = true
         # support clean suffixes for nested modules
         default_suffix = Extlib::Inflection.demodulize(self.name).singular.snake_case
         suffix(options.delete(:suffix) || default_suffix)
@@ -68,6 +68,10 @@ module DataMapper
       #   Methods available to all DataMapper::Resources
       module RemixerClassMethods
         def self.included(base);end;
+        
+        def is_remixable?
+          @is_remixable ||= false
+        end
 
         # - remixables
         # ==== Description
@@ -138,6 +142,10 @@ module DataMapper
           # Example (from my upcoming dm-is-rateable gem)
           # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
           remixable_module = Object.full_const_get(Extlib::Inflection.classify(remixable))
+          
+          unless remixable_module.is_remixable?
+            raise Exception, "#{remixable_module} is not remixable"
+          end
           
           #Merge defaults/options
           options = {

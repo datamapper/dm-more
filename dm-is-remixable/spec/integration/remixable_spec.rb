@@ -16,6 +16,19 @@ DataMapper.auto_migrate!
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::Remixable' do
+    describe 'DataMapper::Resource' do
+      it "should know if it is remixable" do
+        User.is_remixable?.should be(false)
+        Image.is_remixable?.should be(true)
+        Article.is_remixable?.should be(false)
+        Commentable.is_remixable?.should be(true)
+      end
+    end
+    
+    it "should only allow remixables to be remixed" do
+      lambda { User.remix 1, :articles }.should raise_error(Exception)
+    end
+    
     it "should not allow enhancements of modules that aren't remixed" do
       begin
         User.enhance Image do

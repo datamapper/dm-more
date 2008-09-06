@@ -14,9 +14,6 @@ TODO
 - Test nested remixing User remixes Photogenic; Photogenic Remixes comments
 - Test double+ remixing. User remixes Commentable; enhance Commentable remix Commentable
 
-- Remixing a non-remixable just throws an exception . . . should have a .remixable? on DataMapper::Resource's
-  and if its not remixable raise Exception, "XXX is not remixable"
-
 - Harvest Class methods (including it into Remixed Model gets the instance methods, but not class methods...)
 
 - Squash protection;
