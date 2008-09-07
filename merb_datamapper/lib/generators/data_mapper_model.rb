@@ -9,7 +9,7 @@ class Merb::Generators::ModelGenerator
   end
 end
 
-Merb::Generators::ModelGenerator.template :model_datamapper, :orm => :datamapper do
-  source(File.dirname(__FILE__), "templates", "model.rb")
-  destination("app/models", base_path, "#{file_name}.rb")
+Merb::Generators::ModelGenerator.template :model_datamapper, :orm => :datamapper do |t|
+  t.source = File.join(File.dirname(__FILE__), "templates", "model.rb")
+  t.destination = File.join("app/models", base_path, "#{file_name}.rb")
 end

@@ -11,15 +11,15 @@ class Merb::Generators::ResourceControllerGenerator
 end
 
 
-Merb::Generators::ResourceControllerGenerator.template :controller_datamapper, :orm => :datamapper do
-  source(File.dirname(__FILE__), "templates/resource_controller.rb")
-  destination("app/controllers", base_path, "#{file_name}.rb")
+Merb::Generators::ResourceControllerGenerator.template :controller_datamapper, :orm => :datamapper do |t|
+  t.source = File.join(File.dirname(__FILE__), "templates/resource_controller.rb")
+  t.destination = File.join("app/controllers", base_path, "#{file_name}.rb")
 end
 
 [:index, :show, :edit, :new].each do |view|
   Merb::Generators::ResourceControllerGenerator.template "view_#{view}_datamapper".to_sym,
-      :orm => :datamapper, :template_engine => :erb do
-    source(File.dirname(__FILE__), "templates/views/#{view}.html.erb")
-    destination("app/views", base_path, "#{file_name}/#{view}.html.erb")
+      :orm => :datamapper, :template_engine => :erb do |t|
+    t.source = File.join(File.dirname(__FILE__), "templates/views/#{view}.html.erb")
+    t.destination = File.join("app/views", base_path, "#{file_name}/#{view}.html.erb")
   end
 end
