@@ -1,22 +1,38 @@
 if defined?(Merb::Plugins)
-  require 'rubygems'
-  require 'merb_datamapper/version'
+  dependency 'dm-core'
 
-  gem 'dm-core', DataMapper::MerbDataMapper::VERSION
-  require 'dm-core'
+  require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection"
+  Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
 
-  if File.file?(Merb.dir_for(:config) / "database.yml")
-    require File.join(File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "connection")
+  class Merb::Orms::DataMapper::Connect < Merb::BootLoader
+    after BeforeAppLoads
 
-    Merb::Orms::DataMapper.connect
-    Merb::Orms::DataMapper.register_session_type
-  else
-    Merb.logger.info "No database.yml file found in #{Merb.dir_for(:config)}, assuming database connection(s) established in the environment file in #{Merb.dir_for(:config)}/environments"
+    def self.run
+      Merb.logger.debug "Merb::Orms::DataMapper::Connect block."
+
+      # check for the presence of database.yml
+      if File.file?(Merb.dir_for(:config) / "database.yml")
+        # if we have it, connect
+        Merb::Orms::DataMapper.connect
+      else
+        # assume we'll be told at some point
+        Merb.logger.info "No database.yml file found in #{Merb.dir_for(:config)}, assuming database connection(s) established in the environment file in #{Merb.dir_for(:config)}/environments"
+      end
+
+      # if we use a datamapper session store, require it.
+      Merb.logger.debug "Checking if we need to use DataMapper sessions"
+      if Merb::Config.session_stores.include?(:datamapper)
+        Merb.logger.debug "Using DataMapper sessions"
+        require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
+      end
+
+      # required to provide 'to_param'
+      require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "resource"
+
+      Merb.logger.debug "Merb::Orms::DataMapper::Connect complete"
+    end
   end
 
-  require File.join(File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "resource")
-
-  Merb::Plugins.add_rakefiles "merb_datamapper" / "merbtasks"
 
   generators = File.join(File.dirname(__FILE__), 'generators')
   Merb.add_generators generators / 'data_mapper_model'

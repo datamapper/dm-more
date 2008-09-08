@@ -23,6 +23,7 @@ lib/merb_datamapper.rb
 lib/merb_datamapper/merbtasks.rb
 lib/merb_datamapper/version.rb
 spec/connection_spec.rb
+spec/session_store_spec.rb
 spec/generators/data_mapper_migration_spec.rb
 spec/generators/data_mapper_model_spec.rb
 spec/generators/data_mapper_resource_controller_spec.rb
