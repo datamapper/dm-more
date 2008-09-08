@@ -21,7 +21,7 @@ module DataMapper
     def set_timestamp_properties
       if dirty?
         self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).compact.each do |property|
-          TIMESTAMP_PROPERTIES[property.name][self]
+          TIMESTAMP_PROPERTIES[property.name][self] unless attribute_dirty?(property.name)
         end
       end
     end
