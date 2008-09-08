@@ -10,20 +10,22 @@ describe DataMapper::Validate::FormatValidator do
       property :doc_no,   String, :auto_validation => false
       property :email,    String, :auto_validation => false
       property :username, String, :auto_validation => false
-
+      property :url,      String, :auto_validation => false
+      
       # this is a trivial example
       validates_format :doc_no, :with => lambda { |code|
         code =~ /\AA\d{4}\z/ || code =~ /\A[B-Z]\d{6}X12\z/
       }
 
       validates_format :email, :as => :email_address
+      validates_format :url, :as => :url
 
       validates_format :username, :with => /[a-z]/, :message => 'Username must have at least one letter', :allow_nil => true
     end
   end
 
   def valid_attributes
-    { :id => 1, :doc_no => 'A1234', :email => 'user@example.com' }
+    { :id => 1, :doc_no => 'A1234', :email => 'user@example.com', :url => 'http://example.com' }
   end
 
   it 'should validate the format of a value on an instance of a resource' do
@@ -77,6 +79,38 @@ describe DataMapper::Validate::FormatValidator do
       bol.email = e
       bol.valid?
       bol.errors.on(:email).should be_nil
+    end
+
+  end
+  
+  it 'should have a pre-defined URL format' do
+    bad = [ 'http:// example.com',
+            'ftp://example.com',
+            'http://.com',
+            'http://',
+            'test',
+            '...'
+          ]
+
+    good = [
+            'http://example.com',
+            'http://www.example.com',
+           ]
+
+    bol = BillOfLading.new(valid_attributes.except(:url))
+    bol.should_not be_valid
+    bol.errors.on(:url).should include('Url has an invalid format')
+
+    bad.map do |e|
+      bol.url = e
+      bol.valid?
+      bol.errors.on(:url).should include('Url has an invalid format')
+    end
+
+    good.map do |e|
+      bol.url = e
+      bol.valid?
+      bol.errors.on(:url).should be_nil
     end
 
   end

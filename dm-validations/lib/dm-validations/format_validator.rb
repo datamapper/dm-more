@@ -2,6 +2,7 @@
 
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path + 'formats/email'
+require Pathname(__FILE__).dirname.expand_path + 'formats/url'
 
 module DataMapper
   module Validate
@@ -14,6 +15,7 @@ module DataMapper
 
       FORMATS = {}
       include DataMapper::Validate::Format::Email
+      include DataMapper::Validate::Format::Url
 
       def initialize(field_name, options = {}, &b)
         super(field_name, options)
@@ -66,6 +68,7 @@ module DataMapper
       #
       # @details [Pre-defined Formats]
       #   :email_address (format is specified in DataMapper::Validate::Format::Email)
+      #   :url (format is specified in DataMapper::Validate::Format::Url)
       #
       # @example [Usage]
       #   require 'dm-validations'
