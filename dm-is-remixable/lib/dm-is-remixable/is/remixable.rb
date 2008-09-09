@@ -203,7 +203,7 @@ module DataMapper
         #
         #       def backwards; self.test.reverse; end;
         #     end
-        def enhance(remixable,&block)
+        def enhance(remixable,remixable_model, &block)
           # always use innermost singular snake_cased constant name
           model = @remixables[remixable.to_s.singular.snake_case.to_sym][Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym][:model]
 
