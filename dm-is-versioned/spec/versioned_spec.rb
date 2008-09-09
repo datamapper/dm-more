@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + "/spec_helper"
 
 class Story
   include DataMapper::Resource
-  include DataMapper::Is::Versioned
 
   property :id, Integer, :serial => true
   property :title, String
