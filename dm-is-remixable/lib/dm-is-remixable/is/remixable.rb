@@ -205,7 +205,7 @@ module DataMapper
         #     end
         def enhance(remixable,&block)
           # always use innermost singular snake_cased constant name
-          model = @remixables[remixable.to_s.singular.snake_case.to_sym][:model]
+          model = @remixables[remixable.to_s.singular.snake_case.to_sym][Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym][:model]
 
           unless model.nil?
             model.class_eval &block
@@ -238,9 +238,11 @@ module DataMapper
           key = options[:remixable_key]
           accessor_name = options[:as] ? options[:as] : options[:table_name]
           @remixables[key] ||= {}              
-          @remixables[key][:model] ||= remixable_model              
-          @remixables[key][:reader] ||= accessor_name.to_sym
-          @remixables[key][:writer] ||= "#{accessor_name}=".to_sym
+          model_key = Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
+          @remixables[key][model_key] ||= {}            
+          @remixables[key][model_key][:reader] ||= accessor_name.to_sym
+          @remixables[key][model_key][:writer] ||= "#{accessor_name}=".to_sym
+          @remixables[key][model_key][:model] ||= remixable_model
         end
 
         # - remix_one_to_many
