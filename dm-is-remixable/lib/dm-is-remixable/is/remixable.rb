@@ -190,8 +190,11 @@ module DataMapper
         #   Enhance a remix; allows nesting remixables, adding columns & functions to a remixed resource
         # ==== Parameters
         #   remixable <Symbol> Name of remixable to enhance (plural or singular name of is :remixable module)
+        #   model_class <Class, symbol, String> Name of the remixable generated Model Class.
         #   block     <Proc>    Enhancements to perform
         # ==== Examples
+        #   When you have one remixable:
+        #
         #   class Video
         #     include DataMapper::Resource
         #     remix Comment
@@ -203,14 +206,40 @@ module DataMapper
         #
         #       def backwards; self.test.reverse; end;
         #     end
-        def enhance(remixable,remixable_model, &block)
+        #
+        #  When you remixe the same remixable modules twice:
+        #
+        #   class Article
+        #     include DataMapper::Resource
+        #     remix n, :taggings, :for => User, :class_name => "UserArticleTagging"
+        #     remix n, :taggings, :for => Bot,  :class_name => "BotArticleTagging"
+        #
+        #     enhance :taggings, "UserArticleTagging" do
+        #       property :updated_at, DateTime
+        #       belongs_to :user
+        #       belongs_to :tag
+        #     end
+        #
+        #     enhance :taggings, "BotArticleTagging" do
+        #       belongs_to :bot
+        #       belongs_to :tag
+        #     end
+        
+        def enhance(remixable,remixable_model=nil, &block)
           # always use innermost singular snake_cased constant name
-          model = @remixables[remixable.to_s.singular.snake_case.to_sym][Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym][:model]
+          remixable_name = remixable.to_s.singular.snake_case.to_sym
+          class_name = if remixable_model.nil?
+            @remixables[remixable_name].keys.first
+          else
+            Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
+          end
+          
+          model = @remixables[remixable_name][class_name][:model] unless @remixables[remixable_name][class_name].nil?
 
           unless model.nil?
             model.class_eval &block
           else
-            raise Exception, "#{remixable} must be remixed before it can be enhanced"
+            raise Exception, "#{remixable} must be remixed with :class_name option as #{remixable_model} before it can be enhanced"
           end
         end
 
