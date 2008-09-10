@@ -83,13 +83,12 @@ namespace :dm do
   namespace :sessions do
     desc "Perform automigration for sessions"
     task :create => :merb_start do
-      Merb::DataMapperSession.auto_migrate!
+      Merb::DataMapperSessionStore.auto_migrate!
     end
 
     desc "Clears sessions"
     task :clear => :merb_start do
-      table_name = ((Merb::Plugins.config[:datamapper] || {})[:session_table_name] || "sessions")
-      ::DataMapper.repository.adapter.execute("DELETE FROM #{table_name}")
+      Merb::DataMapperSessionStore.all.destroy!
     end
   end
 end
