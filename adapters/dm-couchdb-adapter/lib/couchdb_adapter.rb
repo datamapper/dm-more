@@ -15,16 +15,16 @@ module DataMapper
     # Converts a Resource to a JSON representation.
     def to_json(dirty = false)
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
-      inferred_fields = {:type => self.class.storage_name(repository.name)}
-      return (property_list.inject(inferred_fields) do |accumulator, property|
-        accumulator[property.field] =
-          unless property.type.respond_to?(:dump)
-            property.get!(self)
-          else
+      data = { :type => self.class.storage_name(repository.name) }
+      for property in property_list do
+        data[property.field] =
+          if property.type.respond_to?(:dump)
             property.type.dump(property.get!(self), property)
+          else
+            property.get!(self)
           end
-        accumulator
-      end).to_json
+      end
+      return data.to_json
     end
   end
 end
