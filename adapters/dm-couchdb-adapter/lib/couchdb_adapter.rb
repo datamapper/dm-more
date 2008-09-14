@@ -17,6 +17,7 @@ module DataMapper
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       data = {}
       for property in property_list do
+        raise PersistenceError, '+couchdb_type+ is a reserved column name', caller if property.field == 'couchdb_type'
         data[property.field] =
           if property.type.respond_to?(:dump)
             property.type.dump(property.get!(self), property)

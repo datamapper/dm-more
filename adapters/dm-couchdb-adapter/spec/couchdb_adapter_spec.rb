@@ -62,6 +62,14 @@ class Employee < Person
   property :rank, String
 end
 
+class Broken
+  include DataMapper::Resource
+  property :id, String, :key => true, :field => :_id
+  property :rev, String, :field => :_rev
+  property :couchdb_type, Discriminator
+  property :name, String
+end
+
 describe DataMapper::Adapters::CouchdbAdapter do
   before :all do
     @adapter = DataMapper::Repository.adapters[:couchdb]
@@ -288,6 +296,11 @@ describe DataMapper::Adapters::CouchdbAdapter do
       employee.save.should be_true
       Person.all.include?(employee).should be_true
       employee.destroy.should be_true
+    end
+
+    it "should raise an error if you have a column named couchdb_type" do
+      broken = Broken.new(:name => 'error')
+      lambda { broken.save }.should raise_error(DataMapper::PersistenceError)
     end
   end
 end
