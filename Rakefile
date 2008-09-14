@@ -162,7 +162,7 @@ namespace :ci do
     gem_names.each do |gem_name|
       Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
         t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
-        t.spec_files = Pathname.glob(ENV['FILES'] || ROOT + "/#{gem_name}/spec/**/*_spec.rb")
+        t.spec_files = Pathname.glob(ENV['FILES'] || (ROOT + "#{gem_name}/spec/**/*_spec.rb").to_s)
         unless ENV['NO_RCOV']
           t.rcov = true
           t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"

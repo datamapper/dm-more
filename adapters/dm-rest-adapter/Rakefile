@@ -35,8 +35,7 @@ Spec::Rake::SpecTask.new(:spec) do |t|
   if File.exists?('spec/spec.opts')
     t.spec_opts << '--options' << 'spec/spec.opts'
   end
-  t.spec_files =
-    Pathname.glob(Pathname.new(__FILE__).dirname + 'spec/**/*_spec.rb')
+  t.spec_files = Pathname.glob((ROOT + 'spec/**/*_spec.rb').to_s)
 end
 
 desc "Run all stories"
