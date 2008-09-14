@@ -22,9 +22,9 @@ class User
   property :location, JsonObject
 
   # creates methods for accessing stored/indexed views in the CouchDB database
-  view :by_name, { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.name, doc); } }" }
-  view :by_age,  { "map" => "function(doc) { if (doc.type == 'user') { emit(doc.age, doc); } }" }
-  view :count,   { "map" => "function(doc) { if (doc.type == 'user') { emit(null, 1); } }",
+  view :by_name, { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(doc.name, doc); } }" }
+  view :by_age,  { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(doc.age, doc); } }" }
+  view :count,   { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(null, 1); } }",
                     "reduce" => "function(keys, values) { return sum(values); }" }
 
   belongs_to :company
@@ -47,6 +47,19 @@ class Company
   property :age, Integer
 
   has n, :users
+end
+
+class Person
+  include DataMapper::Resource
+  property :id, String, :key => true, :field => :_id
+  property :rev, String, :field => :_rev
+  property :type, Discriminator
+
+  property :name, String
+end
+
+class Employee < Person
+  property :rank, String
 end
 
 describe DataMapper::Adapters::CouchdbAdapter do
@@ -233,9 +246,13 @@ describe DataMapper::Adapters::CouchdbAdapter do
   end
 
   describe "associations" do
-    before :all do
+    before(:all) do
       @company = Company.create(:name => "ExCorp")
       @user = User.create(:name => 'John', :company => @company)
+    end
+    after(:all) do
+      @company.destroy
+      @user.destroy
     end
 
     it "should work with belongs_to associations" do
@@ -256,5 +273,21 @@ describe DataMapper::Adapters::CouchdbAdapter do
     default_options = { :name => "Jamie", :age => 67, :wealth => 11.5 }
     default_options.merge!(options)
     User.new(default_options)
+  end
+
+  describe 'STI' do
+    it "should override default type" do
+      person = Person.new(:name => 'Bob')
+      person.save.should be_true
+      Person.first.type.should == Person
+      person.destroy.should be_true
+    end
+
+    it "should load descendents on parent.all" do
+      employee = Employee.new(:name => 'Bob', :rank => 'Peon')
+      employee.save.should be_true
+      Person.all.include?(employee).should be_true
+      employee.destroy.should be_true
+    end
   end
 end

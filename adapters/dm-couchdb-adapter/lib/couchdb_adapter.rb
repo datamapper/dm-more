@@ -15,7 +15,7 @@ module DataMapper
     # Converts a Resource to a JSON representation.
     def to_json(dirty = false)
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
-      data = { :type => self.class.storage_name(repository.name) }
+      data = {}
       for property in property_list do
         data[property.field] =
           if property.type.respond_to?(:dump)
@@ -24,6 +24,7 @@ module DataMapper
             property.get!(self)
           end
       end
+      data[:couchdb_type] = self.class.storage_name(repository.name)
       return data.to_json
     end
   end
@@ -134,18 +135,18 @@ module DataMapper
                 data = doc["value"]
                   collection.load(
                     query.fields.map do |property|
-                      data[property.field.to_s]
+                      property.typecast(data[property.field.to_s])
                     end
                   )
               end
             end
           end
-        elsif doc['type'] && doc['type'] == query.model.storage_name(repository.name)
+        elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
           data = doc
           Collection.new(query) do |collection|
             collection.load(
               query.fields.map do |property|
-                data[property.field.to_s]
+                property.typecast(data[property.field.to_s])
               end
             )
           end
@@ -159,12 +160,12 @@ module DataMapper
         if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
         elsif !doc['rows']
-          data = doc if doc['type'] && doc['type'] == query.model.storage_name(repository.name)
+          data = doc if doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
         end
         if data
           query.model.load(
             query.fields.map do |property|
-              data[property.field.to_s]
+              property.typecast(data[property.field.to_s])
             end,
             query
           )
@@ -237,7 +238,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-  if (doc.type == '#{query.model.storage_name(self.name)}') {
+  if (doc.couchdb_type == '#{query.model.storage_name(self.name)}') {
     emit(#{key}, doc);
     }
   }"
@@ -267,7 +268,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (doc.type == '#{query.model.storage_name(self.name)}' && #{conditions.join(" && ")}) {
+    if (doc.couchdb_type == '#{query.model.storage_name(self.name)}' && #{conditions.join(" && ")}) {
       emit(#{key}, doc);
     }
   }"
