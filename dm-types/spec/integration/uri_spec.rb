@@ -23,4 +23,9 @@ describe DataMapper::Types::URI do
   it 'should immediately typecast supplied values' do
     URITest.new(:uri => 'http://localhost').uri.should == Addressable::URI.parse('http://localhost')
   end
+
+  it "should correctly typecast nil values" do
+    URITest.new(:uri => nil).uri.should == nil
+  end
+
 end

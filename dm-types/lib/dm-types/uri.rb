@@ -16,7 +16,13 @@ module DataMapper
       end
 
       def self.typecast(value, property)
-        value.kind_of?(Addressable::URI) ? value : load(value.to_s, property)
+        if value.kind_of?(Addressable::URI)
+          value
+        elsif value.nil?
+          load(nil, property)
+        else
+          load(value.to_s, property)
+        end
       end
     end # class URI
   end # module Types
