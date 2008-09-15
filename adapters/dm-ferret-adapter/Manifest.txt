@@ -1,0 +1,9 @@
+History.txt
+LICENSE
+Manifest.txt
+README.txt
+Rakefile
+TODO
+lib/ferret_adapter.rb
+lib/ferret_adapter/version.rb
+spec/spec.opts
