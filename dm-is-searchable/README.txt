@@ -1,0 +1,1 @@
+= dm-is-searchable
