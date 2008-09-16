@@ -72,9 +72,13 @@ module DataMapper
           ferret << "*"
         else
           query.conditions.each do |operator, property, value|
+            # We use property.field here, so that you can declare composite
+            # fields:
+            #     property :content, String, :field => "title|description"
+            name = property.field
+
             # Since DM's query syntax does not support OR's, we prefix
             # each condition with ferret's operator of +.
-            name = property.name
             ferret << case operator
             when :eql, :like  then "+#{name}:\"#{value}\""
             when :not         then "-#{name}:\"#{value}\""
