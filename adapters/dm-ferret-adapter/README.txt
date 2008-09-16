@@ -9,26 +9,43 @@ require "dm-is-searchable"
 DataMapper.setup(:default, "sqlite3::memory:")
 DataMapper.setup(:search, "ferret://#{Pathname(__FILE__).dirname.expand_path.parent + "index"}")
 
-class User
+class Image
   include DataMapper::Resource
   property :id, Serial
-  property :name, String
+  property :title, String
 
   is :searchable # this defaults to :search repository, you could also do
   # is :searchable, :repository => :ferret
 
 end
 
-repository(:default) { User.auto_migrate! }
-repository(:default) { User.create(:name => "James") }
+class Story
+  include DataMapper::Resource
+  property :id, Serial
+  property :title, String
+  property :author, String
 
-user = User.first
+  repository(:search) do
+    # We only want to search on id and title.
+    properties(:search).clear
+    property :id, Serial
+    property :title, String
+  end
 
-puts User.search(:name => "James").inspect # => [<User name="James">]
+  is :searchable
+
+end
+
+Image.auto_migrate!
+Story.auto_migrate!
+image = Image.create(:title => "Oil Rig");
+story = Story.create(:title => "Big Oil", :author => "John Doe") }
+
+puts Image.search(:title => "Oil Rig").inspect # => [<Image title="Oil Rig">]
 
 # For info on this, see DM::Repository#search and DM::Adapters::FerretAdapter#search.
-puts repository(:search).search('name:"James"').inspect # => { User => ["1"] }
+puts repository(:search).search('title:"Oil"').inspect # => { Image => ["1"], Story => ["1"] }
 
-user.destroy
+image.destroy
 
-puts User.search(:name => "James").inspect # => []
+puts Image.search(:title => "Oil Rig").inspect # => []
