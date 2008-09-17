@@ -1,7 +1,10 @@
 require Pathname(__FILE__).dirname / "image"
 require Pathname(__FILE__).dirname / "commentable"
 require Pathname(__FILE__).dirname / "viewable"
+require Pathname(__FILE__).dirname / "taggable"
 require Pathname(__FILE__).dirname / "user"
+require Pathname(__FILE__).dirname / "bot"
+require Pathname(__FILE__).dirname / "tag"
 
 class Article
   include DataMapper::Resource
@@ -18,9 +21,23 @@ class Article
   remix n, :commentables, :as => "comments", :for => "User"
   
   remix n, "My::Nested::Remixable::Rating", :as => :ratings
+  
+  remix n, :taggable, :as => "user_taggings", :for => "User", :class_name => "UserTagging"
+
+  remix n, :taggable, :as => "bot_taggings", :for => "Bot", :class_name => "BotTagging"
 
   enhance :viewables do
     belongs_to :user
+  end
+  
+  enhance :taggable, "UserTagging" do
+    belongs_to :user
+    belongs_to :tag
+  end
+
+  enhance :taggable, "BotTagging" do
+    belongs_to :bot
+    belongs_to :tag
   end
 
   def viewed_by(usr)
