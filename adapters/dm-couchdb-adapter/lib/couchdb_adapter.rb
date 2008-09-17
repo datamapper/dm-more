@@ -201,6 +201,7 @@ module DataMapper
         elsif query.conditions.length == 1 &&
               query.conditions.first[0] == :eql &&
               query.conditions.first[1].key? &&
+              query.conditions.first[2].length == 1
               !query.conditions.first[2].is_a?(String)
           get_request(query)
         else
