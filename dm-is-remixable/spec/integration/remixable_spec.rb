@@ -32,14 +32,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
     
     it "should not allow enhancements of modules that aren't remixed" do
-      begin
-        User.enhance Image do
-          puts "I can enhance something I didn't remix"
-        end
-        false
-      rescue Exception => e
-        true
-      end
+      lambda {
+        User.enhance Image
+      }.should raise_error
     end
 
     it "should provide a default suffix values for models that do 'is :remixable'" do
@@ -49,7 +44,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     it "should allow enhancing a model that is remixed" do
       Article.enhance :images do
         def self.test_enhance
-          puts "Testing"
+          true
         end
       end
 
@@ -59,7 +54,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     it "should allow enhancing a model that was remixed from a nested module" do
       Article.enhance :ratings do
         def self.test_enhance
-          puts "Testing"
+          true
         end
       end
 
@@ -72,7 +67,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     it "should allow enhancing the same remixable twice with different class_name attributes" do
       Article.enhance :taggable, "UserTagging" do
         def self.test_enhance
-          puts "Testing"
+          true
         end
       end
 
@@ -83,7 +78,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       
       Article.enhance :taggable, "BotTagging" do
         def self.test_enhance_2
-          puts "Testing"
+          true
         end
       end
       BotTagging.should respond_to("test_enhance_2")
@@ -93,14 +88,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
     
     it "should through exception when enhancing an unknown class" do
-      begin
-        Article.enhance :taggable, "NonExistentClass" do
-          puts "OMG!! I can enhance a class that is non-existent!!"
-        end
-        false
-      rescue Exception => e
-        true
-      end
+      lambda {
+        Article.enhance :taggable, "NonExistentClass"
+      }.should raise_error
     end
     
     it "should provided a map of Remixable Modules to Remixed Models names" do
