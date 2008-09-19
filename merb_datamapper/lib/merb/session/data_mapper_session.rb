@@ -1,10 +1,3 @@
-begin
-  gem 'dm-core', '=0.9.6'
-  require 'dm-core'
-rescue LoadError => e
-  require 'data_mapper'
-end
-
 require 'merb-core/dispatch/session'
 
 module Merb
