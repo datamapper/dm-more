@@ -1,5 +1,4 @@
 require 'base64'
-require 'dm-types'
 require 'mime/types'
 require 'net/http'
 

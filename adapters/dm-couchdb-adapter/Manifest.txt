@@ -5,9 +5,12 @@ README.txt
 Rakefile
 TODO
 lib/couchdb_adapter.rb
+lib/couchdb_adapter/attachments.rb
 lib/couchdb_adapter/json_object.rb
 lib/couchdb_adapter/version.rb
 lib/couchdb_adapter/view.rb
 spec/couchdb_adapter_spec.rb
+spec/couchdb_attachments_spec.rb
 spec/couchdb_view_spec.rb
 spec/spec.opts
+spec/testfile.txt
