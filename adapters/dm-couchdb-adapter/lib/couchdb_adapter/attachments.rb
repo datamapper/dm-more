@@ -45,23 +45,24 @@ module DataMapper
         raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
       end
 
-      if new_record?
-        self.attachments.delete(name)
-        self.attachments = nil if self.attachments.empty?
-        return true
+      unless self.attachments && self.attachments[name]
+        false
+      else
+        response = nil
+        unless new_record?
+          http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
+          uri = "/#{repository.adapter.escaped_db_name}/#{self.id}/#{name}?rev=#{self.rev}"
+          response, data = http.delete(uri, { 'Content-Type' => self.attachments[name]['content_type'] })
+        end
+
+        if response && !response.kind_of?(Net::HTTPSuccess)
+          false
+        else
+          self.attachments.delete(name)
+          self.attachments = nil if self.attachments.empty?
+          true
+        end
       end
-
-      return false unless self.attachments && self.attachments[name]
-
-      http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
-      uri = "/#{repository.adapter.escaped_db_name}/#{self.id}/#{name}?rev=#{self.rev}"
-      response, data = http.delete(uri, { 'Content-Type' => self.attachments[name]['content_type'] })
-
-      return false unless response.kind_of?(Net::HTTPSuccess)
-
-      self.attachments.delete(name)
-      self.attachments = nil if self.attachments.empty?
-      true
     end
 
     # TODO: cache data on model? (don't want to make resource dirty though...)
@@ -73,15 +74,20 @@ module DataMapper
         raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
       end
 
-      return nil unless self.id && self.attachments && self.attachments[name]
+      unless self.id && self.attachments && self.attachments[name]
+        nil
+      else
+        http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
+        uri = attachment_path(name)
+        response, data = http.get(uri, { 'Content-Type' => self.attachments[name]['content_type'] })
 
-      http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
-      uri = attachment_path(name)
-      response, data = http.get(uri, { 'Content-Type' => self.attachments[name]['content_type'] })
+        unless response.kind_of?(Net::HTTPSuccess)
+          nil
+        else
+          data
+        end
+      end
 
-      return nil unless response.kind_of?(Net::HTTPSuccess)
-
-      data
     end
 
     def attachment_path(name)
