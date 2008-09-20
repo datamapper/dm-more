@@ -21,10 +21,6 @@ module DataMapper
         value.to_s
       end
       
-      def self.typecast(value, property)
-        value.kind_of?(Permalink) ? value : load(value.to_s, property)
-      end
-      
     end # class Permalink
   end # module Types
 end # module DataMapper

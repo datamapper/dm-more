@@ -23,9 +23,6 @@ describe DataMapper::Types::Permalink do
     PermalinkTest.first.name.should == create_permalink("New DataMapper Type")
   end
 
-  it 'should immediately typecast supplied values' do
-    PermalinkTest.new(:name => 'New DataMapper Type').name.should == create_permalink("New DataMapper Type")
-  end
   
   def create_permalink(word)
     Iconv.new('UTF-8//TRANSLIT//IGNORE', 'UTF-8').iconv(word.gsub(/[^\w\s\-\—]/,'').gsub(/[^\w]|[\_]/,' ').split.join('-').downcase)
