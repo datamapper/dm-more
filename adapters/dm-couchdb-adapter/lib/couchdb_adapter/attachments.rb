@@ -70,12 +70,20 @@ module DataMapper
       return nil unless self.id && self.attachments && self.attachments[name]
 
       http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
-      uri = "/#{repository.adapter.escaped_db_name}/#{self.id}/#{name}"
+      uri = attachment_path(name)
       response, data = http.get(uri, { 'Content-Type' => self.attachments[name]['content_type'] })
 
       return nil unless response.kind_of?(Net::HTTPSuccess)
 
       data
+    end
+
+    def attachment_path(name)
+      if new_record?
+        nil
+      else
+        "/#{repository.adapter.escaped_db_name}/#{self.id}/#{name}"
+      end
     end
   end
 end
