@@ -1,10 +1,11 @@
 require 'base64'
 require 'dm-types'
+require 'mime/types'
 require 'net/http'
 
 module DataMapper
   module Resource
-    def add_attachment(name, content_type, data)
+    def add_attachment(file, options = {})
 
       unless (model.properties.has_property?(:attachments) &&
         model.properties[:attachments].type == DataMapper::Types::JsonObject &&
@@ -12,18 +13,24 @@ module DataMapper
         raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
       end
 
+      filename = File.basename(file.path)
+      mime_types = MIME::Types.of(filename)
+      options[:content_type] ||= mime_types.empty? ? 'application/octet-stream' : mime_types.first.content_type
+      data = file.read
+      options[:name] ||= filename
+
       if new_record? || !model.properties.has_property?(:rev)
         self.attachments ||= {}
-        self.attachments[name] = {
-          'content_type' => content_type,
+        self.attachments[options[:name]] = {
+          'content_type' => options[:content_type],
           'data' => Base64.encode64(data).chomp
         }
       else
         http = Net::HTTP.new(repository.adapter.uri.host, repository.adapter.uri.port)
-        uri = "/#{repository.adapter.escaped_db_name}/#{self.id}/#{name}?rev=#{self.rev}"
+        uri = "/#{repository.adapter.escaped_db_name}/#{self.id}/#{options[:name]}?rev=#{self.rev}"
         headers = {
           'Content-Length' => data.size.to_s,
-          'Content-Type' => content_type
+          'Content-Type' => options[:content_type]
         }
         response, data = http.put(uri, data, headers)
         self.reload
