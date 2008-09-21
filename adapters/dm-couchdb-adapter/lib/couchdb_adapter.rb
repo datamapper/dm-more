@@ -26,7 +26,7 @@ module DataMapper
             property.get!(self)
           end
       end
-      data.delete(:_attachments) if data[:_attachments].nil?
+      data.delete(:_attachments) if data[:_attachments].nil? || data[:_attachments].empty?
       data[:couchdb_type] = self.class.storage_name(repository.name)
       return data.to_json
     end
