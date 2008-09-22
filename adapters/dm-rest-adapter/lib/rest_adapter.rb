@@ -149,19 +149,35 @@ module DataMapper
       end
 
       def http_put(uri, data = nil)
-        request { |http| http.put(uri, data, {"Content-Type", "application/xml"}) }
+        request do |http|
+          request = Net::HTTP::Put.new(uri, data)
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          http.request(request)
+        end
       end
 
       def http_post(uri, data)
-        request { |http| http.post(uri, data, {"Content-Type", "application/xml"}) }
+        request do |http|
+          request = Net::HTTP::Post.new(uri, data, {"Content-Type", "application/xml"})
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          http.request(request)
+        end
       end
 
       def http_get(uri)
-        request { |http| http.get(uri, {"Content-Type", "application/xml"}) }
+        request do |http|
+          request = Net::HTTP::Get.new(uri)
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          http.request(request)
+        end
       end
 
       def http_delete(uri)
-        request { |http| http.delete(uri, {"Content-Type", "application/xml"}) }
+        request do |http|
+          request = Net::HTTP::Delete.new(uri)
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          http.request(request)
+        end
       end
 
       def request(&block)
