@@ -118,69 +118,18 @@ task :release_all do
   end
 end
 
-namespace :ci do
-
-  gems.each do |gem_name|
-    task gem_name do
-      ENV['gem_name'] = gem_name
-
-      Rake::Task["ci:run_all"].invoke
-    end
-  end
-
-  task :run_all => [:spec, :install, :doc, :publish]
-
-  task :spec_all => :define_tasks do
-    gems.each do |gem_name|
-      Rake::Task["#{gem_name}:spec"].invoke
-    end
-  end
-
-  task :spec => :define_tasks do
-    Rake::Task["#{ENV['gem_name']}:spec"].invoke
-  end
-
-  task :doc => :define_tasks do
-    Rake::Task["#{ENV['gem_name']}:doc"].invoke
-  end
-
-  task :install do
-    sh %{cd #{ENV['gem_name']} && rake install}
-  end
-
-  task :publish do
-    out = ENV['CC_BUILD_ARTIFACTS'] || "out"
-    mkdir_p out unless File.directory? out if out
-
-    mv "rdoc", "#{out}/rdoc" if out
-    mv "coverage", "#{out}/coverage_report" if out && File.exists?("coverage")
-    mv "rspec_report.html", "#{out}/rspec_report.html" if out && File.exists?("rspec_report.html")
-  end
-
-  task :define_tasks do
-    gem_names = [(ENV['gem_name'] || gems)].flatten
-    gem_names.each do |gem_name|
-      Spec::Rake::SpecTask.new("#{gem_name}:spec") do |t|
-        t.spec_opts = ["--format", "specdoc", "--format", "html:rspec_report.html", "--diff"]
-        t.spec_files = Pathname.glob(ENV['FILES'] || (ROOT + "#{gem_name}/spec/**/*_spec.rb").to_s)
-        unless ENV['NO_RCOV']
-          t.rcov = true
-          t.rcov_opts << '--exclude' << "spec,gems,#{(gems - [gem_name]).join(',')}"
-          t.rcov_opts << '--text-summary'
-          t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
-          t.rcov_opts << '--only-uncovered'
-        end
-      end
-
-      Rake::RDocTask.new("#{gem_name}:doc") do |t|
-        t.rdoc_dir = 'rdoc'
-        t.title    = gem_name
-        t.options  = ['--line-numbers', '--inline-source', '--all']
-        t.rdoc_files.include("#{gem_name}/lib/**/*.rb", "#{gem_name}/ext/**/*.c")
-      end
-    end
+task :ci do
+  gem_paths.each do |gem_name|
+    Dir.chdir(gem_name){ sh("rake ci") }
   end
 end
+
+task :spec do
+  gem_paths.each do |gem_name|
+    Dir.chdir(gem_name){ sh("rake spec") }
+  end
+end
+
 
 namespace :dm do
   desc 'Run specifications'

@@ -13,6 +13,7 @@ lib/dm-types/file_path.rb
 lib/dm-types/flag.rb
 lib/dm-types/ip_address.rb
 lib/dm-types/json.rb
+lib/dm-types/permalink.rb
 lib/dm-types/regexp.rb
 lib/dm-types/serial.rb
 lib/dm-types/uri.rb
@@ -24,6 +25,7 @@ spec/integration/file_path_spec.rb
 spec/integration/flag_spec.rb
 spec/integration/ip_address_spec.rb
 spec/integration/json_spec.rb
+spec/integration/permalink_spec.rb
 spec/integration/uri_spec.rb
 spec/integration/yaml_spec.rb
 spec/spec.opts
