@@ -17,7 +17,6 @@ lib/generators/templates/views/new.html.erb
 lib/generators/templates/views/show.html.erb
 lib/merb/orms/data_mapper/connection.rb
 lib/merb/orms/data_mapper/database.yml.sample
-lib/merb/orms/data_mapper/resource.rb
 lib/merb/session/data_mapper_session.rb
 lib/merb_datamapper.rb
 lib/merb_datamapper/merbtasks.rb

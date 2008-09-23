@@ -7,6 +7,7 @@ require 'json'
 require 'ostruct'
 require 'net/http'
 require 'uri'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/attachments'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/json_object'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 
@@ -25,6 +26,7 @@ module DataMapper
             property.get!(self)
           end
       end
+      data.delete(:_attachments) if data[:_attachments].nil? || data[:_attachments].empty?
       data[:couchdb_type] = self.class.storage_name(repository.name)
       return data.to_json
     end
@@ -201,6 +203,8 @@ module DataMapper
         elsif query.conditions.length == 1 &&
               query.conditions.first[0] == :eql &&
               query.conditions.first[1].key? &&
+              query.conditions.first[2] &&
+              query.conditions.first[2].length == 1
               !query.conditions.first[2].is_a?(String)
           get_request(query)
         else

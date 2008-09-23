@@ -77,7 +77,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     unless @no_connection
       begin
         @adapter.send(:http_put, "/#{@adapter.escaped_db_name}")
-        create_procedures
+        DataMapper.auto_migrate!
       rescue Errno::ECONNREFUSED
         @no_connection = true
       end
@@ -270,11 +270,6 @@ describe DataMapper::Adapters::CouchdbAdapter do
     it "should work with has n associations" do
       @company.users.should include(@user)
     end
-  end
-
-  def create_procedures
-    DataMapper.auto_migrate!
-    DataMapper.auto_migrate!
   end
 
   def new_user(options = {})

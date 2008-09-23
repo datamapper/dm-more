@@ -26,8 +26,8 @@ if defined?(Merb::Plugins)
         require File.dirname(__FILE__) / "merb" / "session" / "data_mapper_session"
       end
 
-      # required to provide 'to_param'
-      require File.dirname(__FILE__) / "merb" / "orms" / "data_mapper" / "resource"
+      # take advantage of the fact #id returns the key of the model, unless #id is a property
+      Merb::Router.root_behavior = Merb::Router.root_behavior.identify(DataMapper::Resource => :id)
 
       Merb.logger.debug "Merb::Orms::DataMapper::Connect complete"
     end
