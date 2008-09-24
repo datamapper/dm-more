@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "dm-core"
+require "ferret_adapter"
+
+require "fileutils"
+require "rinda/ring"
+require "rinda/tuplespace"
+require "optparse"
+
+options = {
+  :name => ":ferret_index:",
+  :index => Dir.pwd + "/index",
+  :pid_file => "tmp/ferret.pid",
+  :log_file => "log/ferret.log",
+  :log_level => :error
+}
+
+option_parser = OptionParser.new do |opts|
+  opts.banner = "Usage: ferret.rb [options] start|stop"
+  opts.on("-n", "--name NAME", "The name to use for the Rinda Ring service. Defaults to ':ferret_index:'.") { |name| options[:name] = name }
+  opts.on("-P", "--pid PIDFILE", "PID file, defaults to tmp/ferret.pid") { |pid| options[:pid_file] = pid }
+  opts.on("-L", "--log LOGFILE", "Log file, defaults to log/ferret.log") { |log| options[:log_file] = log }
+  opts.on("-l", "--log-level LEVEL", [:debug, :error], "Log levels can be: debug, error. Default is error.") { |level| options[:log_level] = level }
+  opts.on("-i", "--index INDEX", "Index path. Defaults to Dir.pwd + '/index'") { |index| options[:index] = index }
+  # opts.on_tail("-h", "--help", "Show this message") { puts opts; exit }
+end
+
+unless %w(start stop).include? ARGV.last
+  puts option_parser.help
+  exit
+end
+
+option_parser.parse!
+
+command = ARGV.shift
+
+if command == "stop"
+  Process.kill("INT", File.read(options[:pid_file]).to_i) if File.exists?(options[:pid_file])
+  exit
+else
+  fork do
+    # Promote this process.
+    Process.setsid
+
+    FileUtils.mkdir_p(Pathname(options[:pid_file]).dirname)
+    FileUtils.mkdir_p(Pathname(options[:log_file]).dirname)
+
+    # We redirect STDOUT to the :log_file only in debug mode.
+    if options[:log_level] == :debug
+      STDOUT.reopen options[:log_file], "a"
+    else
+      STDOUT.reopen "/dev/null", "a"
+    end
+    STDERR.reopen options[:log_file], "a"
+
+    STDOUT.puts "Starting server."
+    STDOUT.flush
+
+    # Remove the PID file at exit
+    at_exit { File.unlink(options[:pid_file]) if options[:pid_file] }
+
+    # Write the process id to the specified :pid_file
+    File.open(options[:pid_file], "w") { |f| f.write(Process.pid) }
+
+    DRb.start_service
+
+    tuple_space = Rinda::TupleSpace.new
+
+    Rinda::RingServer.new(tuple_space)
+    Rinda::RingProvider.new(:TupleSpace, tuple_space, options[:name]).provide
+
+    uri = Addressable::URI.parse(options[:index])
+    @index = DataMapper::Adapters::FerretAdapter::LocalIndex.new(uri)
+
+    loop do
+      begin
+        command, uri, value = tuple_space.take([nil, nil, nil])
+        case command
+        when :search
+          puts "Search"
+          puts " - #{value[0].inspect}"
+          puts " - #{value[1].inspect}"
+          STDOUT.flush
+          begin
+            result = @index.search(*value)
+            tuple_space.write [:search_result, uri, value, result]
+          rescue
+            tuple_space.write [:search_result, uri, value, nil]
+            raise $!
+          end
+        when :add
+          puts "Insert"
+          puts " - #{value.inspect}"
+          STDOUT.flush
+          @index.add value
+        when :delete
+          puts "Delete"
+          puts " - #{value.inspect}"
+          STDOUT.flush
+          @index.delete value
+        end
+      rescue Interrupt
+        STDOUT.puts "Shutting down server"
+        STDOUT.flush
+        break
+      rescue
+        STDERR.puts "=== #{Time.now} ==="
+        STDERR.puts $!
+        STDERR.puts $!.backtrace
+        STDERR.puts ""
+        STDERR.flush
+      end
+    end
+  end
+end

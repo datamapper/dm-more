@@ -4,6 +4,10 @@ Manifest.txt
 README.txt
 Rakefile
 TODO
+bin/ferret
 lib/ferret_adapter.rb
+lib/ferret_adapter/local_index.rb
+lib/ferret_adapter/remote_index.rb
+lib/ferret_adapter/repository_ext.rb
 lib/ferret_adapter/version.rb
 spec/spec.opts
