@@ -8,6 +8,8 @@ ENV["SQLITE3_SPEC_URI"]   ||= 'sqlite3::memory:'
 ENV["MYSQL_SPEC_URI"]     ||= 'mysql://localhost/dm_core_test'
 ENV["POSTGRES_SPEC_URI"]  ||= 'postgres://postgres@localhost/dm_more_test'
 
+# DataMapper::Logger.new(STDOUT, :debug)
+
 def setup_adapter(name, default_uri = nil)
   begin
     DataMapper.setup(name, ENV["#{ENV['ADAPTER'].to_s.upcase}_SPEC_URI"] || default_uri)
