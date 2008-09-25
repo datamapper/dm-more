@@ -17,6 +17,7 @@ lib/dm-types/permalink.rb
 lib/dm-types/regexp.rb
 lib/dm-types/serial.rb
 lib/dm-types/uri.rb
+lib/dm-types/uuid.rb
 lib/dm-types/version.rb
 lib/dm-types/yaml.rb
 spec/integration/bcrypt_hash_spec.rb
