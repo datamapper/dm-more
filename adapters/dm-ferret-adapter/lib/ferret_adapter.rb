@@ -23,7 +23,9 @@ module DataMapper
       def create(resources)
         resources.each do |resource|
           attributes = resource.attributes
-          attributes.delete_if { |name, value| !resource.class.properties(self.name).has_property?(name) }
+          attributes.delete_if do |name, value|
+            !resource.class.properties(self.name).has_property?(name)
+          end
           attributes.merge!(:_type => resource.class.name)
           @index.add attributes
         end

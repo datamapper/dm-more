@@ -32,7 +32,7 @@ module DataMapper
         unless File.exists?(@uri.path + "segments")
           field_infos = ::Ferret::Index::FieldInfos.new(:store => :no)
           field_infos.add_field(:id, :index => :untokenized, :term_vector => :no, :store => :yes)
-          field_infos.add_field(:_type, :index => :untokenized, :store => :yes)
+          field_infos.add_field(:_type, :index => :no, :term_vector => :no, :store => :yes)
           @index = ::Ferret::Index::Index.new( @options.merge(:field_infos => field_infos) )
         else
           @index = ::Ferret::Index::Index.new( @options )
