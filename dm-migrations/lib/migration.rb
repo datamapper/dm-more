@@ -98,6 +98,22 @@ module DataMapper
       end
     end
 
+    def create_index(table_name, *columns_and_options)
+      if columns_and_options.last.is_a?(Hash)
+        opts = columns_and_options.pop
+      else
+        opts = {}
+      end
+      columns = columns_and_options
+
+      opts[:name] ||= "#{opts[:unique] ? 'unique_' : ''}index_#{table_name}_#{columns.join('_')}"
+
+      execute <<-SQL.compress_lines
+        CREATE #{opts[:unique] ? 'UNIQUE ' : '' }INDEX #{quote_column_name(opts[:name])} ON
+        #{quote_table_name(table_name)} (#{columns.map { |c| quote_column_name(c) }.join(', ') })
+      SQL
+    end
+
     # Orders migrations by position, so we know what order to run them in.
     # First order by postition, then by name, so at least the order is predictable.
     def <=> other
@@ -186,5 +202,12 @@ module DataMapper
       @migration_name_column ||= @adapter.send(:quote_column_name, 'migration_name')
     end
 
+    def quote_table_name(table_name)
+      @adapter.send(:quote_table_name, table_name.to_s)
+    end
+
+    def quote_column_name(column_name)
+      @adapter.send(:quote_column_name, column_name.to_s)
+    end
   end
 end
