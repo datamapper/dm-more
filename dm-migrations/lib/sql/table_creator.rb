@@ -39,7 +39,7 @@ module SQL
         schema[:serial?] ||= schema[:serial]
         schema[:nullable?] ||= schema[:nullable]
         if type_class.is_a?(String)
-          schema[:type] = type_class
+          schema[:primitive] = type_class
         else
           schema = @adapter.class.type_map[type_class].merge(schema)
         end
