@@ -34,3 +34,6 @@ production:
   # repositories:
   #   repo1:
   #     database: sample_development
+
+rake:
+  <<: *defaults
