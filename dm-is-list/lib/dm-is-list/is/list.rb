@@ -59,13 +59,12 @@ module DataMapper
         # we need to make sure that STI-models will inherit the list_scope.
         after_class_method :inherited do |retval, target|
           target.instance_variable_set(:@list_options, @list_options.dup)
-          target.instance_variable_set(:@list_scope, @list_scope.dup)
         end
 
       end
 
       module ClassMethods
-        attr_reader :list_options, :list_scope
+        attr_reader :list_options
 
         ##
         # use this function to repair / build your lists.
