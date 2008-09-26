@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'dm-core/adapters/postgres_adapter'
 require 'uuidtools'
 
 module DataMapper
@@ -19,6 +20,8 @@ module DataMapper
     #  -- Rando Sept 25, 08
     #  
     class UUID < DataMapper::Type
+      primitive 'UUID'
+
       def self.load(value, property)
         return nil if value.nil?
         ::UUID.parse(value) 
@@ -34,6 +37,7 @@ module DataMapper
       end
 
       ::DataMapper::Property::TYPES << self
+      DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID')
     end
   end
 end

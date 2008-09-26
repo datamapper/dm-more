@@ -26,3 +26,5 @@ module DataMapper
     autoload(:BCryptHash, File.join(Pathname(__FILE__).dirname.expand_path, 'dm-types', 'bcrypt_hash'))
   end
 end
+
+DataMapper::Adapters::PostgresAdapter.type_map.map(::DataMapper::Types::UUID).to('UUID')

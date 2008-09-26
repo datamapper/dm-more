@@ -9,8 +9,9 @@ describe DataMapper::Types::UUID do
       include DataMapper::Resource
 
       property :id, Serial
-      property :uuid, DataMapper::Types::UUID
+      property :uuid, ::DataMapper::Types::UUID
     end
+
     UUIDTest.auto_migrate!
   end
   
