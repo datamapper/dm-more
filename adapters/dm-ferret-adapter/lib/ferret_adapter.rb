@@ -22,10 +22,7 @@ module DataMapper
 
       def create(resources)
         resources.each do |resource|
-          attributes = resource.attributes
-          attributes.delete_if do |name, value|
-            !resource.class.properties(self.name).has_property?(name)
-          end
+          attributes = repository(@name) { resource.class.new(resource.attributes).attributes }
           attributes.merge!(:_type => resource.class.name)
           @index.add attributes
         end
