@@ -21,7 +21,28 @@ module SQL
     end
 
     def to_sql
-        "CREATE TABLE #{quoted_table_name} (#{@columns.map{ |c| c.to_sql }.join(', ')})"
+      "CREATE TABLE #{quoted_table_name} (#{@columns.map{ |c| c.to_sql }.join(', ')})"
+    end
+
+    # A helper for using the native NOW() SQL function in a default
+    def now
+      SqlExpr.new('NOW()')
+    end
+
+    # A helper for using the native UUID() SQL function in a default
+    def uuid
+      SqlExpr.new('UUID()')
+    end
+
+    class SqlExpr
+      attr_accessor :sql
+      def initialize(sql)
+        @sql = sql
+      end
+
+      def to_s
+        @sql.to_s
+      end
     end
 
     class Column
@@ -37,7 +58,7 @@ module SQL
       def build_type(type_class)
         schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
         schema[:serial?] ||= schema[:serial]
-        schema[:nullable?] ||= schema[:nullable]
+        schema[:nullable?] ||= schema[:nullable] || !schema[:not_null]
         if type_class.is_a?(String)
           schema[:primitive] = type_class
         else
