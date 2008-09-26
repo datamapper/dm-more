@@ -3,12 +3,12 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 [:sqlite3, :mysql, :postgres].each do |adapter|
   next unless eval("HAS_#{adapter.to_s.upcase}")
-  describe "Using Adapter #{adapter}, " do
+  describe "Using Adapter #{adapter}," do
     describe DataMapper::Migration, "#create_table helper" do
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
           column :id, Integer, :serial => true
-          column :name, String
+          column :name, 'varchar(50)'
           column :long_string, String, :size => 200
         end
       end

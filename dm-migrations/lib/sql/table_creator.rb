@@ -38,12 +38,16 @@ module SQL
         schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
         schema[:serial?] ||= schema[:serial]
         schema[:nullable?] ||= schema[:nullable]
-        schema = @adapter.class.type_map[type_class].merge(schema)
+        if type_class.is_a?(String)
+          schema[:type] = type_class
+        else
+          schema = @adapter.class.type_map[type_class].merge(schema)
+        end
         @adapter.property_schema_statement(schema)
       end
 
       def to_sql
-          type
+        type
       end
 
       def quoted_name
