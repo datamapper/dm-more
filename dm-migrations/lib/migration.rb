@@ -104,7 +104,7 @@ module DataMapper
       else
         opts = {}
       end
-      columns = columns_and_options
+      columns = columns_and_options.flatten
 
       opts[:name] ||= "#{opts[:unique] ? 'unique_' : ''}index_#{table_name}_#{columns.join('_')}"
 
