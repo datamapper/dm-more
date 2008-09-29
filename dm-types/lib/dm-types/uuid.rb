@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'dm-core/adapters/postgres_adapter'
 require 'uuidtools'
 
 module DataMapper
@@ -37,9 +35,9 @@ module DataMapper
       end
 
       ::DataMapper::Property::TYPES << self
-      DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID')
+      if defined? DataMapper::Adapters::PostgresAdapter
+        DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID')
+      end
     end
   end
 end
-
-
