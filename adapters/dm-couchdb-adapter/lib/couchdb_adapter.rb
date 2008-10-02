@@ -153,6 +153,8 @@ module DataMapper
               end
             )
           end
+        else
+          []
         end
       end
 
