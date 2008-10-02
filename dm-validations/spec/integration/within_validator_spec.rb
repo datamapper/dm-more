@@ -21,7 +21,7 @@ describe DataMapper::Validate::WithinValidator do
       validates_within :between, :set => (10..20)
     end
 
-    class Reciever
+    class Receiver
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :holder, String, :auto_validation => false, :default => 'foo'
@@ -48,7 +48,7 @@ describe DataMapper::Validate::WithinValidator do
   end
 
   it "should validate a value by its default" do
-    tel = Reciever.new
+    tel = Receiver.new
     tel.should be_valid
   end
 end
