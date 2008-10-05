@@ -5,7 +5,7 @@ module DataMapper
     class Permalink < DataMapper::Type
       primitive String
       size 65535
-      
+
       def self.load(value, property)
         if value.nil?
           nil
@@ -15,12 +15,12 @@ module DataMapper
           raise ArgumentError.new("+value+ must be nil or a String")
         end
       end
-      
+
       def self.dump(value, property)
         return nil if value.nil?
         value.to_s
       end
-      
+
     end # class Permalink
   end # module Types
 end # module DataMapper

@@ -16,9 +16,9 @@ module DataMapper
       def has_tags_on(*args)
         args.flatten!
         args.uniq!
-        
+
         self.extend(DataMapper::Tags::SingletonMethods)
-        
+
         args.map{|arg| arg.to_sym}.each do |arg|
           class_eval <<-RUBY
           property :frozen_#{arg.to_s.singular}_list, String
@@ -77,7 +77,7 @@ module SingletonMethods
     conditions[:tag_context] = options[:on] if options[:on]
     Tagging.all(conditions).map{|tagging| tagging.taggable}
   end
-  
+
   def taggable?
     true
   end

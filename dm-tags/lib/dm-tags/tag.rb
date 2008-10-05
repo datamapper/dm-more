@@ -4,7 +4,7 @@ class Tag
   property :name, String, :nullable => false, :unique => true
 
   has n, :taggings
-  
+
   def taggables
     taggings.map{|tagging| tagging.taggable}
   end

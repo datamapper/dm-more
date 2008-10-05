@@ -18,6 +18,3 @@ module DataMapper
     end
   end
 end
-
-
-

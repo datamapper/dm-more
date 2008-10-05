@@ -6,7 +6,7 @@ Add ability to have a unique relationship when joining through remixable
   M:M Article.remix n, :views, :for => "User", :unique => true
     in the generated table article_views article_id and user_id would be a unique key,
       only counting a users viewing of an article once
-      
+
 TODO
 ====
 - Add ability to set primary keys and indexes when remixing

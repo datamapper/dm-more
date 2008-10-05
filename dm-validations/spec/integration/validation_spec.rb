@@ -12,7 +12,7 @@ describe DataMapper::Validate do
     end
   end
 
-  describe '#validations' do 
+  describe '#validations' do
       it 'should support more different validations of a different type' do
           number_of_validators_before = Yacht.validators.contexts[:default].length
             class Yacht
@@ -21,7 +21,7 @@ describe DataMapper::Validate do
           number_of_validators_after = Yacht.validators.contexts[:default].length
           (number_of_validators_after - number_of_validators_before).should == 1
       end
-      
+
   end
 
   it 'should respond to save' do

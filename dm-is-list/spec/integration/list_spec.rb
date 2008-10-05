@@ -57,7 +57,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(6).position.should == 3
         end
       end
-      
+
       it 'should rearrange items when setting position yourself' do
         repository(:default) do |repos|
           Todo.get(2).update_attributes(:position => 1)
@@ -135,7 +135,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           item.position.should == 1
           item.user_id = 1
           item.save
-          
+
           item.list_scope.should != item.original_list_scope
           item.position.should == 1
           Todo.get(1).position.should == 2

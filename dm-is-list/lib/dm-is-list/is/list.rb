@@ -25,7 +25,7 @@ module DataMapper
         include DataMapper::Is::List::InstanceMethods
 
         property :position, Integer unless properties.detect{|p| p.name == :position && p.type == Integer}
-        
+
         @list_options = options
 
         before :save do
@@ -113,7 +113,7 @@ module DataMapper
         def reorder_list(order)
           self.class.repair_list(list_scope.merge(:order => order))
         end
-        
+
         def detach(scope=list_scope)
           list(scope).all(:position.gt => position).adjust!({:position => -1},true)
           self.position = nil
@@ -162,7 +162,7 @@ module DataMapper
        private
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
-          
+
           minpos = self.class.list_options[:first]
           prepos = self.original_values[:position] || self.position
           maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : minpos

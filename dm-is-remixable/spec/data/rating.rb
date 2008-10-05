@@ -18,7 +18,7 @@ module My
 
         property :user_id, Integer, :nullable => false
         property :rating,  Integer, :nullable => false, :default => 0
-  
+
         module ClassMethods
 
           # total rating for all rateable instances of this type
@@ -31,7 +31,7 @@ module My
         end
 
       end
-      
+
     end
   end
 end

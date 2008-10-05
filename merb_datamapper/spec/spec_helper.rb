@@ -6,4 +6,3 @@ require 'rubygems'
 gem 'dm-core', '=0.9.6'
 require 'dm-core'
 require 'merb-core'
-

@@ -58,8 +58,8 @@ describe DataMapper::Model do
     it "should add inline attributes to new records" do
       @message = Message.new
       @message.add_attachment(@file, :name => 'test.txt')
-      @message.attachments.should == { 
-        'test.txt' => { 
+      @message.attachments.should == {
+        'test.txt' => {
           'content_type' => 'text/plain',
           'data' => Base64.encode64('test string').chomp
         }

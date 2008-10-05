@@ -26,11 +26,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         Commentable.is_remixable?.should be(true)
       end
     end
-    
+
     it "should only allow remixables to be remixed" do
       lambda { User.remix 1, :articles }.should raise_error(Exception)
     end
-    
+
     it "should not allow enhancements of modules that aren't remixed" do
       lambda {
         User.enhance Image
@@ -50,7 +50,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       ArticleImage.should respond_to("test_enhance")
     end
-    
+
     it "should allow enhancing a model that was remixed from a nested module" do
       Article.enhance :ratings do
         def self.test_enhance
@@ -63,7 +63,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       ArticleRating.new.should respond_to("user_id")
       ArticleRating.new.should respond_to("rating")
     end
-    
+
     it "should allow enhancing the same remixable twice with different class_name attributes" do
       Article.enhance :taggable, "UserTagging" do
         def self.test_enhance
@@ -75,7 +75,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       UserTagging.should respond_to("related_tags")
       UserTagging.new.should respond_to("user_id")
       UserTagging.new.should respond_to("tag")
-      
+
       Article.enhance :taggable, "BotTagging" do
         def self.test_enhance_2
           true
@@ -84,15 +84,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       BotTagging.should respond_to("test_enhance_2")
       BotTagging.should respond_to("related_tags")
       BotTagging.new.should respond_to("bot_id")
-      BotTagging.new.should respond_to("tag")   
+      BotTagging.new.should respond_to("tag")
     end
-    
+
     it "should through exception when enhancing an unknown class" do
       lambda {
         Article.enhance :taggable, "NonExistentClass"
       }.should raise_error
     end
-    
+
     it "should provided a map of Remixable Modules to Remixed Models names" do
       User.remixables.should_not be(nil)
     end
@@ -104,7 +104,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Article.remixables[:rating][:article_rating][:model].should == ArticleRating
       Topic.remixables[:rating][:rating][:model].should == Rating
     end
-    
+
     it "should store the remixee reader name in the map of Remixable Modules to Remixed Models" do
       User.remixables[:billable][:account][:reader].should == :accounts
       # nested remixables
@@ -112,7 +112,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Article.remixables[:rating][:article_rating][:reader].should == :ratings
       Topic.remixables[:rating][:rating][:reader].should == :ratings_for_topic
     end
-    
+
     it "should store the remixee writer name in the map of Remixable Modules to Remixed Models" do
       User.remixables[:billable][:account][:writer].should == :accounts=
       # nested remixables
@@ -120,7 +120,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Article.remixables[:rating][:article_rating][:writer].should == :ratings=
       Topic.remixables[:rating][:rating][:writer].should == :ratings_for_topic=
     end
-    
+
     it "should allow specifying an alternate class name" do
       User.remixables[:billable][:account][:model].name.should_not == "UserBillable"
       User.remixables[:billable][:account][:model].name.should == "Account"

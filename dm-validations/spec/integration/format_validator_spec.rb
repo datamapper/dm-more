@@ -11,7 +11,7 @@ describe DataMapper::Validate::FormatValidator do
       property :email,    String, :auto_validation => false
       property :username, String, :auto_validation => false
       property :url,      String, :auto_validation => false
-      
+
       # this is a trivial example
       validates_format :doc_no, :with => lambda { |code|
         code =~ /\AA\d{4}\z/ || code =~ /\A[B-Z]\d{6}X12\z/
@@ -82,7 +82,7 @@ describe DataMapper::Validate::FormatValidator do
     end
 
   end
-  
+
   it 'should have a pre-defined URL format' do
     bad = [ 'http:// example.com',
             'ftp://example.com',

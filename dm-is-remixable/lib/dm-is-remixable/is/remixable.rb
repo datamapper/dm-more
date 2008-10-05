@@ -4,7 +4,7 @@ class Object
   def full_const_defined?(name)
     !!full_const_get(name) rescue false
   end
-  
+
 end
 
 English::Inflect.rule 'ess', 'esses'
@@ -68,7 +68,7 @@ module DataMapper
       #   Methods available to all DataMapper::Resources
       module RemixerClassMethods
         def self.included(base);end;
-        
+
         def is_remixable?
           @is_remixable ||= false
         end
@@ -142,11 +142,11 @@ module DataMapper
           # Example (from my upcoming dm-is-rateable gem)
           # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
           remixable_module = Object.full_const_get(Extlib::Inflection.classify(remixable))
-          
+
           unless remixable_module.is_remixable?
             raise Exception, "#{remixable_module} is not remixable"
           end
-          
+
           #Merge defaults/options
           options = {
             :as         => nil,
@@ -169,7 +169,7 @@ module DataMapper
             DataMapper.logger.info "Generating Remixed Model: #{options[:class_name]}"
             model = generate_remixed_model(remixable_module, options)
 
-            # map the remixable to the remixed model            
+            # map the remixable to the remixed model
             # since this will be used from 'enhance api' i think it makes perfect sense to
             # always refer to a remixable by its demodulized snake_cased constant name
             remixable_key = Extlib::Inflection.demodulize(remixable_module.name).snake_case.to_sym
@@ -232,7 +232,7 @@ module DataMapper
         #       belongs_to :bot
         #       belongs_to :tag
         #     end
-        
+
         def enhance(remixable,remixable_model=nil, &block)
           # always use innermost singular snake_cased constant name
           remixable_name = remixable.to_s.singular.snake_case.to_sym
@@ -241,7 +241,7 @@ module DataMapper
           else
             Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
           end
-          
+
           model = @remixables[remixable_name][class_name][:model] unless @remixables[remixable_name][class_name].nil?
 
           unless model.nil?
@@ -264,19 +264,19 @@ module DataMapper
             alias #{options[:as].to_sym}= #{options[:table_name].to_sym}=
           EOS
         end
-        
+
         # - populate_remixables_mapping
         # ==== Description
         #   Populates the Hash of remixables with information about the remixable
         # ==== Parameters
-        #   remixable 
+        #   remixable
         #   options <Hash> options hash
         def populate_remixables_mapping(remixable_model, options)
           key = options[:remixable_key]
           accessor_name = options[:as] ? options[:as] : options[:table_name]
-          @remixables[key] ||= {}              
+          @remixables[key] ||= {}
           model_key = Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
-          @remixables[key][model_key] ||= {}            
+          @remixables[key][model_key] ||= {}
           @remixables[key][model_key][:reader] ||= accessor_name.to_sym
           @remixables[key][model_key][:writer] ||= "#{accessor_name}=".to_sym
           @remixables[key][model_key][:model] ||= remixable_model
@@ -375,7 +375,7 @@ module DataMapper
         def auto_migrate_up!(args=nil)
           DataMapper.logger.warn("Skipping auto_migrate_up! for remixable module (#{self.name})")
         end
-        
+
         def auto_migrate_down!(args=nil)
           DataMapper.logger.warn("Skipping auto_migrate_down! for remixable module (#{self.name})")
         end

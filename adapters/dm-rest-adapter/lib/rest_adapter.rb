@@ -151,7 +151,7 @@ module DataMapper
       def http_put(uri, data = nil)
         request do |http|
           request = Net::HTTP::Put.new(uri, data)
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
           http.request(request)
         end
       end
@@ -159,7 +159,7 @@ module DataMapper
       def http_post(uri, data)
         request do |http|
           request = Net::HTTP::Post.new(uri, data, {"Content-Type", "application/xml"})
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
           http.request(request)
         end
       end
@@ -167,7 +167,7 @@ module DataMapper
       def http_get(uri)
         request do |http|
           request = Net::HTTP::Get.new(uri)
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
           http.request(request)
         end
       end
@@ -175,7 +175,7 @@ module DataMapper
       def http_delete(uri)
         request do |http|
           request = Net::HTTP::Delete.new(uri)
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank? 
+          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
           http.request(request)
         end
       end

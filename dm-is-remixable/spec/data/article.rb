@@ -19,9 +19,9 @@ class Article
   remix n, :viewables, :as => "views"
 
   remix n, :commentables, :as => "comments", :for => "User"
-  
+
   remix n, "My::Nested::Remixable::Rating", :as => :ratings
-  
+
   remix n, :taggable, :as => "user_taggings", :for => "User", :class_name => "UserTagging"
 
   remix n, :taggable, :as => "bot_taggings", :for => "Bot", :class_name => "BotTagging"
@@ -29,7 +29,7 @@ class Article
   enhance :viewables do
     belongs_to :user
   end
-  
+
   enhance :taggable, "UserTagging" do
     belongs_to :user
     belongs_to :tag

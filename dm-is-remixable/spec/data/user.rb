@@ -25,7 +25,7 @@ class User
   remix n, :addressables
 
   remix n, :commentables, :as => "comments", :for => "User", :via => "commentor"
-  
+
   remix n, "My::Nested::Remixable::Rating"
 
   enhance :addressables do

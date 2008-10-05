@@ -35,7 +35,7 @@ describe "Taggable" do
     @taggable = DefaultTaggedModel.first
     @taggable.tag_list.should == valid_array
   end
-  
+
   it "should set the associated collection of tags to those whose names
       are in the tag list upon saving, creating and deleting as necessary" do
     tag1 = Tag.create!(:name => 'tag1')
@@ -54,13 +54,13 @@ describe "Taggable" do
     @taggable.tags.sort_by{|tag| tag.id}.should == [tag3, Tag.first(:name => 'tag4')]
     @taggable.skills.sort_by{|skill| skill.id}.should_not == [tag3, Tag.first(:name => 'tag4')]
   end
-  
+
   describe ".tagged_with" do
     it "should have a class method .tagged_with" do
       DefaultTaggedModel.should respond_to(:tagged_with)
       UntaggedModel.should_not respond_to(:tagged_with)
     end
-    
+
     it "should return taggables tagged with the name given in the first argument" do
       @taggable.tag_list = 'tag1, tag2, tag3'
       @taggable.save
@@ -69,7 +69,7 @@ describe "Taggable" do
       taggable.save
       DefaultTaggedModel.tagged_with('tag1').sort_by{|t| t.id}.to_a.should == [@taggable, taggable]
     end
-    
+
     it "should return taggables of the context specified by the second argument" do
       taggable1 = TaggedModel.new
       taggable2 = TaggedModel.new
@@ -82,12 +82,12 @@ describe "Taggable" do
       TaggedModel.tagged_with('tag1', :on => 'tags').should == [taggable1]
     end
   end
-  
+
   it "should have a class method .taggable? which returns true if tagging is defined, and false otherwise" do
     UntaggedModel.taggable?.should be_false
     TaggedModel.taggable?.should be_true
   end
-  
+
   it "should have an instance method #taggable? which returns the same as the instance's class would" do
     UntaggedModel.new.taggable?.should == UntaggedModel.taggable?
     UntaggedModel.new.taggable?.should be_false
