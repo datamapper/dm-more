@@ -127,12 +127,11 @@ module DataMapper
         doc = request do |http|
           http.request(build_request(query))
         end
-        if doc['rows']
-          if doc['rows'].empty?
-            Collection.new(query) { [] }
-          elsif query.view && query.model.views[query.view.to_sym].has_key?('reduce')
-            doc['rows'].map {|row| OpenStruct.new(row)}
-          else
+        if query.view && query.model.views[query.view.to_sym].has_key?('reduce')
+          doc['rows'].map {|row| OpenStruct.new(row)}
+        else
+          collection =
+          if doc['rows'] && !doc['rows'].empty?
             Collection.new(query) do |collection|
               doc['rows'].each do |doc|
                 data = doc["value"]
@@ -143,18 +142,20 @@ module DataMapper
                   )
               end
             end
+          elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
+            data = doc
+            Collection.new(query) do |collection|
+              collection.load(
+                query.fields.map do |property|
+                  property.typecast(data[property.field.to_s])
+                end
+              )
+            end
+          else
+            Collection.new(query) { [] }
           end
-        elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
-          data = doc
-          Collection.new(query) do |collection|
-            collection.load(
-              query.fields.map do |property|
-                property.typecast(data[property.field.to_s])
-              end
-            )
-          end
-        else
-          []
+          collection.total_rows = doc && doc['total_rows'] || 0
+          collection
         end
       end
 

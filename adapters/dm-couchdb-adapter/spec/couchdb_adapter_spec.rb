@@ -151,6 +151,11 @@ describe DataMapper::Adapters::CouchdbAdapter do
     User.all.length.should == 3
   end
 
+  it "should set total_rows on collection" do
+    pending("No CouchDB connection.") if @no_connection
+    User.all.total_rows.should == 3
+  end
+
   it "should get records by eql matcher" do
     pending("No CouchDB connection.") if @no_connection
     new_user(:name => "John", :age => 50).save
