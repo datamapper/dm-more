@@ -34,7 +34,7 @@ if defined?(Merb::Plugins)
   end
 
   class Merb::Orms::DataMapper::Associations < Merb::BootLoader
-    after Merb::BootLoader::LoadClasses
+    after LoadClasses
 
     def self.run
       Merb.logger.debug 'Merb::Orms::DataMapper::Associations block.'
