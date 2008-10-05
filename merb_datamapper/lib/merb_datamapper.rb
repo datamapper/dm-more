@@ -45,7 +45,7 @@ if defined?(Merb::Plugins)
         descendants.merge(model.descendants) if model.respond_to?(:descendants)
       end
       descendants.each do |model|
-        model.many_to_one_relationships.each { |r| r.child_key }
+        model.relationships.each_value { |r| r.child_key }
       end
 
       Merb.logger.debug 'Merb::Orms::DataMapper::Associations complete'
