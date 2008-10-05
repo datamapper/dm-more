@@ -32,7 +32,7 @@ describe Merb::DataMapperSession do
     @session = @session_class.generate
   end
 
-  it_should_behave_like "All session-store backends"
+#  it_should_behave_like "All session-store backends"
 
   it "should have a session_store_type class attribute" do
     @session.class.session_store_type.should == :datamapper
@@ -44,6 +44,6 @@ describe Merb::DataMapperSession, "mixed into Merb::Controller" do
 
   before(:all) { @session_class = Merb::DataMapperSession }
 
-  it_should_behave_like "All session-stores mixed into Merb::Controller"
+#  it_should_behave_like "All session-stores mixed into Merb::Controller"
 
 end
