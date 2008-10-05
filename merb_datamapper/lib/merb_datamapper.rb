@@ -33,6 +33,24 @@ if defined?(Merb::Plugins)
     end
   end
 
+  class Merb::Orms::DataMapper::Associations < Merb::BootLoader
+    after Merb::BootLoader::LoadClasses
+
+    def self.run
+      Merb.logger.debug 'Merb::Orms::DataMapper::Associations block.'
+
+      # make sure all relationships are initialized after loading
+      descendants = DataMapper::Resource.descendants.dup
+      descendants.each do |model|
+        descendants.merge(model.descendants) if model.respond_to?(:descendants)
+      end
+      descendants.each do |model|
+        model.many_to_one_relationships.each { |r| r.child_key }
+      end
+
+      Merb.logger.debug 'Merb::Orms::DataMapper::Associations complete'
+    end
+  end
 
   generators = File.join(File.dirname(__FILE__), 'generators')
   Merb.add_generators generators / 'data_mapper_model'
