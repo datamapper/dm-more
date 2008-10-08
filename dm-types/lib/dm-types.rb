@@ -18,7 +18,7 @@ require dir / 'uuid'
 require dir / 'yaml'
 require dir / 'serial'
 require dir / 'regexp'
-require dir / 'stub'
+require dir / 'slug'
 
 # this looks a little ugly, but everyone who uses dm-types shouldn't have to have ruby-bcrypt installed
 module DataMapper
