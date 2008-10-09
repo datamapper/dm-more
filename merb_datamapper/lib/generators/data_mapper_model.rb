@@ -7,6 +7,11 @@ class Merb::Generators::ModelGenerator
     return 'DateTime' if type == 'datetime'
     return type.camel_case
   end
+  
+  def after_generation
+     STDOUT.puts "\n\033[1;32m Don't forget to define the model schema in your #{file_name.capitalize} class\033[0m\n"
+  end
+  
 end
 
 Merb::Generators::ModelGenerator.template :model_datamapper, :orm => :datamapper do |t|
