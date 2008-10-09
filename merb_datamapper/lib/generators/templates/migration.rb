@@ -1,4 +1,4 @@
-migration <%= current_migration_nr + 1 %>, :<%= migration_name %>  do
+migration <%= current_migration_nr %>, :<%= migration_name %>  do
   up do
   end
 
