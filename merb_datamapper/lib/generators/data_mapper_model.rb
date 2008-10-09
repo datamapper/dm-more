@@ -9,7 +9,7 @@ class Merb::Generators::ModelGenerator
   end
   
   def after_generation
-     STDOUT.puts "\n\033[1;32m Don't forget to define the model schema in your #{file_name.capitalize} class\033[0m\n"
+     STDOUT << message("Don't forget to define the model schema in your #{file_name.capitalize} class")
   end
   
 end
