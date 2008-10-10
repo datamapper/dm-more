@@ -12,8 +12,6 @@ end
 describe DataMapper::Validate::PrimitiveValidator do
   it "should validate a property to check for the type" do
     b = Monica.new
-    p b.valid?
-    p b.errors
     b.should be_valid
 
     b.birth_date = 'ABC'

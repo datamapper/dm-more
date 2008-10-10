@@ -26,7 +26,7 @@ module DataMapper
       protected
 
       def default_error(property)
-        "%s must be of type #{property.primitive.to_s}".t(Extlib::Inflection.humanize(@field_name))
+        "%s must be of type %s".t(Extlib::Inflection.humanize(@field_name), property.primitive)
       end
 
     end # class PrimitiveValidator

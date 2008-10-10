@@ -33,8 +33,8 @@ module DataMapper
       end
 
       def default_error(property)
-        actual = boolean_type?(property) ? "nil" : "blank"
-        "%s must not be #{actual}".t(Extlib::Inflection.humanize(@field_name))
+        actual = boolean_type?(property) ? "nil".t : "blank".t
+        "%s must not be %s".t(Extlib::Inflection.humanize(@field_name), actual)
       end
 
       # Is +property+ a boolean property?

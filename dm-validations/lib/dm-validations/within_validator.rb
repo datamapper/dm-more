@@ -17,19 +17,19 @@ module DataMapper
         includes = @options[:set].include?(target.send(field_name))
         return true if includes
 
+        field_name = Extlib::Inflection.humanize(@field_name)
         if @options[:set].is_a?(Range)
           if @options[:set].first != -n && @options[:set].last != n
-            message = "%s must be between #{@options[:set].first} and #{@options[:set].last}"
+            error_message = @options[:message] || "%s must be between %s and %s".t(field_name, @options[:set].first, @options[:set].last)
           elsif @options[:set].first == -n
-            message = "%s must be less than #{@options[:set].last}"
+            error_message = @options[:message] || "%s must be less than %s".t(field_name, @options[:set].last)
           elsif @options[:set].last == n
-            message = "%s must be greater than #{@options[:set].first}"
+            error_message = @options[:message] || "%s must be greater than %s".t(field_name, @options[:set].first)
           end
         else
-          message = "%s must be one of [#{ @options[:set].join(', ')}]"
+          error_message = "%s must be one of [%s]".t(field_name, @options[:set].join(', '))
         end
 
-        error_message = @options[:message] || message.t(Extlib::Inflection.humanize(@field_name))
         add_error(target, error_message , @field_name)
         return false
       end
