@@ -29,7 +29,6 @@ gem_paths = %w[
   dm-sweatshop
   dm-types
   dm-validations
-  merb_datamapper
 ]
 
 gems = gem_paths.map { |p| File.basename(p) }
