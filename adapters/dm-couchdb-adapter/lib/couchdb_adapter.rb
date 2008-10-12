@@ -19,7 +19,6 @@ module DataMapper
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       data = {}
       for property in property_list do
-        raise PersistenceError, '+couchdb_type+ is a reserved column name', caller if property.field == 'couchdb_type'
         data[property.field] =
           if property.type.respond_to?(:dump)
             property.type.dump(property.get!(self), property)
@@ -28,7 +27,6 @@ module DataMapper
           end
       end
       data.delete(:_attachments) if data[:_attachments].nil? || data[:_attachments].empty?
-      data[:couchdb_type] = self.class.storage_name(repository.name)
       return data.to_json
     end
   end
@@ -73,13 +71,8 @@ module DataMapper
             result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json(true))
           end
           if result["ok"]
-            key = resource.class.key(self.name)
-            if key.size == 1
-              resource.instance_variable_set(
-                key.first.instance_variable_name, result["id"]
-              )
-            end
-            resource.instance_variable_set("@rev", result["rev"])
+            resource.id = result["id"]
+            resource.rev = result["rev"]
             created += 1
           end
         end
@@ -112,11 +105,8 @@ module DataMapper
           end
           result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
           if result["ok"]
-            key = resource.class.key(self.name)
-            resource.instance_variable_set(
-              key.first.instance_variable_name, result["id"])
-            resource.instance_variable_set(
-              "@rev", result["rev"])
+            resource.id = result["id"]
+            resource.rev = result["rev"]
             updated += 1
           end
         end
@@ -143,7 +133,7 @@ module DataMapper
                   )
               end
             end
-          elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
+          elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.to_s
             data = doc
             Collection.new(query) do |collection|
               collection.load(
@@ -167,7 +157,7 @@ module DataMapper
         if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
         elsif !doc['rows']
-          data = doc if doc['couchdb_type'] && doc['couchdb_type'] == query.model.storage_name(repository.name)
+          data = doc if doc['couchdb_type'] && doc['couchdb_type'] == query.model.to_s
         end
         if data
           query.model.load(
@@ -208,8 +198,8 @@ module DataMapper
               query.conditions.first[0] == :eql &&
               query.conditions.first[1].key? &&
               query.conditions.first[2] &&
-              query.conditions.first[2].length == 1
-              !query.conditions.first[2].is_a?(String)
+              (query.conditions.first[2].length == 1 ||
+              !query.conditions.first[2].is_a?(Array))
           get_request(query)
         else
           ad_hoc_request(query)
@@ -219,7 +209,7 @@ module DataMapper
       def view_request(query)
         uri = "/#{self.escaped_db_name}/" +
               "_view/" +
-              "#{query.model.storage_name(self.name)}/" +
+              "#{query.model.to_s}/" +
               "#{query.view}" +
               "#{query_string(query)}"
         request = Net::HTTP::Get.new(uri)
@@ -243,11 +233,17 @@ module DataMapper
         request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
         request["Content-Type"] = "application/json"
 
+        couchdb_type_condition = ["doc.couchdb_type == '#{query.model.to_s}'"]
+        query.model.descendants.each do |descendant|
+          couchdb_type_condition << "doc.couchdb_type == '#{descendant.to_s}'"
+        end
+        couchdb_type_conditions = "( #{couchdb_type_condition.join(' || ')} )"
+
         if query.conditions.empty?
           request.body =
 %Q({"map":
   "function(doc) {
-  if (doc.couchdb_type == '#{query.model.storage_name(self.name)}') {
+  if (#{couchdb_type_conditions}) {
     emit(#{key}, doc);
     }
   }"
@@ -277,7 +273,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (doc.couchdb_type == '#{query.model.storage_name(self.name)}' && #{conditions.join(" && ")}) {
+    if (#{couchdb_type_conditions} && #{conditions.join(' && ')}) {
       emit(#{key}, doc);
     }
   }"
@@ -344,7 +340,7 @@ module DataMapper
 
       module Migration
         def create_model_storage(repository, model)
-          uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
+          uri = "/#{self.escaped_db_name}/_design/#{model.to_s}"
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
@@ -356,7 +352,7 @@ module DataMapper
         end
 
         def destroy_model_storage(repository, model)
-          uri = "/#{self.escaped_db_name}/_design/#{model.storage_name(self.name)}"
+          uri = "/#{self.escaped_db_name}/_design/#{model.to_s}"
           response = http_get(uri)
           unless response['error']
             uri += "?rev=#{response["_rev"]}"

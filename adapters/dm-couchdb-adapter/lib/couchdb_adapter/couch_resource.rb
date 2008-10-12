@@ -13,9 +13,10 @@ module DataMapper
         include DataMapper::Resource
         include DataMapper::CouchResource::Attachments
 
+        property :attachments, DataMapper::Types::JsonObject, :field => :_attachments
         property :id, String, :key => true, :field => :_id
         property :rev, String, :field => :_rev
-        property :attachments, DataMapper::Types::JsonObject, :field => :_attachments
+        property :couchdb_type, DataMapper::Types::Discriminator
 
         def self.default_repository_name
           :couch

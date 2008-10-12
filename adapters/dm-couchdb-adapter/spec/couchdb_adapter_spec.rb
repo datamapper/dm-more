@@ -12,9 +12,9 @@ class User
   property :location, JsonObject
 
   # creates methods for accessing stored/indexed views in the CouchDB database
-  view :by_name, { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(doc.name, doc); } }" }
-  view :by_age,  { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(doc.age, doc); } }" }
-  view :count,   { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(null, 1); } }",
+  view :by_name, { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(doc.name, doc); } }" }
+  view :by_age,  { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(doc.age, doc); } }" }
+  view :count,   { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(null, 1); } }",
                     "reduce" => "function(keys, values) { return sum(values); }" }
 
   belongs_to :company
@@ -68,7 +68,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
       user_with_id = User.new(:name => 'user with id')
       user_with_id.id = 'user_id'
       user_with_id.save.should == true
-      User.get!('user_id').should == user_with_id
+      User.get!('user_id', :repository => :couch).should == user_with_id
       user_with_id.destroy.should be_true
     end
 
@@ -220,7 +220,7 @@ describe DataMapper::Adapters::CouchdbAdapter do
     it "should override default type" do
       person = Person.new(:name => 'Bob')
       person.save.should be_true
-      Person.first.type.should == Person
+      Person.first.couchdb_type.should == Person
       person.destroy.should be_true
     end
 
@@ -229,11 +229,6 @@ describe DataMapper::Adapters::CouchdbAdapter do
       employee.save.should be_true
       Person.all.include?(employee).should be_true
       employee.destroy.should be_true
-    end
-
-    it "should raise an error if you have a column named couchdb_type" do
-      broken = Broken.new(:name => 'error')
-      lambda { broken.save }.should raise_error(DataMapper::PersistenceError)
     end
   end
 end
