@@ -5,12 +5,6 @@ module DataMapper
 end
 
 module DataMapper
-  class Collection
-    attr_accessor :total_rows
-  end
-end
-
-module DataMapper
   module CouchResource
     class View
       attr_reader :model, :name

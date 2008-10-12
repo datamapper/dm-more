@@ -1,7 +1,14 @@
 module DataMapper
+  class Collection
+    attr_accessor :total_rows
+  end
+end
+
+module DataMapper
   module CouchResource
 
     def self.included(mod)
+
       mod.class_eval do
         include DataMapper::Resource
         include DataMapper::CouchResource::Attachments
