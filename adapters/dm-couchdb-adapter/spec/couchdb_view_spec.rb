@@ -7,7 +7,7 @@ class Viewable
   property :open, TrueClass
 end
 
-describe DataMapper::View do
+describe DataMapper::CouchResource::View do
   it "should have a view method" do
     Viewable.should respond_to(:view)
   end
@@ -19,7 +19,7 @@ describe DataMapper::View do
 
   it "should initialize a new Procedure instance" do
     proc = Viewable.view :by_name_desc
-    proc.should be_an_instance_of(DataMapper::View)
+    proc.should be_an_instance_of(DataMapper::CouchResource::View)
   end
 
   it "should create a getter method" do
