@@ -61,7 +61,7 @@ describe DataMapper::Model do
       @message.attachments.should == {
         'test.txt' => {
           'content_type' => 'text/plain',
-          'data' => Base64.encode64('test string').chomp
+          'data' => Base64.encode64("test string\n").chomp
         }
       }
     end
@@ -127,7 +127,7 @@ describe DataMapper::Model do
       @message.add_attachment(@file, :name => 'test.txt')
       @message.save.should be_true
       @message.reload
-      @message.get_attachment('test.txt').should == 'test string'
+      @message.get_attachment('test.txt').should == "test string\n"
       @message.destroy.should be_true
     end
 
