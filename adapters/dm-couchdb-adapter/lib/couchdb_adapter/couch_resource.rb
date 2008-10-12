@@ -4,6 +4,7 @@ module DataMapper
     def self.included(mod)
       mod.class_eval do
         include DataMapper::Resource
+        include DataMapper::CouchResource::Attachments
 
         property :id, String, :key => true, :field => :_id
         property :rev, String, :field => :_rev

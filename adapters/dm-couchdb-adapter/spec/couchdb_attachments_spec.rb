@@ -25,16 +25,6 @@ describe DataMapper::Model do
     @file.close
   end
 
-  it "should raise an error on models without attachments property" do
-    lambda { NonCouch.new.add_attachment(@file) }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
-    lambda { NonCouch.new.get_attachment('testfile') }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
-  end
-
-  it "should not raise an error on models with attachments property" do
-    Message.new.add_attachment(@file)
-    Message.new.get_attachment('testfile')
-  end
-
   describe "#add_attachment" do
 
     it "should add inline attributes to new records" do
