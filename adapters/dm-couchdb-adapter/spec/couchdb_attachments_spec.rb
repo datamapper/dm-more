@@ -90,8 +90,9 @@ describe DataMapper::Model do
       @message.attachments.should_not be_nil
       @message.delete_attachment('test.txt').should be_true
       @message.attachments.should be_nil
-      @message.reload
+      @message = Message.get(@message.id)
       @message.attachments.should be_nil
+      @message.destroy.should be_true
     end
 
   end
