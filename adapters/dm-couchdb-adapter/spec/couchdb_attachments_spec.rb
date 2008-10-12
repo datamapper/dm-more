@@ -1,51 +1,33 @@
+require File.join(File.dirname(__FILE__), 'spec_helper.rb')
+
 require 'base64'
 require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
 
-DataMapper.setup(
-  :default,
-  Addressable::URI.parse("couchdb://localhost:5984/test_cdb_adapter")
-)
-
-class Zoo
+class NonCouch
   include DataMapper::Resource
+
+  property :id, Serial
 end
 
 class Message
-  include DataMapper::Resource
+  include DataMapper::CouchResource
 
-  property :id, String, :key => true, :field => :_id
-  property :rev, String, :field => :_rev
-  property :attachments, JsonObject, :field => :_attachments
   property :content, String
-
 end
 
 describe DataMapper::Model do
-  before :all do
-    @adapter = DataMapper::Repository.adapters[:couchdb]
-    @no_connection = false
-    unless @no_connection
-      begin
-        @adapter.send(:http_put, "/#{@adapter.escaped_db_name}")
-        DataMapper.auto_migrate!
-      rescue Errno::ECONNREFUSED
-        @no_connection = true
-      end
-    end
 
-    @file = File.new(Pathname(__FILE__).dirname.expand_path + "testfile.txt", "r")
+  before(:each) do
+    @file = File.open(Pathname(__FILE__).dirname.expand_path + "testfile.txt", "r")
   end
 
-  after :all do
-    unless @no_connection
-      @adapter.send(:http_delete, "/#{@adapter.escaped_db_name}")
-    end
+  after(:each) do
+    @file.close
   end
 
   it "should raise an error on models without attachments property" do
-    lambda { Zoo.new.add_attachment(@file) }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
-    lambda { Zoo.new.get_attachment('testfile') }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
+    lambda { NonCouch.new.add_attachment(@file) }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
+    lambda { NonCouch.new.get_attachment('testfile') }.should raise_error(ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'")
   end
 
   it "should not raise an error on models with attachments property" do

@@ -8,6 +8,7 @@ require 'ostruct'
 require 'net/http'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/attachments'
+require Pathname(__FILE__).dirname + 'couchdb_adapter/couch_resource'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/json_object'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 
