@@ -7,7 +7,7 @@ class Object
 
 end
 
-English::Inflect.rule 'ess', 'esses'
+Extlib::Inflection.rule 'ess', 'esses'
 
 module DataMapper
   module Is
