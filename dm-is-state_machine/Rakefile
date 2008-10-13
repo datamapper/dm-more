@@ -12,7 +12,7 @@ GEM_NAME = "dm-is-state_machine"
 GEM_VERSION = DataMapper::Is::StateMachine::VERSION
 GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
 GEM_CLEAN = ["log", "pkg"]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.markdown LICENSE TODO ] }
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt README.markdown LICENSE TODO ] }
 
 PROJECT_NAME = "datamapper"
 PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/dm-is-state_machine"
