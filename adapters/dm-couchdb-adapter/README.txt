@@ -54,5 +54,5 @@ You could then call User.by_name to get a listing of users ordered by name, or p
 # TODO: add details about other view options
 
 == Example
-To see a working example of how to use this functionality checkout muddle, my merb based tumblelog that uses this adapter to save its posts, at:
+For a working example of this functionality checkout muddle, my merb based tumblelog, which uses this adapter to save its posts, at:
 http://github.com/monki/muddle
