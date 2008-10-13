@@ -230,5 +230,13 @@ describe DataMapper::Adapters::CouchdbAdapter do
       Person.all.include?(employee).should be_true
       employee.destroy.should be_true
     end
+
+    it "should be able to get children from parent.get" do
+      employee = Employee.new(:name => 'Bob', :rank => 'Peon')
+      employee.save.should be_true
+      Person.get(employee.id).should_not be_nil
+      employee.destroy.should be_true
+    end
+
   end
 end

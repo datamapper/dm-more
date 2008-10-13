@@ -14,7 +14,7 @@ module DataMapper
         include DataMapper::CouchResource::Attachments
 
         property :attachments, DataMapper::Types::JsonObject, :field => :_attachments
-        property :id, String, :key => true, :field => :_id
+        property :id, String, :key => true, :field => :_id, :nullable => true
         property :rev, String, :field => :_rev
         property :couchdb_type, DataMapper::Types::Discriminator
 

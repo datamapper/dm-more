@@ -133,7 +133,8 @@ module DataMapper
                   )
               end
             end
-          elsif doc['couchdb_type'] && doc['couchdb_type'] == query.model.to_s
+          elsif doc['couchdb_type'] &&
+                  (query.model.descendants.collect {|descendant| descendant.to_s} | [query.model.to_s]).include?(doc['couchdb_type'])
             data = doc
             Collection.new(query) do |collection|
               collection.load(
@@ -156,8 +157,10 @@ module DataMapper
         end
         if doc['rows'] && !doc['rows'].empty?
           data = doc['rows'].first['value']
-        elsif !doc['rows']
-          data = doc if doc['couchdb_type'] && doc['couchdb_type'] == query.model.to_s
+        elsif !doc['rows'] &&
+                doc['couchdb_type'] &&
+                (query.model.descendants.collect {|descendant| descendant.to_s} | [query.model.to_s]).include?(doc['couchdb_type'])
+          data = doc
         end
         if data
           query.model.load(
