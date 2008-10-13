@@ -34,14 +34,15 @@ module DataMapper
 
           def view(name, body = nil)
             @views ||= Hash.new { |h,k| h[k] = {} }
-            proc = View.new(self, name)
-            @views[repository.name][name] = body
-            proc
+            view = View.new(self, name)
+            @views[repository.name][name] = Proc.new { body }
+            view
           end
 
           def views(repository_name = default_repository_name)
             @views ||= Hash.new { |h,k| h[k] = {} }
-            @views[repository_name]
+            views = @views[repository_name].dup
+            views.each_pair {|key, value| views[key] = value.call}
           end
 
         end
