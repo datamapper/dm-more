@@ -3,12 +3,29 @@ module DataMapper
     module StateMachine
       module Data
 
-        # Represents one state machine
+        # This Machine class represents one state machine.
+        #
+        # A model (i.e. a DataMapper resource) can have more than one Machine.
         class Machine
 
-          attr_reader :column, :initial
+          # The property of the DM resource that will hold this Machine's
+          # state.
+          #
+          # TODO: change :column to :property
+          attr_accessor :column
+          
+          # The initial value of this Machine's state
+          attr_accessor :initial
+          
+          # The current value of this Machine's state
+          #
+          # This is the "primary control" of this Machine's state.  All
+          # other methods key off the value of @current_state_name.
           attr_accessor :current_state_name
-          attr_accessor :events, :states
+
+          attr_accessor :events
+          
+          attr_accessor :states
 
           def initialize(column, initial)
             @column, @initial   = column, initial
@@ -27,14 +44,18 @@ module DataMapper
                t[:from].to_s == @current_state_name.to_s
             end
             unless transition
-              raise InvalidEvent, "Event (#{event_name.inspect}) does " +
-              "not exist for current state (#{@current_state_name.inspect})"
+              raise InvalidEvent, "Event (#{event_name.inspect}) does not" +
+              "exist for current state (#{@current_state_name.inspect})"
             end
+
+            # == Run :exit hook (if present) ==
+            resource.run_hook_if_present current_state.options[:exit]
+
+            # == Change the current_state ==
             @current_state_name = transition[:to]
 
-            # ===== Call :enter Proc if present =====
-            return unless enter_proc = current_state.options[:enter]
-            enter_proc.call(resource)
+            # == Run :enter hook (if present) ==
+            resource.run_hook_if_present current_state.options[:enter]
           end
 
           # Return the current state

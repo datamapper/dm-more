@@ -48,6 +48,17 @@ module DataMapper
             machine.fire_event(name, self)
             send(:"#{column}=", machine.current_state_name)
           end
+          
+          # Possible alternative to the above:
+          # (class_eval is typically faster than define_method)
+          #
+          # self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          #   def #{name}!
+          #     machine.current_state_name = self.send(:"#{column}")
+          #     machine.fire_event(name, self)
+          #     self.send(:"#{column}="), machine.current_state_name
+          #   end
+          # RUBY
 
           yield if block_given?
 

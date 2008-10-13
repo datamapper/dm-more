@@ -1,6 +1,7 @@
 History.txt
 LICENSE
 Manifest.txt
+README.markdown
 README.txt
 Rakefile
 TODO
@@ -16,10 +17,12 @@ spec/examples/invalid_events.rb
 spec/examples/invalid_states.rb
 spec/examples/invalid_transitions_1.rb
 spec/examples/invalid_transitions_2.rb
+spec/examples/slot_machine.rb
 spec/examples/traffic_light.rb
 spec/integration/invalid_events_spec.rb
 spec/integration/invalid_states_spec.rb
 spec/integration/invalid_transitions_spec.rb
+spec/integration/slot_machine_spec.rb
 spec/integration/traffic_light_spec.rb
 spec/spec.opts
 spec/spec_helper.rb

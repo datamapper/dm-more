@@ -39,13 +39,14 @@ module DataMapper
         @is_state_machine = { :machine => machine }
 
         # ===== Define callbacks =====
-        before :save do
-          if self.new_record?
-            # ...
-          else
-            # ...
-          end
-        end
+        # TODO: define callbacks
+        # before :save do
+        #   if self.new_record?
+        #     # ...
+        #   else
+        #     # ...
+        #   end
+        # end
 
         before :destroy do
           # Do we need to do anything here?
@@ -63,12 +64,12 @@ module DataMapper
       protected
 
       def push_state_machine_context(label)
-        ((@is_state_machine ||= {})[:context] ||= []) << label
+        @is_state_machine ||= {}
+        @is_state_machine[:context] ||= []
+        @is_state_machine[:context] << label
 
-        # Less DRY, though more readable to some
-        # @is_state_machine ||= {}
-        # @is_state_machine[:context] ||= []
-        # @is_state_machine[:context] << label
+        # Compacted, but barely readable for humans
+        # ((@is_state_machine ||= {})[:context] ||= []) << label
       end
 
       def pop_state_machine_context
@@ -84,13 +85,22 @@ module DataMapper
 
         def initialize(*args)
           super
-          # ===== Call :enter Proc if present =====
+          # ===== Run :enter hook if present =====
           return unless is_sm = self.class.instance_variable_get(:@is_state_machine)
           return unless machine = is_sm[:machine]
           return unless initial = machine.initial
           return unless initial_state = machine.find_state(initial)
-          return unless enter_proc = initial_state.options[:enter]
-          enter_proc.call(self)
+          run_hook_if_present initial_state.options[:enter]
+        end
+        
+        # hook may be either a Proc or symbol
+        def run_hook_if_present(hook)
+          return unless hook
+          if hook.respond_to?(:call)
+            hook.call(self)
+          else
+            self.send(hook)
+          end
         end
 
       end # InstanceMethods

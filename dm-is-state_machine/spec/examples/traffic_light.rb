@@ -1,4 +1,4 @@
-# A valid example of a resource with a state machine.
+# A valid example
 class TrafficLight
   include DataMapper::Resource
 
