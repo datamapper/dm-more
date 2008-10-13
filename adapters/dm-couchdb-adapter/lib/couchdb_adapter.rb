@@ -134,7 +134,7 @@ module DataMapper
               end
             end
           elsif doc['couchdb_type'] &&
-                ([query.model.base_model] | query.model.descendants).collect {|descendant| descendant.to_s}.include?(doc['couchdb_type'])
+                query.model.couchdb_types.collect {|type| type.to_s}.include?(doc['couchdb_type'])
             data = doc
             Collection.new(query) do |collection|
               collection.load(
@@ -159,7 +159,7 @@ module DataMapper
           data = doc['rows'].first['value']
         elsif !doc['rows'] &&
                 doc['couchdb_type'] &&
-                ([query.model.base_model] | query.model.descendants).collect {|descendant| descendant.to_s}.include?(doc['couchdb_type'])
+                query.model.couchdb_types.collect {|type| type.to_s}.include?(doc['couchdb_type'])
             data = doc
         end
         if data
@@ -212,7 +212,7 @@ module DataMapper
       def view_request(query)
         uri = "/#{self.escaped_db_name}/" +
               "_view/" +
-              "#{query.model.to_s}/" +
+              "#{query.model.base_model.to_s}/" +
               "#{query.view}" +
               "#{query_string(query)}"
         request = Net::HTTP::Get.new(uri)
@@ -240,7 +240,7 @@ module DataMapper
         query.model.descendants.each do |descendant|
           couchdb_type_condition << "doc.couchdb_type == '#{descendant.to_s}'"
         end
-        couchdb_type_conditions = "( #{couchdb_type_condition.join(' || ')} )"
+        couchdb_type_conditions = couchdb_type_condition.join(' || ')
 
         if query.conditions.empty?
           request.body =
@@ -276,7 +276,7 @@ module DataMapper
           request.body =
 %Q({"map":
   "function(doc) {
-    if (#{couchdb_type_conditions} && #{conditions.join(' && ')}) {
+    if ((#{couchdb_type_conditions}) && #{conditions.join(' && ')}) {
       emit(#{key}, doc);
     }
   }"
@@ -343,7 +343,7 @@ module DataMapper
 
       module Migration
         def create_model_storage(repository, model)
-          uri = "/#{self.escaped_db_name}/_design/#{model.to_s}"
+          uri = "/#{self.escaped_db_name}/_design/#{model.base_model.to_s}"
           view = Net::HTTP::Put.new(uri)
           view['content-type'] = "text/javascript"
           views = model.views.reject {|key, value| value.nil?}
@@ -355,7 +355,7 @@ module DataMapper
         end
 
         def destroy_model_storage(repository, model)
-          uri = "/#{self.escaped_db_name}/_design/#{model.to_s}"
+          uri = "/#{self.escaped_db_name}/_design/#{model.base_model.to_s}"
           response = http_get(uri)
           unless response['error']
             uri += "?rev=#{response["_rev"]}"

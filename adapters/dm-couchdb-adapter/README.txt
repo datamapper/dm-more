@@ -44,9 +44,15 @@ class User
   include DataMapper::Resource
 
   property :name, String
-  view :by_name, { "map" => "function(doc) { if (doc.couchdb_type == 'user') { emit(doc.name, doc); } }" }
+  view :by_name_only_this_model, { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(doc.name, doc); } }" }
 end
+
+couchdb_types_condition builds a condition for you if you want a view that checks to see if the couchdb_type of the record is that of the current model or any of its descendants, just load your models and run Model.couchdb_types_condition and copy/paste the output as the condition in the models view.  I will be making this smoother/cleaner, as I need to reimplement view handling.
 
 You could then call User.by_name to get a listing of users ordered by name, or pass a key to try and find a specific user by their name, ie User.by_name(:key => 'username').
 
 # TODO: add details about other view options
+
+== Example
+To see a working example of how to use this functionality checkout muddle, my merb based tumblelog that uses this adapter to save its posts, at:
+http://github.com/monki/muddle

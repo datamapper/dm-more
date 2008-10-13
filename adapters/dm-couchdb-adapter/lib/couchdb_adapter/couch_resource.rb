@@ -18,11 +18,19 @@ module DataMapper
         property :rev, String, :field => :_rev
         property :couchdb_type, DataMapper::Types::Discriminator
 
-        def self.default_repository_name
-          :couch
-        end
-
         class << self
+
+          def default_repository_name
+            :couch
+          end
+
+          def couchdb_types
+            [self.base_model] | self.descendants
+          end
+
+          def couchdb_types_condition
+            couchdb_types.collect {|type| "doc.couchdb_type == '#{type}'"}.join(' || ')
+          end
 
           def view(name, body = nil)
             @views ||= Hash.new { |h,k| h[k] = {} }
