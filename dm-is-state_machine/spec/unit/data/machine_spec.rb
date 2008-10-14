@@ -87,11 +87,17 @@ describe DataMapper::Is::StateMachine::Data::Machine do
       @machine.find_event(:turn_on).should == @turn_on
     end
 
-    it "#fire_event should work" do
-      @machine.fire_event(:turn_on, nil)
+    it "#fire_event should change state" do
+      resource = mock("resource")
+      resource.should_receive(:run_hook_if_present).exactly(2).times.with(nil)
+      @machine.fire_event(:turn_on, resource)
       @machine.current_state.should == @on_state
       @machine.current_state_name.should == :on
     end
+    
   end
+
+  # TODO: spec fire_event where :run_hook_if_present fires two times,
+  # but with :enter the first and :exit the second.
 
 end
