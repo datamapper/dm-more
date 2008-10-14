@@ -1,3 +1,5 @@
+# TODO: Debug logging
+
 require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'

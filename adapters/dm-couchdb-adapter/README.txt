@@ -38,13 +38,14 @@ Special consideration has been made to work with CouchDB views.
 You should do ALL queries you'll be repeating this way, doing 'User.all(:something => 'this)' will work, but it is much slower and more inefficient than running views you already created.
 You define them in the model with the view function and use Model.auto_migrate! to add the views for that Model to the database, or DataMapper.auto_migrate! to add the views for all models to the database.
 
-An example class with a view:
+An example class with views:
 
 class User
   include DataMapper::Resource
 
   property :name, String
   view :by_name_only_this_model, { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(doc.name, doc); } }" }
+  view :by_name_with_descendants, { "map" => "function(doc) { if (#{}) { emit(doc.name, doc); } }" }
 end
 
 couchdb_types_condition builds a condition for you if you want a view that checks to see if the couchdb_type of the record is that of the current model or any of its descendants, just load your models and run Model.couchdb_types_condition and copy/paste the output as the condition in the models view.  I will be making this smoother/cleaner, as I need to reimplement view handling.
