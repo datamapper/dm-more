@@ -53,12 +53,13 @@ module DataMapper
     def perform_up
       result = nil
       if needs_up?
-        database.transaction.commit do
+        # TODO: fix this so it only does transactions for databases that support create/drop
+        # database.transaction.commit do
           say_with_time "== Performing Up Migration ##{position}: #{name}", 0 do
             result = @up_action.call
           end
           update_migration_info(:up)
-        end
+        # end
       end
       result
     end
@@ -67,12 +68,13 @@ module DataMapper
     def perform_down
       result = nil
       if needs_down?
-        database.transaction.commit do
+        # TODO: fix this so it only does transactions for databases that support create/drop
+        # database.transaction.commit do
           say_with_time "== Performing Down Migration ##{position}: #{name}", 0 do
             result = @down_action.call
           end
           update_migration_info(:down)
-        end
+        # end
       end
       result
     end
