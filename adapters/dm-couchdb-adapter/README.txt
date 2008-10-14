@@ -45,7 +45,7 @@ class User
 
   property :name, String
   view :by_name_only_this_model, { "map" => "function(doc) { if (doc.couchdb_type == 'User') { emit(doc.name, doc); } }" }
-  view :by_name_with_descendants, { "map" => "function(doc) { if (#{}) { emit(doc.name, doc); } }" }
+  view :by_name_with_descendants, { "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }
 end
 
 couchdb_types_condition builds a condition for you if you want a view that checks to see if the couchdb_type of the record is that of the current model or any of its descendants, just load your models and run Model.couchdb_types_condition and copy/paste the output as the condition in the models view.  I will be making this smoother/cleaner, as I need to reimplement view handling.
