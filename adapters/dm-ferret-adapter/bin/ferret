@@ -56,9 +56,6 @@ else
     end
     STDERR.reopen options[:log_file], "a"
 
-    STDOUT.puts "Starting server."
-    STDOUT.flush
-
     # Remove the PID file at exit
     at_exit { File.unlink(options[:pid_file]) if options[:pid_file] }
 
@@ -66,14 +63,22 @@ else
     File.open(options[:pid_file], "w") { |f| f.write(Process.pid) }
 
     if options[:local]
+
+      # We restrict this connections to local ones
       acl = ACL.new %w[ 
         deny all 
         allow 127.0.0.1 
       ]
       DRb.install_acl acl
+
+      # And we start the service on 127.0.0.1, instead of the hostname.
+      DRb.start_service "druby://127.0.0.1:0"
+    else
+      DRb.start_service
     end
 
-    DRb.start_service
+    STDOUT.puts "Server started at #{DRb.uri}"
+    STDOUT.flush
 
     tuple_space = Rinda::TupleSpace.new
 
