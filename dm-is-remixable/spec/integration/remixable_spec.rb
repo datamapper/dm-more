@@ -131,6 +131,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       account.should respond_to("expiration")
     end
 
+    it "should clone hooks from the Remixable Module to the Remixed Model" do
+      article = Article.new
+      article.pics = (@pic = ArticleImage.new)
+
+      @pic.should_receive(:run_hook_method).once
+      article.save
+    end
+
     it "should copy validation contexts from the Remixable Module to the Remixed Model" do
       ArticleComment.validators.contexts.should have_key(:default)
       ArticleComment.validators.contexts.should have_key(:publish)

@@ -7,6 +7,11 @@ module Image
   property :description,  String
   property :path,         String
 
+  after :save, :run_hook_method
+
+  def run_hook_method
+  end
+
   # These methods will be available to the class remixing this module
   #   If 'User' remixes 'Images', these methods will be available to a User class
   #
@@ -42,4 +47,5 @@ module Image
       'INSTANCE METHOD FOR REMIXEE'
     end
   end
+
 end

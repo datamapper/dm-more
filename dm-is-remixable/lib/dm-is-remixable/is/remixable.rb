@@ -393,11 +393,26 @@ module DataMapper
             model.send :include, Object.full_const_get("#{remixable}::RemixeeInstanceMethods")
           end
 
+          clone_hooks(remixable, model)
+
           model
         end
 
         def belongs_to_name(class_name)
           class_name.underscore.gsub(/\//, '_').to_sym
+        end
+
+      private
+
+        def clone_hooks(remixable, model)
+          # event name is by default :create, :destroy etc
+          remixable.instance_hooks.map do |event_name, hooks|
+            [:after, :before].each do |callback|
+              hooks[callback].each do |hook|
+                model.send(callback, event_name, hook[:name])
+              end
+            end
+          end
         end
 
       end # RemixerClassMethods
