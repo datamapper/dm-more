@@ -43,42 +43,45 @@ describe DataMapper::Validate::FormatValidator do
     bol.should be_valid
   end
 
-  it 'should have a pre-defined e-mail format' do
-    bad = [ '-- guy --@example.com',    # spaces are invalid unless quoted
-            '[guy]@example.com',        # square brackets are invalid unless quoted
-            '.guy@example.com',         # local part cannot start with .
-            'guy@example 10:10',
-            'guy@ example dot com',
-            'guy'
-          ]
+  describe "RFC2822 compatible email addresses" do
+    before do
+      @bol = BillOfLading.new(valid_attributes.except(:email))
 
-    good = [
-            '+1~1+@example.com',
-            '{_guy_}@example.com',
-            '"[[ guy ]]"@example.com',
-            'guy."guy"@example.com',
-            'guy@localhost',
-            'guy@example.com',
-            'guy@example.co.uk',
-            'guy@example.co.za',
-            'guy@[187.223.45.119]',
-            'guy@123.com'
-           ]
+      @valid_email_addresses = [
+        '+1~1+@example.com',
+        '{_dave_}@example.com',
+        '"[[ dave ]]"@example.com',
+        'dave."dave"@example.com',
+        'test@localhost',
+        'test@example.com',
+        'test@example.co.uk',
+        'test@example.com.br',
+        '"J. P. \'s-Gravezande, a.k.a. The Hacker!"@example.com',
+        'me@[187.223.45.119]',
+        'someone@123.com',
+        'simon&garfunkel@songs.com'
+      ]
 
-    bol = BillOfLading.new(valid_attributes.except(:email))
-    bol.should_not be_valid
-    bol.errors.on(:email).should include('Email has an invalid format')
-
-    bad.map do |e|
-      bol.email = e
-      bol.valid?
-      bol.errors.on(:email).should include('Email has an invalid format')
+      @invalid_email_addresses = [
+        '-- dave --@example.com',
+        '[dave]@example.com',
+        '.dave@example.com',
+        'Max@Job 3:14',
+        'Job@Book of Job',
+        'J. P. \'s-Gravezande, a.k.a. The Hacker!@example.com'
+      ]
     end
 
-    good.map do |e|
-      bol.email = e
-      bol.valid?
-      bol.errors.on(:email).should be_nil
+    it "should match the RFC reference addresses" do
+      @valid_email_addresses.each do |email|
+        email.should =~ DataMapper::Validate::Format::Email::EmailAddress
+      end
+    end
+
+    it "should not be valid" do
+      @invalid_email_addresses.each do |email|
+        email.should_not =~ DataMapper::Validate::Format::Email::EmailAddress
+      end
     end
 
   end

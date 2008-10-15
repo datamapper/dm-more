@@ -9,6 +9,7 @@ module DataMapper
           )
         end
 
+        # RFC2822 (No attribution reference available)
         EmailAddress = begin
             alpha = "a-zA-Z"
             digit = "0-9"
