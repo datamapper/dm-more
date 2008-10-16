@@ -37,13 +37,16 @@ module DataMapper
       private
 
       def connect_to_remote_index
-        if @uri.host == "localhost"
+        if @uri.host == "localhost" # DataMapper.setup :search, "ferret://localhost/<service>"
+
           # Rinda::RingFinger.new(nil) uses a broadcast list of just ["localhost"], and will
           # find only local Rinda broadcasts.
           finger = Rinda::RingFinger.new(nil)
 
           @service = @uri.path[1..-1]
-        else
+
+        else # DataMapper.setup :search, "ferret://<service>"
+
           # Rinda::RingFinger.new defaults to a broadcast list of ["<broadcast>", "localhost"],
           # and thus will find any public or local Rinda broadcast.
           finger = Rinda::RingFinger.new
