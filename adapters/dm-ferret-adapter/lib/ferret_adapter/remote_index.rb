@@ -63,7 +63,10 @@ module DataMapper
           end
         end
 
-        raise IndexNotFound.new("Your remote index server is not running.") unless @index
+        raise unless @index
+
+      rescue RuntimeError
+        raise IndexNotFound.new("Your remote index server is not running.")
       end
 
     end
