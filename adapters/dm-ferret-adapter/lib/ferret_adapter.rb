@@ -13,10 +13,10 @@ module DataMapper
     class FerretAdapter < AbstractAdapter
       def initialize(name, uri_or_options)
         super
-        if @uri.path[0, 1] == ":"
-          @index = RemoteIndex.new(@uri)
-        else
+        if @uri.host.empty?
           @index = LocalIndex.new(@uri)
+        else
+          @index = RemoteIndex.new(@uri)
         end
       end
 

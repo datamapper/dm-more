@@ -2,6 +2,9 @@ module DataMapper
   module Adapters
     class FerretAdapter::RemoteIndex
 
+      class IndexNotFound < Exception; end
+      class SearchError < Exception; end
+
       attr_accessor :uri
 
       def initialize(uri)
@@ -26,7 +29,7 @@ module DataMapper
         @index.write [:search, DRb.uri, tuple]
         result = @index.take([:search_result, DRb.uri, tuple, nil]).last
         if result == nil
-          raise "An error occurred performing this search. Check the Ferret logs."
+          raise SearchError.new("An error occurred performing this search. Check the Ferret logs.")
         end
         result
       end
@@ -34,17 +37,30 @@ module DataMapper
       private
 
       def connect_to_remote_index
-        @server = Rinda::RingFinger.primary
-        services = @server.read_all [:name, nil, nil, nil]
+        if @uri.host == "localhost"
+          # Rinda::RingFinger.new(nil) uses a broadcast list of just ["localhost"], and will
+          # find only local Rinda broadcasts.
+          finger = Rinda::RingFinger.new(nil)
 
-        if services.detect { |service| service[3] == @uri.path }
-          tuple_space = @server.read([:name, :TupleSpace, nil, @uri.path])[2]
-          @index = Rinda::TupleSpaceProxy.new tuple_space
+          @service = @uri.path[1..-1]
         else
-          raise
+          # Rinda::RingFinger.new defaults to a broadcast list of ["<broadcast>", "localhost"],
+          # and thus will find any public or local Rinda broadcast.
+          finger = Rinda::RingFinger.new
+
+          @service = @uri.host
         end
-      rescue
-        raise "Your remote index server is not running."
+
+        finger.each do |server|
+          services = server.read_all [:name, nil, nil, nil]
+
+          if services.detect { |service| service[3] == @service }
+            tuple_space = server.read([:name, :TupleSpace, nil, @service])[2]
+            break @index = Rinda::TupleSpaceProxy.new(tuple_space)
+          end
+        end
+
+        raise IndexNotFound.new("Your remote index server is not running.") unless @index
       end
 
     end

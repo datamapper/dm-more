@@ -4,28 +4,25 @@ require "dm-core"
 require "ferret_adapter"
 
 require "fileutils"
-require "drb/acl"
 require "rinda/ring"
 require "rinda/tuplespace"
 require "optparse"
 
 options = {
-  :name => ":ferret_index:",
+  :name => "ferret_index",
   :index => Dir.pwd + "/index",
   :pid_file => "tmp/ferret.pid",
   :log_file => "log/ferret.log",
-  :log_level => :error,
-  :local => true
+  :log_level => :error
 }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = "Usage: ferret.rb [options] start|stop"
-  opts.on("-n", "--name NAME", "The name to use for the Rinda Ring service. Defaults to ':ferret_index:'.") { |name| options[:name] = name }
+  opts.on("-n", "--name NAME", "The name to use for the Rinda Ring service. Defaults to 'ferret_index'.") { |name| options[:name] = name }
   opts.on("-P", "--pid PIDFILE", "PID file, defaults to tmp/ferret.pid") { |pid| options[:pid_file] = pid }
   opts.on("-L", "--log LOGFILE", "Log file, defaults to log/ferret.log") { |log| options[:log_file] = log }
   opts.on("-l", "--log-level LEVEL", [:debug, :error], "Log levels can be: debug, error. Default is error.") { |level| options[:log_level] = level }
   opts.on("-i", "--index INDEX", "Index path. Defaults to Dir.pwd + '/index'") { |index| options[:index] = index }
-  opts.on("--local LOCAL", "Run server as local only. Defaults to true.") { |local| options[:local] = local == "false" ? false : true }
 end
 
 unless %w(start stop).include? ARGV.last
@@ -62,20 +59,7 @@ else
     # Write the process id to the specified :pid_file
     File.open(options[:pid_file], "w") { |f| f.write(Process.pid) }
 
-    if options[:local]
-
-      # We restrict this connections to local ones
-      acl = ACL.new %w[ 
-        deny all 
-        allow 127.0.0.1 
-      ]
-      DRb.install_acl acl
-
-      # And we start the service on 127.0.0.1, instead of the hostname.
-      DRb.start_service "druby://127.0.0.1:0"
-    else
-      DRb.start_service
-    end
+    DRb.start_service
 
     STDOUT.puts "Server started at #{DRb.uri}"
     STDOUT.flush

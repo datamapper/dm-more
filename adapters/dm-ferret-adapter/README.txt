@@ -1,5 +1,20 @@
 This is a DataMapper plugin for Ferret.
 
+= Setup code
+
+For a single process site, use the ferret index directly:
+
+  DataMapper.setup :search, "ferret:///path/to/index"
+
+For a multi-process site, use the distributed index by running `ferret start`
+inside your project's directory and then setting up the :search repository:
+
+  DataMapper.setup :search, "ferret://localhost/ferret_index"
+  
+Or, if you want to find a distributed index on another box on the network, use:
+
+  DataMapper.setup :search, "ferret://ferret_index"
+
 = Sample Code
 
 require "rubygems"
