@@ -10,9 +10,6 @@ module DataMapper
       def initialize(uri)
         @uri = uri
 
-        require "rinda/ring"
-        DRb.start_service
-
         connect_to_remote_index
       end
 
@@ -37,35 +34,19 @@ module DataMapper
       private
 
       def connect_to_remote_index
-        if @uri.host == "localhost" # DataMapper.setup :search, "ferret://localhost/<service>"
+        require "drb"
+        require "drb/unix"
+        require "rinda/tuplespace"
 
-          # Rinda::RingFinger.new(nil) uses a broadcast list of just ["localhost"], and will
-          # find only local Rinda broadcasts.
-          finger = Rinda::RingFinger.new(nil)
+        DRb.start_service
+        tuple_space = DRb::DRbObject.new(nil, "drbunix://#{@uri.path}")
 
-          @service = @uri.path[1..-1]
+        # This will throw Errno::ENOENT if the socket does not exist.
+        tuple_space.respond_to?(:write)
 
-        else # DataMapper.setup :search, "ferret://<service>"
+        @index = Rinda::TupleSpaceProxy.new(tuple_space)
 
-          # Rinda::RingFinger.new defaults to a broadcast list of ["<broadcast>", "localhost"],
-          # and thus will find any public or local Rinda broadcast.
-          finger = Rinda::RingFinger.new
-
-          @service = @uri.host
-        end
-
-        finger.each do |server|
-          services = server.read_all [:name, nil, nil, nil]
-
-          if services.detect { |service| service[3] == @service }
-            tuple_space = server.read([:name, :TupleSpace, nil, @service])[2]
-            break @index = Rinda::TupleSpaceProxy.new(tuple_space)
-          end
-        end
-
-        raise unless @index
-
-      rescue RuntimeError
+      rescue Errno::ENOENT
         raise IndexNotFound.new("Your remote index server is not running.")
       end
 

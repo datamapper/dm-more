@@ -13,7 +13,7 @@ module DataMapper
     class FerretAdapter < AbstractAdapter
       def initialize(name, uri_or_options)
         super
-        if @uri.host.empty?
+        unless File.extname(@uri.path) == ".sock"
           @index = LocalIndex.new(@uri)
         else
           @index = RemoteIndex.new(@uri)

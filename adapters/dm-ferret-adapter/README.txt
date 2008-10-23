@@ -9,11 +9,7 @@ For a single process site, use the ferret index directly:
 For a multi-process site, use the distributed index by running `ferret start`
 inside your project's directory and then setting up the :search repository:
 
-  DataMapper.setup :search, "ferret://localhost/ferret_index"
-  
-Or, if you want to find a distributed index on another box on the network, use:
-
-  DataMapper.setup :search, "ferret://ferret_index"
+  DataMapper.setup :search, "ferret:///tmp/ferret_index.sock"
 
 = Sample Code
 

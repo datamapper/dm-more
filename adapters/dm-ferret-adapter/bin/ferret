@@ -4,7 +4,8 @@ require "dm-core"
 require "ferret_adapter"
 
 require "fileutils"
-require "rinda/ring"
+require "drb"
+require "drb/unix"
 require "rinda/tuplespace"
 require "optparse"
 
@@ -53,51 +54,19 @@ else
     end
     STDERR.reopen options[:log_file], "a"
 
-    DRb.start_service
+    tuple_space = Rinda::TupleSpace.new
+
+    DRb.start_service "drbunix:///tmp/#{options[:name]}.sock", tuple_space
 
     STDOUT.puts "Server started at #{DRb.uri}"
     STDOUT.flush
 
-    finger = Rinda::RingFinger.new(nil)
-    tuple_space = Rinda::TupleSpace.new
-    tuple = [:name, :TupleSpace, tuple_space, options[:name]]
-    timeout = Rinda::SimpleRenewer.new
-
-    begin
-      # We want to see if there is a local ring server running,
-      # and also make sure there aren't any services with this.
-      # name already
-      finger.each do |ring_server|
-        services = ring_server.read_all [:name, nil, nil, nil]
-        if services.detect { |service| service[3] == options[:name] }
-          STDERR.puts "Exiting... service already running."
-          STDERR.puts services.inspect
-          STDERR.flush
-          exit
-        end
-      end
-
-      # A RingServer was found, and no ring servers had a service with this name.
-      server = finger.primary
-
-      server.write(tuple, timeout)
-
-    rescue RuntimeError # rinda/ring.rb(212): raise('RingNotFound') if @primary.nil?
-
-      # No RingServer was found, so we'll start up a new one.
-      Rinda::RingServer.new(tuple_space)
-
-      server = finger.lookup_ring_any
-      server.write(tuple, timeout)
-    end
-
     # Write the process id to the specified :pid_file
     File.open(options[:pid_file], "w") { |f| f.write(Process.pid) }
 
-    # Cleanup the pid and the tuple at exit.
+    # Cleanup the pid.
     at_exit do
       File.unlink(options[:pid_file]) if options[:pid_file]
-      server.take(tuple, timeout) if server && tuple && timeout
     end
 
     uri = Addressable::URI.parse(options[:index])
