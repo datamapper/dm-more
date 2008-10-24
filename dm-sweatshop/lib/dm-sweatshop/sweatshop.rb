@@ -1,5 +1,8 @@
 module DataMapper
   class Sweatshop
+    class NoFixturesExist < Exception
+    end
+
     class << self
       attr_accessor :model_map
       attr_accessor :record_map
