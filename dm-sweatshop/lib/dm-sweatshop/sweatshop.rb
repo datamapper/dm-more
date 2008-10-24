@@ -1,6 +1,6 @@
 module DataMapper
   class Sweatshop
-    class NoFixturesExist < Exception
+    class NoFixtureExist < Exception
     end
 
     class << self
@@ -34,7 +34,7 @@ module DataMapper
     end
 
     def self.pick(klass, name)
-      self.record_map[klass][name.to_sym].pick || raise(NoFixturesExist, "no #{name} context fixtures have been generated for the #{klass} class")
+      self.record_map[klass][name.to_sym].pick || raise(NoFixtureExist, "no #{name} context fixtures have been generated for the #{klass} class")
     end
 
     def self.attributes(klass, name)
