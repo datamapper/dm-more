@@ -80,9 +80,9 @@ module DataMapper
     end
 
     # execute raw SQL
-    def execute(sql)
+    def execute(sql, *bind_values)
       say_with_time(sql) do
-        @adapter.execute(sql)
+        @adapter.execute(sql, *bind_values)
       end
     end
 
