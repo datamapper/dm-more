@@ -41,13 +41,13 @@ module DataMapper
           def create(attributes = {}, context = :default)
             resource = new(attributes)
             return resource unless resource.valid?(context)
-            resource.save
+            resource.save!(context)
             resource
           end
 
-          def create!(attributes = {})
+          def create!(attributes = {}, context = :default)
             resource = new(attributes)
-            resource.save!
+            resource.save!(context)
             resource
           end
         end
@@ -59,7 +59,7 @@ module DataMapper
     #
     def save_with_validations(context = :default)
       return false unless valid?(context)
-      save!
+      save!(context)
     end
 
     # Return the ValidationErrors
