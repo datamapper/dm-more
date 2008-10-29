@@ -32,34 +32,38 @@ module DataMapper
 
     def self.included(model)
       model.class_eval <<-EOS, __FILE__, __LINE__
-        if method_defined?(:save) && !method_defined?(:save!)
-          alias save! save
-          alias save  save_with_validations
+        if method_defined?(:save)
+          before :save, :check_validations
         end
 
         class << self
           def create(attributes = {}, context = :default)
             resource = new(attributes)
             return resource unless resource.valid?(context)
-            resource.save!(context)
+            resource.save!
             resource
           end
 
-          def create!(attributes = {}, context = :default)
+          def create!(attributes = {})
             resource = new(attributes)
-            resource.save!(context)
+            resource.save!
             resource
           end
         end
       EOS
     end
 
-    # Validate the resource before saving. Use #save! to save
-    # the record without validations.
+    # Ensures the object is valid for the context provided, and otherwise
+    # throws :halt and returns false.
     #
-    def save_with_validations(context = :default)
-      return false unless valid?(context)
-      save!(context)
+    def check_validations(context = :default)
+      throw(:halt, false) unless context.nil? || valid?(context)
+    end
+
+    # Calls save with a context of nil, thus skipping validations.
+    # 
+    def save!
+      save(nil)
     end
 
     # Return the ValidationErrors
