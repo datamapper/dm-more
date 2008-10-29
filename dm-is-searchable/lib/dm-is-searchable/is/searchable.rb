@@ -8,7 +8,7 @@ module DataMapper
 
         extend ClassMethods
 
-        after(:save) do |success|
+        after(:save) do |success, *args|
           if success
             # We use the adapter directly to bypass our after :save,
             # and because create caches the repository and new_record? state.
