@@ -54,6 +54,15 @@ module DataMapper
           fields << "#{meth.to_json}: #{send(meth).to_json}"
         end
       end
+      
+      # Note: if you want to include a whole other model via relation, use :methods
+      # comments.to_json(:relationships=>{:user=>{:include=>[:first_name],:methods=>[:age]}})
+      # add relationships
+      (options[:relationships] || {}).each do |rel,opts|
+        if self.respond_to?(rel)
+          fields << "#{rel.to_json}: #{send(rel).to_json(opts)}}"
+        end
+      end
 
       result << fields.join(', ')
       result << ' }'
