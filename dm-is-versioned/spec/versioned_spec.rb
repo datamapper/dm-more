@@ -92,6 +92,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       describe "(with a dirty existing resource)" do
         before do
           @story = Story.create(:title => "A Story")
+          @story.title = "An Inner Update"
           @story.title = "An Updated Story"
           @story.save
         end
@@ -102,6 +103,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         it "should not have the same value for the versioned field" do
           @story.updated_at.should_not == Story::Version.first.updated_at
+        end
+        
+        it "should save the original value, not the inner update" do
+          # changes to the story between saves shouldn't be updated.
+          @story.versions.last.title.should == "A Story"
         end
       end
 

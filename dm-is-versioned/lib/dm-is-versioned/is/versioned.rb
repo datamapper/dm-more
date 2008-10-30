@@ -69,7 +69,7 @@ module DataMapper
         end
 
         self.before :attribute_set do |property, value|
-          pending_version_attributes[property] = self.attribute_get(property)
+          pending_version_attributes[property] ||= self.attribute_get(property)
         end
 
         self.after :update do |result|
