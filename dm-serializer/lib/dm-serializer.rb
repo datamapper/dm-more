@@ -60,7 +60,7 @@ module DataMapper
       # add relationships
       (options[:relationships] || {}).each do |rel,opts|
         if self.respond_to?(rel)
-          fields << "#{rel.to_json}: #{send(rel).to_json(opts)}}"
+          fields << "#{rel.to_json}: #{send(rel).to_json(opts)}"
         end
       end
 
