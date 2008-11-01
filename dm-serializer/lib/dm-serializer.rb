@@ -14,7 +14,6 @@ end
 
 module DataMapper
   module Serialize
-
     # Serialize a Resource to JavaScript Object Notation (JSON; RFC 4627)
     #
     # @return <String> a JSON representation of the Resource
@@ -22,15 +21,7 @@ module DataMapper
       result = '{ '
       fields = []
 
-      # FIXME: this should go into bunch of protected methods shared with other serialization methods
-      only_properties     = Array(options[:only])
-      excluded_properties = Array(options[:exclude])
-      exclude_read_only   = options[:without_read_only_attributes] || false
-
-      propset = self.class.properties(repository.name).reject do |p|
-        next if only_properties.include? p.name
-        excluded_properties.include?(p.name) || !(only_properties.empty? || only_properties.include?(p.name))
-      end
+      propset = properties_to_serialize(options)
 
       fields += propset.map do |property|
         "#{property.name.to_json}: #{send(property.getter).to_json}"
@@ -109,6 +100,25 @@ module DataMapper
 
     protected
 
+    # Returns propreties to serialize based on :only or :exclude arrays, if provided
+    # :only takes precendence over :exclude
+    #
+    # @return <Array> properties that need to be serialized
+    def properties_to_serialize(options)
+      only_properties     = Array(options[:only])
+      excluded_properties = Array(options[:exclude])
+      exclude_read_only   = options[:without_read_only_attributes] || false
+
+      self.class.properties(repository.name).reject do |p|
+        if only_properties.include? p.name
+          false
+        else
+          excluded_properties.include?(p.name) || !(only_properties.empty? || only_properties.include?(p.name))
+        end
+      end
+    end
+
+
     # Return the name of this Resource - to be used as the root element name.
     # This can be overloaded.
     #
@@ -126,7 +136,8 @@ module DataMapper
 
       #TODO old code base was converting single quote to double quote on attribs
 
-      self.class.properties(repository.name).each do |property|
+      propset = properties_to_serialize(opts)
+      propset.each do |property|
           value = send(property.name)
           node = root.add_element(property.name.to_s)
           unless property.type == String

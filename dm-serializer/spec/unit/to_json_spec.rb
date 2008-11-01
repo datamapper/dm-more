@@ -79,20 +79,6 @@ describe DataMapper::Serialize, '#to_json' do
     berta["breed"].should be_nil
   end
 
-  it "only includes properties given to :only option" do
-    deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:name]))
-
-    deserialized_hash["name"].should == "Mars"
-    deserialized_hash["aphelion"].should be(nil)
-  end
-
-  it "only includes properties given to :only option" do
-    deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:exclude => [:aphelion]))
-
-    deserialized_hash["name"].should == "Mars"
-    deserialized_hash["aphelion"].should be(nil)
-  end
-
   it "has higher presedence for :only option" do
     deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:aphelion], :exclude => [:aphelion]))
 
