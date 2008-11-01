@@ -50,6 +50,16 @@ module Harness
       JSON.parse(result)[key]
     end
   end
+
+  class ToYaml
+    def method_name
+      :to_yaml
+    end
+
+    def extract_value(result, key)
+      YAML.load(result)[key.to_sym]
+    end
+  end
 end
 
 ENV['ADAPTER'] ||= 'sqlite3'

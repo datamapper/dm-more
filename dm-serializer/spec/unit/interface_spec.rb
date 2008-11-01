@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Serialize do
   def self.each_method(message, &block)
-    [Harness::ToXml, Harness::ToJson].collect {|x| x.new }.each do |harness|
+    [Harness::ToXml, Harness::ToJson, Harness::ToYaml].collect {|x| x.new }.each do |harness|
       describe "##{harness.method_name}" do
         it(message) do
           self.class.send(:define_method, :harness) do

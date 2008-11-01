@@ -87,7 +87,8 @@ module DataMapper
     def to_yaml(opts = {})
       YAML::quick_emit(object_id,opts) do |out|
         out.map(nil,to_yaml_style) do |map|
-          self.class.properties(repository.name).each do |property|
+          propset = properties_to_serialize(opts)
+          propset.each do |property|
             value = send(property.name.to_sym)
             map.add(property.name, value.is_a?(Class) ? value.to_s : value)
           end
@@ -166,7 +167,8 @@ module DataMapper
 
   class Collection
     def to_yaml(opts = {})
-      to_a.to_yaml(opts)
+      # FIXME: Don't double handle the YAML (remove the YAML.load)
+      to_a.collect {|x| YAML.load(x.to_yaml(opts)) }.to_yaml
     end
 
     def to_json(opts = {})
