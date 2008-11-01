@@ -92,6 +92,12 @@ module DataMapper
             value = send(property.name.to_sym)
             map.add(property.name, value.is_a?(Class) ? value.to_s : value)
           end
+          # add methods
+          (opts[:methods] || []).each do |meth|
+            if self.respond_to?(meth)
+              map.add(meth.to_sym, send(meth))
+            end
+          end
           (instance_variable_get("@yaml_addes") || []).each do |k,v|
             map.add(k.to_s,v)
           end
