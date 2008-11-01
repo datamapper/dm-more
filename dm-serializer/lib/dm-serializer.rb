@@ -134,6 +134,16 @@ module DataMapper
           end
           node << REXML::Text.new(value.to_s) unless value.nil?
       end
+
+      # add methods
+      (opts[:methods] || []).each do |meth|
+        if self.respond_to?(meth)
+          xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
+          node = root.add_element(xml_name)
+          value = send(meth)
+          node << REXML::Text.new(value.to_s, :raw => true) unless value.nil?
+        end
+      end
       doc
     end
 

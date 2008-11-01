@@ -25,6 +25,33 @@ def load_driver(name, default_uri)
   end
 end
 
+module Harness
+  class ToXml
+    def method_name
+      :to_xml
+    end
+
+    def extract_value(result, key)
+      doc = REXML::Document.new(result)
+      element = doc.elements[1].elements[key]
+      value = element ? element.text : nil
+      boolean_conversions = {"true" => true, "false" => false}
+      value = boolean_conversions[value] if boolean_conversions.has_key?(value)
+      value
+    end
+  end
+
+  class ToJson
+    def method_name
+      :to_json
+    end
+
+    def extract_value(result, key)
+      JSON.parse(result)[key]
+    end
+  end
+end
+
 ENV['ADAPTER'] ||= 'sqlite3'
 
 HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')

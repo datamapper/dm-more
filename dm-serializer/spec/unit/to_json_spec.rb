@@ -79,13 +79,6 @@ describe DataMapper::Serialize, '#to_json' do
     berta["breed"].should be_nil
   end
 
-  it "serializes values returned by methods given to :methods option" do
-    deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:methods => [:category, :has_known_form_of_life?]))
-
-    deserialized_hash["category"].should == "terrestrial"
-    deserialized_hash["has_known_form_of_life?"].should be(false)
-  end
-
   it "only includes properties given to :only option" do
     deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:name]))
 
