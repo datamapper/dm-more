@@ -27,5 +27,20 @@ describe DataMapper::Sweatshop::Unique do
       (1..3).to_a.collect { @ss.unique(:a) {|x| "a#{x}"} }.should ==
         %w(a0 a1 a2)
     end
+
+    describe 'when ParseTree is unavilable' do
+      it 'raises when no key is provided' do
+        Object.stub!(:const_defined?).with("ParseTree").and_return(false)
+        lambda {
+          @ss.unique {}
+        }.should raise_error
+      end
+
+      it 'does not raise when a key is provided' do
+        lambda {
+          @ss.unique(:a) {}
+        }.should_not raise_error
+      end
+    end
   end
 end

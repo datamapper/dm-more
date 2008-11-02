@@ -1,10 +1,12 @@
 module DataMapper
   class Sweatshop
-    class Unique
+    begin
       require 'parse_tree'
+    rescue LoadError
+      puts "DataMapper::Sweatshop::Unique - ParseTree could not be loaded, anonymous uniques will not be allowed"
+    end
 
-      cattr_accessor :count_map
-
+    class Unique
       def self.unique(key = nil, &block)
         self.count_map ||= Hash.new() { 0 }
 
@@ -21,9 +23,12 @@ module DataMapper
 
       private
 
+      cattr_accessor :count_map
       cattr_accessor :parser
 
       def self.key_for(&block)
+        raise "You need to install ParseTree to use anonymous an anonymous unique (gem install ParseTree). In the mean time, explicitly declare a key: unique(:my_key) { ... }" unless Object::const_defined?("ParseTree")
+
         klass = Class.new
         name = "tmp"
         klass.send(:define_method, name, &block)
