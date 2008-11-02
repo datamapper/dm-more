@@ -253,6 +253,25 @@ This works with contexts too.
 </code>
 </pre>
 
+h2. Sequences
+
+Unique values in a specific format (for example, e-mail addresses) can be
+generated using the @unique@ method. You would normally use this when populating a field
+with a uniqueness constraint.
+
+<pre><code>include DataMapper::Sweatshop::Unique # Use DataMapper::Sweatshop.unique if you don't want to pollute your namespace
+
+User.fix {{
+  :email => unique {|x| "person#{x}@example.com" } 
+}}
+
+User.gen.email
+# => "person0@example.com"
+
+User.gen.email
+# => "person1@example.com"</code></pre>
+
+
 Go forth, and populate your data.
 
 h2. Best Practices
