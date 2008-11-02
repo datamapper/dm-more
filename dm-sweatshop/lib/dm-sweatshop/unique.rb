@@ -5,6 +5,9 @@ module DataMapper
       # with the same block. Alternatively, you may provide an explicit key to
       # indentify the block.
       #
+      # If a block with no parameter is supplied, unique keeps track of previous
+      # invocations, and will continue yielding until a unique value is generated
+      #
       # ParseTree is required unless an explicit key is provided
       #
       #   (1..3).collect { unique {|x| x }}     # => [0, 1, 2]
@@ -12,13 +15,27 @@ module DataMapper
       #   (1..3).collect { unique {|x| x }}     # => [3, 4, 5] # Continued on from above
       #   (1..3).collect { unique(:a) {|x| x }} # => [0, 1, 2] # Explicit key overrides block identity
       #
+      #   a = [1, 1, 1, 2, 2, 3]
+      #   (1..3).collect { unique { a.shift }}  # => [1, 2, 3]
+      #
       # return <Object> the return value of the block
       def unique(key = nil, &block)
-        UniqueWorker.count_map ||= Hash.new() { 0 }
+        if block.arity < 1
+          UniqueWorker.unique_map ||= {}
 
-        key ||= UniqueWorker.key_for(&block)
-        result = block[UniqueWorker.count_map[key]] 
-        UniqueWorker.count_map[key] += 1
+          key ||= UniqueWorker.key_for(&block)
+          set = UniqueWorker.unique_map[key] || Set.new
+          result = block[]
+          result = block[] while set.include?(result) 
+          set << result
+          UniqueWorker.unique_map[key] = set
+        else  
+          UniqueWorker.count_map ||= Hash.new() { 0 }
+
+          key ||= UniqueWorker.key_for(&block)
+          result = block[UniqueWorker.count_map[key]] 
+          UniqueWorker.count_map[key] += 1
+        end
 
         result
       end
@@ -33,6 +50,7 @@ module DataMapper
       end
 
       cattr_accessor :count_map
+      cattr_accessor :unique_map
       cattr_accessor :parser
 
       # Use the sexp representation of the block as a unique key for the block

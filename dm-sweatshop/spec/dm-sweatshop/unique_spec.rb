@@ -30,6 +30,14 @@ describe DataMapper::Sweatshop::Unique do
         %w(a0 a1 a2)
     end
 
+    describe 'when the block has an arity less than 1' do
+      it 'keeps yielding until a unique value is generated' do
+        a = [1,1,1,2]
+        (1..2).collect { @ss.unique { a.shift }}.should ==
+          [1, 2]
+      end
+    end
+
     describe 'when ParseTree is unavilable' do
       it 'raises when no key is provided' do
         Object.stub!(:const_defined?).with("ParseTree").and_return(false)
