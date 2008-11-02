@@ -181,7 +181,7 @@ The real power of sweatshop is generating working associations.
 </code>
 </pre>
 
-That's going to generate alot of tags, way more than you would see in the production app.  Let's recylce some already generated tags instead.
+That's going to generate alot of tags, way more than you would see in the production app.  Let's recycle some already generated tags instead.
 
 <pre>
 <code>
@@ -237,7 +237,7 @@ To keep track of all of our new fixtures, we can even give them a context.
 
 h3. Overriding a fixture
 
-Sometimes you will want to change one of your fixtures a little bit.  You create a new fixture with a whole new context, but this can be overkill.  The other option is to specify attributes in the call to @generate@.
+Sometimes you will want to change one of your fixtures a little bit.  You can create a new fixture with a whole new context, but this can be overkill.  The other option is to specify attributes in the call to @generate@.
 
 <pre>
 <code>
