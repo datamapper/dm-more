@@ -76,7 +76,8 @@ describe DataMapper::Sweatshop do
     end
 
     it "should raise an error if neither the class or it's parent class(es) have been mapped" do
-      lambda { DataMapper::Sweatshop.attributes(Child, :default) }.should raise_error("default fixture was not found")
+      lambda { DataMapper::Sweatshop.attributes(Child, :default) }.
+        should raise_error(DataMapper::Sweatshop::NoFixtureExist, /default fixture was not found for class/)
     end
   end
 
