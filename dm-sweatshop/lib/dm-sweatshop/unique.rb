@@ -1,12 +1,6 @@
 module DataMapper
   class Sweatshop
-    begin
-      require 'parse_tree'
-    rescue LoadError
-      puts "DataMapper::Sweatshop::Unique - ParseTree could not be loaded, anonymous uniques will not be allowed"
-    end
-
-    class Unique
+    module Unique
       # Yields a value to the block. The value is unique for each invocation
       # with the same block. Alternatively, you may provide an explicit key to
       # indentify the block.
@@ -19,21 +13,24 @@ module DataMapper
       #   (1..3).collect { unique(:a) {|x| x }} # => [0, 1, 2] # Explicit key overrides block identity
       #
       # return <Object> the return value of the block
-      def self.unique(key = nil, &block)
-        self.count_map ||= Hash.new() { 0 }
+      def unique(key = nil, &block)
+        UniqueWorker.count_map ||= Hash.new() { 0 }
 
-        key ||= key_for(&block)
-        result = block[self.count_map[key]] 
-        self.count_map[key] += 1
+        key ||= UniqueWorker.key_for(&block)
+        result = block[UniqueWorker.count_map[key]] 
+        UniqueWorker.count_map[key] += 1
 
         result
       end
+    end
+    extend(Unique)
 
-      def self.reset!
-        self.count_map = Hash.new() { 0 }
+    class UniqueWorker
+      begin
+        require 'parse_tree'
+      rescue LoadError
+        puts "DataMapper::Sweatshop::Unique - ParseTree could not be loaded, anonymous uniques will not be allowed"
       end
-
-      private
 
       cattr_accessor :count_map
       cattr_accessor :parser

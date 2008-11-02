@@ -1,12 +1,14 @@
 require(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 describe DataMapper::Sweatshop::Unique do
-  before(:each) do
-    @ss = DataMapper::Sweatshop::Unique
-    @ss.reset!
-  end
-
   describe '#unique' do
+    before(:each) do
+      @ss = DataMapper::Sweatshop
+      DataMapper::Sweatshop::UniqueWorker.class_eval do
+        self.count_map = Hash.new() { 0 }
+      end
+    end
+
     it 'for the same block, yields an incrementing value' do
       (1..3).to_a.collect { @ss.unique {|x| "a#{x}"} }.should ==
         %w(a0 a1 a2)
@@ -41,6 +43,16 @@ describe DataMapper::Sweatshop::Unique do
           @ss.unique(:a) {}
         }.should_not raise_error
       end
+    end
+  end
+
+  describe 'when mixing into an object' do
+    it 'only the unique method is added to the public interface' do
+      obj = Object.new
+      old = obj.public_methods
+      obj.extend(DataMapper::Sweatshop::Unique)
+      new = obj.public_methods
+      (new - old).should == ["unique"]
     end
   end
 end
