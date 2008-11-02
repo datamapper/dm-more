@@ -41,7 +41,7 @@ describe DataMapper::Sweatshop::Unique do
         a = [1,1,1, nil]
         lambda {
           (1..3).collect { @ss.unique { a.shift }}
-        }.should raise_error
+        }.should raise_error(DataMapper::Sweatshop::Unique::TooManyTriesException)
       end
     end
 

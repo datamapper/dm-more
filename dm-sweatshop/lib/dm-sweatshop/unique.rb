@@ -19,6 +19,7 @@ module DataMapper
       #
       #   a = [1, 1, 1, 2, 2, 3]
       #   (1..3).collect { unique { a.shift }}  # => [1, 2, 3]
+      #   (1..3).collect { unique { 1 }}        # raises TooManyTriesException
       #
       # return <Object> the return value of the block
       def unique(key = nil, &block)
@@ -33,7 +34,7 @@ module DataMapper
             result = block[] 
             tries += 1
 
-            raise "Cannot generate unique value after #{tries} attempts" if tries >= UniqueWorker::MAX_TRIES
+            raise TooManyTriesException.new("Could not generate unique value after #{tries} attempts") if tries >= UniqueWorker::MAX_TRIES
           end
           set << result
           UniqueWorker.unique_map[key] = set
@@ -47,6 +48,8 @@ module DataMapper
 
         result
       end
+
+      class TooManyTriesException < RuntimeError; end;
     end
     extend(Unique)
 
