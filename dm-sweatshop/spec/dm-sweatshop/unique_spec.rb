@@ -17,6 +17,8 @@ describe DataMapper::Sweatshop::Unique do
         %w(a0 a1 a2)
       (1..3).to_a.collect { @ss.unique {|x| "b#{x}"} }.should ==
         %w(b0 b1 b2)
+      (1..3).to_a.collect { @ss.unique {|x| "a#{x}"} }.should ==
+        %w(a3 a4 a5)
     end
 
     it 'allows an optional key to be specified' do
