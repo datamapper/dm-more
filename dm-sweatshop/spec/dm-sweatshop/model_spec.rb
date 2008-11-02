@@ -146,7 +146,7 @@ describe DataMapper::Model do
       @yellow = Widget.gen(:yellow)
     end
 
-    it "creates an object from named attributes hash" do      
+    it "returns an object from named attributes hash" do
       @red.name.should == "rosso"
       @red.price.should == 20
 
