@@ -276,7 +276,7 @@ Person.fix {{
 }}
 
 [Person.gen.email, Person.gen.email, Person.gen.email]
-# => ["bob-0@example.com", "tom-0@example.com", "bob-1@example.com"]
+# => ["bob-0@example.com", "tom-0@example.com", "bob-1@example.com"]</code></pre>
 
 h2. Best Practices
 
