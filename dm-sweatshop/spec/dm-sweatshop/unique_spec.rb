@@ -7,12 +7,12 @@ describe DataMapper::Sweatshop::Unique do
   end
 
   describe '#unique' do
-    it 'for the same block, passes an incrementing value' do
+    it 'for the same block, yields an incrementing value' do
       (1..3).to_a.collect { @ss.unique {|x| "a#{x}"} }.should ==
         %w(a0 a1 a2)
     end
 
-    it 'for the different blocks, passes separately incrementing values' do
+    it 'for the different blocks, yields separately incrementing values' do
       (1..3).to_a.collect { @ss.unique {|x| "a#{x}"} }.should ==
         %w(a0 a1 a2)
       (1..3).to_a.collect { @ss.unique {|x| "b#{x}"} }.should ==

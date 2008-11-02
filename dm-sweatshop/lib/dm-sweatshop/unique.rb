@@ -7,6 +7,18 @@ module DataMapper
     end
 
     class Unique
+      # Yields a value to the block. The value is unique for each invocation
+      # with the same block. Alternatively, you may provide an explicit key to
+      # indentify the block.
+      #
+      # ParseTree is required unless an explicit key is provided
+      #
+      #   (1..3).collect { unique {|x| x }}     # => [0, 1, 2]
+      #   (1..3).collect { unique {|x| x + 1 }} # => [1, 2, 3]
+      #   (1..3).collect { unique {|x| x }}     # => [3, 4, 5] # Continued on from above
+      #   (1..3).collect { unique(:a) {|x| x }} # => [0, 1, 2] # Explicit key overrides block identity
+      #
+      # return <Object> the return value of the block
       def self.unique(key = nil, &block)
         self.count_map ||= Hash.new() { 0 }
 
@@ -26,6 +38,10 @@ module DataMapper
       cattr_accessor :count_map
       cattr_accessor :parser
 
+      # Use the sexp representation of the block as a unique key for the block
+      # If you copy and paste a block, it will still have the same key
+      #
+      # return <Object> the unique key for the block
       def self.key_for(&block)
         raise "You need to install ParseTree to use anonymous an anonymous unique (gem install ParseTree). In the mean time, explicitly declare a key: unique(:my_key) { ... }" unless Object::const_defined?("ParseTree")
 
