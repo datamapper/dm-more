@@ -300,15 +300,6 @@ h3. Enforcing Validations
 
 Enforce validations at generation time, before the call to @new@/@create@.
 
-<pre>
-<code>
-  User.fix {{
-    :username.unique  => /\w+/.gen,
-    :tweets           => 500.of {Tweet.make}
-  }}
-</code>
-</pre>
-
 h3. Better Exception Handling
 
 h3. Smarter @pick@
