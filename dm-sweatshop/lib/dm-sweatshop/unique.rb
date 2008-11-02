@@ -6,7 +6,9 @@ module DataMapper
       # indentify the block.
       #
       # If a block with no parameter is supplied, unique keeps track of previous
-      # invocations, and will continue yielding until a unique value is generated
+      # invocations, and will continue yielding until a unique value is generated.
+      # If a unique value is not generated after @UniqueWorker::MAX_TRIES@, an exception
+      # is raised.
       #
       # ParseTree is required unless an explicit key is provided
       #
@@ -26,7 +28,13 @@ module DataMapper
           key ||= UniqueWorker.key_for(&block)
           set = UniqueWorker.unique_map[key] || Set.new
           result = block[]
-          result = block[] while set.include?(result) 
+          tries = 0
+          while set.include?(result) 
+            result = block[] 
+            tries += 1
+
+            raise "Cannot generate unique value after #{tries} attempts" if tries >= UniqueWorker::MAX_TRIES
+          end
           set << result
           UniqueWorker.unique_map[key] = set
         else  
@@ -43,6 +51,8 @@ module DataMapper
     extend(Unique)
 
     class UniqueWorker
+      MAX_TRIES = 10
+
       begin
         require 'parse_tree'
       rescue LoadError

@@ -36,6 +36,13 @@ describe DataMapper::Sweatshop::Unique do
         (1..2).collect { @ss.unique { a.shift }}.should ==
           [1, 2]
       end
+
+      it 'raises when a unique value cannot be generated' do
+        a = [1,1,1, nil]
+        lambda {
+          (1..3).collect { @ss.unique { a.shift }}
+        }.should raise_error
+      end
     end
 
     describe 'when ParseTree is unavilable' do
