@@ -253,26 +253,30 @@ This works with contexts too.
 </code>
 </pre>
 
-h2. Sequences
+h2. Unique values
 
-Unique values in a specific format (for example, e-mail addresses) can be
-generated using the @unique@ method. You would normally use this when populating a field
-with a uniqueness constraint.
+Data for fields with a uniqueness constraint (for example, e-mail addresses) can be generated using the @unique@ method. The simplest usage is to guarantee that random data is unique - wrap your generator in a @unique@ block with no parameters, and the block will be repeatedly executed until it generates a unique value (don't worry, it raises after a few tries).
+
+For repeatable data, provide a block with one parameter. An incrementing value will be passed in on each invocation of that block. You can also name a unique block to override the block's identity (yeah that sentence is dense, just see the examples).
 
 <pre><code>include DataMapper::Sweatshop::Unique # Use DataMapper::Sweatshop.unique if you don't want to pollute your namespace
 
 User.fix {{
-  :email => unique {|x| "person#{x}@example.com" } 
+  :name  => unique { /\w+/.gen }
+  :email => unique {|x| "person-#{x}@example.com" } 
 }}
 
-User.gen.email
-# => "person0@example.com"
+[User.gen.email, User.gen.email]
+# => ["person-0@example.com", "person-1@example.com"]
 
-User.gen.email
-# => "person1@example.com"</code></pre>
+names = ['bob', 'tom', 'bob']
+Person.fix {{
+  :name  => (name = names.shift)
+  :email => unique(name) {|x| "#{name}-#{x}@example.com" } 
+}}
 
-
-Go forth, and populate your data.
+[Person.gen.email, Person.gen.email, Person.gen.email]
+# => ["bob-0@example.com", "tom-0@example.com", "bob-1@example.com"]
 
 h2. Best Practices
 

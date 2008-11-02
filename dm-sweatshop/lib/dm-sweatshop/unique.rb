@@ -3,7 +3,7 @@ module DataMapper
     module Unique
       # Yields a value to the block. The value is unique for each invocation
       # with the same block. Alternatively, you may provide an explicit key to
-      # indentify the block.
+      # identify the block.
       #
       # If a block with no parameter is supplied, unique keeps track of previous
       # invocations, and will continue yielding until a unique value is generated.
