@@ -1,57 +1,60 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-describe DataMapper::Serialize do
-  def self.each_method(message, &block)
-    [Harness::ToXml, Harness::ToJson, Harness::ToYaml].collect {|x| x.new }.each do |harness|
-      describe "##{harness.method_name}" do
-        it(message) do
-          self.class.send(:define_method, :harness) do
-            harness
-          end
-          self.instance_eval(&block)
-        end
-      end
+share_examples_for 'A serialization method' do
+  before do
+    %w[ @harness ].each do |ivar|
+      raise "+#{ivar}+ should be defined in before block" unless instance_variable_get(ivar)
     end
   end
 
-  each_method "serializes values returned by methods given to :methods option" do
+  it "only includes properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(harness.method_name, :methods => [:category, :has_known_form_of_life?])
+    ).send(@harness.method_name, :only => [:name])
+
+    @harness.extract_value(result, "name").should == "Mars"
+    @harness.extract_value(result, "aphelion").should be(nil)
+  end
+
+  it "serializes values returned by methods given to :methods option" do
+    result = Planet.new(
+      :name     => "Mars",
+      :aphelion => 249_209_300.4
+    ).send(@harness.method_name, :methods => [:category, :has_known_form_of_life?])
     
-    harness.extract_value(result, "category").should == "terrestrial"
-    harness.extract_value(result, "has_known_form_of_life?").should be(false)
+    @harness.extract_value(result, "category").should == "terrestrial"
+    @harness.extract_value(result, "has_known_form_of_life?").should be(false)
   end
 
-  each_method "only includes properties given to :only option" do
+  it "only includes properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(harness.method_name, :only => [:name])
+    ).send(@harness.method_name, :only => [:name])
 
-    harness.extract_value(result, "name").should == "Mars"
-    harness.extract_value(result, "aphelion").should be(nil)
+    @harness.extract_value(result, "name").should == "Mars"
+    @harness.extract_value(result, "aphelion").should be(nil)
   end
 
-  each_method "excludes properties given to :exclude option" do
+  it "excludes properties given to :exclude option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(harness.method_name, :exclude => [:aphelion])
+    ).send(@harness.method_name, :exclude => [:aphelion])
 
-    harness.extract_value(result, "name").should == "Mars"
-    harness.extract_value(result, "aphelion").should be(nil)
+    @harness.extract_value(result, "name").should == "Mars"
+    @harness.extract_value(result, "aphelion").should be(nil)
   end
 
-  each_method "has higher precendence for :only option over :exclude" do
+  it "has higher precendence for :only option over :exclude" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(harness.method_name, :only => [:name], :exclude => [:name])
+    ).send(@harness.method_name, :only => [:name], :exclude => [:name])
 
-    harness.extract_value(result, "name").should == "Mars"
-    harness.extract_value(result, "aphelion").should be(nil)
+    @harness.extract_value(result, "name").should == "Mars"
+    @harness.extract_value(result, "aphelion").should be(nil)
   end
 end

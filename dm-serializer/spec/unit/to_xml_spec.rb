@@ -18,7 +18,23 @@ describe DataMapper::Serialize, '#to_xml' do
     end
 
     @empty_collection = DataMapper::Collection.new(query) {}
+    @harness = Class.new do
+      def method_name
+        :to_xml
+      end
+
+      def extract_value(result, key)
+        doc = REXML::Document.new(result)
+        element = doc.elements[1].elements[key]
+        value = element ? element.text : nil
+        boolean_conversions = {"true" => true, "false" => false}
+        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
+        value
+      end
+    end.new
   end
+
+  it_should_behave_like "A serialization method"
 
   it "should serialize a resource to XML" do
     berta = Cow.new

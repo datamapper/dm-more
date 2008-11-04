@@ -15,7 +15,18 @@ describe DataMapper::Serialize, '#to_json' do
     end
 
     @empty_collection = DataMapper::Collection.new(query) {}
+    @harness = Class.new do
+      def method_name
+        :to_json
+      end
+
+      def extract_value(result, key)
+        JSON.parse(result)[key]
+      end
+    end.new
   end
+
+  it_should_behave_like "A serialization method"
 
   it "serializes resource to JSON" do
     deserialized_hash = JSON.parse(Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus").to_json)

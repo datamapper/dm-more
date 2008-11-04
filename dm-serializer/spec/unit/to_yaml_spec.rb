@@ -16,7 +16,18 @@ describe DataMapper::Serialize, '#to_yaml' do
     end
 
     @empty_collection = DataMapper::Collection.new(query) {}
+    @harness = Class.new do
+      def method_name
+        :to_yaml
+      end
+
+      def extract_value(result, key)
+        YAML.load(result)[key.to_sym]
+      end
+    end.new
   end
+
+  it_should_behave_like "A serialization method"
 
   it "serializes single resource to YAML" do
     betsy = Cow.new(:id => 230, :composite => 22, :name => "Betsy", :breed => "Jersey")
