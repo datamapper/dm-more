@@ -8,7 +8,7 @@ share_examples_for 'A serialization method' do
     end
   end
 
-  it "only includes properties given to :only option" do
+  it "should only includes properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
@@ -18,7 +18,7 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "aphelion").should be(nil)
   end
 
-  it "serializes values returned by methods given to :methods option" do
+  it "should serialize values returned by methods given to :methods option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
@@ -28,7 +28,7 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "has_known_form_of_life?").should be(false)
   end
 
-  it "only includes properties given to :only option" do
+  it "should only include properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
@@ -38,7 +38,7 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "aphelion").should be(nil)
   end
 
-  it "excludes properties given to :exclude option" do
+  it "should exclude properties given to :exclude option" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
@@ -48,7 +48,7 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "aphelion").should be(nil)
   end
 
-  it "has higher precendence for :only option over :exclude" do
+  it "should give higher precendence to :only option over :exclude" do
     result = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
