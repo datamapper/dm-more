@@ -13,8 +13,9 @@ spec/fixtures/planet.rb
 spec/fixtures/quatum_cat.rb
 spec/spec.opts
 spec/spec_helper.rb
-spec/unit/serializer_spec.rb
-spec/unit/to_csv_spec.rb
-spec/unit/to_json_spec.rb
-spec/unit/to_xml_spec.rb
-spec/unit/to_yaml_spec.rb
+spec/lib/serialization_method_shared_spec.rb
+spec/public/serializer_spec.rb
+spec/public/to_csv_spec.rb
+spec/public/to_json_spec.rb
+spec/public/to_xml_spec.rb
+spec/public/to_yaml_spec.rb
