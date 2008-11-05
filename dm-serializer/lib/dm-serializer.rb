@@ -17,7 +17,8 @@ module DataMapper
     # Serialize a Resource to JavaScript Object Notation (JSON; RFC 4627)
     #
     # @return <String> a JSON representation of the Resource
-    def to_json(options = {})
+    def to_json(*args)
+      options = args.first || {}
       result = '{ '
       fields = []
 
@@ -177,7 +178,8 @@ module DataMapper
       to_a.collect {|x| YAML.load(x.to_yaml(opts)) }.to_yaml
     end
 
-    def to_json(opts = {})
+    def to_json(*args)
+      opts = args.first || {}
       "[" << map {|e| e.to_json(opts)}.join(",") << "]"
     end
 

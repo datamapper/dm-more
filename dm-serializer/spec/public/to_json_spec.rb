@@ -46,6 +46,38 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_hash["breed"].should     == "Angus"
   end
 
+  it "should serialize an array of collections" do
+    deserialized_collection = JSON.parse([@collection].to_json).first
+    betsy = deserialized_collection.first
+    berta = deserialized_collection.last
+
+    betsy["id"].should        == 1
+    betsy["composite"].should == 2
+    betsy["name"].should      == "Betsy"
+    betsy["breed"].should     == "Jersey"
+
+    berta["id"].should        == 10
+    berta["composite"].should == 20
+    berta["name"].should      == "Berta"
+    berta["breed"].should     == "Guernsey"
+  end
+
+  it "should serialize an array of extended objects" do
+    deserialized_collection = JSON.parse(@collection.to_a.to_json)
+    betsy = deserialized_collection.first
+    berta = deserialized_collection.last
+
+    betsy["id"].should        == 1
+    betsy["composite"].should == 2
+    betsy["name"].should      == "Betsy"
+    betsy["breed"].should     == "Jersey"
+
+    berta["id"].should        == 10
+    berta["composite"].should == 20
+    berta["name"].should      == "Berta"
+    berta["breed"].should     == "Guernsey"
+  end
+
   it "serializes collections to JSON by serializing each member" do
     deserialized_collection = JSON.parse(@collection.to_json)
     betsy = deserialized_collection.first
