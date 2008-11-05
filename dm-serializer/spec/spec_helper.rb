@@ -31,7 +31,7 @@ HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
 
-require spec_dir_path + 'unit/interface_spec'
+require spec_dir_path + 'lib/serialization_method_shared_spec'
 
 # require fixture resources
 Dir[spec_dir_path + "fixtures/*.rb"].each do |fixture_file|
