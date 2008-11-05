@@ -52,6 +52,7 @@ module DataMapper
 
       def self.typecast(value, property)
         case value
+        when nil   then nil
         when Array then value.map {|v| v.to_sym}
         else value.to_sym
         end
