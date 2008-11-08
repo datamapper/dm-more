@@ -35,8 +35,8 @@ module DataMapper
             property :created_at, DateTime
             property :updated_at, DateTime
           when :on
-            property :created_on, DateTime
-            property :updated_on, DateTime
+            property :created_on, Date
+            property :updated_on, Date
           else
             unless TIMESTAMP_PROPERTIES.keys.include?(ts)
               raise InvalidTimestampName, "Invalid timestamp property '#{ts}'."
