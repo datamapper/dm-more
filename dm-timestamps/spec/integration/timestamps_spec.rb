@@ -21,7 +21,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     after do
      repository(:default).adapter.execute('DELETE from green_smoothies');
     end
-
+    
     it "should not set the created_at/on fields if they're already set" do
       repository(:default) do
         green_smoothie = GreenSmoothie.new(:name => 'Banana')
@@ -107,5 +107,41 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
     end
 
+    describe "inclusion" do
+      before :each do
+        @klass = Class.new do
+          include DataMapper::Resource
+        end
+      end
+      
+      it "should provide #timestamps" do
+        @klass.should respond_to(:timestamps)
+      end
+      
+      it "should set the *at properties" do
+        @klass.timestamps :at
+        
+        @klass.properties.should have_property(:created_at)
+        @klass.properties.should have_property(:updated_at)
+      end
+      
+      it "should set the *on properties" do
+        @klass.timestamps :on
+        
+        @klass.properties.should have_property(:created_on)
+        @klass.properties.should have_property(:updated_on)
+      end
+      
+      it "should set multiple properties" do
+        @klass.timestamps :created_at, :updated_on
+        
+        @klass.properties.should have_property(:created_at)
+        @klass.properties.should have_property(:updated_on)
+      end
+      
+      it "should fail on unknown property name" do
+        lambda { @klass.timestamps :wowee }.should raise_error(DataMapper::Timestamp::InvalidTimestampName)
+      end
+    end
   end
 end
