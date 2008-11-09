@@ -23,13 +23,13 @@ describe DataMapper::Serialize, '#to_csv' do
     peter.composite = 344
     peter.name = 'Peter'
     peter.breed = 'Long Horn'
-    peter.to_csv.chomp.should == '44,344,Peter,Long Horn'
+    peter.to_csv.chomp.split(',')[0..3].should == ['44','344','Peter','Long Horn']
   end
 
   it "should serialize a collection to CSV" do
-    @collection.to_csv.gsub(/[[:space:]]+\n/, "\n").should ==
-      "1,2,Betsy,Jersey\n" +
-      "10,20,Berta,Guernsey\n"
+    result = @collection.to_csv.gsub(/[[:space:]]+\n/, "\n")
+    result.to_a[0].split(',')[0..3].should == ['1','2','Betsy','Jersey']
+    result.to_a[1].split(',')[0..3].should == ['10','20','Berta','Guernsey']
   end
 
   describe "multiple repositories" do

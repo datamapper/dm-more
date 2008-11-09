@@ -7,6 +7,7 @@ describe DataMapper::Serialize, '#to_json' do
   #
 
   before(:all) do
+    Cow.auto_migrate!
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
     @collection = DataMapper::Collection.new(query) do |c|
@@ -27,6 +28,21 @@ describe DataMapper::Serialize, '#to_json' do
   end
 
   it_should_behave_like "A serialization method"
+
+  it "serializes a one to many relationship" do
+    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+    parent.save
+    baby.save
+
+    deserialized_hash = JSON.parse(parent.baby_cows.to_json).first
+
+    deserialized_hash["id"].should        == 2
+    deserialized_hash["composite"].should == 321
+    deserialized_hash["name"].should      == "Felix"
+    deserialized_hash["breed"].should     == "Angus"
+  end
 
   it "serializes resource to JSON" do
     deserialized_hash = JSON.parse(Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus").to_json)

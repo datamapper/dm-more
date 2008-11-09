@@ -172,6 +172,21 @@ module DataMapper
     include Serialize
   end # module Resource
 
+  # the json gem adds Object#to_json, which breaks the DM proxies, since it 
+  # happens *after* the proxy has been blank slated. This code removes the added
+  # method, so it is delegated correctly to the Collection
+  [
+    Associations::OneToMany::Proxy
+
+    # Need tests for the following:
+    #Associations::ManyToMany::Proxy,
+    #Associations::ManyToOne::Proxy
+  ].each do |proxy|
+    [:to_json].each do |method|
+      proxy.send(:undef_method, :to_json) rescue nil
+    end
+  end
+
   class Collection
     def to_yaml(opts = {})
       # FIXME: Don't double handle the YAML (remove the YAML.load)

@@ -6,6 +6,9 @@ class Cow
   property :name,      String
   property :breed,     String
 
+  has n, :baby_cows, :class_name => 'Cow'
+  belongs_to :mother_cow, :class_name => 'Cow'
+
   def serialize_properties
     {:extra => "Extra", :another => 42}
   end

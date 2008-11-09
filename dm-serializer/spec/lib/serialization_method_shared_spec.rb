@@ -7,6 +7,20 @@ share_examples_for 'A serialization method' do
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_get(ivar)
     end
   end
+  
+  it 'should serialize a resource' do
+    result = Cow.new(
+      :id        => 89,
+      :composite => 34,
+      :name      => 'Berta',
+      :breed     => 'Guernsey'
+    ).send(@harness.method_name)
+    
+    @harness.extract_value(result, "id"       ).should == 89
+    @harness.extract_value(result, "composite").should == 34
+    @harness.extract_value(result, "name"     ).should == 'Berta'
+    @harness.extract_value(result, "breed"    ).should == 'Guernsey'
+  end
 
   it "should only includes properties given to :only option" do
     result = Planet.new(
