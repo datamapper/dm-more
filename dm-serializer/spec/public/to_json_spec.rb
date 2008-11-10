@@ -7,7 +7,7 @@ describe DataMapper::Serialize, '#to_json' do
   #
 
   before(:all) do
-    Cow.auto_migrate!
+    DataMapper.auto_migrate!
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
     @collection = DataMapper::Collection.new(query) do |c|
@@ -27,6 +27,12 @@ describe DataMapper::Serialize, '#to_json' do
     end.new
   end
 
+  before(:each) do
+    Cow.all.destroy!
+    Planet.all.destroy!
+    FriendedPlanet.all.destroy!
+  end
+
   it_should_behave_like "A serialization method"
 
   it "serializes a one to many relationship" do
@@ -42,6 +48,32 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_hash["composite"].should == 321
     deserialized_hash["name"].should      == "Felix"
     deserialized_hash["breed"].should     == "Angus"
+  end
+
+  it "serializes a many to one relationship" do
+    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+    parent.save
+    baby.save
+
+    deserialized_hash = JSON.parse(baby.mother_cow.to_json)
+
+    deserialized_hash["id"].should        == 1
+    deserialized_hash["composite"].should == 322
+    deserialized_hash["name"].should      == "Harry"
+    deserialized_hash["breed"].should     == "Angus"
+  end
+
+  it "serializes a many to many relationship" do
+    p1 = Planet.create(:name => 'earth')
+    p2 = Planet.create(:name => 'mars')
+
+    FriendedPlanet.create(:planet => p1, :friend_planet => p2)
+
+    deserialized_hash = JSON.parse(p1.reload.friend_planets.to_json).first
+
+    deserialized_hash["name"].should == "mars"
   end
 
   it "serializes resource to JSON" do

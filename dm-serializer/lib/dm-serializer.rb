@@ -176,11 +176,9 @@ module DataMapper
   # happens *after* the proxy has been blank slated. This code removes the added
   # method, so it is delegated correctly to the Collection
   [
-    Associations::OneToMany::Proxy
-
-    # Need tests for the following:
-    #Associations::ManyToMany::Proxy,
-    #Associations::ManyToOne::Proxy
+    Associations::OneToMany::Proxy,
+    Associations::ManyToOne::Proxy,
+    Associations::ManyToMany::Proxy
   ].each do |proxy|
     [:to_json].each do |method|
       proxy.send(:undef_method, :to_json) rescue nil
