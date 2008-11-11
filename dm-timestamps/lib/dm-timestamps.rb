@@ -29,6 +29,8 @@ module DataMapper
     
     module ClassMethods
       def timestamps(*args)
+        if args.empty? then raise ArgumentError, "You need to pass at least one argument." end
+
         args.each do |ts|
           case ts
           when :at

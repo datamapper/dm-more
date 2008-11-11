@@ -146,6 +146,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "should fail on unknown property name" do
         lambda { @klass.timestamps :wowee }.should raise_error(DataMapper::Timestamp::InvalidTimestampName)
       end
+
+      it "should fail on empty arguments" do
+        lambda { @klass.timestamps }.should raise_error(ArgumentError)
+      end
     end
   end
 end
