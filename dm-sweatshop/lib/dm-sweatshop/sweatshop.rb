@@ -61,12 +61,7 @@ module DataMapper
     #
     # @returns   [DataMapper::Resource]    added instance
     def self.create(klass, name, attributes = {})
-      begin
-        record(klass, name, klass.create(attributes(klass, name).merge(attributes)))
-      rescue StandardError => e
-        retry if e.message =~ /^column \w+ is not unique$/
-        raise e
-      end
+      record(klass, name, klass.create(attributes(klass, name).merge(attributes)))
     end
 
     # Creates an instance from given hash of attributes
