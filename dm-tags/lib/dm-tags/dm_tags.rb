@@ -31,7 +31,7 @@ module DataMapper
           end
 
           def #{arg.to_s.singular}_list
-            @#{arg.to_s.singular}_list || #{arg}.map{|#{arg.to_s.singular}| #{arg.to_s.singular}.name}.sort
+            @#{arg.to_s.singular}_list ||= #{arg}.map{|#{arg.to_s.singular}| #{arg.to_s.singular}.name}.sort
           end
 
           def #{arg.to_s.singular}_list=(string)
