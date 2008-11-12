@@ -50,9 +50,6 @@ module DataMapper
     # Creates an instance from given hash of attributes, saves it
     # and adds it to the record map.
     #
-    # If record is valid because of duplicated property value,
-    # this method does a retry.
-    #
     # @param     klass       [Class, DataMapper::Resource]
     # @param     name        [Symbol]
     # @param     attributes  [Hash]
