@@ -69,11 +69,11 @@ module DataMapper
         end
 
         self.after_class_method :auto_migrate! do
-          model.auto_migrate!
+          self::Version.auto_migrate!
         end
 
         self.after_class_method :auto_upgrade! do
-          model.auto_upgrade!
+          self::Version.auto_upgrade!
         end
 
         self.before :attribute_set do |property, value|
