@@ -73,15 +73,15 @@ module DataMapper
         end
 
         self.after :update do |result|
-          if result == true
+          if result && dirty_attributes.has_key?(properties[on])
             model.create(self.attributes.merge(pending_version_attributes))
             self.pending_version_attributes.clear
           end
+          
           result
         end
 
         include DataMapper::Is::Versioned::InstanceMethods
-
       end
 
 
