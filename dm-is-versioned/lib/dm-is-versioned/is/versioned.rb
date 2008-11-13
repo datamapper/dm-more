@@ -48,11 +48,12 @@ module DataMapper
 
       def is_versioned(options = {})
         on = options[:on]
-        storage_name = Extlib::Inflection.tableize(self.name + "Version")
-        model = DataMapper::Model.new(storage_name)
 
         class << self; self end.class_eval do 
           define_method :const_missing do |name|
+            storage_name = Extlib::Inflection.tableize(self.name + "Version")
+            model = DataMapper::Model.new(storage_name)
+            
             if name == :Version
               properties.each do |property|
                 options = property.options
@@ -82,7 +83,7 @@ module DataMapper
 
         self.after :update do |result|
           if result && dirty_attributes.has_key?(properties[on])
-            model.create(self.attributes.merge(pending_version_attributes))
+            self.class::Version.create(self.attributes.merge(pending_version_attributes))
             self.pending_version_attributes.clear
           end
           
