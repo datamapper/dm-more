@@ -47,17 +47,25 @@ module DataMapper
     module Versioned
 
       def is_versioned(options = {})
-
         on = options[:on]
-
         storage_name = Extlib::Inflection.tableize(self.name + "Version")
-        model = self.const_set("Version", DataMapper::Model.new(storage_name))
+        model = DataMapper::Model.new(storage_name)
 
-        properties.each do |property|
-          options = property.options
-          options[:key] = true if property.name == on || options[:serial] == true
-          options[:serial] = false
-          model.property property.name, property.type, options
+        class << self; self end.class_eval do 
+          define_method :const_missing do |name|
+            if name == :Version
+              properties.each do |property|
+                options = property.options
+                options[:key] = true if property.name == on || options[:serial] == true
+                options[:serial] = false
+                model.property property.name, property.type, options
+              end
+              
+              self.const_set("Version", model)
+            else
+              super(name)
+            end
+          end
         end
 
         self.after_class_method :auto_migrate! do
