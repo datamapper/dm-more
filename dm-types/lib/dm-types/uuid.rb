@@ -17,8 +17,29 @@ module DataMapper
     #
     #  -- Rando Sept 25, 08
     #
+    # Actually, setting the primitive to "UUID" is not neccessary and causes
+    # a segfault when trying to query uuid's from the database.  The primitive
+    # should be a class which has been added to the do driver you are using.
+    # Also, it's only neccessary to add a class to the do drivers to use as a
+    # primitive when a value cannot be represented as a string.  A uuid can be
+    # represented as a string, so setting the primitive to String ensures that
+    # the value argument is a String containing the uuid in string form.
+    #
+    # <strike>It is still neccessary to add the UUID entry to the type map for
+    # each different adapter with their respective database primitive.</strike>
+    #
+    # The method that generates the SQL schema from the typemap currently
+    # ignores the size attribute from the type map if the primitive type
+    # is String.  The causes the generated SQL statement to contain a size for
+    # a UUID column (e.g. id UUID(50)), which causes a syntax error in postgres.
+    # Until this is resolved, you will have to manually change the column type
+    # to UUID in a migration, if you want to use postgres' built in UUID type.
+    #
+    #  -- benburkert Nov 15, 08
+    #
     class UUID < DataMapper::Type
-      primitive 'UUID'
+      primitive String
+      size 36
 
       def self.load(value, property)
         return nil if value.nil?
@@ -34,10 +55,10 @@ module DataMapper
         value.kind_of?(::UUID) ? value : load(value, property)
       end
 
-      ::DataMapper::Property::TYPES << self
-      if defined? DataMapper::Adapters::PostgresAdapter
-        DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID')
-      end
+      #::DataMapper::Property::TYPES << self
+      #if defined? DataMapper::Adapters::PostgresAdapter
+      #  DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID').with(:size => nil)
+      #end
     end
   end
 end
