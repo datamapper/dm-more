@@ -39,7 +39,7 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it "should serialize a collection to XML" do
     @collection.to_xml.should == <<-EOS.compress_lines(false)
-      <cows type='array'>
+      <#{Extlib::Inflection.tableize("Cow")} type='array'>
         <cow>
           <id type='integer'>1</id>
           <composite type='integer'>2</composite>
@@ -52,7 +52,7 @@ describe DataMapper::Serialize, '#to_xml' do
           <name>Berta</name>
           <breed>Guernsey</breed>
         </cow>
-      </cows>
+      </#{Extlib::Inflection.tableize("Cow")}>
   EOS
   end
 
