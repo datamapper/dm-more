@@ -8,10 +8,13 @@ include FileUtils
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
 gem_paths = %w[
+  dm-adjust
+  dm-serializer
+  dm-validations
+  dm-types
   adapters/dm-couchdb-adapter
   adapters/dm-ferret-adapter
   adapters/dm-rest-adapter
-  dm-adjust
   dm-aggregates
   dm-ar-finders
   dm-cli
@@ -26,14 +29,11 @@ gem_paths = %w[
   dm-migrations
   dm-observer
   dm-querizer
-  dm-serializer
   dm-shorthand
   dm-sweatshop
   dm-tags
   dm-timestamps
   dm-sweatshop
-  dm-types
-  dm-validations
 ]
 
 gems = gem_paths.map { |p| File.basename(p) }
