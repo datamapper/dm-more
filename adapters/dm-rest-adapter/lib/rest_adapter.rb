@@ -194,8 +194,7 @@ module DataMapper
         resource[:values] = []
         entity_element.elements.each do |field_element|
           attribute = dm_model_class.properties(repository.name).find do |property|
-            # *MUST* use Inflection.underscore on the XML as Rails converts '_' to '-' in the XML
-            property.name.to_s == Inflection.underscore(field_element.name.to_s)
+            property.name.to_s == field_element.name.to_s.gsub('-', '_')
           end
           if attribute
             resource[:values] << field_element.text
