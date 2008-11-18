@@ -34,20 +34,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     repository(:default) do
 
       User.auto_migrate!
-      @paul = User.create!(:name => "paul")
-      @john = User.create!(:name => "john")
+      @paul = User.create(:name => "paul")
+      @john = User.create(:name => "john")
 
       Category.auto_migrate!
-      Category.create!(:id => 1, :name => "Electronics")
-      Category.create!(:id => 2, :parent_id => 1,  :name => "Televisions")
-      Category.create!(:id => 3, :parent_id => 2,  :name => "Tube")
-      Category.create!(:id => 4, :parent_id => 2,  :name => "LCD")
-      Category.create!(:id => 5, :parent_id => 2,  :name => "Plasma")
-      Category.create!(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
-      Category.create!(:id => 7, :parent_id => 6,  :name => "MP3 Players")
-      Category.create!(:id => 8, :parent_id => 7,  :name => "Flash")
-      Category.create!(:id => 9, :parent_id => 6,  :name => "CD Players")
-      Category.create!(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
+      Category.create(:id => 1, :name => "Electronics")
+      Category.create(:id => 2, :parent_id => 1,  :name => "Televisions")
+      Category.create(:id => 3, :parent_id => 2,  :name => "Tube")
+      Category.create(:id => 4, :parent_id => 2,  :name => "LCD")
+      Category.create(:id => 5, :parent_id => 2,  :name => "Plasma")
+      Category.create(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
+      Category.create(:id => 7, :parent_id => 6,  :name => "MP3 Players")
+      Category.create(:id => 8, :parent_id => 7,  :name => "Flash")
+      Category.create(:id => 9, :parent_id => 6,  :name => "CD Players")
+      Category.create(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
     end
   end
 
@@ -248,9 +248,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         repository(:default) do |repos|
           Category.auto_migrate!
 
-          c1 = Category.create!(:name => "New Electronics")
+          c1 = Category.create(:name => "New Electronics")
 
-          c2 = Category.create!(:name => "OLED TVs")
+          c2 = Category.create(:name => "OLED TVs")
 
           c1.pos.should == [1,4]
           c1.root.should == c1
