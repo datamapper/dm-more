@@ -1,7 +1,7 @@
 require 'rubygems'
 gem 'rspec', '>=1.1.3'
 require 'spec'
-gem "dm-core"
+gem "dm-core", '>=0.9.7'
 require 'dm-core'
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-observer'
@@ -12,7 +12,7 @@ def load_driver(name, default_uri)
   lib = "do_#{name}"
 
   begin
-    gem lib, '>=0.9.5'
+    gem lib, '>=0.9.7'
     require lib
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
