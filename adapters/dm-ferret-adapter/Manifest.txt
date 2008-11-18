@@ -1,3 +1,4 @@
+.gitignore
 History.txt
 LICENSE
 Manifest.txt
@@ -10,4 +11,6 @@ lib/ferret_adapter/local_index.rb
 lib/ferret_adapter/remote_index.rb
 lib/ferret_adapter/repository_ext.rb
 lib/ferret_adapter/version.rb
+spec/adapter_spec.rb
+spec/helper.rb
 spec/spec.opts
