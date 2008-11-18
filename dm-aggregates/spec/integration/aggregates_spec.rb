@@ -5,12 +5,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Resource' do
     before :all do
       # A simplistic example, using with an Integer property
-   class Knight
-    include DataMapper::Resource
+      class Knight
+        include DataMapper::Resource
 
-    property :id,								Serial
-    property :name,							String
-   end
+        property :id,   Serial
+        property :name, String
+      end
 
       class Dragon
         include DataMapper::Resource
@@ -23,9 +23,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         property :birth_on,          Date
         property :birth_time,        Time
 
-    belongs_to :knight
+        belongs_to :knight
       end
-
 
       # A more complex example, with BigDecimal and Float properties
       # Statistics taken from CIA World Factbook:
@@ -47,8 +46,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       @birth_on   = Date.parse(@birth_at.to_s)
       @birth_time = Time.parse(@birth_at.to_s)
 
-   @chuck = Knight.create( :name => 'Chuck' )
-   @larry = Knight.create( :name => 'Larry')
+      @chuck = Knight.create(:name => 'Chuck')
+      @larry = Knight.create(:name => 'Larry')
 
       Dragon.create(:name => 'George', :is_fire_breathing => false, :toes_on_claw => 3, :birth_at => @birth_at, :birth_on => @birth_on, :birth_time => @birth_time, :knight => @chuck )
       Dragon.create(:name => 'Puff',   :is_fire_breathing => true,  :toes_on_claw => 4, :birth_at => @birth_at, :birth_on => @birth_on, :birth_time => @birth_time, :knight => @larry )
@@ -320,12 +319,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
 
-   describe "query path issue" do
-     it "should not break when a query path is specified" do
-       dragon = Dragon.first(Dragon.knight.name => 'Chuck')
-     dragon.name.should == 'George'
-     end
-   end
-  end
+      describe "query path issue" do
+        it "should not break when a query path is specified" do
+          dragon = Dragon.first(Dragon.knight.name => 'Chuck')
+          dragon.name.should == 'George'
+        end
+      end
+    end
   end
 end
