@@ -196,19 +196,21 @@ module DataMapper
 
     # Quoted table name, for the adapter
     def migration_info_table
-      @migration_info_table ||= @adapter.send(:quote_table_name, 'migration_info')
+      @migration_info_table ||= quote_table_name('migration_info')
     end
 
     # Quoted `migration_name` column, for the adapter
     def migration_name_column
-      @migration_name_column ||= @adapter.send(:quote_column_name, 'migration_name')
+      @migration_name_column ||= quote_column_name('migration_name')
     end
 
     def quote_table_name(table_name)
+      # TODO: Fix this for 1.9 - can't use this hack to access a private method
       @adapter.send(:quote_table_name, table_name.to_s)
     end
 
     def quote_column_name(column_name)
+      # TODO: Fix this for 1.9 - can't use this hack to access a private method
       @adapter.send(:quote_column_name, column_name.to_s)
     end
   end
