@@ -9,15 +9,15 @@ describe TrafficLight do
   end
 
   it "should have an 'id' column" do
-    @t.attributes.should include(:id)
+    @t.attributes.should have_key(:id)
   end
 
   it "should have a 'color' column" do
-    @t.attributes.should include(:color)
+    @t.attributes.should have_key(:color)
   end
 
   it "should not have a 'state' column" do
-    @t.attributes.should_not include(:state)
+    @t.attributes.should_not have_key(:state)
   end
 
   it "should start off in the green state" do

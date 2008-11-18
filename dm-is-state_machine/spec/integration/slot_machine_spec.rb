@@ -9,19 +9,19 @@ describe SlotMachine do
   end
 
   it "should have an 'id' column" do
-    @sm.attributes.should include(:id)
+    @sm.attributes.should have_key(:id)
   end
 
   it "should have a 'mode' column" do
-    @sm.attributes.should include(:mode)
+    @sm.attributes.should have_key(:mode)
   end
 
   it "should have a 'power_on' column" do
-    @sm.attributes.should include(:power_on)
+    @sm.attributes.should have_key(:power_on)
   end
 
   it "should not have a 'state' column" do
-    @sm.attributes.should_not include(:state)
+    @sm.attributes.should_not have_key(:state)
   end
 
   it "should start in the off state" do
