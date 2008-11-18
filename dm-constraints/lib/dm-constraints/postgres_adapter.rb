@@ -2,6 +2,8 @@ module DataMapper
   module Constraints
     module PostgresAdapter
       module SQL
+        include DataMapper::Constraints::DataObjectsAdapter::SQL
+
         private
 
         def constraint_exists?(storage_name, constraint_name)

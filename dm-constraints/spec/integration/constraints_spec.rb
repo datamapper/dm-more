@@ -5,41 +5,38 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
   describe 'DataMapper::Constraints' do
 
-    before :all do
+    before do
       DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[adapter]
 
       class Stable
         include DataMapper::Resource
 
-        property :id,        Serial
-        property :location,  String
-        property :size,      Integer
+        property :id,       Serial
+        property :location, String
+        property :size,     Integer
+
+        has n, :cows
       end
 
       class Farmer
         include DataMapper::Resource
 
         property :first_name, String, :key => true
-        property :last_name, String,  :key => true
+        property :last_name,  String, :key => true
+
+        has n, :cows
       end
 
       class Cow
         include DataMapper::Resource
         include DataMapper::Constraints
 
-        property :id,        Serial
-        property :name,      String
-        property :breed,     String
+        property :id,    Serial
+        property :name,  String
+        property :breed, String
+
         belongs_to :stable
         belongs_to :farmer
-      end
-
-      class Stable
-        has n, :cows
-      end
-
-      class Farmer
-        has n, :cows
       end
 
       DataMapper.auto_migrate!

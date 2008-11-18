@@ -2,6 +2,8 @@ module DataMapper
   module Constraints
     module MysqlAdapter
       module SQL
+        include DataMapper::Constraints::DataObjectsAdapter::SQL
+
         private
 
         def destroy_constraints_statement(table_name, constraint_name)

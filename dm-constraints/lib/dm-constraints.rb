@@ -18,10 +18,6 @@ module DataMapper
   end
 
   module Adapters
-    class DataObjectsAdapter
-      include DataMapper::Constraints::DataObjectsAdapter::SQL
-    end
-
     class MysqlAdapter
       include DataMapper::Constraints::MysqlAdapter::SQL
     end
