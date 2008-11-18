@@ -177,6 +177,7 @@ module DataMapper
             else [action.to_i,maxpos].min
           end
 
+          return false if [:lower, :higher].include?(action) && newpos == prepos
           return false if !newpos || ([:above,:below].include?(action) && list_scope != object.list_scope)
           return true if newpos == position && position == prepos || (newpos == maxpos && position == maxpos-1)
 
