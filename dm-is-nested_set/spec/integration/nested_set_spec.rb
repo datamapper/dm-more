@@ -3,56 +3,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
-  class User
-    include DataMapper::Resource
-
-    property :id, Serial
-    property :name, String
-
-    has n, :categories
-  end
-
-  class Category
-    include DataMapper::Resource
-
-    property :id, Integer, :serial => true
-    property :name, String
-    property :class_name, Discriminator
-
-    belongs_to :user
-
-    is :nested_set, :scope => [:user_id]
-
-    def pos; [lft,rgt] end # convenience method only for speccing.
-  end
-
-  class CustomCategory < Category
-
-  end
-
-  def setup
-    repository(:default) do
-
-      User.auto_migrate!
-      @paul = User.create(:name => "paul")
-      @john = User.create(:name => "john")
-
-      Category.auto_migrate!
-      Category.create(:id => 1, :name => "Electronics")
-      Category.create(:id => 2, :parent_id => 1,  :name => "Televisions")
-      Category.create(:id => 3, :parent_id => 2,  :name => "Tube")
-      Category.create(:id => 4, :parent_id => 2,  :name => "LCD")
-      Category.create(:id => 5, :parent_id => 2,  :name => "Plasma")
-      Category.create(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
-      Category.create(:id => 7, :parent_id => 6,  :name => "MP3 Players")
-      Category.create(:id => 8, :parent_id => 7,  :name => "Flash")
-      Category.create(:id => 9, :parent_id => 6,  :name => "CD Players")
-      Category.create(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
-    end
-  end
-
-  setup
-
   # id | lft| rgt| title
   #========================================
   # 1  | 1  | 20 | - Electronics
@@ -77,7 +27,54 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   # |                                       Electronics                                                  |
   # |____________________________________________________________________________________________________|
 
-  describe 'DataMapper::Is::NestedSet' do
+  describe DataMapper::Is::NestedSet do
+    before do
+      Object.send(:remove_const, :User) if defined?(User)
+      class User
+        include DataMapper::Resource
+
+        property :id, Serial
+        property :name, String
+
+        has n, :categories
+      end
+
+      Object.send(:remove_const, :Category) if defined?(Category)
+      class Category
+        include DataMapper::Resource
+
+        property :id, Integer, :serial => true
+        property :name, String
+        property :class_name, Discriminator
+
+        belongs_to :user
+
+        is :nested_set, :scope => [:user_id]
+
+        def pos; [lft,rgt] end # convenience method only for speccing.
+      end
+
+      Object.send(:remove_const, :CustomCategory) if defined?(CustomCategory)
+      class CustomCategory < Category; end
+
+      DataMapper.auto_migrate!
+
+      repository(:default) do
+        @paul = User.create(:name => "paul")
+        @john = User.create(:name => "john")
+
+        Category.create(:id => 1, :name => "Electronics")
+        Category.create(:id => 2, :parent_id => 1,  :name => "Televisions")
+        Category.create(:id => 3, :parent_id => 2,  :name => "Tube")
+        Category.create(:id => 4, :parent_id => 2,  :name => "LCD")
+        Category.create(:id => 5, :parent_id => 2,  :name => "Plasma")
+        Category.create(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
+        Category.create(:id => 7, :parent_id => 6,  :name => "MP3 Players")
+        Category.create(:id => 8, :parent_id => 7,  :name => "Flash")
+        Category.create(:id => 9, :parent_id => 6,  :name => "CD Players")
+        Category.create(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
+      end
+    end
 
     describe 'Class#rebuild_tree_from_set' do
       it 'should reset all parent_ids correctly' do
@@ -137,8 +134,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
-
-    Category.get(1).children
 
     describe '#descendants and #self_and_descendants' do
       it 'should return all subnodes of node' do
@@ -228,7 +223,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           #mp3_players.descendants.length.should == 1
 
           # The category is at the top of its parent, should not be able to indent.
-          mp3_players.move(:indent).should == false
+          #mp3_players.move(:indent).should == false
+          mp3_players.pos.should == [11,14]
 
           mp3_players.move(:outdent)
 
@@ -299,7 +295,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     describe 'scoping' do
       it 'should detach from list when changing scope' do
         repository(:default) do |repos|
-          setup
           plasma = Category.get(5)
           plasma.pos.should == [7,8]
           plasma.user_id = 1
@@ -312,7 +307,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     describe 'integrity' do
       it 'should detach object from list when deleted' do
         repository(:default) do |repos|
-          setup
           lcd = Category.get(4)
           lcd.pos.should == [5,6]
           Category.get(3).destroy
