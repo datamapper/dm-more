@@ -10,7 +10,7 @@ RUBYFORGE_PROJECT = 'dm-tags' # The unix name for your project
 HOMEPATH = "http://#{RUBYFORGE_PROJECT}.rubyforge.org"
 DOWNLOAD_PATH = "http://rubyforge.org/projects/#{RUBYFORGE_PROJECT}"
 EXTRA_DEPENDENCIES = [
- ['dm-core', '>= 0.9.3']
+ ['dm-core', '~>0.9.7']
 ]    # An array of rubygem dependencies [name, version]
 
 @config_file = "~/.rubyforge/user-config.yml"
