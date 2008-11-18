@@ -28,7 +28,7 @@ module DataMapper
             property.get!(self)
           end
       end
-      data.delete(:_attachments) if data[:_attachments].nil? || data[:_attachments].empty?
+      data.delete('_attachments') if data['_attachments'].nil? || data['_attachments'].empty?
       return data.to_json
     end
   end
@@ -130,7 +130,7 @@ module DataMapper
                 data = doc["value"]
                   collection.load(
                     query.fields.map do |property|
-                      property.typecast(data[property.field.to_s])
+                      property.typecast(data[property.field])
                     end
                   )
               end
@@ -141,7 +141,7 @@ module DataMapper
             Collection.new(query) do |collection|
               collection.load(
                 query.fields.map do |property|
-                  property.typecast(data[property.field.to_s])
+                  property.typecast(data[property.field])
                 end
               )
             end
@@ -167,7 +167,7 @@ module DataMapper
         if data
           query.model.load(
             query.fields.map do |property|
-              property.typecast(data[property.field.to_s])
+              property.typecast(data[property.field])
             end,
             query
           )

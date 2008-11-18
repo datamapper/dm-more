@@ -12,8 +12,8 @@ module DataMapper
           def add_attachment(file, options = {})
             unless (model.properties.has_property?(:attachments) &&
               model.properties[:attachments].type == DataMapper::Types::JsonObject &&
-              model.properties[:attachments].field == :_attachments)
-              raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
+              model.properties[:attachments].field == '_attachments')
+              raise ArgumentError, "Attachments require: property :attachments, JsonObject, :field => '_attachments'"
             end
 
             filename = File.basename(file.path)
@@ -45,8 +45,8 @@ module DataMapper
 
             unless (model.properties.has_property?(:attachments) &&
               model.properties[:attachments].type == DataMapper::Types::JsonObject &&
-              model.properties[:attachments].field == :_attachments)
-              raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
+              model.properties[:attachments].field == '_attachments')
+              raise ArgumentError, "Attachments require   property :attachments, JsonObject, :field => '_attachments'"
             end
 
             unless self.attachments && self.attachments[name]
@@ -74,8 +74,8 @@ module DataMapper
 
             unless (model.properties.has_property?(:attachments) &&
               model.properties[:attachments].type == DataMapper::Types::JsonObject &&
-              model.properties[:attachments].field == :_attachments)
-              raise ArgumentError, "Attachments require '  property :attachments, JsonObject, :field => :_attachments'"
+              model.properties[:attachments].field == '_attachments')
+              raise ArgumentError, "Attachments require   property :attachments, JsonObject, :field => '_attachments'"
             end
 
             unless self.id && self.attachments && self.attachments[name]

@@ -26,9 +26,9 @@ instead of the normal:
 include DataMapper::Resource
 
 This adds the following reserved properties (which have special meaning in Couch, so don't overwrite them):
-property :id, String, :key => true, :field => :_id
-property :rev, String, :field => :_rev
-property :attachments, DataMapper::Types::JsonObject, :field => :_attachments
+property :id, String, :key => true, :field => '_id'
+property :rev, String, :field => '_rev'
+property :attachments, DataMapper::Types::JsonObject, :field => '_attachments'
 
 You should now be able to use resources and their properties and have them stored to couchdb.
 NOTE: 'couchdb_type' is a reserved property, used to map documents to their ruby models.
