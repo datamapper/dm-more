@@ -48,7 +48,7 @@ module DataMapper
       def db_name
         result = @uri.path.scan(/^\/?([-_+%()$a-z0-9]+?)\/?$/).flatten[0]
         if result != nil
-          return Addressable::URI.unencode_segment(result)
+          return Addressable::URI.unencode_component(result)
         else
           raise StandardError, "Invalid database path: '#{@uri.path}'"
         end
@@ -56,7 +56,7 @@ module DataMapper
 
       # Returns the name of the CouchDB database after being escaped.
       def escaped_db_name
-        return Addressable::URI.encode_segment(
+        return Addressable::URI.encode_component(
           self.db_name, Addressable::URI::CharacterClasses::UNRESERVED)
       end
 
