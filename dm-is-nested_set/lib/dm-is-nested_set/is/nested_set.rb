@@ -163,8 +163,7 @@ module DataMapper
         # @raise <UnableToPositionError> if node is unable to calculate a new position for the element
         # @see move_without_saving
         def move(vector)
-          move_without_saving(vector)
-          save
+          move_without_saving(vector) && save
         end
 
         ##
