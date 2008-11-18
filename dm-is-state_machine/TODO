@@ -8,7 +8,7 @@ TODO
 * I am not real happy with spec/unit/dsl:
   - The specs are brittle.
   - The specs don't actually test much.
-  
+
   However, the integration specs are pretty thorough.  Maybe each
   serves their own purpose.
 
@@ -21,13 +21,13 @@ API QUESTIONS
   For example, instead of:
     light = TrafficLight.new
     light.color == "yellow"
-    
+
   We could possibly offer:
     light.yellow?
-    
+
   Advantages:
     - More compact syntax.
-    
+
   Disadvantages:
     - Namespace pollution
     - Possible namespace collision if you have more than one state machine

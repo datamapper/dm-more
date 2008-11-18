@@ -44,7 +44,7 @@ describe DataMapper::Model do
           :name => /\w+/.gen.capitalize,
           :price => /\d{4,5}/.gen.to_i
         }}
-        
+
         @default = DataMapper::Sweatshop.model_map[Widget][:default]
       end
 
@@ -84,7 +84,7 @@ describe DataMapper::Model do
       }}
 
       Order.gen.widgets.should_not be_empty
-    end    
+    end
   end
 
 
@@ -94,11 +94,11 @@ describe DataMapper::Model do
         :name  => "red",
         :price => 20
       }}
-      
+
       @widget = Widget.make(:red)
     end
 
-    it "creates an object from named attributes hash" do      
+    it "creates an object from named attributes hash" do
       @widget.name.should == "red"
       @widget.price.should == 20
     end
@@ -115,11 +115,11 @@ describe DataMapper::Model do
         :name  => "red",
         :price => 20
       }}
-      
+
       @widget = Widget.gen(:red)
     end
 
-    it "creates an object from named attributes hash" do      
+    it "creates an object from named attributes hash" do
       @widget.name.should == "red"
       @widget.price.should == 20
     end
@@ -141,7 +141,7 @@ describe DataMapper::Model do
         :name  => "giallo",
         :price => 30
       }}
-      
+
       @red    = Widget.gen(:red)
       @yellow = Widget.gen(:yellow)
     end
@@ -170,7 +170,7 @@ describe DataMapper::Model do
       @hash.should be_an_instance_of(Hash)
     end
 
-    it "returns stored attributes hash by name" do      
+    it "returns stored attributes hash by name" do
       @hash[:name].should == "red"
       @hash[:price].should == 20
     end

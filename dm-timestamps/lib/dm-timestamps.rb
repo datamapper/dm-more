@@ -26,7 +26,7 @@ module DataMapper
         end
       end
     end
-    
+
     module ClassMethods
       def timestamps(*args)
         if args.empty? then raise ArgumentError, "You need to pass at least one argument." end
@@ -43,13 +43,13 @@ module DataMapper
             unless TIMESTAMP_PROPERTIES.keys.include?(ts)
               raise InvalidTimestampName, "Invalid timestamp property '#{ts}'."
             end
-            
+
             property ts, DateTime
           end
         end
       end
     end
-    
+
     class InvalidTimestampName < RuntimeError; end
   end # module Timestamp
 

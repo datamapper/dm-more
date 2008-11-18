@@ -7,7 +7,7 @@ Install with the rest of the dm-more package, using:
 Setting up:
   The easiest way is to pass a full url, here is an example:
   "couchdb://localhost:5984/my_app_development"
-  
+
   You can break it out like this:
   "#{adapter}://#{host}:#{port}/#{database}"
   - adapter should be :couchdb
@@ -15,7 +15,7 @@ Setting up:
   - host (probably localhost)
   - port should be specified (couchdb defaults to port 5984)
 
-If you haven't you'll need to create this database.  
+If you haven't you'll need to create this database.
 The easiest way is with curl in the terminal, like so:
 'curl -X PUT localhost:5984/my_app_development'
 You should use the same address here as you did to connect (just leave out the 'couchdb://' part)
@@ -34,7 +34,7 @@ You should now be able to use resources and their properties and have them store
 NOTE: 'couchdb_type' is a reserved property, used to map documents to their ruby models.
 
 == Views
-Special consideration has been made to work with CouchDB views. 
+Special consideration has been made to work with CouchDB views.
 You should do ALL queries you'll be repeating this way, doing 'User.all(:something => 'this)' will work, but it is much slower and more inefficient than running views you already created.
 You define them in the model with the view function and use Model.auto_migrate! to add the views for that Model to the database, or DataMapper.auto_migrate! to add the views for all models to the database.
 

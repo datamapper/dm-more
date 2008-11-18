@@ -33,7 +33,7 @@ describe SlotMachine do
   end
 
   describe "in :off mode" do
-    
+
     before(:each) do
       @sm.mode = :off
       @sm.power_on = false
@@ -59,9 +59,9 @@ describe SlotMachine do
     end
 
   end
-  
+
   describe "in :idle mode" do
-    
+
     before(:each) do
       @sm.mode = :idle
       @sm.power_on = true
@@ -72,7 +72,7 @@ describe SlotMachine do
         @sm.turn_on!
       }.should raise_error(DataMapper::Is::StateMachine::InvalidEvent)
     end
-    
+
     it "turn_off! should work" do
       @sm.turn_off!
       @sm.mode.should == "off"
@@ -85,7 +85,7 @@ describe SlotMachine do
         @sm.turn_off!
       }.should raise_error(DataMapper::Is::StateMachine::InvalidEvent)
     end
-    
+
   end
 
 end

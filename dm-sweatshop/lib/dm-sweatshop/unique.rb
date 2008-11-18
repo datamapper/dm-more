@@ -30,19 +30,19 @@ module DataMapper
           set = UniqueWorker.unique_map[key] || Set.new
           result = block[]
           tries = 0
-          while set.include?(result) 
-            result = block[] 
+          while set.include?(result)
+            result = block[]
             tries += 1
 
             raise TooManyTriesException.new("Could not generate unique value after #{tries} attempts") if tries >= UniqueWorker::MAX_TRIES
           end
           set << result
           UniqueWorker.unique_map[key] = set
-        else  
+        else
           UniqueWorker.count_map ||= Hash.new() { 0 }
 
           key ||= UniqueWorker.key_for(&block)
-          result = block[UniqueWorker.count_map[key]] 
+          result = block[UniqueWorker.count_map[key]]
           UniqueWorker.count_map[key] += 1
         end
 

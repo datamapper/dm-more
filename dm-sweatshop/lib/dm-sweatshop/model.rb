@@ -46,7 +46,7 @@ module DataMapper
     #
     # @returns   [Hash]              existing instance of a model from the model map
     # @raises    NoFixtureExist      when requested fixture does not exist in the model map
-    # 
+    #
     # @api       public
     def generate_attributes(name = default_fauxture_name)
       Sweatshop.attributes(self, name)
@@ -62,7 +62,7 @@ module DataMapper
     #
     # @api       private
     #
-    # @returns   [DataMapper::Resource]    added instance 
+    # @returns   [DataMapper::Resource]    added instance
     def make(name = default_fauxture_name, attributes = {})
       name, attributes = default_fauxture_name, name if name.is_a? Hash
       Sweatshop.make(self, name, attributes)
@@ -74,7 +74,7 @@ module DataMapper
     #
     # @returns   [DataMapper::Resource]                   existing instance of a model from the record map
     # @raises     DataMapper::Sweatshop::NoFixtureExist   when requested fixture does not exist in the record map
-    # 
+    #
     # @api       public
     def pick(name = default_fauxture_name)
       Sweatshop.pick(self, name)

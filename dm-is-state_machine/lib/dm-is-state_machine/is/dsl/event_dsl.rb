@@ -48,7 +48,7 @@ module DataMapper
             machine.fire_event(name, self)
             send(:"#{column}=", machine.current_state_name)
           end
-          
+
           # Possible alternative to the above:
           # (class_eval is typically faster than define_method)
           #

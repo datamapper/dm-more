@@ -92,7 +92,7 @@ module DataMapper
           return unless initial_state = machine.find_state(initial)
           run_hook_if_present initial_state.options[:enter]
         end
-        
+
         # hook may be either a Proc or symbol
         def run_hook_if_present(hook)
           return unless hook

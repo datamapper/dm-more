@@ -20,13 +20,13 @@ module DataMapper
     # Those instances may or may not be new records.
     self.record_map = Hash.new {|h,k| h[k] = Hash.new {|h,k| h[k] = []}}
 
-    # Adds a Proc to model map. Proc must return a Hash of attributes. 
+    # Adds a Proc to model map. Proc must return a Hash of attributes.
     #
     # @param     klass      [Class, DataMapper::Resource]
     # @param     name       [Symbol]
     # @param     instance   [DataMapper::Resource]
     #
-    # @api       private    
+    # @api       private
     #
     # @returns   [Array]    model map
     def self.add(klass, name, &proc)
@@ -70,7 +70,7 @@ module DataMapper
     #
     # @api       private
     #
-    # @returns   [DataMapper::Resource]    added instance 
+    # @returns   [DataMapper::Resource]    added instance
     def self.make(klass, name, attributes = {})
       record(klass, name, klass.new(attributes(klass, name).merge(attributes)))
     end
@@ -82,7 +82,7 @@ module DataMapper
     #
     # @returns   [DataMapper::Resource]                   existing instance of a model from the record map
     # @raises     DataMapper::Sweatshop::NoFixtureExist   when requested fixture does not exist in the record map
-    # 
+    #
     # @api       private
     def self.pick(klass, name)
       self.record_map[klass][name.to_sym].pick || raise(NoFixtureExist, "no #{name} context fixtures have been generated for the #{klass} class")
@@ -95,7 +95,7 @@ module DataMapper
     #
     # @returns   [Hash]          existing instance of a model from the model map
     # @raises    NoFixtureExist  when requested fixture does not exist in the model map
-    # 
+    #
     # @api       private
     def self.attributes(klass, name)
       proc = model_map[klass][name.to_sym].pick

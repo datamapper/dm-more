@@ -49,11 +49,11 @@ module DataMapper
       def is_versioned(options = {})
         on = options[:on]
 
-        class << self; self end.class_eval do 
+        class << self; self end.class_eval do
           define_method :const_missing do |name|
             storage_name = Extlib::Inflection.tableize(self.name + "Version")
             model = DataMapper::Model.new(storage_name)
-            
+
             if name == :Version
               properties.each do |property|
                 options = property.options
@@ -61,7 +61,7 @@ module DataMapper
                 options[:serial] = false
                 model.property property.name, property.type, options
               end
-              
+
               self.const_set("Version", model)
             else
               super(name)
@@ -86,7 +86,7 @@ module DataMapper
             self.class::Version.create(self.attributes.merge(pending_version_attributes))
             self.pending_version_attributes.clear
           end
-          
+
           result
         end
 

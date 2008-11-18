@@ -13,10 +13,10 @@ module DataMapper
           #
           # TODO: change :column to :property
           attr_accessor :column
-          
+
           # The initial value of this Machine's state
           attr_accessor :initial
-          
+
           # The current value of this Machine's state
           #
           # This is the "primary control" of this Machine's state.  All
@@ -24,7 +24,7 @@ module DataMapper
           attr_accessor :current_state_name
 
           attr_accessor :events
-          
+
           attr_accessor :states
 
           def initialize(column, initial)

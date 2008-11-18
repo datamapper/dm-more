@@ -61,7 +61,7 @@ module DataMapper
     end
 
     # Calls save with a context of nil, thus skipping validations.
-    # 
+    #
     def save!
       save(nil)
     end

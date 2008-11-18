@@ -94,7 +94,7 @@ describe DataMapper::Is::StateMachine::Data::Machine do
       @machine.current_state.should == @on_state
       @machine.current_state_name.should == :on
     end
-    
+
   end
 
   # TODO: spec fire_event where :run_hook_if_present fires two times,
