@@ -194,7 +194,7 @@ module DataMapper
         resource[:values] = []
         entity_element.elements.each do |field_element|
           attribute = dm_model_class.properties(repository.name).find do |property|
-            property.name.to_s == field_element.name.to_s.gsub('-', '_')
+            property.name.to_s == field_element.name.to_s.tr('-', '_')
           end
           if attribute
             resource[:values] << field_element.text
