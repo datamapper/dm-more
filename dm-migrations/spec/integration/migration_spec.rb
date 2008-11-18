@@ -50,25 +50,15 @@ ADAPTERS.each do |adapter|
         [m1, m2, m3, m4].sort.should == [m1, m3, m2, m4]
       end
 
-      if ADAPTERS.include?(:sqlite3)
-        it "should extend with SQL::Sqlite3 when adapter is Sqlite3Adapter" do
-          migration = DataMapper::Migration.new(1, :sqlite3_adapter_test, :database => :sqlite3) { }
-          (class << migration.adapter; self; end).included_modules.should include(SQL::Sqlite3)
-        end
-      end
+      expected_module = {
+        :sqlite3  => lambda { SQL::Sqlite3 },
+        :mysql    => lambda { SQL::Mysql },
+        :postgres => lambda { SQL::Postgres }
+      }[adapter][]
 
-      if ADAPTERS.include?(:mysql)
-        it "should extend with SQL::Mysql when adapter is MysqlAdapter" do
-          migration = DataMapper::Migration.new(1, :mysql_adapter_test, :database => :mysql) { }
-          (class << migration.adapter; self; end).included_modules.should include(SQL::Mysql)
-        end
-      end
-
-      if ADAPTERS.include?(:postgres)
-        it "should extend with SQL::Postgres when adapter is PostgresAdapter" do
-          migration = DataMapper::Migration.new(1, :postgres_adapter_test, :database => :postgres) { }
-          (class << migration.adapter; self; end).included_modules.should include(SQL::Postgresql)
-        end
+      it "should extend with #{expected_module} when adapter is #{adapter}" do
+        migration = DataMapper::Migration.new(1, :"#{adapter}_adapter_test", :database => adapter) { }
+        (class << migration.adapter; self; end).included_modules.should include(expected_module)
       end
     end
 
