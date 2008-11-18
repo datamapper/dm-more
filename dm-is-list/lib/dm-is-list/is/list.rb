@@ -150,8 +150,7 @@ module DataMapper
         # @return <TrueClass, FalseClass> returns false if it cannot move to the position, otherwise true
         # @see move_without_saving
         def move(vector)
-          move_without_saving(vector)
-          save
+          move_without_saving(vector) && save
         end
 
         ##
@@ -166,6 +165,7 @@ module DataMapper
           minpos = self.class.list_options[:first]
           prepos = self.original_values[:position] || self.position
           maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : minpos
+
           newpos = case action
             when :highest     then minpos
             when :lowest      then maxpos

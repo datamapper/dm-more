@@ -24,19 +24,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       is :list, :scope => [:user_id]
     end
 
-    before :all do
+    before :each do
       User.auto_migrate!(:default)
       Todo.auto_migrate!(:default)
 
-      u1 = User.create!(:name => "Johnny")
-      Todo.create!(:user => u1, :title => "Write down what is needed in a list-plugin")
-      Todo.create!(:user => u1, :title => "Complete a temporary version of is-list")
-      Todo.create!(:user => u1, :title => "Squash bugs in nested-set")
+      u1 = User.create(:name => "Johnny")
+      Todo.create(:user => u1, :title => "Write down what is needed in a list-plugin")
+      Todo.create(:user => u1, :title => "Complete a temporary version of is-list")
+      Todo.create(:user => u1, :title => "Squash bugs in nested-set")
 
-      u2 = User.create!(:name => "Freddy")
-      Todo.create!(:user => u2, :title => "Eat tasty cupcake")
-      Todo.create!(:user => u2, :title => "Procrastinate on paid work")
-      Todo.create!(:user => u2, :title => "Go to sleep")
+      u2 = User.create(:name => "Freddy")
+      Todo.create(:user => u2, :title => "Eat tasty cupcake")
+      Todo.create(:user => u2, :title => "Procrastinate on paid work")
+      Todo.create(:user => u2, :title => "Go to sleep")
 
     end
 
@@ -79,11 +79,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it 'should rearrange items correctly when moving :lower' do
         repository(:default) do |repos|
-          Todo.get(3).position.should == 2
-          Todo.get(2).position.should == 3
-          Todo.get(3).move :lower
-          Todo.get(3).position.should == 3
           Todo.get(2).position.should == 2
+          Todo.get(3).position.should == 3
+          Todo.get(2).move :lower
+          Todo.get(2).position.should == 3
+          Todo.get(3).position.should == 2
 
           Todo.get(4).position.should == 1
         end
@@ -107,23 +107,22 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it 'should not rearrange when trying to move top-item up, or bottom item down' do
         repository(:default) do |repos|
-          Todo.get(6).position.should == 1
-          Todo.get(6).move(:higher).should == false
-          Todo.get(6).position.should == 1
+          Todo.get(4).position.should == 1
+          Todo.get(4).move(:higher).should == false
+          Todo.get(4).position.should == 1
 
-          Todo.get(1).position.should == 3
-          Todo.get(2).position.should == 1
-          Todo.get(1).move(:lower).should == false
+          Todo.get(6).position.should == 3
+          Todo.get(6).move(:lower).should == false
         end
       end
 
       it 'should rearrange items correctly when moving :above or :below' do
         repository(:default) do |repos|
-          Todo.get(6).position.should == 1
-          Todo.get(5).position.should == 3
-          Todo.get(6).move(:below => Todo.get(5))
+          Todo.get(4).position.should == 1
           Todo.get(6).position.should == 3
-          Todo.get(5).position.should == 2
+          Todo.get(4).move(:below => Todo.get(6))
+          Todo.get(4).position.should == 3
+          Todo.get(6).position.should == 2
         end
       end
     end
