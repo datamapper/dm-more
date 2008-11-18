@@ -50,10 +50,10 @@ describe "SQLite3 Extensions" do
 
       @col1 = mock('SQLite3 Column')
       @col2 = mock('SQLite3 Column')
-      SQL::Sqlite3::Column.stub!(:new).and_return(@col1, @col2)
     end
 
     it 'should initialize columns by querying the table' do
+      SQL::Sqlite3::Column.stub!(:new).and_return(@col1, @col2)
       @adapter.should_receive(:query_table).with('users').and_return([@cs1,@cs2])
       SQL::Sqlite3::Table.new(@adapter, 'users')
     end
@@ -65,6 +65,7 @@ describe "SQLite3 Extensions" do
     end
 
     it 'should set the @columns to the looked-up columns' do
+      SQL::Sqlite3::Column.stub!(:new).and_return(@col1, @col2)
       t = SQL::Sqlite3::Table.new(@adapter, 'users')
       t.columns.should == [@col1, @col2]
     end
