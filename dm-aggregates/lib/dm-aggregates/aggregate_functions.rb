@@ -160,7 +160,8 @@ module DataMapper
       query = scoped_query(query)
 
       if query.fields.any? { |p| p.kind_of?(Property) }
-        query.repository.aggregate(query.update(:unique => true))
+        # explicitly specify the fields to circumvent a bug in Query#update
+        query.repository.aggregate(query.update(:fields => query.fields, :unique => true))
       else
         query.repository.aggregate(query).first  # only return one row
       end
