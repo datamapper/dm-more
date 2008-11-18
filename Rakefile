@@ -9,6 +9,7 @@ include FileUtils
 # gems may depend on other member gems of dm-more
 gem_paths = %w[
   adapters/dm-couchdb-adapter
+  adapters/dm-ferret-adapter
   adapters/dm-rest-adapter
   dm-adjust
   dm-aggregates
@@ -17,14 +18,18 @@ gem_paths = %w[
   dm-constraints
   dm-is-list
   dm-is-nested_set
+  dm-is-remixable
+  dm-is-searchable
   dm-is-state_machine
   dm-is-tree
+  dm-is-versioned
   dm-migrations
   dm-observer
   dm-querizer
   dm-serializer
   dm-shorthand
   dm-sweatshop
+  dm-tags
   dm-timestamps
   dm-sweatshop
   dm-types
