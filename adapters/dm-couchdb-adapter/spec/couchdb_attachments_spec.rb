@@ -3,25 +3,27 @@ require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 require 'base64'
 require 'pathname'
 
-class NonCouch
-  include DataMapper::Resource
-
-  property :id, Serial
-end
-
-class Message
-  include DataMapper::CouchResource
-
-  property :content, String
-end
-
 describe DataMapper::Model do
 
-  before(:each) do
+  before do
+    Object.send(:remove_const, :NonCouch) if defined?(NonCouch)
+    class NonCouch
+      include DataMapper::Resource
+
+      property :id, Serial
+    end
+
+    Object.send(:remove_const, :Message) if defined?(Message)
+    class Message
+      include DataMapper::CouchResource
+
+      property :content, String
+    end
+
     @file = File.open(Pathname(__FILE__).dirname.expand_path + "testfile.txt", "r")
   end
 
-  after(:each) do
+  after do
     @file.close
   end
 
