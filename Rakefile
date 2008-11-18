@@ -151,3 +151,5 @@ namespace :dm do
     end
   end
 end
+
+task :default => :spec
