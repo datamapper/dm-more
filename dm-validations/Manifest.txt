@@ -14,6 +14,7 @@ lib/dm-validations/contextual_validators.rb
 lib/dm-validations/custom_validator.rb
 lib/dm-validations/format_validator.rb
 lib/dm-validations/formats/email.rb
+lib/dm-validations/formats/url.rb
 lib/dm-validations/generic_validator.rb
 lib/dm-validations/length_validator.rb
 lib/dm-validations/method_validator.rb
@@ -25,8 +26,6 @@ lib/dm-validations/uniqueness_validator.rb
 lib/dm-validations/validation_errors.rb
 lib/dm-validations/version.rb
 lib/dm-validations/within_validator.rb
-lib/dm-validations/formats/url.rb
-lib/dm-validations/formats/email.rb
 spec/integration/absent_field_validator_spec.rb
 spec/integration/acceptance_validator_spec.rb
 spec/integration/auto_validate_spec.rb
