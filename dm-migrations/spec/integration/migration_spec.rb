@@ -1,8 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-[:sqlite3, :mysql, :postgres].each do |adapter|
-  next unless eval("HAS_#{adapter.to_s.upcase}")
+ADAPTERS.each do |adapter|
   describe "Using Adapter #{adapter}, " do
     describe DataMapper::Migration, 'interface' do
       before do
@@ -51,21 +50,21 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
         [m1, m2, m3, m4].sort.should == [m1, m3, m2, m4]
       end
 
-      if HAS_SQLITE3
+      if ADAPTERS.include?(:sqlite3)
         it "should extend with SQL::Sqlite3 when adapter is Sqlite3Adapter" do
           migration = DataMapper::Migration.new(1, :sqlite3_adapter_test, :database => :sqlite3) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Sqlite3)
         end
       end
 
-      if HAS_MYSQL
+      if ADAPTERS.include?(:mysql)
         it "should extend with SQL::Mysql when adapter is MysqlAdapter" do
           migration = DataMapper::Migration.new(1, :mysql_adapter_test, :database => :mysql) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Mysql)
         end
       end
 
-      if HAS_POSTGRES
+      if ADAPTERS.include?(:postgres)
         it "should extend with SQL::Postgres when adapter is PostgresAdapter" do
           migration = DataMapper::Migration.new(1, :postgres_adapter_test, :database => :postgres) { }
           (class << migration.adapter; self; end).included_modules.should include(SQL::Postgresql)

@@ -5,26 +5,25 @@ require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-migrations'
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/migration_runner'
 
+ADAPTERS = []
 def load_driver(name, default_uri)
-  #return false if ENV['ADAPTER'] != name.to_s
 
   lib = "do_#{name}"
-
   begin
     gem lib, '~>0.9.7'
     require lib
     DataMapper.setup(name, default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
-    puts "Loaded #{name}"
+    ADAPTERS << name
     true
   rescue Gem::LoadError => e
-    warn "Could not load #{lib}: #{e}"
+    warn "dm-migrations specs will not be run against #{name} - Could not load #{lib}: #{e}."
     false
   end
 end
 
-ENV['ADAPTER'] ||= 'sqlite3'
+#ENV['ADAPTER'] ||= 'sqlite3'
 
-HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
-HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
-HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
+load_driver(:sqlite3,  'sqlite3::memory:')
+load_driver(:mysql,    'mysql://localhost/dm_core_test')
+load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')

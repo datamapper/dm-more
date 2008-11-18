@@ -1,8 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-[:sqlite3, :mysql, :postgres].each do |adapter|
-  next unless eval("HAS_#{adapter.to_s.upcase}")
+ADAPTERS.each do |adapter|
   describe "Using Adapter #{adapter}, " do
     describe 'empty migration runner' do
       it "should return an empty array if no migrations have been defined" do
