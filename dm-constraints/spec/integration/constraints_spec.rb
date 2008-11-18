@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-[HAS_MYSQL, HAS_POSTGRES].each do |adapter|
+ADAPTERS.each do |adapter|
 
   describe 'DataMapper::Constraints' do
 
