@@ -13,9 +13,9 @@ lib/dm-types/file_path.rb
 lib/dm-types/flag.rb
 lib/dm-types/ip_address.rb
 lib/dm-types/json.rb
-lib/dm-types/slug.rb
 lib/dm-types/regexp.rb
 lib/dm-types/serial.rb
+lib/dm-types/slug.rb
 lib/dm-types/uri.rb
 lib/dm-types/uuid.rb
 lib/dm-types/version.rb
@@ -28,6 +28,7 @@ spec/integration/ip_address_spec.rb
 spec/integration/json_spec.rb
 spec/integration/slug_spec.rb
 spec/integration/uri_spec.rb
+spec/integration/uuid_spec.rb
 spec/integration/yaml_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
