@@ -33,7 +33,6 @@ gem_paths = %w[
   dm-sweatshop
   dm-tags
   dm-timestamps
-  dm-sweatshop
 ]
 
 gems = gem_paths.map { |p| File.basename(p) }
