@@ -69,6 +69,7 @@ module DataMapper
             descendants.each do |model|
               if model.storage_exists?(repository_name)
                 adapter = model.repository(repository_name).adapter
+                next unless adapter.respond_to?(:destroy_constraints_statements)
                 statements = adapter.destroy_constraints_statements(repository_name, model)
                 statements.each {|stmt| adapter.execute(stmt) }
               end
@@ -79,6 +80,7 @@ module DataMapper
             descendants = DataMapper::Resource.descendants.to_a if descendants.empty?
             descendants.each do |model|
               adapter = model.repository(repository_name).adapter
+              next unless adapter.respond_to?(:create_constraints_statements)
               statements = adapter.create_constraints_statements(repository_name, model)
               statements.each {|stmt| adapter.execute(stmt) }
             end
