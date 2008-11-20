@@ -53,7 +53,7 @@ ADAPTERS.each do |adapter|
       expected_module = {
         :sqlite3  => lambda { SQL::Sqlite3 },
         :mysql    => lambda { SQL::Mysql },
-        :postgres => lambda { SQL::Postgres }
+        :postgres => lambda { SQL::Postgresql }
       }[adapter][]
 
       it "should extend with #{expected_module} when adapter is #{adapter}" do
