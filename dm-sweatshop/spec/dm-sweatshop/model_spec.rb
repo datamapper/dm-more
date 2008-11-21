@@ -142,8 +142,14 @@ describe DataMapper::Model do
         :price => 30
       }}
 
+      Widget.fix(:blue) {{
+        :name  => Proc.new { "b" + "lu" },
+        :price => 40
+      }}
+      
       @red    = Widget.gen(:red)
       @yellow = Widget.gen(:yellow)
+      @blue   = Widget.gen(:blue)
     end
 
     it "returns a pre existing object with named attributes hash" do
@@ -152,6 +158,10 @@ describe DataMapper::Model do
 
       @yellow.name.should == "giallo"
       @yellow.price.should == 30
+    end
+
+    it "expands callable values of attributes hash" do
+      @blue.name.should == "blu"
     end
   end
 

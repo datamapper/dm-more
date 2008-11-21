@@ -51,6 +51,14 @@ describe DataMapper::Sweatshop do
     end
   end
 
+  describe ".expand_callable_values" do
+    it 'evalues values that respond to call' do
+      DataMapper::Sweatshop.
+        expand_callable_values({ :value => Proc.new { "a" + "b" } }).
+        should == { :value => "ab" }
+    end
+  end
+
   describe ".attributes" do
     it "should return an attributes hash" do
       DataMapper::Sweatshop.add(Parent, :default) {{
@@ -68,6 +76,15 @@ describe DataMapper::Sweatshop do
       DataMapper::Sweatshop.add(Parent, :default, &proc)
       DataMapper::Sweatshop.attributes(Parent, :default).should == {:calls => 1}
       DataMapper::Sweatshop.attributes(Parent, :default).should == {:calls => 2}
+    end
+
+    it "expands callable values" do
+      DataMapper::Sweatshop.add(Parent, :default) do
+        { :value => Proc.new { "a" + "b" } }
+      end
+      DataMapper::Sweatshop.attributes(Parent, :default).should == {
+        :value => "ab"
+      }
     end
 
     it "should call attributes with the superclass if the class is not mapped" do

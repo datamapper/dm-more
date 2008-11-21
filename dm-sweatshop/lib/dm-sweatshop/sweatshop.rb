@@ -101,12 +101,31 @@ module DataMapper
       proc = model_map[klass][name.to_sym].pick
 
       if proc
-        proc.call
+        expand_callable_values(proc.call)
       elsif klass.superclass.is_a?(DataMapper::Model)
         attributes(klass.superclass, name)
       else
         raise NoFixtureExist, "#{name} fixture was not found for class #{klass}"
       end
+    end
+
+    # Returns a Hash with callable values evaluated.
+    #
+    # @param     hash     [Hash]
+    #
+    # @returns   [Hash]          existing instance of a model from the model map
+    #
+    # @api       private
+    def self.expand_callable_values(hash)
+      expanded = {}
+      hash.each do |key, value|
+        if value.respond_to?(:call)
+          expanded[key] = value.call
+        else
+          expanded[key] = value
+        end
+      end
+      expanded
     end
   end
 end
