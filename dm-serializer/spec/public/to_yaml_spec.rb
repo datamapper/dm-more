@@ -10,11 +10,6 @@ describe DataMapper::Serialize, '#to_yaml' do
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
-    @collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([10, 20, 'Berta', 'Guernsey'])
-    end
-
     @empty_collection = DataMapper::Collection.new(query) {}
     @harness = Class.new do
       def method_name
@@ -32,16 +27,6 @@ describe DataMapper::Serialize, '#to_yaml' do
   end
 
   it_should_behave_like "A serialization method"
-
-  it "serializes single resource to YAML" do
-    betsy = Cow.new(:id => 230, :composite => 22, :name => "Betsy", :breed => "Jersey")
-    deserialized_hash = YAML.load(betsy.to_yaml)
-
-    deserialized_hash[:id].should        == 230
-    deserialized_hash[:name].should      == "Betsy"
-    deserialized_hash[:composite].should == 22
-    deserialized_hash[:breed].should     == "Jersey"
-  end
 
   it "leaves out nil properties" do
     betsy = Cow.new(:id => 230, :name => "Betsy", :breed => "Jersey")

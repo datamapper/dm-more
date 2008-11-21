@@ -9,14 +9,6 @@ describe DataMapper::Serialize, '#to_xml' do
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
-    @time = DateTime.now
-
-
-    @collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([10, 20, 'Berta', 'Guernsey'])
-    end
-
     @empty_collection = DataMapper::Collection.new(query) {}
     @harness = Class.new do
       def method_name

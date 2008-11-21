@@ -80,15 +80,6 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_hash["name"].should == "mars"
   end
 
-  it "serializes resource to JSON" do
-    deserialized_hash = JSON.parse(Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus").to_json)
-
-    deserialized_hash["id"].should        == 1
-    deserialized_hash["composite"].should == 322
-    deserialized_hash["name"].should      == "Harry"
-    deserialized_hash["breed"].should     == "Angus"
-  end
-
   it "excludes nil attributes" do
     deserialized_hash = JSON.parse(Cow.new(:id => 1, :name => "Harry", :breed => "Angus").to_json)
 
@@ -156,13 +147,6 @@ describe DataMapper::Serialize, '#to_json' do
     berta["composite"].should == 20
     berta["name"].should be_nil
     berta["breed"].should be_nil
-  end
-
-  it "has higher presedence for :only option" do
-    deserialized_hash = JSON.parse(Planet.new(:name => "Mars", :aphelion => 249_209_300.4).to_json(:only => [:aphelion], :exclude => [:aphelion]))
-
-    deserialized_hash["name"].should be(nil)
-    deserialized_hash["aphelion"].should == 249_209_300.4
   end
 
   describe "multiple repositories" do
