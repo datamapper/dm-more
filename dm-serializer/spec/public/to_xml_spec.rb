@@ -23,9 +23,13 @@ describe DataMapper::Serialize, '#to_xml' do
         :to_xml
       end
 
-      def extract_value(result, key)
+      def extract_value(result, key, options = {})
         doc = REXML::Document.new(result)
-        element = doc.elements[1].elements[key]
+        if options[:index]
+          element = doc.elements[1].elements[options[:index] + 1].elements[key]
+        else
+          element = doc.elements[1].elements[key]
+        end
         value = element ? element.text : nil
         attributes = element ? element.attributes : {}
         boolean_conversions = {"true" => true, "false" => false}
@@ -37,26 +41,6 @@ describe DataMapper::Serialize, '#to_xml' do
   end
 
   it_should_behave_like "A serialization method"
-
-  it "should serialize a collection to XML" do
-    pending("Spec is invalid, need to use xml matchers rather than text match")
-    @collection.to_xml.should == <<-EOS.compress_lines(false)
-      <#{Extlib::Inflection.tableize("Cow")} type='array'>
-        <cow>
-          <id type='integer'>1</id>
-          <composite type='integer'>2</composite>
-          <name>Betsy</name>
-          <breed>Jersey</breed>
-        </cow>
-        <cow>
-          <id type='integer'>10</id>
-          <composite type='integer'>20</composite>
-          <name>Berta</name>
-          <breed>Guernsey</breed>
-        </cow>
-      </#{Extlib::Inflection.tableize("Cow")}>
-  EOS
-  end
 
   describe "multiple repositories" do
     before(:all) do

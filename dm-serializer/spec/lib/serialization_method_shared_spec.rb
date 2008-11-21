@@ -22,6 +22,25 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "breed"    ).should == 'Guernsey'
   end
 
+  it 'should serialize a collection' do
+    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+    collection = DataMapper::Collection.new(query) do |c|
+      c.load([1, 2, 'Betsy', 'Jersey'])
+      c.load([10, 20, 'Berta', 'Guernsey'])
+    end
+
+    result = collection.send(@harness.method_name)
+    @harness.extract_value(result, "id",        :index => 0).should == 1
+    @harness.extract_value(result, "name",      :index => 0).should == "Betsy"
+    @harness.extract_value(result, "composite", :index => 0).should == 2
+    @harness.extract_value(result, "breed",     :index => 0).should == "Jersey"
+
+    @harness.extract_value(result, "id",        :index => 1).should == 10
+    @harness.extract_value(result, "name",      :index => 1).should == "Berta"
+    @harness.extract_value(result, "composite", :index => 1).should == 20
+    @harness.extract_value(result, "breed",     :index => 1).should == "Guernsey"
+  end
+
   it "should only includes properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",

@@ -21,8 +21,12 @@ describe DataMapper::Serialize, '#to_json' do
         :to_json
       end
 
-      def extract_value(result, key)
-        JSON.parse(result)[key]
+      def extract_value(result, key, options = {})
+        if options[:index]
+          JSON.parse(result)[options[:index]][key]
+        else
+          JSON.parse(result)[key]
+        end
       end
     end.new
   end
@@ -112,22 +116,6 @@ describe DataMapper::Serialize, '#to_json' do
 
   it "should serialize an array of extended objects" do
     deserialized_collection = JSON.parse(@collection.to_a.to_json)
-    betsy = deserialized_collection.first
-    berta = deserialized_collection.last
-
-    betsy["id"].should        == 1
-    betsy["composite"].should == 2
-    betsy["name"].should      == "Betsy"
-    betsy["breed"].should     == "Jersey"
-
-    berta["id"].should        == 10
-    berta["composite"].should == 20
-    berta["name"].should      == "Berta"
-    berta["breed"].should     == "Guernsey"
-  end
-
-  it "serializes collections to JSON by serializing each member" do
-    deserialized_collection = JSON.parse(@collection.to_json)
     betsy = deserialized_collection.first
     berta = deserialized_collection.last
 

@@ -21,8 +21,12 @@ describe DataMapper::Serialize, '#to_yaml' do
         :to_yaml
       end
 
-      def extract_value(result, key)
-        YAML.load(result)[key.to_sym]
+      def extract_value(result, key, options = {})
+        if options[:index]
+          YAML.load(result)[options[:index]][key.to_sym]
+        else
+          YAML.load(result)[key.to_sym]
+        end
       end
     end.new
   end
@@ -47,23 +51,6 @@ describe DataMapper::Serialize, '#to_yaml' do
     deserialized_hash[:name].should      == "Betsy"
     deserialized_hash[:composite].should be(nil)
     deserialized_hash[:breed].should     == "Jersey"
-  end
-
-  it "serializes a collection to YAML" do
-    deserialized_collection = YAML.load(@collection.to_yaml)
-
-    betsy = deserialized_collection.first
-    berta = deserialized_collection.last
-
-    betsy[:id].should        == 1
-    betsy[:name].should      == "Betsy"
-    betsy[:composite].should == 2
-    betsy[:breed].should     == "Jersey"
-
-    berta[:id].should        == 10
-    berta[:name].should      == "Berta"
-    berta[:composite].should == 20
-    berta[:breed].should     == "Guernsey"
   end
 
   it "handles empty collections just fine" do
