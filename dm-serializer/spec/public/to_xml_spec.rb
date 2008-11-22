@@ -7,13 +7,9 @@ describe DataMapper::Serialize, '#to_xml' do
   #
 
   before(:all) do
-    @harness = Class.new do
+    @harness = Class.new(SerializerTestHarness) do
       def method_name
         :to_xml
-      end
-
-      def test(object, *args)
-        deserialize(object.send(method_name, *args))
       end
 
       protected

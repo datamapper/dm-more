@@ -15,13 +15,9 @@ describe DataMapper::Serialize, '#to_json' do
       c.load([10, 20, 'Berta', 'Guernsey'])
     end
 
-    @harness = Class.new do
+    @harness = Class.new(SerializerTestHarness) do
       def method_name
         :to_json
-      end
-
-      def test(object, *args)
-        deserialize(object.send(method_name, *args))
       end
 
       protected
