@@ -29,13 +29,4 @@ describe DataMapper::Serialize, '#to_yaml' do
 
   it_should_behave_like "A serialization method"
 
-  it "leaves out nil properties" do
-    betsy = Cow.new(:id => 230, :name => "Betsy", :breed => "Jersey")
-    deserialized_hash = YAML.load(betsy.to_yaml)
-
-    deserialized_hash[:id].should        == 230
-    deserialized_hash[:name].should      == "Betsy"
-    deserialized_hash[:composite].should be(nil)
-    deserialized_hash[:breed].should     == "Jersey"
-  end
 end

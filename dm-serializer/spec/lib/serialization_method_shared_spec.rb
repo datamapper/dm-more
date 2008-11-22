@@ -20,6 +20,16 @@ share_examples_for 'A serialization method' do
     result.values_at("id", "composite", "name", "breed").should == [89,  34, 'Berta', 'Guernsey']
   end
 
+  it 'should exclude nil properties' do
+    cow = Cow.new(
+      :id        => 89,
+      :name      => nil
+    )
+    
+    result = @harness.test(cow)
+    result.values_at("id", "composite").should == [89,  nil]
+  end
+
   it 'should serialize a collection' do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
     collection = DataMapper::Collection.new(query) do |c|

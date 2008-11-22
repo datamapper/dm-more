@@ -77,15 +77,6 @@ describe DataMapper::Serialize, '#to_json' do
     deserialized_hash["name"].should == "mars"
   end
 
-  it "excludes nil attributes" do
-    deserialized_hash = JSON.parse(Cow.new(:id => 1, :name => "Harry", :breed => "Angus").to_json)
-
-    deserialized_hash["id"].should        == 1
-    deserialized_hash["composite"].should be(nil)
-    deserialized_hash["name"].should      == "Harry"
-    deserialized_hash["breed"].should     == "Angus"
-  end
-
   it "should serialize an array of collections" do
     deserialized_collection = JSON.parse([@collection].to_json).first
     betsy = deserialized_collection.first

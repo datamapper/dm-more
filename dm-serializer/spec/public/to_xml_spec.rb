@@ -37,7 +37,7 @@ describe DataMapper::Serialize, '#to_xml' do
       def cast(value, type)
         boolean_conversions = {"true" => true, "false" => false}
         value = boolean_conversions[value] if boolean_conversions.has_key?(value)
-        value = value.to_i if type == "integer"
+        value = value.to_i if value && type == "integer"
         value
       end
     end.new
