@@ -91,4 +91,18 @@ share_examples_for 'A serialization method' do
     result = @harness.test(planet, :only => [:name], :exclude => [:name])
     result.values_at("name", "aphelion").should == ["Mars", nil]
   end
+
+  describe "multiple repositories" do
+    before(:all) do
+      QuantumCat.auto_migrate!
+      repository(:alternate){QuantumCat.auto_migrate!}
+    end
+
+    it "should use the repsoitory for the model" do
+      gerry = QuantumCat.create(:name => "gerry")
+      george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}
+      @harness.test(gerry )['is_dead'].should be(nil)
+      @harness.test(george)['is_dead'].should be(false)
+    end
+  end
 end

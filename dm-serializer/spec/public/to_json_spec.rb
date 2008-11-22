@@ -141,20 +141,6 @@ describe DataMapper::Serialize, '#to_json' do
     berta["breed"].should be_nil
   end
 
-  describe "multiple repositories" do
-    before(:all) do
-      QuantumCat.auto_migrate!
-      repository(:alternate){QuantumCat.auto_migrate!}
-    end
-
-    it "should use the repsoitory for the model" do
-      gerry = QuantumCat.create(:name => "gerry")
-      george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}
-      gerry.to_json.should_not match(/is_dead/)
-      george.to_json.should match(/is_dead/)
-    end
-  end
-
   it "supports :include option for one level depth"
 
   it "supports :include option for more than one level depth"

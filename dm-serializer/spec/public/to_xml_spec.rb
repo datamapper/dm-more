@@ -45,18 +45,4 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it_should_behave_like "A serialization method"
 
-  describe "multiple repositories" do
-    before(:all) do
-      QuantumCat.auto_migrate!
-      repository(:alternate){QuantumCat.auto_migrate!}
-    end
-
-    it "should use the repsoitory for the model" do
-      gerry = QuantumCat.create(:name => "gerry")
-      george = repository(:alternate){QuantumCat.create(:name => "george", :is_dead => false)}
-      gerry.to_xml.should_not match(/is_dead/)
-      george.to_xml.should match(/is_dead/)
-    end
-  end
-
 end
