@@ -45,4 +45,45 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it_should_behave_like "A serialization method"
 
+  describe 'Resource#xml_element_name' do
+    it 'should return the class name underscored by extlib' do
+      QuantumCat.new.send(:xml_element_name).should == Extlib::Inflection.underscore('QuantumCat')
+    end
+
+    it 'should be used as the root node name by #to_xml' do
+      planet = Planet.new
+      class << planet
+        def xml_element_name
+          "aplanet"
+        end
+      end
+
+      xml = planet.to_xml
+      REXML::Document.new(xml).elements[1].name.should == "aplanet"
+    end
+  end
+
+  describe 'Collection#xml_element_name' do
+    before(:each) do
+      query = DataMapper::Query.new(DataMapper::repository(:default), QuantumCat)
+      @collection = DataMapper::Collection.new(query)
+    end
+
+    it 'should return the class name tableized by extlib' do
+      @collection.send(:xml_element_name).should == Extlib::Inflection.tableize('QuantumCat')
+    end
+
+    it 'should be used as the root node name by #to_xml' do
+      planet = Planet.new
+      @collection.load([1])
+      class << @collection
+        def xml_element_name
+          "somanycats"
+        end
+      end
+
+      xml = @collection.to_xml
+      REXML::Document.new(xml).elements[1].name.should == "somanycats"
+    end
+  end
 end

@@ -2,10 +2,12 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 share_examples_for 'A serialization method' do
-  before do
+  before(:all) do
     %w[ @harness ].each do |ivar|
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_get(ivar)
     end
+
+    DataMapper.auto_migrate!
   end
 
   before(:each) do
