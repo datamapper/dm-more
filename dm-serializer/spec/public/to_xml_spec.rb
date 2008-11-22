@@ -7,9 +7,6 @@ describe DataMapper::Serialize, '#to_xml' do
   #
 
   before(:all) do
-    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-
-    @empty_collection = DataMapper::Collection.new(query) {}
     @harness = Class.new do
       def method_name
         :to_xml
@@ -28,6 +25,29 @@ describe DataMapper::Serialize, '#to_xml' do
         value = boolean_conversions[value] if boolean_conversions.has_key?(value)
         value = value.to_i if attributes["type"] == "integer"
         value
+      end
+
+      def cast(value, type)
+        boolean_conversions = {"true" => true, "false" => false}
+        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
+        value = value.to_i if type == "integer"
+        value
+      end
+
+      def deserialize(result)
+        doc = REXML::Document.new(result)
+        root = doc.elements[1]
+        if root.attributes["type"] == "array"
+          root.elements.collect do |element|
+            a = {}
+            element.elements.each do |v|
+              a.update(v.name => cast(v.text, v.attributes["type"]))
+            end
+            a
+          end
+        else  
+          raise "Unimplemented - XML deserialize for non array"
+        end
       end
     end.new
   end

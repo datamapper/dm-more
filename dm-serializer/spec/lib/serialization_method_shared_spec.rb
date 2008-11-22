@@ -41,6 +41,14 @@ share_examples_for 'A serialization method' do
     @harness.extract_value(result, "breed",     :index => 1).should == "Guernsey"
   end
 
+  it 'should serialize an empty collection' do
+    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+    collection = DataMapper::Collection.new(query) {}
+
+    result = collection.send(@harness.method_name)
+    @harness.deserialize(result).should be_empty
+  end
+
   it "should only includes properties given to :only option" do
     result = Planet.new(
       :name     => "Mars",

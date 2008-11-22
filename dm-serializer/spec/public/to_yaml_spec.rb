@@ -8,9 +8,6 @@ describe DataMapper::Serialize, '#to_yaml' do
   #
 
   before(:all) do
-    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-
-    @empty_collection = DataMapper::Collection.new(query) {}
     @harness = Class.new do
       def method_name
         :to_yaml
@@ -22,6 +19,10 @@ describe DataMapper::Serialize, '#to_yaml' do
         else
           YAML.load(result)[key.to_sym]
         end
+      end
+
+      def deserialize(result)
+        YAML.load(result)
       end
     end.new
   end
@@ -36,10 +37,6 @@ describe DataMapper::Serialize, '#to_yaml' do
     deserialized_hash[:name].should      == "Betsy"
     deserialized_hash[:composite].should be(nil)
     deserialized_hash[:breed].should     == "Jersey"
-  end
-
-  it "handles empty collections just fine" do
-    YAML.load(@empty_collection.to_yaml).should be_empty
   end
 
   describe "multiple repositories" do

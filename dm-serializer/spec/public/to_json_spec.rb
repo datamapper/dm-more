@@ -15,7 +15,6 @@ describe DataMapper::Serialize, '#to_json' do
       c.load([10, 20, 'Berta', 'Guernsey'])
     end
 
-    @empty_collection = DataMapper::Collection.new(query) {}
     @harness = Class.new do
       def method_name
         :to_json
@@ -27,6 +26,10 @@ describe DataMapper::Serialize, '#to_json' do
         else
           JSON.parse(result)[key]
         end
+      end
+
+      def deserialize(result)
+        JSON.parse(result)
       end
     end.new
   end
@@ -126,11 +129,6 @@ describe DataMapper::Serialize, '#to_json' do
 
     deserialized_hash["extra"].should == "Extra"
     deserialized_hash["another"].should == 42
-  end
-
-  it "handles empty collections just fine" do
-    deserialized_collection = JSON.parse(@empty_collection.to_json)
-    deserialized_collection.should be_empty
   end
 
   it "handles options given to a collection properly" do
