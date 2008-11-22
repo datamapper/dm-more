@@ -13,16 +13,20 @@ describe DataMapper::Serialize, '#to_yaml' do
         :to_yaml
       end
 
-      def extract_value(result, key, options = {})
-        if options[:index]
-          YAML.load(result)[options[:index]][key.to_sym]
-        else
-          YAML.load(result)[key.to_sym]
-        end
+      def test(object, *args)
+        deserialize(object.send(method_name, *args))
       end
 
+      protected
+
       def deserialize(result)
-        YAML.load(result)
+        stringify_keys = lambda {|hash| hash.inject({}) {|a, (key, value)| a.update(key.to_s => value) }}
+        result = YAML.load(result)
+        if result.is_a?(Array)
+          result.collect(&stringify_keys)
+        else
+          stringify_keys[result]
+        end
       end
     end.new
   end

@@ -12,27 +12,11 @@ describe DataMapper::Serialize, '#to_xml' do
         :to_xml
       end
 
-      def extract_value(result, key, options = {})
-        doc = REXML::Document.new(result)
-        if options[:index]
-          element = doc.elements[1].elements[options[:index] + 1].elements[key]
-        else
-          element = doc.elements[1].elements[key]
-        end
-        value = element ? element.text : nil
-        attributes = element ? element.attributes : {}
-        boolean_conversions = {"true" => true, "false" => false}
-        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
-        value = value.to_i if attributes["type"] == "integer"
-        value
+      def test(object, *args)
+        deserialize(object.send(method_name, *args))
       end
 
-      def cast(value, type)
-        boolean_conversions = {"true" => true, "false" => false}
-        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
-        value = value.to_i if type == "integer"
-        value
-      end
+      protected
 
       def deserialize(result)
         doc = REXML::Document.new(result)
@@ -46,8 +30,19 @@ describe DataMapper::Serialize, '#to_xml' do
             a
           end
         else  
-          raise "Unimplemented - XML deserialize for non array"
+          a = {}
+          root.elements.each do |v|
+            a.update(v.name => cast(v.text, v.attributes["type"]))
+          end
+          a
         end
+      end
+
+      def cast(value, type)
+        boolean_conversions = {"true" => true, "false" => false}
+        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
+        value = value.to_i if type == "integer"
+        value
       end
     end.new
   end

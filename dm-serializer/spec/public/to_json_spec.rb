@@ -20,13 +20,11 @@ describe DataMapper::Serialize, '#to_json' do
         :to_json
       end
 
-      def extract_value(result, key, options = {})
-        if options[:index]
-          JSON.parse(result)[options[:index]][key]
-        else
-          JSON.parse(result)[key]
-        end
+      def test(object, *args)
+        deserialize(object.send(method_name, *args))
       end
+
+      protected
 
       def deserialize(result)
         JSON.parse(result)

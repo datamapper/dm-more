@@ -9,17 +9,15 @@ share_examples_for 'A serialization method' do
   end
   
   it 'should serialize a resource' do
-    result = Cow.new(
+    cow = Cow.new(
       :id        => 89,
       :composite => 34,
       :name      => 'Berta',
       :breed     => 'Guernsey'
-    ).send(@harness.method_name)
+    )
     
-    @harness.extract_value(result, "id"       ).should == 89
-    @harness.extract_value(result, "composite").should == 34
-    @harness.extract_value(result, "name"     ).should == 'Berta'
-    @harness.extract_value(result, "breed"    ).should == 'Guernsey'
+    result = @harness.test(cow)
+    result.values_at("id", "composite", "name", "breed").should == [89,  34, 'Berta', 'Guernsey']
   end
 
   it 'should serialize a collection' do
@@ -29,73 +27,68 @@ share_examples_for 'A serialization method' do
       c.load([10, 20, 'Berta', 'Guernsey'])
     end
 
-    result = collection.send(@harness.method_name)
-    @harness.extract_value(result, "id",        :index => 0).should == 1
-    @harness.extract_value(result, "name",      :index => 0).should == "Betsy"
-    @harness.extract_value(result, "composite", :index => 0).should == 2
-    @harness.extract_value(result, "breed",     :index => 0).should == "Jersey"
-
-    @harness.extract_value(result, "id",        :index => 1).should == 10
-    @harness.extract_value(result, "name",      :index => 1).should == "Berta"
-    @harness.extract_value(result, "composite", :index => 1).should == 20
-    @harness.extract_value(result, "breed",     :index => 1).should == "Guernsey"
+    result = @harness.test(collection)
+    result[0].values_at("id", "composite", "name", "breed").should == [1,  2, 'Betsy', 'Jersey']
+    result[1].values_at("id", "composite", "name", "breed").should == [10,  20, 'Berta', 'Guernsey']
   end
 
   it 'should serialize an empty collection' do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
     collection = DataMapper::Collection.new(query) {}
 
-    result = collection.send(@harness.method_name)
-    @harness.deserialize(result).should be_empty
+    result = @harness.test(collection)
+    result.should be_empty
   end
 
   it "should only includes properties given to :only option" do
-    result = Planet.new(
+    planet = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(@harness.method_name, :only => [:name])
+    )
 
-    @harness.extract_value(result, "name").should == "Mars"
-    @harness.extract_value(result, "aphelion").should be(nil)
+    result = @harness.test(planet, :only => [:name])
+    result.values_at("name", "aphelion").should == ["Mars", nil]
   end
 
   it "should serialize values returned by methods given to :methods option" do
-    result = Planet.new(
+    planet = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(@harness.method_name, :methods => [:category, :has_known_form_of_life?])
-    
-    @harness.extract_value(result, "category").should == "terrestrial"
-    @harness.extract_value(result, "has_known_form_of_life?").should be(false)
+    )
+
+    result = @harness.test(planet, :methods => [:category, :has_known_form_of_life?])
+    # XML currently can't serialize ? at the end of method names
+    boolean_method_name = @harness.method_name == :to_xml ? "has_known_form_of_life" : "has_known_form_of_life?"
+    result.values_at("category", boolean_method_name).should == ["terrestrial", false]
   end
 
   it "should only include properties given to :only option" do
-    result = Planet.new(
+    planet = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(@harness.method_name, :only => [:name])
+    )
 
-    @harness.extract_value(result, "name").should == "Mars"
-    @harness.extract_value(result, "aphelion").should be(nil)
+    result = @harness.test(planet, :only => [:name])
+    result.values_at("name", "aphelion").should == ["Mars", nil]
   end
 
   it "should exclude properties given to :exclude option" do
-    result = Planet.new(
+    planet = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(@harness.method_name, :exclude => [:aphelion])
+    )
 
-    @harness.extract_value(result, "name").should == "Mars"
-    @harness.extract_value(result, "aphelion").should be(nil)
+    result = @harness.test(planet, :exclude => [:aphelion])
+    result.values_at("name", "aphelion").should == ["Mars", nil]
   end
 
   it "should give higher precendence to :only option over :exclude" do
-    result = Planet.new(
+    planet = Planet.new(
       :name     => "Mars",
       :aphelion => 249_209_300.4
-    ).send(@harness.method_name, :only => [:name], :exclude => [:name])
+    )
 
-    @harness.extract_value(result, "name").should == "Mars"
-    @harness.extract_value(result, "aphelion").should be(nil)
+    result = @harness.test(planet, :only => [:name], :exclude => [:name])
+    result.values_at("name", "aphelion").should == ["Mars", nil]
   end
 end
