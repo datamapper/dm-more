@@ -7,6 +7,12 @@ share_examples_for 'A serialization method' do
       raise "+#{ivar}+ should be defined in before block" unless instance_variable_get(ivar)
     end
   end
+
+  before(:each) do
+    Cow.all.destroy!
+    Planet.all.destroy!
+    FriendedPlanet.all.destroy!
+  end
   
   it 'should serialize a resource' do
     cow = Cow.new(
@@ -100,6 +106,43 @@ share_examples_for 'A serialization method' do
 
     result = @harness.test(planet, :only => [:name], :exclude => [:name])
     result.values_at("name", "aphelion").should == ["Mars", nil]
+  end
+
+  it "serializes a one to many relationship" do
+    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+    parent.save
+    baby.save
+
+    result = @harness.test(parent.baby_cows)
+    result.should be_kind_of(Array)
+
+    result[0].values_at(*%w{id composite name breed}).should == [2, 321, "Felix", "Angus"]
+  end
+
+  it "serializes a many to one relationship" do
+    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+    parent.save
+    baby.save
+
+    result = @harness.test(baby.mother_cow)
+    result.should be_kind_of(Hash)
+    result.values_at(*%w{id composite name breed}).should == [1, 322, "Harry", "Angus"]
+  end
+
+  it "serializes a many to many relationship" do
+    p1 = Planet.create(:name => 'earth')
+    p2 = Planet.create(:name => 'mars')
+
+    FriendedPlanet.create(:planet => p1, :friend_planet => p2)
+
+    result = @harness.test(p1.reload.friend_planets)
+    result.should be_kind_of(Array)
+
+    result[0]["name"].should == "mars"
   end
 
   describe "multiple repositories" do
