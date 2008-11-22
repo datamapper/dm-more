@@ -14,138 +14,142 @@ share_examples_for 'A serialization method' do
     FriendedPlanet.all.destroy!
   end
   
-  it 'should serialize a resource' do
-    cow = Cow.new(
-      :id        => 89,
-      :composite => 34,
-      :name      => 'Berta',
-      :breed     => 'Guernsey'
-    )
-    
-    result = @harness.test(cow)
-    result.values_at("id", "composite", "name", "breed").should == [89,  34, 'Berta', 'Guernsey']
-  end
-
-  it 'should exclude nil properties' do
-    cow = Cow.new(
-      :id        => 89,
-      :name      => nil
-    )
-    
-    result = @harness.test(cow)
-    result.values_at("id", "composite").should == [89,  nil]
-  end
-
-  it 'should serialize a collection' do
-    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([10, 20, 'Berta', 'Guernsey'])
+  describe '(serializing single resources)' do
+    it 'should serialize a resource' do
+      cow = Cow.new(
+        :id        => 89,
+        :composite => 34,
+        :name      => 'Berta',
+        :breed     => 'Guernsey'
+      )
+      
+      result = @harness.test(cow)
+      result.values_at("id", "composite", "name", "breed").should == [89,  34, 'Berta', 'Guernsey']
     end
 
-    result = @harness.test(collection)
-    result[0].values_at("id", "composite", "name", "breed").should == [1,  2, 'Betsy', 'Jersey']
-    result[1].values_at("id", "composite", "name", "breed").should == [10,  20, 'Berta', 'Guernsey']
+    it 'should exclude nil properties' do
+      cow = Cow.new(
+        :id        => 89,
+        :name      => nil
+      )
+      
+      result = @harness.test(cow)
+      result.values_at("id", "composite").should == [89,  nil]
+    end
+
+    it "should only includes properties given to :only option" do
+      planet = Planet.new(
+        :name     => "Mars",
+        :aphelion => 249_209_300.4
+      )
+
+      result = @harness.test(planet, :only => [:name])
+      result.values_at("name", "aphelion").should == ["Mars", nil]
+    end
+
+    it "should serialize values returned by methods given to :methods option" do
+      planet = Planet.new(
+        :name     => "Mars",
+        :aphelion => 249_209_300.4
+      )
+
+      result = @harness.test(planet, :methods => [:category, :has_known_form_of_life?])
+      # XML currently can't serialize ? at the end of method names
+      boolean_method_name = @harness.method_name == :to_xml ? "has_known_form_of_life" : "has_known_form_of_life?"
+      result.values_at("category", boolean_method_name).should == ["terrestrial", false]
+    end
+
+    it "should only include properties given to :only option" do
+      planet = Planet.new(
+        :name     => "Mars",
+        :aphelion => 249_209_300.4
+      )
+
+      result = @harness.test(planet, :only => [:name])
+      result.values_at("name", "aphelion").should == ["Mars", nil]
+    end
+
+    it "should exclude properties given to :exclude option" do
+      planet = Planet.new(
+        :name     => "Mars",
+        :aphelion => 249_209_300.4
+      )
+
+      result = @harness.test(planet, :exclude => [:aphelion])
+      result.values_at("name", "aphelion").should == ["Mars", nil]
+    end
+
+    it "should give higher precendence to :only option over :exclude" do
+      planet = Planet.new(
+        :name     => "Mars",
+        :aphelion => 249_209_300.4
+      )
+
+      result = @harness.test(planet, :only => [:name], :exclude => [:name])
+      result.values_at("name", "aphelion").should == ["Mars", nil]
+    end
   end
 
-  it 'should serialize an empty collection' do
-    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    collection = DataMapper::Collection.new(query) {}
+  describe "(collections and proxies)" do
+    it 'should serialize a collection' do
+      query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+      collection = DataMapper::Collection.new(query) do |c|
+        c.load([1, 2, 'Betsy', 'Jersey'])
+        c.load([10, 20, 'Berta', 'Guernsey'])
+      end
 
-    result = @harness.test(collection)
-    result.should be_empty
+      result = @harness.test(collection)
+      result[0].values_at("id", "composite", "name", "breed").should == [1,  2, 'Betsy', 'Jersey']
+      result[1].values_at("id", "composite", "name", "breed").should == [10,  20, 'Berta', 'Guernsey']
+    end
+
+    it 'should serialize an empty collection' do
+      query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+      collection = DataMapper::Collection.new(query) {}
+
+      result = @harness.test(collection)
+      result.should be_empty
+    end
+
+    it "serializes a one to many relationship" do
+      parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+      baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+      parent.save
+      baby.save
+
+      result = @harness.test(parent.baby_cows)
+      result.should be_kind_of(Array)
+
+      result[0].values_at(*%w{id composite name breed}).should == [2, 321, "Felix", "Angus"]
+    end
+
+    it "serializes a many to one relationship" do
+      parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
+      baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
+
+      parent.save
+      baby.save
+
+      result = @harness.test(baby.mother_cow)
+      result.should be_kind_of(Hash)
+      result.values_at(*%w{id composite name breed}).should == [1, 322, "Harry", "Angus"]
+    end
+
+    it "serializes a many to many relationship" do
+      p1 = Planet.create(:name => 'earth')
+      p2 = Planet.create(:name => 'mars')
+
+      FriendedPlanet.create(:planet => p1, :friend_planet => p2)
+
+      result = @harness.test(p1.reload.friend_planets)
+      result.should be_kind_of(Array)
+
+      result[0]["name"].should == "mars"
+    end
   end
 
-  it "should only includes properties given to :only option" do
-    planet = Planet.new(
-      :name     => "Mars",
-      :aphelion => 249_209_300.4
-    )
-
-    result = @harness.test(planet, :only => [:name])
-    result.values_at("name", "aphelion").should == ["Mars", nil]
-  end
-
-  it "should serialize values returned by methods given to :methods option" do
-    planet = Planet.new(
-      :name     => "Mars",
-      :aphelion => 249_209_300.4
-    )
-
-    result = @harness.test(planet, :methods => [:category, :has_known_form_of_life?])
-    # XML currently can't serialize ? at the end of method names
-    boolean_method_name = @harness.method_name == :to_xml ? "has_known_form_of_life" : "has_known_form_of_life?"
-    result.values_at("category", boolean_method_name).should == ["terrestrial", false]
-  end
-
-  it "should only include properties given to :only option" do
-    planet = Planet.new(
-      :name     => "Mars",
-      :aphelion => 249_209_300.4
-    )
-
-    result = @harness.test(planet, :only => [:name])
-    result.values_at("name", "aphelion").should == ["Mars", nil]
-  end
-
-  it "should exclude properties given to :exclude option" do
-    planet = Planet.new(
-      :name     => "Mars",
-      :aphelion => 249_209_300.4
-    )
-
-    result = @harness.test(planet, :exclude => [:aphelion])
-    result.values_at("name", "aphelion").should == ["Mars", nil]
-  end
-
-  it "should give higher precendence to :only option over :exclude" do
-    planet = Planet.new(
-      :name     => "Mars",
-      :aphelion => 249_209_300.4
-    )
-
-    result = @harness.test(planet, :only => [:name], :exclude => [:name])
-    result.values_at("name", "aphelion").should == ["Mars", nil]
-  end
-
-  it "serializes a one to many relationship" do
-    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
-    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
-
-    parent.save
-    baby.save
-
-    result = @harness.test(parent.baby_cows)
-    result.should be_kind_of(Array)
-
-    result[0].values_at(*%w{id composite name breed}).should == [2, 321, "Felix", "Angus"]
-  end
-
-  it "serializes a many to one relationship" do
-    parent = Cow.new(:id => 1, :composite => 322, :name => "Harry", :breed => "Angus")
-    baby = Cow.new(:mother_cow => parent, :id => 2, :composite => 321, :name => "Felix", :breed => "Angus")
-
-    parent.save
-    baby.save
-
-    result = @harness.test(baby.mother_cow)
-    result.should be_kind_of(Hash)
-    result.values_at(*%w{id composite name breed}).should == [1, 322, "Harry", "Angus"]
-  end
-
-  it "serializes a many to many relationship" do
-    p1 = Planet.create(:name => 'earth')
-    p2 = Planet.create(:name => 'mars')
-
-    FriendedPlanet.create(:planet => p1, :friend_planet => p2)
-
-    result = @harness.test(p1.reload.friend_planets)
-    result.should be_kind_of(Array)
-
-    result[0]["name"].should == "mars"
-  end
-
-  describe "multiple repositories" do
+  describe "(multiple repositories)" do
     before(:all) do
       QuantumCat.auto_migrate!
       repository(:alternate){QuantumCat.auto_migrate!}
