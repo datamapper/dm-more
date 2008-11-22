@@ -42,7 +42,7 @@ AUTHOR = "Sam Smoot"
 EMAIL  = "ssmoot@gmail.com"
 GEM_NAME = "dm-more"
 GEM_VERSION = DataMapper::More::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION], *(gems - %w[ ]).collect { |g| [g, GEM_VERSION] }]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], *gems.map { |g| [g, "~>#{GEM_VERSION}"] }]
 GEM_CLEAN = ['**/.DS_Store}', '*.db', "doc/rdoc", ".config", "**/{coverage,log,pkg}", "cache", "lib/merb-more.rb"]
 GEM_EXTRAS = { :has_rdoc => false }
 

@@ -66,7 +66,7 @@ describe DataMapper::Serialize, '#to_xml' do
   describe 'Collection#xml_element_name' do
     before(:each) do
       query = DataMapper::Query.new(DataMapper::repository(:default), QuantumCat)
-      @collection = DataMapper::Collection.new(query)
+      @collection = DataMapper::Collection.new(query) {}
     end
 
     it 'should return the class name tableized by extlib' do

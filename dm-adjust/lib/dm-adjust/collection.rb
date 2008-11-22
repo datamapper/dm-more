@@ -32,9 +32,16 @@ module DataMapper
       # if the query contains a raw sql-string, we cannot (truly) know, and must load.
       altered = query.conditions.detect{|c| adjust_attributes.include?(c[1]) || c[0] == :raw }
 
+      identity_map   = repository.identity_map(model)
+      key_properties = model.key(repository.name)
+
       if identity_map.any? && reload
-        reload_query = @key_properties.zip(identity_map.keys.transpose).to_hash
-        reload_query = all(reload_query.merge(:fields => @key_properties)).send(:keys) if altered
+        reload_query = key_properties.zip(identity_map.keys.transpose).to_hash
+
+        if altered
+          keys = all(reload_query.merge(:fields => key_properties)).map { |r| r.key }
+          reload_query = model.key(repository.name).zip(keys.transpose).to_hash
+        end
       end
 
       repository.adjust(adjust_attributes,scoped_query)

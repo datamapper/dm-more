@@ -19,6 +19,14 @@ Run 'rubyforge setup' to prepare your env for access to Rubyforge
   RUBYFORGE_USERNAME.replace @config["username"]
 end
 
+# Remove hoe dependency
+class Hoe
+  def extra_dev_deps
+    @extra_dev_deps.reject! { |dep| dep[0] == "hoe" }
+    @extra_dev_deps
+  end
+end
+
 hoe = Hoe.new(GEM_NAME, GEM_VERSION) do |p|
 
   p.developer(AUTHOR, EMAIL)

@@ -24,26 +24,24 @@ module DataMapper
         belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
         has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
 
-        before :save do
-          if self.new_record?
-            if !self.parent
-              # TODO must change for nested sets
-              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
-            elsif self.parent && !self.lft
-              self.move_without_saving(:into => self.parent)
-            end
-          else
+        before :create do
+          if !self.parent
+            # TODO must change for nested sets
+            self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
+          elsif self.parent && !self.lft
+            self.move_without_saving(:into => self.parent)
+          end
+        end
 
-            if self.nested_set_scope != self.original_nested_set_scope
-              # TODO detach from old list first. many edge-cases here, need good testing
-              self.lft,self.rgt = nil,nil
-              #puts "#{self.root.inspect} - #{[self.nested_set_scope,self.original_nested_set_scope].inspect}"
-              self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
-            elsif (self.parent && !self.lft) || (self.parent != self.ancestor)
-              # if the parent is set, we try to move this into that parent, otherwise move into root.
-              self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
-            end
-
+        before :update do
+          if self.nested_set_scope != self.original_nested_set_scope
+            # TODO detach from old list first. many edge-cases here, need good testing
+            self.lft,self.rgt = nil,nil
+            #puts "#{self.root.inspect} - #{[self.nested_set_scope,self.original_nested_set_scope].inspect}"
+            self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
+          elsif (self.parent && !self.lft) || (self.parent != self.ancestor)
+            # if the parent is set, we try to move this into that parent, otherwise move into root.
+            self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
           end
         end
 

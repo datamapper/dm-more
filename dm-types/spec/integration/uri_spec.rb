@@ -14,7 +14,7 @@ describe DataMapper::Types::URI do
 
   it "should work" do
     repository(:default) do
-      URITest.create!(:uri => 'http://localhost')
+      URITest.create(:uri => 'http://localhost')
     end
 
     URITest.first.uri.should == Addressable::URI.parse('http://localhost')

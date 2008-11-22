@@ -10,7 +10,7 @@ AUTHOR = "Paul Sadauskas"
 EMAIL  = "psadauskas@gmail.com"
 GEM_NAME = "dm-migrations"
 GEM_VERSION = DataMapper::Migration::VERSION
-GEM_DEPENDENCIES = [["dm-core", '~>0.9.7']]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 

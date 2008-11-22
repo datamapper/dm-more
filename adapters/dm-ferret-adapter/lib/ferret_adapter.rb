@@ -2,7 +2,7 @@ require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'ferret_adapter/version'
 
-gem 'dm-core', ">=#{DataMapper::More::FerretAdapter::VERSION}"
+gem 'dm-core', '~>0.9.7'
 require 'dm-core'
 
 gem "ferret"

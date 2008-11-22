@@ -60,7 +60,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it 'should rearrange items when setting position yourself' do
         repository(:default) do |repos|
-          Todo.get(2).update_attributes(:position => 1)
+          todo = Todo.get(2)
+          todo.position = 1
+          todo.save
+
           Todo.get(2).position.should == 1
           Todo.get(1).position.should == 2
         end

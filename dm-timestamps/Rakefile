@@ -10,7 +10,7 @@ AUTHOR = "Foy Savas"
 EMAIL  = "foysavas@gmail.com"
 GEM_NAME = "dm-timestamps"
 GEM_VERSION = DataMapper::Timestamps::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg", "coverage"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 

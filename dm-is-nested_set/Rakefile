@@ -10,7 +10,7 @@ AUTHOR = "Sindre Aarsaether"
 EMAIL  = "sindre [a] identu [d] no"
 GEM_NAME = "dm-is-nested_set"
 GEM_VERSION = DataMapper::Is::NestedSet::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 

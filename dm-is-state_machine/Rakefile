@@ -10,7 +10,7 @@ AUTHOR = "David James"
 EMAIL  = "djwonk [a] collectiveinsight [d] net"
 GEM_NAME = "dm-is-state_machine"
 GEM_VERSION = DataMapper::Is::StateMachine::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt README.markdown LICENSE TODO ] }
 

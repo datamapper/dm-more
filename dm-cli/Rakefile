@@ -10,7 +10,7 @@ AUTHOR = "Wayne E. Seguin"
 EMAIL  = "john@wishVPS.com"
 GEM_NAME = "dm-cli"
 GEM_VERSION = DataMapper::CLI::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ],
                :executables => %w[ dm ], :bindir => "bin" }

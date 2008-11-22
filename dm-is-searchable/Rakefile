@@ -10,7 +10,7 @@ AUTHOR = "Bernerd Schaefer"
 EMAIL  = "bernerd [a] wieck [d] com"
 GEM_NAME = "dm-is-searchable"
 GEM_VERSION = DataMapper::Is::Searchable::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE ] }
 

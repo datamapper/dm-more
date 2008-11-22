@@ -28,28 +28,28 @@ module DataMapper
 
         @list_options = options
 
-        before :save do
-          if self.new_record?
-            # a position has been set before save => open up and make room for item
-            # no position has been set => move to bottom of my scope-list (or keep detached?)
-            self.send(:move_without_saving, (self.position || :lowest))
+        before :create do
+          # a position has been set before save => open up and make room for item
+          # no position has been set => move to bottom of my scope-list (or keep detached?)
+          self.send(:move_without_saving, (self.position || :lowest))
+        end
+
+        before :update do
+          # if the scope has changed, we need to detach our item from the old list
+          if self.list_scope != self.original_list_scope
+            newpos = self.position
+
+            self.detach(self.original_list_scope) # removing from old list
+            self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
+
+          elsif self.attribute_dirty?(:position) && !self.moved
+            self.send(:move_without_saving, self.position)
           else
-            # if the scope has changed, we need to detach our item from the old list
-            if self.list_scope != self.original_list_scope
-              newpos = self.position
-
-              self.detach(self.original_list_scope) # removing from old list
-              self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
-
-            elsif self.attribute_dirty?(:position) && !self.moved
-              self.send(:move_without_saving, self.position)
-            else
-              self.moved = false
-            end
-            # a (new) position has been set => move item to this position (only if position has been set manually)
-            # the scope has changed => detach from old list, and possibly move into position
-            # the scope and position has changed => detach from old, move to pos in new
+            self.moved = false
           end
+          # a (new) position has been set => move item to this position (only if position has been set manually)
+          # the scope has changed => detach from old list, and possibly move into position
+          # the scope and position has changed => detach from old, move to pos in new
         end
 
         before :destroy do

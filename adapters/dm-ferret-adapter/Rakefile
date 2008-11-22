@@ -10,7 +10,7 @@ AUTHOR = "Bernerd Schaefer"
 EMAIL  = "bernerd@wieck.com"
 GEM_NAME = "dm-ferret-adapter"
 GEM_VERSION = DataMapper::More::FerretAdapter::VERSION
-GEM_DEPENDENCIES = [["dm-core", ">=#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 

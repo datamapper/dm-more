@@ -10,7 +10,7 @@ AUTHOR = "Ben Burkert"
 EMAIL  = "ben@benburkert.com"
 GEM_NAME = "dm-sweatshop"
 GEM_VERSION = DataMapper::Sweatshop::VERSION
-GEM_DEPENDENCIES = [["dm-core", GEM_VERSION], "randexp"]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], "randexp"]
 GEM_CLEAN = ["log", "pkg"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.textile LICENSE TODO ] }
 

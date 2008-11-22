@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
-gem 'dm-core', DataMapper::More::CouchDBAdapter::VERSION
+gem 'dm-core', '~>0.9.7'
 require 'dm-core'
 require 'json'
 require 'ostruct'

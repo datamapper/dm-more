@@ -177,7 +177,7 @@ module DataMapper
   # method, so it is delegated correctly to the Collection
   [
     Associations::OneToMany::Proxy,
-    Associations::ManyToOne::Proxy,
+    (Associations::ManyToOne::Proxy if defined?(Associations::ManyToOne::Proxy)),
     Associations::ManyToMany::Proxy
   ].each do |proxy|
     [:to_json].each do |method|
