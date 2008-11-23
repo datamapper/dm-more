@@ -3,7 +3,8 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Timestamp' do
-    before :all do
+    before do
+      Object.send(:remove_const, :GreenSmoothie) if defined?(GreenSmoothie)
       class GreenSmoothie
         include DataMapper::Resource
 
@@ -16,10 +17,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         auto_migrate!(:default)
       end
-    end
-
-    after do
-     repository(:default).adapter.execute('DELETE from green_smoothies');
     end
 
     it "should not set the created_at/on fields if they're already set" do

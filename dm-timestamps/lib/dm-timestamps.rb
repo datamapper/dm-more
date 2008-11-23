@@ -5,53 +5,52 @@ require 'dm-core'
 
 module DataMapper
   module Timestamp
+    Resource.append_inclusions self
+
     TIMESTAMP_PROPERTIES = {
-      :updated_at => lambda { |r| r.updated_at = DateTime.now },
-      :updated_on => lambda { |r| r.updated_on = Date.today   },
-      :created_at => lambda { |r| r.created_at = DateTime.now if r.new_record? && r.created_at.nil? },
-      :created_on => lambda { |r| r.created_on = Date.today   if r.new_record? && r.created_on.nil?},
-    }
+      :updated_at => [ DateTime, lambda { |r| r.updated_at   = DateTime.now                  } ],
+      :updated_on => [ Date,     lambda { |r| r.updated_on   = Date.today                    } ],
+      :created_at => [ DateTime, lambda { |r| r.created_at ||= DateTime.now if r.new_record? } ],
+      :created_on => [ Date,     lambda { |r| r.created_on ||= Date.today   if r.new_record? } ],
+    }.freeze
 
     def self.included(model)
-      model.before :save, :set_timestamp_properties
-      model.send :extend, ClassMethods
+      model.before :create, :set_timestamps
+      model.before :update, :set_timestamps
+      model.extend ClassMethods
     end
 
     private
 
-    def set_timestamp_properties
-      if dirty?
-        self.class.properties.slice(*TIMESTAMP_PROPERTIES.keys).compact.each do |property|
-          TIMESTAMP_PROPERTIES[property.name][self] unless attribute_dirty?(property.name)
+    def set_timestamps
+      return unless dirty?
+      TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
+        if property = model.properties[name]
+          proc.call(self) unless attribute_dirty?(name)
         end
       end
     end
 
     module ClassMethods
-      def timestamps(*args)
-        if args.empty? then raise ArgumentError, "You need to pass at least one argument." end
+      def timestamps(*names)
+        raise ArgumentError, 'You need to pass at least one argument' if names.empty?
 
-        args.each do |ts|
-          case ts
-          when :at
-            property :created_at, DateTime
-            property :updated_at, DateTime
-          when :on
-            property :created_on, Date
-            property :updated_on, Date
-          else
-            unless TIMESTAMP_PROPERTIES.keys.include?(ts)
-              raise InvalidTimestampName, "Invalid timestamp property '#{ts}'."
-            end
-
-            property ts, DateTime
+        names.each do |name|
+          case name
+            when *TIMESTAMP_PROPERTIES.keys
+              type, proc = TIMESTAMP_PROPERTIES[name]
+              property name, type, :default => proc
+            when :at
+              timestamps(:created_at, :updated_at)
+            when :on
+              timestamps(:created_on, :updated_on)
+            else
+              raise InvalidTimestampName, "Invalid timestamp property name '#{name}'"
           end
         end
       end
-    end
+    end # module ClassMethods
 
     class InvalidTimestampName < RuntimeError; end
   end # module Timestamp
-
-  Resource::append_inclusions Timestamp
-end
+end # module DataMapper
