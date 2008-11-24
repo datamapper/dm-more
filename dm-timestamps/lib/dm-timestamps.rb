@@ -25,8 +25,8 @@ module DataMapper
     def set_timestamps
       return unless dirty?
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
-        if property = model.properties[name]
-          property.set(self, proc.call(self)) unless attribute_dirty?(name)
+        if model.properties.has_property?(name)
+          model.properties[name].set(self, proc.call(self)) unless attribute_dirty?(name)
         end
       end
     end
@@ -39,7 +39,7 @@ module DataMapper
           case name
             when *TIMESTAMP_PROPERTIES.keys
               type, proc = TIMESTAMP_PROPERTIES[name]
-              property name, type, :default => proc
+              property name, type
             when :at
               timestamps(:created_at, :updated_at)
             when :on
