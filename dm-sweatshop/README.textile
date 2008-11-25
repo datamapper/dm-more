@@ -288,6 +288,7 @@ The suggested way to use dm-sweatshop with test specs is to create a @spec/spec_
 <code>
   Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
 
+  require 'dm-sweatshop'
   require File.join(File.dirname(__FILE__), 'spec_fixtures')
 </code>
 </pre>
