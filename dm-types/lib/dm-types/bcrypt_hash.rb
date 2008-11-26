@@ -36,7 +36,7 @@ module DataMapper
           begin
             value.is_a?(BCrypt::Password) ? value : load(value, property)
           rescue BCrypt::Errors::InvalidHash
-             dump(value,property)
+            dump(value,property)
           end
         end
       end
