@@ -41,7 +41,37 @@ describe "DataMapper::Types::BCryptHash" do
       end
 
       it "should return nil if given nil" do
-        FilePath.load(nil, :property).should be_nil
+        BCryptHash.load(nil, :property).should be_nil
+      end
+    end
+
+    describe ".typecast" do
+      it "should return the crypted_password as a BCrypt::Password" do
+        BCryptHash.typecast(@crypted_password, :property).should be_an_instance_of(BCrypt::Password)
+      end
+
+      it "should match the password as a BCrypt::Password" do
+        BCryptHash.typecast(@crypted_password, :property).should == @clear_password
+      end
+
+      it "should return the string value of crypted_password as a BCrypt::Password" do
+        BCryptHash.typecast(@crypted_password.to_s, :property).should be_an_instance_of(BCrypt::Password)
+      end
+
+      it "should match the password as a string of the crypted_password" do
+        BCryptHash.typecast(@crypted_password.to_s, :property).should == @clear_password
+      end
+      
+      it "should return the password as a BCrypt::Password" do
+        BCryptHash.typecast(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
+      end
+
+      it "should match the password as clear_password" do
+        BCryptHash.typecast(@clear_password, :property).should == @clear_password
+      end
+
+      it "should return nil if given nil" do
+        BCryptHash.typecast(nil, :property).should be_nil
       end
     end
   else

@@ -39,6 +39,15 @@ describe "DataMapper::Types::BCryptHash" do
         @user.password.should == "D@t@Mapper R0cks!"
       end
 
+      it "should not change the password on save and reload" do
+        @user = User.first
+        v1 = @user.password.to_s
+        @user.save
+        @user.reload
+        v2 = @user.password.to_s
+        v1.should == v2
+      end
+
       it "should have a cost of BCrypt::Engine::DEFAULT_COST" do
         @user = User.first
         @user.password.cost.should == BCrypt::Engine::DEFAULT_COST
