@@ -37,8 +37,6 @@ module DataMapper
             value.is_a?(BCrypt::Password) ? value : BCrypt::Password.new(value)
           rescue BCrypt::Errors::InvalidHash
             BCrypt::Password.create(value, :cost => BCrypt::Engine::DEFAULT_COST)
-          rescue
-           raise $1
           end
         end
       end
