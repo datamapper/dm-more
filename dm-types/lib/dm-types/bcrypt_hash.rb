@@ -8,11 +8,11 @@ module DataMapper
       size 60
 
       def self.load(value, property)
-        value.nil? ? nil : typecast(value, property)
+        typecast(value, property)
       end
 
       def self.dump(value, property)
-        value.nil? ? nil : typecast(value, property).to_s
+        typecast(value, property)
       end
  
       def self.typecast(value, property)

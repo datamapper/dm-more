@@ -25,8 +25,8 @@ describe "DataMapper::Types::BCryptHash" do
     end
 
     describe ".dump" do
-      it "should return a crypted hash as a String" do
-        BCryptHash.dump(@clear_password, :property).should be_an_instance_of(String)
+      it "should return a crypted hash as a BCrypt::Password" do
+        BCryptHash.dump(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
       end
 
       it "should return a string that is 60 characters long" do
