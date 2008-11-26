@@ -34,9 +34,9 @@ module DataMapper
           nil
         else
           begin
-            value.is_a?(BCrypt::Password) ? value : BCrypt::Password.new(value)
+            value.is_a?(BCrypt::Password) ? value : load(value, property)
           rescue BCrypt::Errors::InvalidHash
-            BCrypt::Password.create(value, :cost => BCrypt::Engine::DEFAULT_COST)
+             dump(value,property)
           end
         end
       end
