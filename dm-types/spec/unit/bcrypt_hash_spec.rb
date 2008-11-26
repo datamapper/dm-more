@@ -15,15 +15,22 @@ describe "DataMapper::Types::BCryptHash" do
     before(:each) do
       @clear_password = "DataMapper R0cks!"
       @crypted_password = BCrypt::Password.create(@clear_password)
+      @nonstandard_type = 1
+
+      class TestType
+        @a = 1
+        @b = "Hi There"
+      end
+      @nonstandard_type2 = TestType.new
     end
 
     describe ".dump" do
-      it "should return a crypted hash as a BCrypt::Password" do
-        BCryptHash.dump(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
+      it "should return a crypted hash as a String" do
+        BCryptHash.dump(@clear_password, :property).should be_an_instance_of(String)
       end
 
       it "should return a string that is 60 characters long" do
-        BCryptHash.dump(@clear_password, :property).should have(60).characters
+        BCryptHash.dump(@clear_password, :property).to_s.should have(60).characters
       end
 
       it "should return nil if nil is passed" do
@@ -68,6 +75,22 @@ describe "DataMapper::Types::BCryptHash" do
 
       it "should match the password as clear_password" do
         BCryptHash.typecast(@clear_password, :property).should == @clear_password
+      end
+      
+      it "should encrypt any type that has to_s" do
+        BCryptHash.typecast(@nonstandard_type, :property).should be_an_instance_of(BCrypt::Password)
+      end
+
+      it "should match the non-standard type" do
+        BCryptHash.typecast(@nonstandard_type, :property).should == @nonstandard_type
+      end
+
+      it "should encrypt anything passed to it" do
+        BCryptHash.typecast(@nonstandard_type2, :property).should be_an_instance_of(BCrypt::Password)
+      end
+
+      it "should match user-defined types" do
+        BCryptHash.typecast(@nonstandard_type2, :property).should == @nonstandard_type2
       end
 
       it "should return nil if given nil" do
