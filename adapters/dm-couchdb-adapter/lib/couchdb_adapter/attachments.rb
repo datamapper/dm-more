@@ -31,7 +31,7 @@ module DataMapper
             else
               adapter = repository.adapter
               http = Net::HTTP.new(adapter.uri.host, adapter.uri.port)
-              uri = "#{attachment_path(name)}?rev=#{self.rev}"
+              uri = Addressable::URI.encode_component("#{attachment_path(name)}?rev=#{self.rev}")
               headers = {
                 'Content-Length' => data.size.to_s,
                 'Content-Type'   => content_type,
@@ -54,7 +54,7 @@ module DataMapper
             response = unless new_record?
               adapter = repository.adapter
               http = Net::HTTP.new(adapter.uri.host, adapter.uri.port)
-              uri = "#{attachment_path(name)}?rev=#{self.rev}"
+              uri = Addressable::URI.encode_component("#{attachment_path(name)}?rev=#{self.rev}")
               http.delete(uri, 'Content-Type' => attachment['content_type'])
             end
 
@@ -78,7 +78,7 @@ module DataMapper
             else
               adapter = repository.adapter
               http = Net::HTTP.new(adapter.uri.host, adapter.uri.port)
-              uri = attachment_path(name)
+              uri = Addressable::URI.encode_component(attachment_path(name))
               response, data = http.get(uri, 'Content-Type' => attachment['content_type'])
 
               unless response.kind_of?(Net::HTTPSuccess)
