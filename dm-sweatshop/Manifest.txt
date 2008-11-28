@@ -2,7 +2,6 @@ History.txt
 LICENSE
 Manifest.txt
 README.textile
-README.txt
 Rakefile
 TODO
 lib/dm-sweatshop.rb

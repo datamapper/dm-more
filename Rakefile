@@ -120,18 +120,13 @@ task :release_all do
   end
 end
 
-task :ci do
-  gem_paths.each do |gem_name|
-    Dir.chdir(gem_name){ sh("rake ci") }
+%w[ ci spec clean clobber check_manifest ].each do |command|
+  task command do
+    gem_paths.each do |gem_name|
+      Dir.chdir(gem_name){ sh("rake #{command}") }
+    end
   end
 end
-
-task :spec do
-  gem_paths.each do |gem_name|
-    Dir.chdir(gem_name){ sh("rake spec") }
-  end
-end
-
 
 namespace :dm do
   desc 'Run specifications'
