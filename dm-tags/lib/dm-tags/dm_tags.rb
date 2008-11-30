@@ -44,13 +44,13 @@ module DataMapper
             deleted_#{arg}.each do |name|
               tag = Tag.first(:name => name)
               tagging = #{arg.to_s.singular}_taggings.first(:tag_id => tag.id)
-              tagging.destroy
+              tagging.destroy unless tagging.nil?
               #{arg.to_s.singular}_taggings.reload
             end
             #{arg.to_s.singular}_list.each do |name|
               tag = Tag.first(:name => name)
               next if #{arg}.to_a.include?(tag)
-              tag = Tag.create!(:name => name) unless tag
+              tag = Tag.create(:name => name) unless tag
               #{arg.to_s.singular}_taggings << Tagging.new(:tag => tag, :taggable_type => self.class.to_s, :tag_context => "#{arg}")
             end
             self.frozen_#{arg.to_s.singular}_list = #{arg}.map{|#{arg.to_s.singular}| #{arg.to_s.singular}.name}.sort.join(',')
