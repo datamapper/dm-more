@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'spec'
-# require 'merb-core'
 require 'dm-core'
 require 'dm-validations'
 require File.dirname(__FILE__) + '/../lib/dm-tags'
