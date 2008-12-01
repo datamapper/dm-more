@@ -1,11 +1,12 @@
 class Tag
   include DataMapper::Resource
-  property :id, Integer, :serial => true
-  property :name, String, :nullable => false, :unique => true
+
+  property :id,   Serial
+  property :name, String, :nullable => false, :unique => true, :unique_index => true
 
   has n, :taggings
 
   def taggables
-    taggings.map{|tagging| tagging.taggable}
+    taggings.map{ |tagging| tagging.taggable }
   end
 end
