@@ -17,6 +17,19 @@ share_examples_for 'A serialization method' do
   end
   
   describe '(serializing single resources)' do
+    it 'should serialize Model.first' do
+      # At the moment this is implied by serializing a resource, but this
+      # test ensures the contract even if dm-core changes
+      Cow.create(
+        :id        => 89,
+        :composite => 34,
+        :name      => 'Berta',
+        :breed     => 'Guernsey'
+      )
+      result = @harness.test(Cow.first)
+      result.values_at("name", "breed").should == ["Berta", "Guernsey"]
+    end
+
     it 'should serialize a resource' do
       cow = Cow.new(
         :id        => 89,
@@ -93,6 +106,19 @@ share_examples_for 'A serialization method' do
   end
 
   describe "(collections and proxies)" do
+    it 'should serialize Model.all' do
+      # At the moment this is implied by serializing a collection, but this
+      # test ensures the contract even if dm-core changes
+      Cow.create(
+        :id        => 89,
+        :composite => 34,
+        :name      => 'Berta',
+        :breed     => 'Guernsey'
+      )
+      result = @harness.test(Cow.all)
+      result[0].values_at("name", "breed").should == ["Berta", "Guernsey"]
+    end
+
     it 'should serialize a collection' do
       query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
       collection = DataMapper::Collection.new(query) do |c|
