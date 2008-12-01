@@ -31,6 +31,7 @@ gem_paths = %w[
   dm-querizer
   dm-shorthand
   dm-sweatshop
+  dm-tags
   dm-timestamps
 ]
 
