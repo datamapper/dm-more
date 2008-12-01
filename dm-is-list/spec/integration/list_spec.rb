@@ -68,6 +68,24 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(1).position.should == 2
         end
       end
+
+      it 'should rearrange items when setting the position yourself multiple times' do
+        repository(:default) do |repos|
+          todo = Todo.get(2)
+          todo.position = 3
+          todo.save
+
+          Todo.get(2).position.should == 3
+          Todo.get(3).position.should == 2
+
+          todo = Todo.get(2)
+          todo.position = 2
+          todo.save
+
+          Todo.get(2).position.should == 2
+          Todo.get(3).position.should == 3
+        end
+      end
     end
 
     describe 'movement' do

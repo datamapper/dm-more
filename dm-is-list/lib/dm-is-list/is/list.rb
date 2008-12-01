@@ -38,15 +38,15 @@ module DataMapper
           # if the scope has changed, we need to detach our item from the old list
           if self.list_scope != self.original_list_scope
             newpos = self.position
-
             self.detach(self.original_list_scope) # removing from old list
             self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
-
           elsif self.attribute_dirty?(:position) && !self.moved
             self.send(:move_without_saving, self.position)
-          else
-            self.moved = false
           end
+
+          # on update, clean moved to prepare for the next change
+          self.moved = false
+
           # a (new) position has been set => move item to this position (only if position has been set manually)
           # the scope has changed => detach from old list, and possibly move into position
           # the scope and position has changed => detach from old, move to pos in new
