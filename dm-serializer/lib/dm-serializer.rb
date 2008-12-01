@@ -132,7 +132,7 @@ module DataMapper
     #
     # @return <String> name of this Resource
     def xml_element_name
-      Extlib::Inflection.underscore(self.class.name)
+      Extlib::Inflection.underscore(self.class.name).tr("/", "-")
     end
 
     # Return a REXML::Document representing this Resource
@@ -210,7 +210,7 @@ module DataMapper
 
     protected
     def xml_element_name
-      Extlib::Inflection.tableize(self.model.to_s)
+      Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")
     end
 
     def to_xml_document(opts={})
