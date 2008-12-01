@@ -8,10 +8,10 @@ module DataMapper
     Resource.append_inclusions self
 
     TIMESTAMP_PROPERTIES = {
-      :updated_at => [ DateTime, lambda { |r| DateTime.now                                    } ],
-      :updated_on => [ Date,     lambda { |r| Date.today                                      } ],
-      :created_at => [ DateTime, lambda { |r| r.created_at || (DateTime.now if r.new_record?) } ],
-      :created_on => [ Date,     lambda { |r| r.created_on || (Date.today   if r.new_record?) } ],
+      :updated_at => [ DateTime, lambda { |r, p| DateTime.now                                    } ],
+      :updated_on => [ Date,     lambda { |r, p| Date.today                                      } ],
+      :created_at => [ DateTime, lambda { |r, p| r.created_at || (DateTime.now if r.new_record?) } ],
+      :created_on => [ Date,     lambda { |r, p| r.created_on || (Date.today   if r.new_record?) } ],
     }.freeze
 
     def self.included(model)
@@ -26,7 +26,7 @@ module DataMapper
       return unless dirty?
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
         if model.properties.has_property?(name)
-          model.properties[name].set(self, proc.call(self)) unless attribute_dirty?(name)
+          model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)
         end
       end
     end
