@@ -60,8 +60,7 @@ module DataMapper
         end
       end if altered
 
-      return true
-
-    end # adjust
+      true
+    end
   end # Collection
 end # DataMapper

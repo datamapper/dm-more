@@ -1,6 +1,10 @@
 module DataMapper
   module Model
 
+    def adjust(attributes = {}, reload = false)
+      raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
+    end
+
     ##
     # increment or decrement attributes on all objects in a resource
     #
@@ -13,5 +17,5 @@ module DataMapper
     def adjust!(attributes,reload=false)
       all.adjust!(attributes,reload)
     end
-  end
-end
+  end # Model
+end # DataMapper

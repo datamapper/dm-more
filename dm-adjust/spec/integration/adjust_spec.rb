@@ -13,7 +13,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
   describe 'Adjust' do
 
-    before :all do
+    before do
       Person.auto_migrate!(:default)
       Person.create(:name => 'George', :age => 15)
       Person.create(:name => 'Puff',   :age => 18)
@@ -23,11 +23,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Person.create(:name => 'Amadeus',:age => 60)
     end
 
-    describe 'Resource#adjust!' do
+    describe 'Model#adjust!' do
       it 'should adjust values' do
         repository(:default) do
-          p = Person.get(1)
-          p.salary.should == 20000
           Person.adjust!({:salary => 1000},true)
           Person.all.each{|p| p.salary.should == 21000}
         end
@@ -51,9 +49,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it 'should load the query if conditions were adjusted' do
         repository(:default) do |repos|
-          @specific = Person.all(:salary => 25000)
+          @specific = Person.all(:salary => 20000)
           @specific.adjust!({:salary => 5000},true)
-          @specific.length.should == 2
+          @specific.length.should == 6
+        end
+      end
+    end
+
+    describe 'Resource#adjust' do
+      it 'should adjust the value' do
+        repository(:default) do |repos|
+          p = Person.get(1)
+          p.salary.should == 20000
+          p.adjust!({:salary => 1000},true)
+          p.salary.should == 21000
         end
       end
     end
