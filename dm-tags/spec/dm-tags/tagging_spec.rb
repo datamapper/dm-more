@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 include DataMapper::Tags
 
 describe Tagging do
-  before(:each) do
+  before do
     @tagging = Tagging.new
   end
 

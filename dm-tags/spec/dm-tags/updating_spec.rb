@@ -2,17 +2,35 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe "Tag", "when updating" do
+  before do
+    @tagged_model = TaggedModel.new
+  end
+
   it "should create itself" do
-    o = TaggedModel.new
-    o.tag_list = "abc, def, ghi"
-    o.skill_list = "Casablanca, Morocco"
-    o.save.should be_true
+    @tagged_model.tag_list = "abc, def, ghi"
+    @tagged_model.skill_list = "Casablanca, Morocco"
+    @tagged_model.save
+
+    @tagged_model.should_not be_new_record
+    @tagged_model.reload
+    @tagged_model.tags.map { |t| t.name }.should == %w[ abc def ghi ]
+    @tagged_model.skills.map { |t| t.name }.should == %w[ Casablanca Morocco ]
   end
 
   it "should update itself" do
-    o = TaggedModel.first
-    o.tag_list = "abc, def, xyz, jkl"
-    o.skill_list = "Sahara, Morocco"
-    o.save.should be_true
+    @tagged_model.save
+    @tagged_model.should_not be_new_record
+    @tagged_model.reload
+
+    @tagged_model.tags.should be_empty
+    @tagged_model.skills.should be_empty
+
+    @tagged_model.tag_list = "abc, def, xyz, jkl"
+    @tagged_model.skill_list = "Sahara, Morocco"
+    @tagged_model.save
+
+    @tagged_model.reload
+    @tagged_model.tags.map { |t| t.name }.should == %w[ abc def jkl xyz ]
+    @tagged_model.skills.map { |t| t.name }.should == %w[ Morocco Sahara ]
   end
 end

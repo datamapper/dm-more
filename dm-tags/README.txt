@@ -28,7 +28,7 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
 
   class MyModel
     include DataMapper::Resource
-    property :id, Integer, :serial => true
+    property :id, Serial
     has_tags_on :tags, :skills
   end
 
@@ -65,7 +65,7 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
 
   class TagsOnly
     include DataMapper::Resource
-    property :id, Integer, :serial => true
+    property :id, Serial
     has_tags
   end
 

@@ -2,12 +2,7 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe "Taggable" do
-  before(:each) do
-    TaggedModel.all.destroy!
-    AnotherTaggedModel.all.destroy!
-    DefaultTaggedModel.all.destroy!
-    UntaggedModel.all.destroy!
-    Tag.all.destroy!
+  before do
     @taggable = DefaultTaggedModel.new
   end
 
