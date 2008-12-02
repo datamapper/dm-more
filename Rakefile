@@ -124,7 +124,7 @@ end
 %w[ ci spec clean clobber check_manifest ].each do |command|
   task command do
     gem_paths.each do |gem_name|
-      Dir.chdir(gem_name){ sh("rake #{command}") }
+      Dir.chdir(gem_name){ sh("rake #{command}; true") }
     end
   end
 end
