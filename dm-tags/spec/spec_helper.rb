@@ -4,4 +4,6 @@ require 'dm-core'
 require 'dm-validations'
 require File.dirname(__FILE__) + '/../lib/dm-tags'
 require File.dirname(__FILE__) + '/classes'
-require File.dirname(__FILE__) + '/dm-setup'
+
+DataMapper.setup(:default, 'sqlite3::memory:')
+DataMapper.auto_migrate!

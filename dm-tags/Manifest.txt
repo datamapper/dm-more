@@ -12,7 +12,6 @@ lib/dm-tags/tag.rb
 lib/dm-tags/tagging.rb
 lib/dm-tags/version.rb
 spec/classes.rb
-spec/dm-setup.rb
 spec/dm-tags/dm_tags_spec.rb
 spec/dm-tags/tag_spec.rb
 spec/dm-tags/taggable_spec.rb

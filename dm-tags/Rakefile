@@ -24,4 +24,3 @@ namespace :jruby do
     sh %{#{SUDO} jruby -S gem install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources}, :verbose => false
   end
 end
-
