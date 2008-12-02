@@ -8,7 +8,6 @@ lib/dm-tags/dm_tags.rb
 lib/dm-tags/tag.rb
 lib/dm-tags/tagging.rb
 lib/dm-tags/version.rb
-setup.rb
 spec/classes.rb
 spec/dm-setup.rb
 spec/dm-tags/dm_tags_spec.rb
