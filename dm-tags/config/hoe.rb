@@ -37,7 +37,7 @@ end
 REV = nil
 # UNCOMMENT IF REQUIRED:
 # REV = YAML.load(`svn info`)['Revision']
-VERS = DataMapper::Tags::VERSION::STRING + (REV ? ".#{REV}" : "")
+VERS = DataMapper::Tags::VERSION + (REV ? ".#{REV}" : "")
 RDOC_OPTS = ['--quiet', '--title', 'dm-tags documentation',
     "--opname", "index.html",
     "--line-numbers",

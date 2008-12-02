@@ -3,7 +3,7 @@ require 'config/hoe' # setup Hoe + all gem configuration
 
 Dir['tasks/**/*.rake'].each { |rake| load rake }
 
-GEM_VERSION = DataMapper::Tags::VERSION::STRING
+GEM_VERSION = DataMapper::Tags::VERSION
 
 WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
 SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
