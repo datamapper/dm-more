@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/../spec_helper.rb'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe Tag do
   before(:each) do
