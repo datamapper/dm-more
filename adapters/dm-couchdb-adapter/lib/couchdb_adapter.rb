@@ -175,6 +175,30 @@ module DataMapper
       end
 
     protected
+
+      def normalize_uri(uri_or_options)
+        if uri_or_options.kind_of?(String) || uri_or_options.kind_of?(Addressable::URI)
+          uri_or_options = DataObjects::URI.parse(uri_or_options)
+        end
+
+        if uri_or_options.kind_of?(DataObjects::URI)
+          return uri_or_options
+        end
+
+        query = uri_or_options.except(:adapter, :username, :password, :host, :port, :database).map { |pair| pair.join('=') }.join('&')
+        query = nil if query.blank?
+
+        return DataObjects::URI.parse(Addressable::URI.new(
+          :scheme   => uri_or_options[:adapter].to_s,
+          :user     => uri_or_options[:username],
+          :password => uri_or_options[:password],
+          :host     => uri_or_options[:host],
+          :port     => uri_or_options[:port],
+          :path     => uri_or_options[:database],
+          :query    => query
+        ))
+      end
+
       def build_request(query)
         if query.view
           view_request(query)
