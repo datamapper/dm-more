@@ -146,7 +146,7 @@ describe DataMapper::Model do
         :name  => Proc.new { "b" + "lu" },
         :price => 40
       }}
-      
+
       @red    = Widget.gen(:red)
       @yellow = Widget.gen(:yellow)
       @blue   = Widget.gen(:blue)

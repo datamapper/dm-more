@@ -25,7 +25,7 @@ describe DataMapper::Serialize, '#to_xml' do
             end
             a
           end
-        else  
+        else
           a = {}
           root.elements.each do |v|
             a.update(v.name => cast(v.text, v.attributes["type"]))
@@ -47,7 +47,7 @@ describe DataMapper::Serialize, '#to_xml' do
 
   describe 'Resource#xml_element_name' do
     it 'should return the class name underscored and with slashes replaced with dashes' do
-      QuanTum::Cat.new.send(:xml_element_name).should == 'quan_tum-cat' 
+      QuanTum::Cat.new.send(:xml_element_name).should == 'quan_tum-cat'
     end
 
     it 'should be used as the root node name by #to_xml' do

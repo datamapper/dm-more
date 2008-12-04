@@ -15,7 +15,7 @@ share_examples_for 'A serialization method' do
     Planet.all.destroy!
     FriendedPlanet.all.destroy!
   end
-  
+
   describe '(serializing single resources)' do
     it 'should serialize Model.first' do
       # At the moment this is implied by serializing a resource, but this
@@ -37,7 +37,7 @@ share_examples_for 'A serialization method' do
         :name      => 'Berta',
         :breed     => 'Guernsey'
       )
-      
+
       result = @harness.test(cow)
       result.values_at("id", "composite", "name", "breed").should == [89,  34, 'Berta', 'Guernsey']
     end
@@ -47,7 +47,7 @@ share_examples_for 'A serialization method' do
         :id        => 89,
         :name      => nil
       )
-      
+
       result = @harness.test(cow)
       result.values_at("id", "composite").should == [89,  nil]
     end

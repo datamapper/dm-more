@@ -14,7 +14,7 @@ module DataMapper
       def self.dump(value, property)
         typecast(value, property)
       end
- 
+
       def self.typecast(value, property)
         if value.nil?
           nil

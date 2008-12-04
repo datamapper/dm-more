@@ -1,4 +1,4 @@
-# Yes, this crazy capitalization is intentional, 
+# Yes, this crazy capitalization is intentional,
 # to test xml root element name generation
 module QuanTum
   class Cat

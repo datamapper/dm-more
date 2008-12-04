@@ -68,7 +68,7 @@ describe "DataMapper::Types::BCryptHash" do
       it "should match the password as a string of the crypted_password" do
         BCryptHash.typecast(@crypted_password.to_s, :property).should == @clear_password
       end
-      
+
       it "should return the password as a BCrypt::Password" do
         BCryptHash.typecast(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
       end
@@ -76,7 +76,7 @@ describe "DataMapper::Types::BCryptHash" do
       it "should match the password as clear_password" do
         BCryptHash.typecast(@clear_password, :property).should == @clear_password
       end
-      
+
       it "should encrypt any type that has to_s" do
         BCryptHash.typecast(@nonstandard_type, :property).should be_an_instance_of(BCrypt::Password)
       end

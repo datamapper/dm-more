@@ -172,7 +172,7 @@ module DataMapper
     include Serialize
   end # module Resource
 
-  # the json gem adds Object#to_json, which breaks the DM proxies, since it 
+  # the json gem adds Object#to_json, which breaks the DM proxies, since it
   # happens *after* the proxy has been blank slated. This code removes the added
   # method, so it is delegated correctly to the Collection
   [

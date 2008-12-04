@@ -89,7 +89,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
-      
+
     describe "explicit property declaration" do
       before do
         Object.send(:remove_const, :GreenSmoothie) if defined?(GreenSmoothie)
@@ -155,7 +155,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           lambda { @klass.timestamps }.should raise_error(ArgumentError)
         end
       end
-      
+
       describe "behavior" do
         before do
           Object.send(:remove_const, :GreenSmoothie) if defined?(GreenSmoothie)
@@ -164,7 +164,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
             property :id, Integer, :serial => true
             property :name, String
-            
+
             timestamps :at, :on
 
             auto_migrate!(:default)
