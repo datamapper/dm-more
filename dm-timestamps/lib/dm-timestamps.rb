@@ -38,8 +38,8 @@ module DataMapper
         names.each do |name|
           case name
             when *TIMESTAMP_PROPERTIES.keys
-              type, proc = TIMESTAMP_PROPERTIES[name]
-              property name, type
+              type = TIMESTAMP_PROPERTIES[name].first
+              property name, type, :nullable => false
             when :at
               timestamps(:created_at, :updated_at)
             when :on
