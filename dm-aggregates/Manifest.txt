@@ -12,6 +12,8 @@ lib/dm-aggregates/model.rb
 lib/dm-aggregates/repository.rb
 lib/dm-aggregates/support/symbol.rb
 lib/dm-aggregates/version.rb
-spec/integration/aggregates_spec.rb
+spec/public/collection_spec.rb
+spec/public/model_spec.rb
+spec/public/shared/aggregate_shared_spec.rb
 spec/spec.opts
 spec/spec_helper.rb

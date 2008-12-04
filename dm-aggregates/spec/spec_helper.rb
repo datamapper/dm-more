@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-aggregates'
+
+SPEC_ROOT = Pathname(__FILE__).dirname.expand_path
+require SPEC_ROOT.parent + 'lib/dm-aggregates'
+Pathname.glob((SPEC_ROOT + '{lib,*/shared}/**/*.rb').to_s).each { |f| require f }
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
