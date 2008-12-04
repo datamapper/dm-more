@@ -23,7 +23,8 @@ module DataMapper
         tag = Tag.first(:name => string)
         conditions = {}
         conditions[:tag_id] = tag.id
-        conditions[:tag_context] = options[:on] if options[:on]
+        conditions[:tag_context] = options[:on] if options.has_key?(:on)
+        conditions[:taggable_type] = self.to_s
         Tagging.all(conditions).map { |tagging| tagging.taggable }
       end
 
