@@ -18,12 +18,12 @@ module DataMapper
   end
 
   module Adapters
-    class MysqlAdapter
-      include DataMapper::Constraints::MysqlAdapter::SQL
+    if defined?(MysqlAdapter)
+      MysqlAdapter.send :include, DataMapper::Constraints::MysqlAdapter::SQL
     end
 
-    class PostgresAdapter
-      include DataMapper::Constraints::PostgresAdapter::SQL
+    if defined?(PostgresAdapter)
+      PostgresAdapter.send :include, DataMapper::Constraints::PostgresAdapter::SQL
     end
   end
 end

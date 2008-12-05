@@ -57,7 +57,7 @@ ADAPTERS.each do |adapter|
     end
 
     it "should not be able to create related objects with a failing foreign key constraint" do
-      s = Stable.first(:order => [:id.desc])
+      s = Stable.create
       lambda { @c1 = Cow.create(:name => "Bea", :stable_id => s.id + 1) }.should raise_error
     end
 
