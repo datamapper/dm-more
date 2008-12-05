@@ -1,0 +1,12 @@
+History.txt
+LICENSE
+Manifest.txt
+README.txt
+Rakefile
+TODO
+lib/dm-is-viewable.rb
+lib/dm-is-viewable/is/viewable.rb
+lib/dm-is-viewable/is/version.rb
+spec/integration/viewable_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
