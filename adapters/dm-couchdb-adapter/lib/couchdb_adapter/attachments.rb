@@ -1,6 +1,9 @@
 require 'base64'
-require 'mime/types'
 require 'net/http'
+require 'rubygems'
+
+gem 'mime-types', '~>1.15'
+require 'mime/types'
 
 module DataMapper
   module CouchResource
