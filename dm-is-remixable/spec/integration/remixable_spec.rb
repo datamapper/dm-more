@@ -290,28 +290,21 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       User.new.respond_to?(:user_addresses).should be(true)
     end
     
-    # Example:
-    # User.remixes n, :images, :as => "pics"
-    # User.pics should be a QueryPath instead of User.user_images
-    #
-    it 'should bind optional accessors the the QueryPath when used' do
-      pending
-    end
-    
-    # Example:
-    # Submission.remixes n, :comments
-    #
-    # Comment(:submission) => SubmissionComment
-    #
-    it 'should act as a factory for all generated remixed classes' do
-      pending
-    end
-    
-    # Example:
+    # Currently:
     #   Submission.remixes n, :comments
     #   SubmissionComment.new.user = User.first => throws exception, accessor name is 'users' instead
     #
-    it 'should pluralize accessor names correctly given the type of relationship' do
+    # Example:
+    #   User.remix 1, :images 
+    #     # => User.image & UserImage.user
+    #
+    #   User.remix n, :images 
+    #     # => User.images & UserImage.user
+    #   
+    #   User.remix n, :comments, :for => 'User', :via => 'commentor'
+    #     # => User.comments & UserComment.user & UserComment.commentor
+    #
+    it 'should pluralize accessor names with respect to cardinality' do
       pending
     end
     
