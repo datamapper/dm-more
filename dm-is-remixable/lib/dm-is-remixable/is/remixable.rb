@@ -55,7 +55,7 @@ module DataMapper
         extend  DataMapper::Is::Remixable::RemixeeClassMethods
         include DataMapper::Is::Remixable::RemixeeInstanceMethods
         @is_remixable = true
-        
+
         # support clean suffixes for nested modules
         default_suffix = Extlib::Inflection.demodulize(self.name).singular.snake_case
         suffix(options.delete(:suffix) || default_suffix)
@@ -353,7 +353,7 @@ module DataMapper
           if Object.full_const_defined? "#{remixable}::RemixeeInstanceMethods"
             model.send :include, Object.full_const_get("#{remixable}::RemixeeInstanceMethods")
           end
-          
+
           model
         end
 
@@ -362,7 +362,7 @@ module DataMapper
       # - RemixeeClassMethods
       # ==== Description
       #   Methods available to any model that is :remixable
-      module RemixeeClassMethods                
+      module RemixeeClassMethods
         # - suffix
         # ==== Description
         #   modifies the storage name suffix, which is by default based on the Remixable Module name

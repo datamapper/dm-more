@@ -10,13 +10,13 @@ Adds simple SQL View-like functionality to DataMapper.  It helps keep your queri
 class User
   include DataMapper::Resource
 
-	is :viewable
-	
-	# After the name symbol you can treat supply anything that would work in Resource#all
-	create_view :legal_women, :active => true, :age.gt => 18, :gender => :female
-	create_view :legal_people, :active => true, :age.gt => 18
-	
-	#... Your code here ...
+ is :viewable
+
+ # After the name symbol you can treat supply anything that would work in Resource#all
+ create_view :legal_women, :active => true, :age.gt => 18, :gender => :female
+ create_view :legal_people, :active => true, :age.gt => 18
+
+ #... Your code here ...
 end
 
 @users = User.view :legal_women # :)
@@ -25,7 +25,7 @@ end
 @users = User.view :legal_women, :city => 'Los Angeles'
 # => Only finds women in LA
 
-@users = User.view :legal_people, :gender => :male 
+@users = User.view :legal_people, :gender => :male
 # => Finds dudes if thats what you are into.
 
 # Remember, views restrict results so the following would return nothing

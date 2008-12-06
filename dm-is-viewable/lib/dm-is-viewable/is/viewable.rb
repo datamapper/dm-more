@@ -14,7 +14,7 @@ module DataMapper
       # does not get cluttered. ClassMethods and InstanceMethods gets added
       # in the specific resources when you fire is :viewable
       ##
-      
+
       def is_viewable(options={})
         # Add class-methods
         extend  DataMapper::Is::Viewable::ClassMethods
@@ -32,7 +32,7 @@ module DataMapper
         #   View details
         def views(name=nil)
           @views ||= {}
-          
+
           return @views if name.nil?
           return @views[name]
         end
@@ -49,7 +49,7 @@ module DataMapper
           @views ||= {}
           @views[name] = query_params
         end
-        
+
         # Queries a view from the repository
         #
         # @param name [Symbol]

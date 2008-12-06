@@ -6,7 +6,7 @@ module Image
   property :id,           Integer, :key => true, :serial => true
   property :description,  String
   property :path,         String
-  
+
   # These methods will be available to the class remixing this module
   #   If 'User' remixes 'Images', these methods will be available to a User class
   #
@@ -15,7 +15,7 @@ module Image
       'CLASS METHOD FOR REMIXER'
     end
   end
-  
+
   # These methods will be available to instantiated objects of the remixing this module
   #   If 'User' remixes 'Images', these methods will be available to a User object
   #
@@ -24,7 +24,7 @@ module Image
       'INSTANCE METHOD FOR REMIXER'
     end
   end
-  
+
   # These methods will be available to the Generated Remixed Class
   #   If 'User' remixes 'Images', these methods will be available to UserImage class
   #
@@ -33,7 +33,7 @@ module Image
       'CLASS METHOD FOR REMIXEE'
     end
   end
-  
+
   # These methods will be available to an instantiated Generated Remixed Class
   #   If 'User' remixes 'Images', these methods will be available to a UserImage object
   #
