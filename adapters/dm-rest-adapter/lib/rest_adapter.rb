@@ -5,7 +5,7 @@ require Pathname(__FILE__).dirname + 'rest_adapter/version'
 gem 'dm-core', '~>0.9.7'
 require 'dm-core'
 
-gem 'extlib', '~>0.9.8'
+gem 'extlib', '~>0.9.9'
 require 'extlib'
 
 require 'dm-serializer'
