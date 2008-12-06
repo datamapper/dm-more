@@ -40,5 +40,7 @@ describe 'DataMapper::Types::UUID' do
 
       u.uuid.should be_nil
     end
+  else
+    it 'requires the uuidtools gem to test'
   end
 end

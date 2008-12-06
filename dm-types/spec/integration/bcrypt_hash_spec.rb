@@ -19,12 +19,12 @@ describe 'DataMapper::Types::BCryptHash' do
           property :password, BCryptHash
         end
         User.auto_migrate!
-        User.create!(:password => "DataMapper R0cks!")
+        User.create(:password => "DataMapper R0cks!")
       end
 
       it "should save a password to the DB on creation" do
         repository(:default) do
-          User.create!(:password => "password1")
+          User.create(:password => "password1")
         end
         user = User.all
         user[0].password.should == "DataMapper R0cks!"

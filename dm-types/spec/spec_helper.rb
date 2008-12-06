@@ -1,7 +1,9 @@
-require 'rubygems'
-gem 'rspec', '>=1.1.3'
-require 'spec'
 require 'pathname'
+require 'rubygems'
+
+gem 'rspec', '~>1.1.11'
+require 'spec'
+
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-types'
 
 ENV["SQLITE3_SPEC_URI"]   ||= 'sqlite3::memory:'
