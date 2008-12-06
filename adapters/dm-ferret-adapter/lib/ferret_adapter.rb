@@ -5,8 +5,8 @@ require Pathname(__FILE__).dirname + 'ferret_adapter/version'
 gem 'dm-core', '~>0.9.7'
 require 'dm-core'
 
-gem "ferret"
-require "ferret"
+gem 'ferret', '~>0.11.6'
+require 'ferret'
 
 module DataMapper
   module Adapters
