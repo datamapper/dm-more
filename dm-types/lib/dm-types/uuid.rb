@@ -1,3 +1,6 @@
+require 'rubygems'
+
+gem 'uuidtools', '~>1.0.7'
 require 'uuidtools'
 
 module DataMapper

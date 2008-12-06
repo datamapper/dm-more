@@ -1,28 +1,26 @@
-require 'rubygems'
 require 'pathname'
+require 'rubygems'
 
 gem 'dm-core', '~>0.9.7'
 require 'dm-core'
 
-dir = Pathname(__FILE__).dirname.expand_path / 'dm-types'
-
-require dir / 'csv'
-require dir / 'enum'
-require dir / 'epoch_time'
-require dir / 'file_path'
-require dir / 'flag'
-require dir / 'ip_address'
-require dir / "json"""
-require dir / 'uri'
-require dir / 'uuid'
-require dir / 'yaml'
-require dir / 'serial'
-require dir / 'regexp'
-require dir / 'slug'
-
-# this looks a little ugly, but everyone who uses dm-types shouldn't have to have ruby-bcrypt installed
 module DataMapper
   module Types
-    autoload(:BCryptHash, File.join(Pathname(__FILE__).dirname.expand_path, 'dm-types', 'bcrypt_hash'))
+    dir = (Pathname(__FILE__).dirname.expand_path / 'dm-types').to_s
+
+    autoload :BCryptHash, dir / 'bcrypt_hash'
+    autoload :Csv,        dir / 'csv'
+    autoload :Enum,       dir / 'enum'
+    autoload :EpochTime,  dir / 'epoch_time'
+    autoload :FilePath,   dir / 'file_path'
+    autoload :Flag,       dir / 'flag'
+    autoload :IPAddress,  dir / 'ip_address'
+    autoload :Json,       dir / 'json'
+    autoload :Regexp,     dir / 'regexp'
+    autoload :Serial,     dir / 'serial'
+    autoload :Slug,       dir / 'slug'
+    autoload :URI,        dir / 'uri'
+    autoload :UUID,       dir / 'uuid'
+    autoload :Yaml,       dir / 'yaml'
   end
 end

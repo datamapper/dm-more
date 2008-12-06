@@ -1,14 +1,14 @@
-
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 begin
+  gem 'bcrypt-ruby', '~>2.0.3'
   require 'bcrypt'
 rescue LoadError
   skip_tests = true
 end
 
-describe "DataMapper::Types::BCryptHash" do
+describe 'DataMapper::Types::BCryptHash' do
   unless skip_tests
     describe "with no options" do
       before(:each) do

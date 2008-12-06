@@ -1,4 +1,6 @@
 require 'rubygems'
+
+gem 'addressable', '~>2.0.1'
 require 'addressable/uri'
 
 module DataMapper
