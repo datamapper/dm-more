@@ -18,7 +18,7 @@ PROJECT_NAME = "datamapper"
 PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/dm-is-viewable"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = "Viewable of a DataMapper plugin"
 
-#require ROOT.parent + 'tasks/hoe'
+require ROOT.parent + 'tasks/hoe'
 
 task :default => [ :spec ]
 
