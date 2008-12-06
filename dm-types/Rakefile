@@ -10,7 +10,7 @@ AUTHOR = "Sam Smoot"
 EMAIL  = "ssmoot@gmail.com"
 GEM_NAME = "dm-types"
 GEM_VERSION = DataMapper::Types::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], ["addressable", "~>2.0.1"]]
+GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], ['addressable', '~>2.0.1']]
 GEM_CLEAN = ["log", "pkg", "coverage"]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 

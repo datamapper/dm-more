@@ -1,10 +1,10 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'dm-core', '~>0.9.7'
+gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 
-gem 'dm-validations', '~>0.9.7'
+gem 'dm-validations', '~>0.9.8'
 require 'dm-validations'
 
 spec_dir_path = Pathname(__FILE__).dirname.expand_path

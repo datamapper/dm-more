@@ -4,7 +4,7 @@ require 'rubygems'
 gem 'rspec', '~>1.1.11'
 require 'spec'
 
-gem 'dm-core', '~>0.9.7'
+gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-observer'

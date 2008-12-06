@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
-gem 'dm-core', '~>0.9.7'
+gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 require 'json'
 require 'ostruct'
