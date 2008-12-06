@@ -1,5 +1,5 @@
-require 'rubygems'
 require 'pathname'
+require 'rubygems'
 
 SPEC_ROOT = Pathname(__FILE__).dirname.expand_path
 require SPEC_ROOT.parent + 'lib/dm-aggregates'
@@ -8,16 +8,12 @@ Pathname.glob((SPEC_ROOT + '{lib,*/shared}/**/*.rb').to_s).each { |f| require f 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
 
-  lib = "do_#{name}"
-
   begin
-    gem lib, '~>0.9.7'
-    require lib
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
     true
-  rescue Gem::LoadError => e
-    warn "Could not load #{lib}: #{e}"
+  rescue LoadError => e
+    warn "Could not load do_#{name}: #{e}"
     false
   end
 end

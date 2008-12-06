@@ -20,7 +20,7 @@ def setup_adapter(name, default_uri = nil)
   rescue Exception => e
     if name.to_s == ENV['ADAPTER']
       Object.const_set('ADAPTER', nil)
-      warn "Could not load #{name} adapter: #{e}"
+      warn "Could not load do_#{name}: #{e}"
     end
     false
   end

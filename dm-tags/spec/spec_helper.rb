@@ -1,5 +1,5 @@
-require 'rubygems'
 require 'pathname'
+require 'rubygems'
 
 gem 'dm-core', '~>0.9.7'
 require 'dm-core'

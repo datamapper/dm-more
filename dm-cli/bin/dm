@@ -1,10 +1,13 @@
 #!/usr/bin/env ruby
-require "rubygems"
 
-gem "dm-core", "~>0.9.7"
-require "dm-core"
-require "dm-cli"
-require "optparse"
+require 'optparse'
+require 'rubygems'
+
+gem 'dm-core', '~>0.9.7'
+require 'dm-core'
+
+gem 'dm-cli', '~>0.9.7'
+require 'dm-cli'
 
 DataMapper::CLI::BinDir = File.dirname(__FILE__)
 DataMapper::CLI.start
