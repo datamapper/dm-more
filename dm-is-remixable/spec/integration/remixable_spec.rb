@@ -135,7 +135,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     it "should allow creating an accessor alias" do
       article = Article.new
       article.should respond_to("pics")
-      article.should respond_to("article_images")
     end
 
     it "should copy properties from the Remixable Module to the Remixed Model" do
@@ -208,12 +207,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       comment = UserComment.new
       comment.comment = "YOU SUCK!"
       comment.commentor = user2
-      user.user_comments << comment
 
-      user2.user_comments.length.should be(0)
+      user.comments << comment
+
+      user2.comments.length.should be(0)
 
       comment.commentor.first_name.should == "Testy"
-      user.user_comments.length.should be(1)
+      
+      user.comments.length.should be(1)
     end
 
     # Example:
@@ -285,7 +286,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # User.first.user_images should raise method not found
     #
     it 'should remove the original attribute accessor when attaching an optional one' do
-      pending
+      Article.new.respond_to?(:pics).should be(true)      
+      User.new.respond_to?(:user_addresses).should be(true)
     end
     
     # Example:

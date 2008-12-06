@@ -93,7 +93,8 @@ module DataMapper
         #                                   This is the class that will be created from the Remixable Module
         #                                   The storage_name can be changed via 'enhance' in the class that is remixing
         #                                   Default: self.name.downcase + "_" + remixable.suffix.pluralize
-        #                       :as         <String> Alias to access associated data
+        #                       :as         <String> Alters the name that the remixable items will be available through, this WILL NOT
+        #                                   create the standard accessor
         #                                   Default: tableize(:class_name)
         #                       :for|:on    <String> Class name to join to through Remixable
         #                                   This will create a M:M relationship THROUGH the remixable, rather than
@@ -114,7 +115,7 @@ module DataMapper
         #
         #   Tables: users, user_addresses
         #   Classes: User, UserAddress
-        #     User.user_addresses << UserAddress.new
+        #     User.user_addresses << UserAddress.new => Raise No Method Exception since it was alias with :as
         #     User.addresses << UserAddress.new
         #   --------------------------------------------
         #   --------------------------------------------
@@ -194,9 +195,6 @@ module DataMapper
               # has n and belongs_to (or One-To-Many)
               remix_one_to_many cardinality, model, options
             end
-
-            #Add accessor alias
-            attach_accessor(options) unless options[:as].nil?
           else
             DataMapper.logger.warn "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
           end
@@ -261,18 +259,6 @@ module DataMapper
 
         private
 
-        # - attach_accessor
-        # ==== Description
-        #   Creates additional alias for r/w accessor
-        # ==== Parameters
-        #   options <Hash> options hash
-        def attach_accessor(options)
-          self.class_eval(<<-EOS, __FILE__, __LINE__ + 1)
-            alias #{options[:as].to_sym} #{options[:table_name].to_sym}
-            alias #{options[:as].to_sym}= #{options[:table_name].to_sym}=
-          EOS
-        end
-
         # - populate_remixables_mapping
         # ==== Description
         #   Populates the Hash of remixables with information about the remixable
@@ -298,7 +284,7 @@ module DataMapper
         #   model       <Class> remixed model that 'self' is relating to
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
-          self.has cardinality, options[:table_name].intern
+          self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
           model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :nullable => false
           model.belongs_to Extlib::Inflection.tableize(self.name).intern
         end
@@ -319,7 +305,7 @@ module DataMapper
 
           # Is M:M between two different classes or the same class
           unless self.name == options[:other_model].name
-            self.has cardinality, options[:table_name].intern
+            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
             options[:other_model].has cardinality, options[:table_name].intern
 
             model.belongs_to  Extlib::Inflection.tableize(self.name).intern
@@ -327,7 +313,7 @@ module DataMapper
           else
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
 
-            self.has cardinality, options[:table_name].intern
+            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
             model.belongs_to Extlib::Inflection.tableize(self.name).intern
             model.belongs_to options[:via].intern, :class_name => options[:other_model].name, :child_key => ["#{options[:via]}_id".intern]
           end
