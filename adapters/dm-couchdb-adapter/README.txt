@@ -30,6 +30,11 @@ property :id, String, :key => true, :field => '_id'
 property :rev, String, :field => '_rev'
 property :attachments, DataMapper::Types::JsonObject, :field => '_attachments'
 
+If you want the model to use your couch repository by default, be sure to also add the following(replacing :couch with your repository name):
+def self.default_repository_name
+  :couch
+end
+
 You should now be able to use resources and their properties and have them stored to couchdb.
 NOTE: 'couchdb_type' is a reserved property, used to map documents to their ruby models.
 

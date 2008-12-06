@@ -3,6 +3,9 @@ require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 if COUCHDB_AVAILABLE
   class User
     include DataMapper::CouchResource
+    def self.default_repository_name
+      :couch
+    end
 
     # regular properties
     property :name, String
@@ -28,6 +31,9 @@ if COUCHDB_AVAILABLE
 
   class Company
     include DataMapper::CouchResource
+    def self.default_repository_name
+      :couch
+    end
 
     # This class happens to have similar properties
     property :name, String
@@ -38,6 +44,10 @@ if COUCHDB_AVAILABLE
 
   class Person
     include DataMapper::CouchResource
+    def self.default_repository_name
+      :couch
+    end
+
     property :type, Discriminator
     property :name, String
   end
@@ -48,13 +58,17 @@ if COUCHDB_AVAILABLE
 
   class Broken
     include DataMapper::CouchResource
+    def self.default_repository_name
+      :couch
+    end
+
     property :couchdb_type, Discriminator
     property :name, String
   end
 
   describe DataMapper::Adapters::CouchdbAdapter do
 
-    describe "should do resource functions" do
+    describe "resource functions" do
 
       before(:each) do
         @user = User.new(:name => "Jamie", :age => 67, :wealth => 11.5)

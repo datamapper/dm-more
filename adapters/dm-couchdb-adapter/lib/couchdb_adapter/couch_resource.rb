@@ -20,10 +20,6 @@ module DataMapper
 
         class << self
 
-          def default_repository_name
-            :couch
-          end
-
           def couchdb_types
             [self.base_model] | self.descendants
           end

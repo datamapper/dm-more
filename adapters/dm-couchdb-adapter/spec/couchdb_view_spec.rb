@@ -2,6 +2,9 @@ require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
 class Viewable
   include DataMapper::CouchResource
+  def self.default_repository_name
+    :couch
+  end
 
   property :name, String
   property :open, TrueClass
