@@ -33,7 +33,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     it "should not allow enhancements of modules that aren't remixed" do
       lambda {
-        User.enhance Image
+        User.enhance :images
       }.should raise_error
     end
 
@@ -196,8 +196,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       article.pics.path.should == image2.path
     end
 
+    # Example:
+    #   Users are Commentable by many Users
+    #
     it "should allow M:M unary relationships through the Remixable Module" do
-      #User => Commentable => User
       user = User.new
       user.first_name = "Tester"
       user2 = User.new
@@ -214,8 +216,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       user.user_comments.length.should be(1)
     end
 
+    # Example:
+    #   Articles are Commentable by many Users
+    #
     it "should allow M:M relationships through the Remixable Module" do
-      #Article => Commentable => User
       user = User.new
       article = Article.new
 
@@ -234,6 +238,96 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       article.comments.first.should be(ac)
       user.article_comments.first.should be(ac)
+    end
+    
+    # Example:
+    # Remixable Image add functionality to any class that remixes it
+    #   Image::RemixerClassMethods defines a method called 'total_images' that counts the total number of images for the class
+    #   Image::RemixerInstanceMethods defines a method called 'most_viewed_image' that find the most viewed image for an object
+    #
+    #   User.remixes n, :images
+    #   User.total_images => count of all images owned by all users
+    #   User.first.most_viewed_image => would return the most viewed image
+    # 
+    it "should add a remixables' 'RemixerClassMethods' modules to the remixing class" do
+      Article.respond_to?(:test_remixer_class_method).should be(true)
+      Article.test_remixer_class_method.should == 'CLASS METHOD FOR REMIXER'
+    end
+    
+    it "should add a remixables' 'RemixerInstanceMethods' modules to the remixing class" do
+      Article.new.respond_to?(:test_remixer_instance_method).should be(true)
+      Article.new.test_remixer_instance_method.should == 'INSTANCE METHOD FOR REMIXER'
+    end
+    
+    # Example:
+    # Remixable Image add functionality to any class that remixes it
+    #   Image::RemixeeClassMethods defines a method called 'damaged_files' would return a list of all images with invalid checksums (or whatev)
+    #   Image::RemixeeInstanceMethods defines a method called 'mime_type' that find the mime type of the particular image
+    #
+    #   Article.remixes n, :images
+    #   # => yields and ArticleImage Class
+    #   ArticleImage.damaged_files => list of all images with invalid checksums
+    #   ArticleImage.first.mime_type => would return the mime type of that image
+    #
+    it "should add a remixables' 'RemixeeClassMethods' modules to the generated remixed class" do
+      ArticleImage.respond_to?(:test_remixee_class_method).should be(true)
+      ArticleImage.test_remixee_class_method.should == 'CLASS METHOD FOR REMIXEE'
+    end
+    
+    it "should add a remixables' 'RemixeeInstanceMethods' modules to the generated remixed class" do
+      ArticleImage.new.respond_to?(:test_remixee_instance_method).should be(true)
+      ArticleImage.new.test_remixee_instance_method.should == 'INSTANCE METHOD FOR REMIXEE'
+    end
+    
+    # Example:
+    # User.remixes n, :images, :as => "pics"
+    # User.first.pics would be the acessor for images
+    # User.first.user_images should raise method not found
+    #
+    it 'should remove the original attribute accessor when attaching an optional one' do
+      pending
+    end
+    
+    # Example:
+    # User.remixes n, :images, :as => "pics"
+    # User.pics should be a QueryPath instead of User.user_images
+    #
+    it 'should bind optional accessors the the QueryPath when used' do
+      pending
+    end
+    
+    # Example:
+    # Submission.remixes n, :comments
+    #
+    # Comment(:submission) => SubmissionComment
+    #
+    it 'should act as a factory for all generated remixed classes' do
+      pending
+    end
+    
+    # Example:
+    #   Submission.remixes n, :comments
+    #   SubmissionComment.new.user = User.first => throws exception, accessor name is 'users' instead
+    #
+    it 'should pluralize accessor names correctly given the type of relationship' do
+      pending
+    end
+    
+    # Note:
+    # Currently the :via flag allows one to specify another name for the field, but it always appends _id
+    # 
+    # Example:
+    #   User w/ PK being 'login_name'
+    #   User.remixes n, :comments, :for => 'User', :via => 'commentor'
+    #   
+    #   Comment Table:
+    #     * id 
+    #     * text
+    #     * user_login_name
+    #     * commentor_id #=> should be able to specify it to be commentor_login_name
+    #
+    it 'should allow the primary and child field names to be specified while remixing' do
+      pending
     end
   end
 end

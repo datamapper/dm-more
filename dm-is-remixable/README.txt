@@ -125,3 +125,46 @@ class Video
 
   #... methods, properties, etc ...#
 end
+
+
+Further, remixables can namespace methods that should exist in the generated and remixing classes, if these
+modules are present the are attached appropriately to the other classes.
+
+module ExampleRemixable
+  include DataMapper::Resource
+  is :remixable
+  
+  #... your properies ...
+  
+  # Class methods that will be attached to class doing the remixing...
+  # 
+  # These methods would be attached to the User class given:
+  #   User.remixes n, :images
+  # 
+  module RemixerClassMethods
+  end
+  
+  # Instances methods that will be attached to objects of the class doing the remixing...
+  # 
+  # These methods would be attached to User objects given:
+  #   User.remixes n, :images
+  #
+  module RemixerInstanceMethods
+  end
+  
+  # Class methods that will be attached to genereated remixed class
+  # 
+  # These methods would be attached to the UserImage class given:
+  #   User.remixes n, :images
+  #
+  module RemixeeClassMethods
+  end
+  
+  # Instances methods that will be attached to objects of the genereated remixed class
+  # 
+  # These methods would be attached to UserImage objects given:
+  #   User.remixes n, :images
+  #
+  module RemixeeInstanceMethods
+  end
+end

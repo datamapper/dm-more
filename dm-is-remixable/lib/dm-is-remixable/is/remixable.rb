@@ -175,6 +175,15 @@ module DataMapper
             remixable_key = Extlib::Inflection.demodulize(remixable_module.name).snake_case.to_sym
             populate_remixables_mapping(model, options.merge(:remixable_key => remixable_key))
 
+            # attach RemixerClassMethods and RemixerInstanceMethods to remixer if defined by remixee
+            if Object.full_const_defined? "#{remixable_module}::RemixerClassMethods"
+              extend Object.full_const_get("#{remixable_module}::RemixerClassMethods")
+            end
+
+            if Object.full_const_defined? "#{remixable_module}::RemixerInstanceMethods"
+              include Object.full_const_get("#{remixable_module}::RemixerInstanceMethods")
+            end
+
             #Create relationships between Remixer and remixed class
             if options[:other_model]
               # M:M Class-To-Class w/ Remixable Module as intermediate table
@@ -232,7 +241,6 @@ module DataMapper
         #       belongs_to :bot
         #       belongs_to :tag
         #     end
-
         def enhance(remixable,remixable_model=nil, &block)
           # always use innermost singular snake_cased constant name
           remixable_name = remixable.to_s.singular.snake_case.to_sym
@@ -350,6 +358,15 @@ module DataMapper
             model.property(prop.name, prop.type, prop.options)
           end
 
+          # attach remixed model access to RemixeeClassMethods and RemixeeInstanceMethods if defined
+          if Object.full_const_defined? "#{remixable}::RemixeeClassMethods"
+            model.send :extend, Object.full_const_get("#{remixable}::RemixeeClassMethods")
+          end
+
+          if Object.full_const_defined? "#{remixable}::RemixeeInstanceMethods"
+            model.send :include, Object.full_const_get("#{remixable}::RemixeeInstanceMethods")
+          end
+          
           model
         end
 

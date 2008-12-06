@@ -14,17 +14,5 @@ TODO
 - Test nested remixing User remixes Photogenic; Photogenic Remixes comments
 - Test double+ remixing. User remixes Commentable; enhance Commentable remix Commentable
 
-- Harvest Class methods (including it into Remixed Model gets the instance methods, but not class methods...)
-
-- Squash protection;
-  IF    ClassA => remix ModuleB, :table_name => "squashme"
-  AND   ClassC => remix ModuleB, :table_name => "squashme" #SQUASHED THAT TABLE
-
 - Remixable.related(*remixed_models)
   Taggable.related(Article, JobPostings)
-
-
-CONSIDERATIONS
-==============
-- Customizing Assocations           (http://datamapper.org/docs/associations.html)
-- Adding Conditions to Associations (http://datamapper.org/docs/associations.html)
