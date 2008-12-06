@@ -26,6 +26,7 @@ gem_paths = %w[
   dm-is-state_machine
   dm-is-tree
   dm-is-versioned
+  dm-is-viewable
   dm-migrations
   dm-observer
   dm-querizer
