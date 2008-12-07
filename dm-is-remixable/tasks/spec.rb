@@ -12,7 +12,7 @@ begin
 
     begin
       gem 'rcov', '~>0.8'
-      t.rcov = ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true
+      t.rcov = JRUBY ? false : (ENV.has_key?('NO_RCOV') ? ENV['NO_RCOV'] != 'true' : true)
       t.rcov_opts << '--exclude' << 'spec'
       t.rcov_opts << '--text-summary'
       t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'

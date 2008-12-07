@@ -97,3 +97,4 @@ stories/resources/steps/read.rb
 stories/resources/steps/using_rest_adapter.rb
 tasks/install.rb
 tasks/spec.rb
+tasks/stories.rb

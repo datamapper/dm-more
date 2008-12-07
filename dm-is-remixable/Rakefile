@@ -1,7 +1,10 @@
 require 'pathname'
 require 'rubygems'
 
-ROOT = Pathname(__FILE__).dirname.expand_path
+ROOT    = Pathname(__FILE__).dirname.expand_path
+JRUBY   = RUBY_PLATFORM =~ /java/
+WINDOWS = Gem.win_platform?
+SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 require ROOT + 'lib/dm-is-remixable/is/version'
 
