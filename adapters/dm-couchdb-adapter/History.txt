@@ -1,0 +1,7 @@
+=== 0.9.8
+* Enhancement
+  * Correct parsing of a params hash
+* Bugfixes
+  * Correct escaping of view and attachment URLs
+  * couch adapter name no longer mandated
+  * Correct content type now sent
