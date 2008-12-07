@@ -1,0 +1,3 @@
+=== 0.9.8
+* Bugfixes
+  * Only extend defined adapter classes [#610 state:resolved]

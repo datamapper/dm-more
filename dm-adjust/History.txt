@@ -1,0 +1,5 @@
+=== 0.9.8
+* Enhancements
+  * Added Resource#adjust! method
+  * Added Resource#adjust and Model#adjust (validation respecting) stubs
+  * Preparations for dkubb/dm-core

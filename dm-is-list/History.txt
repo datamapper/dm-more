@@ -1,0 +1,3 @@
+=== 0.9.8
+* Bugfixes
+  * Applied patch to fix bug with manual positioning [#672 state:resolved]

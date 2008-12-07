@@ -1,3 +1,7 @@
+=== 0.9.8
+* When using :as remixables ONLY create the given accessor instead of creating the default and aliasing it.
+* Remixable Modules can now namespace methods to remixing classes and generated class.
+
 === 0.9.3 / 2008-07-31
 
 * 1 major enhancement

@@ -14,7 +14,7 @@ GEM_NAME = 'dm-is-remixable'
 GEM_VERSION = DataMapper::Is::Remixable::VERSION
 GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 
 PROJECT_NAME = 'datamapper'
 PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/#{GEM_NAME}"

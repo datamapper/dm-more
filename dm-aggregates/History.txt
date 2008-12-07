@@ -1,0 +1,4 @@
+=== 0.9.8
+* Enhancements
+  * Collection#size now uses #count if unloaded
+  * Added Model#size, which defers to #count

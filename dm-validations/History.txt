@@ -1,0 +1,3 @@
+=== 0.9.8
+* Bugfix
+  * Updated specs to test valididity of RFC2822 email addresses

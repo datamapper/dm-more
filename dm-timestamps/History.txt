@@ -1,0 +1,4 @@
+=== 0.9.8
+* Enhancements
+  * Added timestamps helper method
+  * Internal refactorings

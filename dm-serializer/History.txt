@@ -1,0 +1,6 @@
+=== 0.9.8
+* Enhancements
+  * to_yaml and to_xml now support :only and :exclude options
+  * to_yaml and to_xml now support serializing methods
+* Bugfix
+  * gem requires now preceded by gem() call
