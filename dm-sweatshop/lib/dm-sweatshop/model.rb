@@ -40,6 +40,22 @@ module DataMapper
 
     alias_method :gen, :generate
 
+    # Same as generate except that it uses Model#create!. It
+    # forces invalid objects to be saved in the repository.
+    #
+    # @param     name        [Symbol]
+    # @param     attributes  [Hash]
+    #
+    # @api       public
+    #
+    # @returns   [DataMapper::Resource]    added instance
+    def generate!(name = default_fauxture_name, attributes = {})
+      name, attributes = default_fauxture_name, name if name.is_a? Hash
+      Sweatshop.create!(self, name, attributes)
+    end
+
+    alias_method :gen!, :generate!
+
     # Returns a Hash of attributes from the model map.
     #
     # @param     name     [Symbol]   name of the fauxture to use

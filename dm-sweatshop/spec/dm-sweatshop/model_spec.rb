@@ -1,16 +1,17 @@
 require File.dirname(__FILE__) + '/../spec_helper'
+require 'dm-validations'
 
 describe DataMapper::Model do
 
   class Widget
     include DataMapper::Resource
-
     property :id, Integer, :serial => true
     property :type, Discriminator
     property :name, String
     property :price, Integer
 
     belongs_to :order
+    validates_present :price
   end
 
   class Wonket < Widget
@@ -117,6 +118,10 @@ describe DataMapper::Model do
       }}
 
       @widget = Widget.gen(:red)
+
+      Widget.fix(:blue) {{
+        :name  => "blue"
+      }}
     end
 
     it "creates an object from named attributes hash" do
@@ -127,7 +132,24 @@ describe DataMapper::Model do
     it "returns a saved object" do
       @widget.should_not be_new_record
     end
+
+    it "does not save invalid model" do
+      blue_widget = Widget.gen(:blue)
+      blue_widget.should be_new_record
+    end
   end
+
+  describe ".generate!" do
+    it "saves a model even if it is invalid" do
+      Widget.fix(:blue) {{
+        :name  => "blue"
+      }}
+
+      blue_widget = Widget.gen!(:blue)
+      blue_widget.should_not be_new_record
+    end
+  end
+
 
 
   describe ".pick" do

@@ -47,6 +47,20 @@ module DataMapper
       instance
     end
 
+    # Same as create but calls Model#create! and does save 
+    # invalid models
+    #
+    # @param     klass       [Class, DataMapper::Resource]
+    # @param     name        [Symbol]
+    # @param     attributes  [Hash]
+    #
+    # @api       private
+    #
+    # @returns   [DataMapper::Resource]    added instance
+    def self.create!(klass, name, attributes = {})
+      record(klass, name, klass.create!(attributes(klass, name).merge(attributes)))
+    end
+
     # Creates an instance from given hash of attributes, saves it
     # and adds it to the record map.
     #
