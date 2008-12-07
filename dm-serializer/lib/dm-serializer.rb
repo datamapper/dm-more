@@ -1,15 +1,18 @@
-require Pathname('rexml/document')
+require 'rexml/document'
 
 begin
+  gem('fastercsv')
   require 'faster_csv'
 rescue LoadError
   nil
 end
 
 begin
-  require Pathname('json/ext')
+  gem('json')
+  require 'json/ext'
 rescue LoadError
-  require Pathname('json/pure')
+  gem('json_pure')
+  require 'json/pure'
 end
 
 module DataMapper
