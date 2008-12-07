@@ -7,28 +7,28 @@ Story: remote app wants to update a resource
     Given a local representation of a remote Resource
     When I make valid changes to that Resource
     And I try to save the Resource
-    Then the Resource should save 
-    
+    Then the Resource should save
+
   Scenario: remote app updates with invalid changes to a resource's state
     Given a local representation of a remote Resource
     When I make invalid changes to that Resource
     And I try to save the Resource
     Then the Resource should not save
-    
+
   Scenario: remote app updates with changes to an object and one of its children
     Given a local representation of a remote Resource
     And a local representation of one of that Resource's child Resources
     When I make valid changes to the parent Resource
     And I make valid changes to the child Resource
     Then both Resources should save
-    
+
   Scenario: remote app updates with valid changes to an object and invalid changes to one of its children
     Given a local representation of a remote Resource
     And a local representation of one of that Resource's child Resources
     When I make valid changes to the parent Resource
     And I make invalid changes to the child Resource
     Then neither Resource should save
-  
+
   Scenario: remote app updates with invalid changes to an object and valid changes to one of its children
     Given a local representation of a remote Resource
     And a local representation of one of that Resource's child Resources
@@ -36,7 +36,7 @@ Story: remote app wants to update a resource
     And I make valid changes to the child Resource
     Then neither Resource should save
 
-  Scenario: remote app updates with invalid changes to an object and invalid changes to one of its children          
+  Scenario: remote app updates with invalid changes to an object and invalid changes to one of its children
     Given a local representation of a remote Resource
     And a local representation of one of that Resource's child Resources
     When I make invalid changes to the parent Resource

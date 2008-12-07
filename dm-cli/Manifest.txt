@@ -11,3 +11,5 @@ lib/dm-cli/cli.rb
 lib/dm-cli/version.rb
 spec/spec.opts
 spec/unit/cli_spec.rb
+tasks/install.rb
+tasks/spec.rb

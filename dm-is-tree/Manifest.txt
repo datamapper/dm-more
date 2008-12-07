@@ -8,3 +8,5 @@ lib/dm-is-tree.rb
 lib/dm-is-tree/is/tree.rb
 lib/dm-is-tree/is/version.rb
 spec/spec.opts
+tasks/install.rb
+tasks/spec.rb

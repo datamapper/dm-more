@@ -1,27 +1,22 @@
-require 'rubygems'
-require 'spec'
-require 'spec/rake/spectask'
 require 'pathname'
+require 'rubygems'
 
 ROOT = Pathname(__FILE__).dirname.expand_path
+
 require ROOT + 'lib/dm-constraints/version'
 
-AUTHOR = "Dirkjan Bussink"
-EMAIL  = "d.bussink@gmail.com"
-GEM_NAME = "dm-constraints"
+AUTHOR = 'Dirkjan Bussink'
+EMAIL  = 'd.bussink [a] gmail [d] com'
+GEM_NAME = 'dm-constraints'
 GEM_VERSION = DataMapper::Constraints::VERSION
 GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
-GEM_CLEAN = ["log", "pkg", "coverage"]
+GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO ] }
 
-PROJECT_NAME = "datamapper"
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/dm-constraints"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = "DataMapper plugin for performing validations on data models"
+PROJECT_NAME = 'datamapper'
+PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/#{GEM_NAME}"
+PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin constraining relationships'
 
-require ROOT.parent + 'tasks/hoe'
-
-require ROOT + 'tasks/gemspec'
-require ROOT + 'tasks/install'
-require ROOT + 'tasks/dm'
-require ROOT + 'tasks/doc'
-require ROOT + 'tasks/ci'
+[ ROOT, ROOT.parent ].each do |dir|
+  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+end

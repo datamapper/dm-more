@@ -11,11 +11,13 @@ lib/dm-serializer/version.rb
 spec/fixtures/cow.rb
 spec/fixtures/planet.rb
 spec/fixtures/quan_tum_cat.rb
-spec/spec.opts
-spec/spec_helper.rb
 spec/lib/serialization_method_shared_spec.rb
 spec/public/serializer_spec.rb
 spec/public/to_csv_spec.rb
 spec/public/to_json_spec.rb
 spec/public/to_xml_spec.rb
 spec/public/to_yaml_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

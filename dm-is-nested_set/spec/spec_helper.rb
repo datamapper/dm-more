@@ -4,7 +4,13 @@ require 'rubygems'
 gem 'rspec', '~>1.1.11'
 require 'spec'
 
-require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-is-nested_set'
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+# use local dm-adjust if running from dm-more directly
+lib = ROOT.parent.join('dm-adjust', 'lib').expand_path
+$LOAD_PATH.unshift(lib) if lib.directory?
+
+require ROOT + 'lib/dm-is-nested_set'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
@@ -12,7 +18,6 @@ def load_driver(name, default_uri)
   begin
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
-    DataObjects::Sqlite3.logger = DataObjects::Logger.new(Pathname(__FILE__).dirname+'dm.log',0)
     true
   rescue LoadError => e
     warn "Could not load do_#{name}: #{e}"

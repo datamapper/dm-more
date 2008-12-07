@@ -14,3 +14,5 @@ lib/dm-adjust/version.rb
 spec/integration/adjust_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

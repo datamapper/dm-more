@@ -17,3 +17,5 @@ spec/couchdb_view_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/testfile.txt
+tasks/install.rb
+tasks/spec.rb

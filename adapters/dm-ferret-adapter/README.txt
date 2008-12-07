@@ -13,7 +13,7 @@ inside your project's directory and then setting up the :search repository:
 
 = Sample Code
 
-require "rubygems"
+require 'rubygems'
 require "dm-core"
 require "dm-is-searchable"
 

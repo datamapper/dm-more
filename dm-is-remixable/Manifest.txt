@@ -22,3 +22,5 @@ spec/data/viewable.rb
 spec/integration/remixable_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

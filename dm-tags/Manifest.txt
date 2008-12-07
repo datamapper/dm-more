@@ -1,11 +1,10 @@
 .gitignore
 History.txt
-License.txt
+LICENSE
 Manifest.txt
 README.txt
 Rakefile
-config/hoe.rb
-config/requirements.rb
+TODO
 lib/dm-tags.rb
 lib/dm-tags/dm_tags.rb
 lib/dm-tags/tag.rb
@@ -18,7 +17,5 @@ spec/dm-tags/tagging_spec.rb
 spec/dm-tags/updating_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
-tasks/deployment.rake
-tasks/environment.rake
-tasks/rspec.rake
-tasks/website.rake
+tasks/install.rb
+tasks/spec.rb

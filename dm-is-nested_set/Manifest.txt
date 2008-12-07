@@ -10,3 +10,5 @@ lib/dm-is-nested_set/is/version.rb
 spec/integration/nested_set_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

@@ -40,18 +40,18 @@ gems = gem_paths.map { |p| File.basename(p) }
 
 ROOT = Pathname(__FILE__).dirname.expand_path
 
-AUTHOR = "Sam Smoot"
-EMAIL  = "ssmoot@gmail.com"
-GEM_NAME = "dm-more"
+AUTHOR = 'Sam Smoot'
+EMAIL  = 'ssmoot [a] gmail [d] com'
+GEM_NAME = 'dm-more'
 GEM_VERSION = DataMapper::More::VERSION
 GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], *gems.map { |g| [g, "~>#{GEM_VERSION}"] }]
 GEM_CLEAN = ['**/.DS_Store}', '*.db', "doc/rdoc", ".config", "**/{coverage,log,pkg}", "cache", "lib/merb-more.rb"]
 GEM_EXTRAS = { :has_rdoc => false }
 
-PROJECT_NAME = "datamapper"
-PROJECT_URL  = "http://datamapper.org"
-PROJECT_DESCRIPTION = "Faster, Better, Simpler."
-PROJECT_SUMMARY = "An Object/Relational Mapper for Ruby"
+PROJECT_NAME = 'datamapper'
+PROJECT_URL  = 'http://github.com/sam/dm-more/tree/master'
+PROJECT_DESCRIPTION = 'Faster, Better, Simpler.'
+PROJECT_SUMMARY = 'An Object/Relational Mapper for Ruby'
 
 require ROOT + 'tasks/hoe'
 
@@ -60,12 +60,12 @@ SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 desc "Install it all"
 task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::More::VERSION}.gem  --no-update-sources}
+  sh %{#{SUDO} gem install --local pkg/dm-more-#{GEM_VERSION}.gem  --no-update-sources}
 end
 
 desc "Uninstall it all"
 task :uninstall => [ :uninstall_gems, :clobber ] do
-  sh "#{SUDO} gem uninstall dm-more -v#{DataMapper::More::VERSION} -I -x", :verbose => false rescue "dm-more not installed"
+  sh "#{SUDO} gem uninstall dm-more -v#{GEM_VERSION} -I -x", :verbose => false rescue "dm-more not installed"
 end
 
 desc "Build the dm-more gems"
@@ -105,7 +105,7 @@ end
 desc "Bundle up all the dm-more gems"
 task :bundle => [:package, :build_gems] do
   mkdir_p "bundle"
-  cp "pkg/dm-more-#{DataMapper::More::VERSION}.gem", "bundle"
+  cp "pkg/dm-more-#{GEM_VERSION}.gem", "bundle"
   gem_paths.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
       rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
@@ -116,16 +116,16 @@ end
 
 desc "Release all dm-more gems"
 task :release_all do
-  sh "rake release VERSION=#{DataMapper::More::VERSION}; true"
+  sh "rake release VERSION=#{GEM_VERSION}; true"
   gem_paths.each do |dir|
-    Dir.chdir(dir) { sh "rake release VERSION=#{DataMapper::More::VERSION}; true" }
+    Dir.chdir(dir) { sh "rake release VERSION=#{GEM_VERSION}; true" }
   end
 end
 
 %w[ ci spec clean clobber check_manifest ].each do |command|
   task command do
     gem_paths.each do |gem_name|
-      Dir.chdir(gem_name){ sh("rake #{command}; true") }
+      Dir.chdir(gem_name){ sh("rake #{command}") }
     end
   end
 end

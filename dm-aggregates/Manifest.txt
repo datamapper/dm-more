@@ -17,3 +17,5 @@ spec/public/model_spec.rb
 spec/public/shared/aggregate_shared_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

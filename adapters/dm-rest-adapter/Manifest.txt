@@ -95,3 +95,5 @@ stories/resources/helpers/book.rb
 stories/resources/helpers/story_helper.rb
 stories/resources/steps/read.rb
 stories/resources/steps/using_rest_adapter.rb
+tasks/install.rb
+tasks/spec.rb

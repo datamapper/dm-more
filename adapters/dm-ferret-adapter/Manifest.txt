@@ -14,3 +14,5 @@ lib/ferret_adapter/version.rb
 spec/adapter_spec.rb
 spec/helper.rb
 spec/spec.opts
+tasks/install.rb
+tasks/spec.rb

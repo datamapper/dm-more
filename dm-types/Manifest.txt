@@ -43,3 +43,5 @@ spec/unit/json_spec.rb
 spec/unit/regexp_spec.rb
 spec/unit/uri_spec.rb
 spec/unit/yaml_spec.rb
+tasks/install.rb
+tasks/spec.rb

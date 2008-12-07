@@ -46,3 +46,5 @@ spec/integration/validation_spec.rb
 spec/integration/within_validator_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

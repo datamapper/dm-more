@@ -10,3 +10,5 @@ lib/dm-is-versioned/is/versioned.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/versioned_spec.rb
+tasks/install.rb
+tasks/spec.rb

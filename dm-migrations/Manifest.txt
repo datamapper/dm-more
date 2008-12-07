@@ -36,3 +36,6 @@ spec/unit/sql/table_creator_spec.rb
 spec/unit/sql/table_modifier_spec.rb
 spec/unit/sql/table_spec.rb
 spec/unit/sql_spec.rb
+tasks/db.rb
+tasks/install.rb
+tasks/spec.rb
