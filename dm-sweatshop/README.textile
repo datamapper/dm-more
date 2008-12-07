@@ -114,12 +114,12 @@ Person.gen(:valid)
 </code>
 </pre>
 
-@generate@ (or @gen@) method uses @create@ method of DataMapper models. What if
-we want just a new record? Use @make@ method instead:
+@generate@ (or @gen@) method uses @create@ method of DataMapper models. This means that validations are run on the model. There are two other methods you can use to creat data - @make@ to build a model that has not been saved, and @generate!@ to force saving of the model even if it is invalid (it uses @create!@ internally).
 
 <pre>
 <code>
 Person.make(:valid)
+Person.generate!(:invalid) # You can also use #gen!
 </code>
 </pre>
 
