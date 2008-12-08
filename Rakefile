@@ -103,7 +103,7 @@ task 'lib/dm-more.rb' do
   mkdir_p 'lib'
   File.open('lib/dm-more.rb', 'w+') do |file|
     file.puts '### AUTOMATICALLY GENERATED.  DO NOT EDIT.'
-    (gems - %w[ dm-gen ]).each do |gem|
+    (gems - %w[ dm-gen dm-is-remixable ]).each do |gem|
       lib = if '-adapter' == gem[-8..-1]
         gem.split('-')[1..-1].join('_')
       else
