@@ -1,4 +1,6 @@
-=== 0.9.8
-* Enhancements
+=== 0.9.8 / 2008-12-07
+
+* 2 minor enhancements:
+
   * Added timestamps helper method
   * Internal refactorings

@@ -1,10 +1,14 @@
-=== 0.9.7
+=== 0.9.8 / 2008-12-07
 
-* Added functionality and docs
+* No changes this version
 
-  - Added support to pass a symbol to a transition, which will call the
+=== 0.9.7 / 2008-11-18
+
+4 minor enhancements:
+
+  * Added support to pass a symbol to a transition, which will call the
     corresponding method.  This means you don't have to put a whole
     Proc inside the state machine definition if you don't want to.
-  - Added support for the :exit transition.
-  - Created a new example called SlotMachine in /spec/integration
-  - Updated README and TODO.
+  * Added support for the :exit transition.
+  * Created a new example called SlotMachine in /spec/integration
+  * Updated README and TODO.

@@ -1,13 +1,16 @@
-=== 0.9.8
-* Enhancements
+=== 0.9.8 / 2008-12-07
+
+* 1 minor enhancement:
+
   * callable values now automatically expanded
 
-* Bugfixes
+* 1 bug fix:
+
   * Now requiring with gem() calls and tested versions
 
-=== 0.9.7
+=== 0.9.7 / 2008-11-18
 
-* 2 major enhancements
+* 2 major enhancements:
 
   * Reworked unique model generator.
   * Improved documentation.

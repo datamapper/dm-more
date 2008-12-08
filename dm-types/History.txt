@@ -1,4 +1,6 @@
-=== 0.9.8
-* Bugfixes
+=== 0.9.8 / 2008-12-07
+
+* 2 bug fixes:
+
   * Corrected BCryptHash type behavior (previously, value would be repeated saved
   * tightened uuidtools requirement for the uuid type
