@@ -1,9 +1,19 @@
-$LOAD_PATH.unshift File.expand_path("#{File.dirname(__FILE__)}/../lib/rest_adapter")
+require 'pathname'
 require 'rubygems'
-require 'spec'
 require 'tempfile'
+
+gem 'dm-core', '~>0.9.8'
 require 'dm-core'
-#require 'pathname'
-#require Pathname(__FILE__).dirname.parent.expand_path + '../../lib/rest_adapter'
-require File.join(File.dirname(__FILE__), *%w[resources helpers story_helper])
-require File.join(File.dirname(__FILE__), *%w[resources steps using_rest_adapter])
+
+gem 'rspec', '~>1.1.11'
+require 'spec'
+
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+# use local dm-serializer if running from dm-more directly
+lib = ROOT.parent.parent.join('dm-serializer', 'lib').expand_path
+$LOAD_PATH.unshift(lib) if lib.directory?
+
+require ROOT + 'lib/rest_adapter'
+require ROOT + 'stories/resources/helpers/story_helper'
+require ROOT + 'stories/resources/steps/using_rest_adapter'

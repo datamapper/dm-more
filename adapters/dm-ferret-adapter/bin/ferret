@@ -5,7 +5,7 @@ require "drb"
 require "drb/unix"
 require "optparse"
 require "rinda/tuplespace"
-require "rubygems"
+require 'rubygems'
 
 gem 'dm-core', '~>0.9.8'
 require 'dm-core'

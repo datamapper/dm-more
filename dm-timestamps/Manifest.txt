@@ -9,3 +9,5 @@ lib/dm-timestamps/version.rb
 spec/integration/timestamps_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb

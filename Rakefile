@@ -2,12 +2,12 @@ require 'pathname'
 require 'spec/rake/spectask'
 require 'rake/rdoctask'
 require 'fileutils'
-require 'lib/dm-more/version.rb'
+require 'lib/dm-more/version'
 include FileUtils
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
-gem_paths = %w[
+GEM_PATHS = %w[
   dm-adjust
   dm-serializer
   dm-validations
@@ -34,98 +34,110 @@ gem_paths = %w[
   dm-sweatshop
   dm-tags
   dm-timestamps
-]
+].freeze
 
-gems = gem_paths.map { |p| File.basename(p) }
+gems = GEM_PATHS.map { |p| File.basename(p) }
 
-ROOT = Pathname(__FILE__).dirname.expand_path
+ROOT    = Pathname(__FILE__).dirname.expand_path
+JRUBY   = RUBY_PLATFORM =~ /java/
+WINDOWS = Gem.win_platform?
+SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-AUTHOR = "Sam Smoot"
-EMAIL  = "ssmoot@gmail.com"
-GEM_NAME = "dm-more"
+AUTHOR = 'Sam Smoot'
+EMAIL  = 'ssmoot [a] gmail [d] com'
+GEM_NAME = 'dm-more'
 GEM_VERSION = DataMapper::More::VERSION
 GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], *gems.map { |g| [g, "~>#{GEM_VERSION}"] }]
-GEM_CLEAN = ['**/.DS_Store}', '*.db', "doc/rdoc", ".config", "**/{coverage,log,pkg}", "cache", "lib/merb-more.rb"]
+GEM_CLEAN = %w[ **/.DS_Store} *.db doc/rdoc .config **/{coverage,log,pkg} cache lib/dm-more.rb ]
 GEM_EXTRAS = { :has_rdoc => false }
 
-PROJECT_NAME = "datamapper"
-PROJECT_URL  = "http://datamapper.org"
-PROJECT_DESCRIPTION = "Faster, Better, Simpler."
-PROJECT_SUMMARY = "An Object/Relational Mapper for Ruby"
+PROJECT_NAME = 'datamapper'
+PROJECT_URL  = 'http://github.com/sam/dm-more/tree/master'
+PROJECT_DESCRIPTION = 'Faster, Better, Simpler.'
+PROJECT_SUMMARY = 'An Object/Relational Mapper for Ruby'
 
-require ROOT + 'tasks/hoe'
+Pathname.glob(ROOT.join('tasks/**/*.rb').to_s).each { |f| require f }
 
-WIN32 = (RUBY_PLATFORM =~ /win32|mingw|cygwin/) rescue nil
-SUDO  = WIN32 ? '' : ('sudo' unless ENV['SUDOLESS'])
-
-desc "Install it all"
-task :install => [:install_gems, :package] do
-  sh %{#{SUDO} gem install --local pkg/dm-more-#{DataMapper::More::VERSION}.gem  --no-update-sources}
+def sudo_gem(cmd)
+  sh "#{SUDO} #{RUBY} -S gem #{cmd}", :verbose => false
 end
 
-desc "Uninstall it all"
+desc "Install #{GEM_NAME} #{GEM_VERSION}"
+task :install => [ :install_gems, :package ] do
+  sudo_gem "install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources"
+end
+
+desc "Uninstall #{GEM_NAME} #{GEM_VERSION}"
 task :uninstall => [ :uninstall_gems, :clobber ] do
-  sh "#{SUDO} gem uninstall dm-more -v#{DataMapper::More::VERSION} -I -x", :verbose => false rescue "dm-more not installed"
+  sudo_gem "uninstall #{GEM_NAME} -v#{GEM_VERSION} -Ix"
 end
 
-desc "Build the dm-more gems"
+def rake(cmd)
+  sh "#{RUBY} -S rake #{cmd}", :verbose => false
+end
+
+desc "Build #{GEM_NAME} #{GEM_VERSION}"
 task :build_gems do
-  gem_paths.each do |dir|
-    Dir.chdir(dir){ sh "rake gem" }
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir){ rake 'gem' }
   end
 end
 
-desc "Install the dm-more gems"
+desc 'Install the dm-more gems'
 task :install_gems => :build_gems do
-  gem_paths.each do |dir|
-    Dir.chdir(dir){ sh "rake install" }
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir){ rake 'install; true' }
   end
 end
 
-desc "Uninstall the dm-more gems"
+desc 'Uninstall the dm-more gems'
 task :uninstall_gems do
-  gems.each do |sub_gem|
-    sh %{#{SUDO} gem uninstall #{sub_gem} -I -x} rescue "#{sub_gem} not installed."
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir){ rake 'uninstall; true' }
   end
 end
 
-task :package => ["lib/dm-more.rb"]
-desc "Create dm-more.rb"
-task "lib/dm-more.rb" do
-  mkdir_p "lib"
-  File.open("lib/dm-more.rb","w+") do |file|
-    file.puts "### AUTOMATICALLY GENERATED.  DO NOT EDIT."
-    gems.each do |gem|
-      next if gem == "dm-gen"
-      file.puts "require '#{gem}'"
+task :package => %w[ lib/dm-more.rb ]
+
+task 'lib/dm-more.rb' do
+  mkdir_p 'lib'
+  File.open('lib/dm-more.rb', 'w+') do |file|
+    file.puts '### AUTOMATICALLY GENERATED.  DO NOT EDIT.'
+    (gems - %w[ dm-gen dm-is-remixable ]).each do |gem|
+      lib = if '-adapter' == gem[-8..-1]
+        gem.split('-')[1..-1].join('_')
+      else
+        gem
+      end
+      file.puts "require '#{lib}'"
     end
   end
 end
 
-desc "Bundle up all the dm-more gems"
-task :bundle => [:package, :build_gems] do
-  mkdir_p "bundle"
-  cp "pkg/dm-more-#{DataMapper::More::VERSION}.gem", "bundle"
-  gem_paths.each do |gem|
+task :bundle => [ :package, :build_gems ] do
+  mkdir_p 'bundle'
+  cp "pkg/dm-more-#{GEM_VERSION}.gem", 'bundle'
+  GEM_PATHS.each do |gem|
     File.open("#{gem}/Rakefile") do |rakefile|
-      rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*"(.*)"$/ }
-      sh %{cp #{gem}/pkg/#{File.basename(gem)}-#{$1}.gem bundle/}
+      rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*'(.*)'$/ }
+      cp "#{gem}/pkg/#{File.basename(gem)}-#{$1}.gem", 'bundle'
     end
   end
 end
 
-desc "Release all dm-more gems"
+# NOTE: this task must be named release_all, and not release
+desc "Release #{GEM_NAME} #{GEM_VERSION}"
 task :release_all do
-  sh "rake release VERSION=#{DataMapper::More::VERSION}; true"
-  gem_paths.each do |dir|
-    Dir.chdir(dir) { sh "rake release VERSION=#{DataMapper::More::VERSION}; true" }
+  sh "rake release VERSION=#{GEM_VERSION}"
+  GEM_PATHS.each do |dir|
+    Dir.chdir(dir) { rake "release VERSION=#{GEM_VERSION}" }
   end
 end
 
 %w[ ci spec clean clobber check_manifest ].each do |command|
   task command do
-    gem_paths.each do |gem_name|
-      Dir.chdir(gem_name){ sh("rake #{command}; true") }
+    GEM_PATHS.each do |gem_name|
+      Dir.chdir(gem_name){ rake command }
     end
   end
 end
@@ -134,9 +146,9 @@ namespace :dm do
   desc 'Run specifications'
   task :specs do
     Spec::Rake::SpecTask.new(:spec) do |t|
-      Dir["**/Rakefile"].each do |rakefile|
+      Dir['**/Rakefile'].each do |rakefile|
         # don't run in the top level dir or in the pkg dir
-        unless rakefile == "Rakefile" || rakefile =~ /^pkg/
+        unless rakefile == 'Rakefile' || rakefile =~ /^pkg/
           # running chdir in a block runs the task in specified dir, then returns to previous dir.
           Dir.chdir(File.join(File.dirname(__FILE__), File.dirname(rakefile))) do
             raise "Broken specs in #{rakefile}" unless system 'rake'

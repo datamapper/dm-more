@@ -1,15 +1,11 @@
-# Needed to import datamapper and other gems
-require 'rubygems'
 require 'pathname'
+require 'rubygems'
 
-# Add all external dependencies for the plugin here
 gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 
-# Require plugin-files
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-remixable' / 'is' / 'remixable.rb'
+require Pathname(__FILE__).dirname.expand_path / 'dm-is-remixable' / 'is' / 'remixable'
 
-# Include the plugin in Resource
 module DataMapper
   module Resource
     module ClassMethods

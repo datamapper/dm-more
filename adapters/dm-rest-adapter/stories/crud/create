@@ -2,36 +2,36 @@ Story: remote app wants to create a resource
   As a remote app
   I want to create a resource
   So that I can store some data about a particular item
-  
-  Scenario: remote app supplies a new valid Resource 
+
+  Scenario: remote app supplies a new valid Resource
     Given a valid DataMapper::Resource
     When I try to save the Resource
     Then the Resource should save
 
-  Scenario: remote app supplies a new invalid Resource 
+  Scenario: remote app supplies a new invalid Resource
     Given a valid DataMapper::Resource
     When I make invalid changes to that Resource
     When I try to save the Resource
     Then the Resource should not save
-    
+
   Scenario: remote app supplies a new valid Resource associated with another new valid Resource
     Given a new Resource
     And another new Resource associated with the first
     When I try to save the first Resource
     Then both Resources should save
-    
+
   Scenario: remote app supplies a new invalid Resource associated with another new valid Resource
     Given a new invalid Resouce
     And another new Resource associated with the first
     When I try to save the first Resource
     Neither Resource should save
-    
+
   Scenario: remote app supplies a new valid Resource associated with another new invalid Resource
     Given a new Resource
     And another new invalid Resource associated with the first
     When I try to save the first Resource
     Neither Resource should save
-    
+
   Scenario: remote app supplies a new invalid Resource associated with another new invalid Resource
     Given a new invalid Resource
     And another new invalid Resource associated with the first

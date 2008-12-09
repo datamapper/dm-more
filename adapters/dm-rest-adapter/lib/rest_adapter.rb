@@ -1,6 +1,7 @@
-require 'rubygems'
+require 'net/http'
 require 'pathname'
-require Pathname(__FILE__).dirname + 'rest_adapter/version'
+require 'rexml/document'
+require 'rubygems'
 
 gem 'dm-core', '~>0.9.8'
 require 'dm-core'
@@ -8,9 +9,10 @@ require 'dm-core'
 gem 'extlib', '~>0.9.9'
 require 'extlib'
 
+#gem 'dm-serializer', '~>0.9.8'
 require 'dm-serializer'
-require 'net/http'
-require 'rexml/document'
+
+require Pathname(__FILE__).dirname + 'rest_adapter/version'
 
 # TODO: Abstract XML support out from the protocol
 # TODO: Build JSON support

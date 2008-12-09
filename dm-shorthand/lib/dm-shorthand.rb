@@ -8,9 +8,17 @@ module DataMapper
 
       def included(target)
         _dm_shorthand_included(target)
+
         parentname, basename = target.name.split /::(?=\w+$)/
-        parent = parentname.split(/::/).inject(Kernel) { |mod, str| mod.const_get(str) }
-        eval <<-EOD
+
+        if basename
+          parent = parentname.split(/::/).inject(Kernel) { |mod, str| mod.const_get(str) }
+        else
+          basename = parentname
+          parent = Kernel
+        end
+
+        eval(<<-EOS, binding, __FILE__, __LINE__)
           class << parent
             def #{basename}(repository_name)
               class_cache[repository_name] ||= begin
@@ -37,7 +45,7 @@ module DataMapper
               @class_cache ||= {}
             end
           end
-        EOD
+        EOS
       end
     end
   end

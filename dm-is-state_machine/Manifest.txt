@@ -32,3 +32,5 @@ spec/unit/data/state_spec.rb
 spec/unit/dsl/event_dsl_spec.rb
 spec/unit/dsl/state_dsl_spec.rb
 spec/unit/state_machine_spec.rb
+tasks/install.rb
+tasks/spec.rb

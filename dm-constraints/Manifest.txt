@@ -12,8 +12,5 @@ lib/dm-constraints/version.rb
 spec/integration/constraints_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
-tasks/ci.rb
-tasks/dm.rb
-tasks/doc.rb
-tasks/gemspec.rb
 tasks/install.rb
+tasks/spec.rb
