@@ -1,3 +1,9 @@
+=== 0.9.9 / Unreleased
+
+* 1 enhancement:
+  
+  * Added #generate! method to create invalid fixture
+
 === 0.9.8 / 2008-12-07
 
 * 1 minor enhancement:
