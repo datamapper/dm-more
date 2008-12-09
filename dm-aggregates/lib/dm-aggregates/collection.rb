@@ -2,9 +2,9 @@ module DataMapper
   class Collection
     include AggregateFunctions
 
-    def size
-      loaded? ? super : count
-    end
+#    def size
+#      loaded? ? super : count
+#    end
 
     private
 
