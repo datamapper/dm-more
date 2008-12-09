@@ -1,6 +1,14 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
+# run the specs with dm-validations, if available
+begin
+  gem 'dm-validations', '~>0.9.8'
+  require 'dm-validations'
+rescue LoadError
+  # do nothing
+end
+
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Timestamp' do
     describe "Timestamp (shared behavior)", :shared => true do
@@ -86,8 +94,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         class GreenSmoothie
           include DataMapper::Resource
 
-          property :id, Integer, :serial => true
-          property :name, String
+          property :id,         Serial
+          property :name,       String
           property :created_at, DateTime
           property :created_on, Date
           property :updated_at, DateTime
@@ -152,7 +160,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           class GreenSmoothie
             include DataMapper::Resource
 
-            property :id, Integer, :serial => true
+            property :id,   Serial
             property :name, String
 
             timestamps :at, :on
