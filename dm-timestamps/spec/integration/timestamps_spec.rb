@@ -5,88 +5,78 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Timestamp' do
     describe "Timestamp (shared behavior)", :shared => true do
       it "should not set the created_at/on fields if they're already set" do
-        repository(:default) do
-          green_smoothie = GreenSmoothie.new(:name => 'Banana')
-          time = (DateTime.now - 100)
-          green_smoothie.created_at = time
-          green_smoothie.created_on = time
-          green_smoothie.save
-          green_smoothie.created_at.should == time
-          green_smoothie.created_on.should == time
-          green_smoothie.created_at.should be_a_kind_of(DateTime)
-          green_smoothie.created_on.should be_a_kind_of(Date)
-        end
+        green_smoothie = GreenSmoothie.new(:name => 'Banana')
+        time = (DateTime.now - 100)
+        green_smoothie.created_at = time
+        green_smoothie.created_on = time
+        green_smoothie.save
+        green_smoothie.created_at.should == time
+        green_smoothie.created_on.should == time
+        green_smoothie.created_at.should be_a_kind_of(DateTime)
+        green_smoothie.created_on.should be_a_kind_of(Date)
       end
 
       it "should set the created_at/on fields on creation" do
-        repository(:default) do
-          green_smoothie = GreenSmoothie.new(:name => 'Banana')
-          green_smoothie.created_at.should be_nil
-          green_smoothie.created_on.should be_nil
-          green_smoothie.save
-          green_smoothie.created_at.should be_a_kind_of(DateTime)
-          green_smoothie.created_on.should be_a_kind_of(Date)
-        end
+        green_smoothie = GreenSmoothie.new(:name => 'Banana')
+        green_smoothie.created_at.should be_nil
+        green_smoothie.created_on.should be_nil
+        green_smoothie.save
+        green_smoothie.created_at.should be_a_kind_of(DateTime)
+        green_smoothie.created_on.should be_a_kind_of(Date)
       end
 
       it "should not alter the create_at/on fields on model updates" do
-        repository(:default) do
-          green_smoothie = GreenSmoothie.new(:id => 2, :name => 'Berry')
-          green_smoothie.created_at.should be_nil
-          green_smoothie.created_on.should be_nil
-          green_smoothie.save
-          original_created_at = green_smoothie.created_at
-          original_created_on = green_smoothie.created_on
-          green_smoothie.name = 'Strawberry'
-          green_smoothie.save
-          green_smoothie.created_at.should eql(original_created_at)
-          green_smoothie.created_on.should eql(original_created_on)
-        end
+        green_smoothie = GreenSmoothie.new(:id => 2, :name => 'Berry')
+        green_smoothie.created_at.should be_nil
+        green_smoothie.created_on.should be_nil
+        green_smoothie.save
+        original_created_at = green_smoothie.created_at
+        original_created_on = green_smoothie.created_on
+        green_smoothie.name = 'Strawberry'
+        green_smoothie.save
+        green_smoothie.created_at.should eql(original_created_at)
+        green_smoothie.created_on.should eql(original_created_on)
       end
 
       it "should set the updated_at/on fields on creation and on update" do
-        repository(:default) do
-          green_smoothie = GreenSmoothie.new(:name => 'Mango')
-          green_smoothie.updated_at.should be_nil
-          green_smoothie.updated_on.should be_nil
-          green_smoothie.save
-          green_smoothie.updated_at.should be_a_kind_of(DateTime)
-          green_smoothie.updated_on.should be_a_kind_of(Date)
-          original_updated_at = green_smoothie.updated_at
-          original_updated_on = green_smoothie.updated_on
-          time_tomorrow = DateTime.now + 1
-          date_tomorrow = Date.today + 1
-          DateTime.stub!(:now).and_return { time_tomorrow }
-          Date.stub!(:today).and_return { date_tomorrow }
-          green_smoothie.name = 'Cranberry Mango'
-          green_smoothie.save
-          green_smoothie.updated_at.should_not eql(original_updated_at)
-          green_smoothie.updated_on.should_not eql(original_updated_on)
-          green_smoothie.updated_at.should eql(time_tomorrow)
-          green_smoothie.updated_on.should eql(date_tomorrow)
-        end
+        green_smoothie = GreenSmoothie.new(:name => 'Mango')
+        green_smoothie.updated_at.should be_nil
+        green_smoothie.updated_on.should be_nil
+        green_smoothie.save
+        green_smoothie.updated_at.should be_a_kind_of(DateTime)
+        green_smoothie.updated_on.should be_a_kind_of(Date)
+        original_updated_at = green_smoothie.updated_at
+        original_updated_on = green_smoothie.updated_on
+        time_tomorrow = DateTime.now + 1
+        date_tomorrow = Date.today + 1
+        DateTime.stub!(:now).and_return { time_tomorrow }
+        Date.stub!(:today).and_return { date_tomorrow }
+        green_smoothie.name = 'Cranberry Mango'
+        green_smoothie.save
+        green_smoothie.updated_at.should_not eql(original_updated_at)
+        green_smoothie.updated_on.should_not eql(original_updated_on)
+        green_smoothie.updated_at.should eql(time_tomorrow)
+        green_smoothie.updated_on.should eql(date_tomorrow)
       end
 
       it "should only set the updated_at/on fields on dirty objects" do
-        repository(:default) do
-          green_smoothie = GreenSmoothie.new(:name => 'Mango')
-          green_smoothie.updated_at.should be_nil
-          green_smoothie.updated_on.should be_nil
-          green_smoothie.save
-          green_smoothie.updated_at.should be_a_kind_of(DateTime)
-          green_smoothie.updated_on.should be_a_kind_of(Date)
-          original_updated_at = green_smoothie.updated_at
-          original_updated_on = green_smoothie.updated_on
-          time_tomorrow = DateTime.now + 1
-          date_tomorrow = Date.today + 1
-          DateTime.stub!(:now).and_return { time_tomorrow }
-          Date.stub!(:today).and_return { date_tomorrow }
-          green_smoothie.save
-          green_smoothie.updated_at.should_not eql(time_tomorrow)
-          green_smoothie.updated_on.should_not eql(date_tomorrow)
-          green_smoothie.updated_at.should eql(original_updated_at)
-          green_smoothie.updated_on.should eql(original_updated_on)
-        end
+        green_smoothie = GreenSmoothie.new(:name => 'Mango')
+        green_smoothie.updated_at.should be_nil
+        green_smoothie.updated_on.should be_nil
+        green_smoothie.save
+        green_smoothie.updated_at.should be_a_kind_of(DateTime)
+        green_smoothie.updated_on.should be_a_kind_of(Date)
+        original_updated_at = green_smoothie.updated_at
+        original_updated_on = green_smoothie.updated_on
+        time_tomorrow = DateTime.now + 1
+        date_tomorrow = Date.today + 1
+        DateTime.stub!(:now).and_return { time_tomorrow }
+        Date.stub!(:today).and_return { date_tomorrow }
+        green_smoothie.save
+        green_smoothie.updated_at.should_not eql(time_tomorrow)
+        green_smoothie.updated_on.should_not eql(date_tomorrow)
+        green_smoothie.updated_at.should eql(original_updated_at)
+        green_smoothie.updated_on.should eql(original_updated_on)
       end
     end
 
@@ -103,7 +93,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :updated_at, DateTime
           property :updated_on, Date
 
-          auto_migrate!(:default)
+          auto_migrate!
         end
       end
 
@@ -167,7 +157,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
             timestamps :at, :on
 
-            auto_migrate!(:default)
+            auto_migrate!
           end
         end
 
