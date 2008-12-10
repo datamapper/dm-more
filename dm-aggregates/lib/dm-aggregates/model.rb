@@ -2,9 +2,9 @@ module DataMapper
   module Model
     include AggregateFunctions
 
-    def size
-      count
-    end
+#    def size
+#      count
+#    end
 
     private
 
