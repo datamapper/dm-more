@@ -13,14 +13,12 @@ module DataMapper
         elsif value.is_a?(String)
           ::JSON.load(value)
         else
-          raise ArgumentError.new("+value+ must be nil or a String")
+          raise ArgumentError, '+value+ must be nil or a String'
         end
       end
 
       def self.dump(value, property)
-        if value.nil?
-          nil
-        elsif value.is_a?(String)
+        if value.nil? || value.is_a?(String)
           value
         else
           ::JSON.dump(value)
@@ -28,8 +26,7 @@ module DataMapper
       end
 
       def self.typecast(value, property)
-        # Arrays and hashes are left alone, while strings are parsed as JSON.
-        if value.kind_of?(Array) || value.kind_of?(Hash)
+        if value.nil? || value.kind_of?(Array) || value.kind_of?(Hash)
           value
         else
           ::JSON.load(value.to_s)
