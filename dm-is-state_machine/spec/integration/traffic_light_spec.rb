@@ -147,4 +147,40 @@ describe TrafficLight do
 
   end
 
+  describe "hooks" do
+
+    it "should log initial state before state is changed on a before hook" do
+      @t.forward!
+      @t.before_hook_log.should == %w(green)
+      @t.forward!
+      @t.before_hook_log.should == %w(green yellow)
+      @t.forward!
+      @t.before_hook_log.should == %w(green yellow red)
+    end
+
+    it "should log final state before state is changed on a before hook" do
+      @t.forward!
+      @t.after_hook_log.should == %w(yellow)
+      @t.forward!
+      @t.after_hook_log.should == %w(yellow red)
+      @t.forward!
+      @t.after_hook_log.should == %w(yellow red green)
+    end
+
+  end
+
+  describe "overwriting event methods" do
+
+    before(:all) do
+      TrafficLight.class_eval "def forward!(added_param); log << added_param; transition!(:forward); end"
+    end
+
+    it "should transition normally with added functionality" do
+      @t.color.should == "green"
+      @t.forward!("test")
+      @t.color.should == "yellow"
+      @t.log.should == %w(G test Y)
+    end
+
+  end
 end

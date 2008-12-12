@@ -22,7 +22,20 @@ class TrafficLight
     end
   end
 
+  before :transition!, :before_hook
+  after  :transition!, :after_hook
+
+  def before_hook
+    before_hook_log << attribute_get(:color)
+  end
+
+  def after_hook
+    after_hook_log << attribute_get(:color)
+  end
+
   def log; @log ||= [] end
+  def before_hook_log; @bh_log ||= [] end
+  def after_hook_log; @ah_log ||= [] end
 
   attr_reader :init
   def initialize(*args)

@@ -42,11 +42,8 @@ module DataMapper
           push_state_machine_context(:event)
 
           # ===== Define methods =====
-          column = machine.column
           define_method("#{name}!") do
-            machine.current_state_name = send(:"#{column}")
-            machine.fire_event(name, self)
-            send(:"#{column}=", machine.current_state_name)
+            transition!(name)
           end
 
           # Possible alternative to the above:
