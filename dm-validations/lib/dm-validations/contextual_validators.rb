@@ -17,15 +17,14 @@ module DataMapper
       #
       # @return <Hash> a hash of validators <GenericValidator>
       def contexts
-        @contexts ||= @contexts = {}
+        @contexts ||= {}
       end
 
       # Return an array of validators for a named context
       #
       # @return <Array> An array of validators
       def context(name)
-        contexts[name] = [] unless contexts.has_key?(name)
-        contexts[name]
+        contexts[name] ||= []
       end
 
       # Clear all named context validators off of the resource
