@@ -69,11 +69,11 @@ module DataMapper
 
         class_eval <<-CLASS, __FILE__, __LINE__
           def self.roots
-            all :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
+            all :#{configuration[:child_key]} => nil, :order => [#{configuration[:order].inspect}]
           end
 
           def self.first_root
-            first :#{configuration[:child_key]} => nil, :order => #{configuration[:order].inspect}
+            first :#{configuration[:child_key]} => nil, :order => [#{configuration[:order].inspect}]
           end
         CLASS
 
