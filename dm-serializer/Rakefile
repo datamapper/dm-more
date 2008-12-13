@@ -14,7 +14,7 @@ GEM_NAME = 'dm-serializer'
 GEM_VERSION = DataMapper::Serializer::VERSION
 GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
 GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.textile LICENSE TODO History.txt ] }
 
 PROJECT_NAME = 'datamapper'
 PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/#{GEM_NAME}"
