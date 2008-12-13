@@ -47,7 +47,7 @@ module DataMapper
       instance
     end
 
-    # Same as create but calls Model#create! and does save 
+    # Same as create but calls Model#create! and does save
     # invalid models
     #
     # @param     klass       [Class, DataMapper::Resource]
