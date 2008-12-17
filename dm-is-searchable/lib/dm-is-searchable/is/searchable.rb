@@ -30,7 +30,7 @@ module DataMapper
         def search(search_options = {}, options = {})
           docs = repository(@search_repository) { self.all(search_options) }
           ids = docs.collect { |doc| doc[:id] }
-          self.all(options.merge(:id => ids))
+          self.all(options.merge(key.first => ids))
         end
       end # module ClassMethods
 
