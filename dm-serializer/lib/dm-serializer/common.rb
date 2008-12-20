@@ -7,7 +7,6 @@ module DataMapper
     def properties_to_serialize(options)
       only_properties     = Array(options[:only])
       excluded_properties = Array(options[:exclude])
-      exclude_read_only   = options[:without_read_only_attributes] || false
 
       self.class.properties(repository.name).reject do |p|
         if only_properties.include? p.name

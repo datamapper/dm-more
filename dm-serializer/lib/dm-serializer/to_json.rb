@@ -24,12 +24,6 @@ module DataMapper
         "#{property.name.to_json}: #{send(property.getter).to_json}"
       end
 
-      if self.class.respond_to?(:read_only_attributes) && exclude_read_only
-        self.class.read_only_attributes.each do |property|
-          fields << "#{property.to_json}: #{send(property).to_json}"
-        end
-      end
-
       # add methods
       (options[:methods] || []).each do |meth|
         if self.respond_to?(meth)
