@@ -5,7 +5,8 @@ gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 
 spec_dir_path = Pathname(__FILE__).dirname.expand_path
-require spec_dir_path.parent + 'lib/dm-serializer'
+$LOAD_PATH.unshift(spec_dir_path.parent + 'lib/')
+require 'dm-serializer'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

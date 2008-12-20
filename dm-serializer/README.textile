@@ -37,6 +37,14 @@ cow.to_json(:methods => [:desc]) # => { "id": 1, "name": "Berta", "desc": "A Cow
 
 You can include associations by passing the association accessor the @:methods@ option.
 
+If you want to only load a particular serialization method, that's cool, you can do that:
+
+<pre>
+<code>
+require 'dm-serializer/to_json'
+</code>
+</pre>
+
 h2. @to_csv@
 
 @to_csv@ currently doesn't support any options yet. It will in the future. It will not support serializing child associations.
