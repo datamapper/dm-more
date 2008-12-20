@@ -24,12 +24,6 @@ module DataMapper
         "#{property.name.to_json}: #{send(property.getter).to_json}"
       end
 
-      if self.respond_to?(:serialize_properties)
-        self.serialize_properties.each do |k,v|
-          fields << "#{k.to_json}: #{v.to_json}"
-        end
-      end
-
       if self.class.respond_to?(:read_only_attributes) && exclude_read_only
         self.class.read_only_attributes.each do |property|
           fields << "#{property.to_json}: #{send(property).to_json}"

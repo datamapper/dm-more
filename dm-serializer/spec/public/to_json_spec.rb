@@ -62,13 +62,6 @@ describe DataMapper::Serialize, '#to_json' do
     berta["breed"].should     == "Guernsey"
   end
 
-  it "handles extra properties" do
-    deserialized_hash = JSON.parse(Cow.new(:id => 1, :name => "Harry", :breed => "Angus").to_json)
-
-    deserialized_hash["extra"].should == "Extra"
-    deserialized_hash["another"].should == 42
-  end
-
   it "handles options given to a collection properly" do
     deserialized_collection = JSON.parse(@collection.to_json(:only => [:composite]))
     betsy = deserialized_collection.first
