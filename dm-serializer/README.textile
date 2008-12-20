@@ -45,6 +45,17 @@ require 'dm-serializer/to_json'
 </code>
 </pre>
 
+h2. @to_xml@
+
+@to_xml@ supports some extra options to allow you to override the element names
+
+<pre>
+<code>
+cow.to_xml(            :element_name => 'bovine') # => <bovine><id>1</id><name>Berta</name></bovine>
+cows.to_xml(:collection_element_name => 'kine')   # => <kine><bovine><id>1</id><name>Berta</name></bovine></kine>
+</code>
+</pre>
+
 h2. @to_csv@
 
 @to_csv@ currently doesn't support any options yet. It will in the future. It will not support serializing child associations.

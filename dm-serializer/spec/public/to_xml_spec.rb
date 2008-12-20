@@ -45,45 +45,43 @@ describe DataMapper::Serialize, '#to_xml' do
 
   it_should_behave_like "A serialization method"
 
-  describe 'Resource#xml_element_name' do
-    it 'should return the class name underscored and with slashes replaced with dashes' do
-      QuanTum::Cat.new.send(:xml_element_name).should == 'quan_tum-cat'
-    end
-
+  describe ':element_name option for Resource' do
     it 'should be used as the root node name by #to_xml' do
       planet = Planet.new
-      class << planet
-        def xml_element_name
-          "aplanet"
-        end
-      end
-
-      xml = planet.to_xml
+      xml = planet.to_xml(:element_name => "aplanet")
       REXML::Document.new(xml).elements[1].name.should == "aplanet"
+    end
+
+    it 'when not specified the class name underscored and with slashes replaced with dashes should be used as the root node name' do
+      cat = QuanTum::Cat.new
+      xml = cat.to_xml
+      REXML::Document.new(xml).elements[1].name.should == "quan_tum-cat"
     end
   end
 
-  describe 'Collection#xml_element_name' do
+  describe ':collection_element_name for Collection' do
     before(:each) do
       query = DataMapper::Query.new(DataMapper::repository(:default), QuanTum::Cat)
       @collection = DataMapper::Collection.new(query) {}
     end
 
-    it 'should return the class name tableized and with slashes replaced with dashes' do
-      @collection.send(:xml_element_name).should == 'quan_tum-cats'
+    it 'when not specified the class name tableized and with slashes replaced with dashes should be used as the root node name' do
+      xml = @collection.to_xml
+      REXML::Document.new(xml).elements[1].name.should == "quan_tum-cats"
     end
 
     it 'should be used as the root node name by #to_xml' do
-      planet = Planet.new
       @collection.load([1])
-      class << @collection
-        def xml_element_name
-          "somanycats"
-        end
-      end
 
-      xml = @collection.to_xml
+      xml = @collection.to_xml(:collection_element_name => "somanycats")
       REXML::Document.new(xml).elements[1].name.should == "somanycats"
+    end
+
+    it 'should respect :element_name for collection elements' do
+      @collection.load([1])
+
+      xml = @collection.to_xml(:collection_element_name => "somanycats", :element_name => 'cat')
+      REXML::Document.new(xml).elements[1].elements[1].name.should == "cat"
     end
   end
 end

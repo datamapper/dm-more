@@ -12,20 +12,13 @@ module DataMapper
 
     protected
 
-    # Return the name of this Resource - to be used as the root element name.
-    # This can be overloaded.
-    #
-    # @return <String> name of this Resource
-    def xml_element_name
-      Extlib::Inflection.underscore(self.class.name).tr("/", "-")
-    end
-
     # Return a REXML::Document representing this Resource
     #
     # @return <REXML::Document> an XML representation of this Resource
     def to_xml_document(opts={}, doc=nil)
       doc ||= REXML::Document.new
-      root = doc.add_element(xml_element_name)
+      default_xml_element_name = lambda { Extlib::Inflection.underscore(self.class.name).tr("/", "-") }
+      root = doc.add_element(opts[:element_name] || default_xml_element_name[])
 
       #TODO old code base was converting single quote to double quote on attribs
 
@@ -59,13 +52,11 @@ module DataMapper
 
     protected
 
-    def xml_element_name
-      Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")
-    end
-
     def to_xml_document(opts={})
       doc = REXML::Document.new
-      root = doc.add_element(xml_element_name)
+      default_collection_element_name = lambda { Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-") }
+      root = doc.add_element(opts[:collection_element_name] || default_collection_element_name[])
+
       root.attributes["type"] = 'array'
       each do |item|
         item.send(:to_xml_document, opts, root)
