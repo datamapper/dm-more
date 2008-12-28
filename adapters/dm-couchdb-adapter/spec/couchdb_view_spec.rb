@@ -7,7 +7,7 @@ class Viewable
   end
 
   property :name, String
-  property :open, TrueClass
+  property :open, Boolean
 end
 
 describe DataMapper::CouchResource::View do
