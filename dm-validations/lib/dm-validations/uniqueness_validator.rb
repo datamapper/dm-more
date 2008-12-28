@@ -6,7 +6,7 @@ module DataMapper
     # @author Guy van den Berg
     # @since  0.9
     class UniquenessValidator < GenericValidator
-      include Assertions
+      include Extlib::Assertions
 
       def initialize(field_name, options = {})
         assert_kind_of 'scope', options[:scope], Array, Symbol if options.has_key?(:scope)
