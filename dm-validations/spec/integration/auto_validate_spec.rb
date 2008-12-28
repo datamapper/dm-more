@@ -127,9 +127,9 @@ describe "Automatic Validation from Property Definition" do
   it "should not auto add any validators if the option :auto_validation => false was given" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id,   Integer,     :serial   => true,  :auto_validation => false
-      property :name, String,      :nullable => false, :auto_validation => false
-      property :bool, DM::Boolean, :nullable => false, :auto_validation => false
+      property :id,   Integer,                    :serial   => true,  :auto_validation => false
+      property :name, String,                     :nullable => false, :auto_validation => false
+      property :bool, DataMapper::Types::Boolean, :nullable => false, :auto_validation => false
     end
     klass.new.valid?.should == true
   end
