@@ -13,7 +13,7 @@ shared_examples_for 'It Has Setup Resources' do
 
       property :id,                Serial
       property :name,              String
-      property :is_fire_breathing, TrueClass
+      property :is_fire_breathing, Boolean
       property :toes_on_claw,      Integer
       property :birth_at,          DateTime
       property :birth_on,          Date
