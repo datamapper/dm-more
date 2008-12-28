@@ -47,16 +47,18 @@ module DataMapper
     end
   end
 
-  # the json gem adds Object#to_json, which breaks the DM proxies, since it
-  # happens *after* the proxy has been blank slated. This code removes the added
-  # method, so it is delegated correctly to the Collection
-  [
-    Associations::OneToMany::Proxy,
-    (Associations::ManyToOne::Proxy if defined?(Associations::ManyToOne::Proxy)),
-    Associations::ManyToMany::Proxy
-  ].each do |proxy|
-    [:to_json].each do |method|
-      proxy.send(:undef_method, :to_json) rescue nil
+  module Associations
+    # the json gem adds Object#to_json, which breaks the DM proxies, since it
+    # happens *after* the proxy has been blank slated. This code removes the added
+    # method, so it is delegated correctly to the Collection
+    [
+      (OneToMany::Proxy  if defined?(OneToMany::Proxy)),
+      (ManyToOne::Proxy  if defined?(ManyToOne::Proxy)),
+      (ManyToMany::Proxy if defined?(ManyToMany::Proxy)),
+    ].each do |proxy|
+      [:to_json].each do |method|
+        proxy.send(:undef_method, :to_json) rescue nil
+      end
     end
   end
 
