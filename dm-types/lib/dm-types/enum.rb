@@ -34,8 +34,8 @@ module DataMapper
 
       def self.dump(value, property)
         case value
-        when Array then value.collect { |v| self.dump(v, property) }
-        else            self.flag_map.invert[value]
+          when Array then value.collect { |v| self.dump(v, property) }
+          else            self.flag_map.invert[value]
         end
       end
 
@@ -46,7 +46,7 @@ module DataMapper
           when Symbol then value.to_sym
           when String then value.to_s
           when Fixnum then value.to_i
-          else               value
+          else             value
         end
       end
     end # class Enum
@@ -61,7 +61,7 @@ module DataMapper
           return unless property.options[:auto_validation]
 
           if property.type.ancestors.include?(Types::Enum)
-           validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
+            validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
           end
         end
       end
