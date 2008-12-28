@@ -5,7 +5,7 @@ class Monica # :nodoc:
   include DataMapper::Resource
   property :id, Integer, :serial => true
   property :birth_date, Date, :auto_validation => false
-  property :happy, TrueClass
+  property :happy, Boolean
   validates_is_primitive :birth_date
 end
 
