@@ -20,7 +20,7 @@ describe 'A REST adapter' do
                          :author => 'Robert Heinlein',
                          :created_at => DateTime.parse('2008-06-08T17:02:28Z'))
         @book.instance_eval { @new_record = false }
-        @repository.identity_map(Book).set(@book.key, @book)
+        @repository.identity_map(Book)[@book.key] = @book
         @book.title = "Mary Had a Little Lamb"
       end
     end
