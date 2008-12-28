@@ -287,7 +287,7 @@ module DataMapper
         def remix_one_to_many(cardinality, model, options)
           self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
           model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :nullable => false
-          model.belongs_to Extlib::Inflection.tableize(self.name).intern
+          model.belongs_to belongs_to_name(self.name)
         end
 
         # - remix_many_to_many
@@ -309,13 +309,13 @@ module DataMapper
             self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
             options[:other_model].has cardinality, options[:table_name].intern
 
-            model.belongs_to  Extlib::Inflection.tableize(self.name).intern
-            model.belongs_to  Extlib::Inflection.tableize(options[:other_model].name).intern
+            model.belongs_to belongs_to_name(self.name)
+            model.belongs_to belongs_to_name(options[:other_model].name)
           else
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
 
             self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
-            model.belongs_to Extlib::Inflection.tableize(self.name).intern
+            model.belongs_to belongs_to_name(self.name)
             model.belongs_to options[:via].intern, :class_name => options[:other_model].name, :child_key => ["#{options[:via]}_id".intern]
           end
         end
@@ -355,6 +355,10 @@ module DataMapper
           end
 
           model
+        end
+
+        def belongs_to_name(class_name)
+          class_name.to_const_path.gsub(/\//, '_').to_sym
         end
 
       end # RemixerClassMethods
