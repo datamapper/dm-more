@@ -115,7 +115,7 @@ module DataMapper
         #
         # @private
         def nested_set_scope
-          self.class.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
+          self.model.base_model.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
         end
 
         ##
@@ -123,7 +123,7 @@ module DataMapper
         # @private
         def original_nested_set_scope
           # TODO commit
-          self.class.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          self.model.base_model.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         ##
@@ -131,7 +131,7 @@ module DataMapper
         #
         def nested_set
           # TODO add option for serving it as a nested array
-          self.class.all(nested_set_scope.merge(:order => [:lft.asc]))
+          self.model.base_model.all(nested_set_scope.merge(:order => [:lft.asc]))
         end
 
         ##
@@ -211,16 +211,16 @@ module DataMapper
               # find out how wide this node is, as we need to make a gap large enough for it to fit in
               gap = self.rgt - self.lft + 1
               # make a gap at position, that is as wide as this node
-              self.class.adjust_gap!(nested_set,position-1,gap)
+              self.model.base_model.adjust_gap!(nested_set,position-1,gap)
               # offset this node (and all its descendants) to the right position
               old_position = self.lft
               offset = position - old_position
               nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
               # close the gap this movement left behind.
-              self.class.adjust_gap!(nested_set,old_position,-gap)
+              self.model.base_model.adjust_gap!(nested_set,old_position,-gap)
             else
               # make a gap where the new node can be inserted
-              self.class.adjust_gap!(nested_set,position-1,2)
+              self.model.base_model.adjust_gap!(nested_set,position-1,2)
               # set the position fields
               self.lft, self.rgt = position, position + 1
             end
@@ -359,7 +359,7 @@ module DataMapper
        private
         def detach
           offset = self.lft - self.rgt - 1
-          self.class.adjust_gap!(nested_set,self.rgt,offset)
+          self.model.base_model.adjust_gap!(nested_set,self.rgt,offset)
           self.lft,self.rgt = nil,nil
         end
 
