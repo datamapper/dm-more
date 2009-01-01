@@ -1,87 +1,99 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-describe DataMapper::Serialize, '#to_xml' do
-  #
-  # ==== enterprisey XML
-  #
+{
+  'REXML'  => nil,
+  'LibXML' => 'libxml'
+}.each do |lib, file_to_require|
+  begin
+    require file_to_require if file_to_require
+  rescue LoadError
+    warn "[WARNING] Cannot require '#{file_to_require}', not running #to_xml specs for #{lib}"
+    next
+  end
 
-  before(:all) do
-    @harness = Class.new(SerializerTestHarness) do
-      def method_name
-        :to_xml
-      end
+  describe DataMapper::Serialize, "#to_xml using #{lib}" do
+    #
+    # ==== enterprisey XML
+    #
 
-      protected
+    before(:all) do
+      @harness = Class.new(SerializerTestHarness) do
+        def method_name
+          :to_xml
+        end
 
-      def deserialize(result)
-        doc = REXML::Document.new(result)
-        root = doc.elements[1]
-        if root.attributes["type"] == "array"
-          root.elements.collect do |element|
+        protected
+
+        def deserialize(result)
+          doc = REXML::Document.new(result)
+          root = doc.elements[1]
+          if root.attributes["type"] == "array"
+            root.elements.collect do |element|
+              a = {}
+              element.elements.each do |v|
+                a.update(v.name => cast(v.text, v.attributes["type"]))
+              end
+              a
+            end
+          else
             a = {}
-            element.elements.each do |v|
+            root.elements.each do |v|
               a.update(v.name => cast(v.text, v.attributes["type"]))
             end
             a
           end
-        else
-          a = {}
-          root.elements.each do |v|
-            a.update(v.name => cast(v.text, v.attributes["type"]))
-          end
-          a
         end
+
+        def cast(value, type)
+          boolean_conversions = {"true" => true, "false" => false}
+          value = boolean_conversions[value] if boolean_conversions.has_key?(value)
+          value = value.to_i if value && type == "integer"
+          value
+        end
+      end.new
+    end
+
+    it_should_behave_like "A serialization method"
+
+    describe ':element_name option for Resource' do
+      it 'should be used as the root node name by #to_xml' do
+        planet = Planet.new
+        xml = planet.to_xml(:element_name => "aplanet")
+        REXML::Document.new(xml).elements[1].name.should == "aplanet"
       end
 
-      def cast(value, type)
-        boolean_conversions = {"true" => true, "false" => false}
-        value = boolean_conversions[value] if boolean_conversions.has_key?(value)
-        value = value.to_i if value && type == "integer"
-        value
+      it 'when not specified the class name underscored and with slashes replaced with dashes should be used as the root node name' do
+        cat = QuanTum::Cat.new
+        xml = cat.to_xml
+        REXML::Document.new(xml).elements[1].name.should == "quan_tum-cat"
       end
-    end.new
-  end
-
-  it_should_behave_like "A serialization method"
-
-  describe ':element_name option for Resource' do
-    it 'should be used as the root node name by #to_xml' do
-      planet = Planet.new
-      xml = planet.to_xml(:element_name => "aplanet")
-      REXML::Document.new(xml).elements[1].name.should == "aplanet"
     end
 
-    it 'when not specified the class name underscored and with slashes replaced with dashes should be used as the root node name' do
-      cat = QuanTum::Cat.new
-      xml = cat.to_xml
-      REXML::Document.new(xml).elements[1].name.should == "quan_tum-cat"
-    end
-  end
+    describe ':collection_element_name for Collection' do
+      before(:each) do
+        query = DataMapper::Query.new(DataMapper::repository(:default), QuanTum::Cat)
+        @collection = DataMapper::Collection.new(query) {}
+      end
 
-  describe ':collection_element_name for Collection' do
-    before(:each) do
-      query = DataMapper::Query.new(DataMapper::repository(:default), QuanTum::Cat)
-      @collection = DataMapper::Collection.new(query) {}
-    end
+      it 'when not specified the class name tableized and with slashes replaced with dashes should be used as the root node name' do
+        xml = @collection.to_xml
+        REXML::Document.new(xml).elements[1].name.should == "quan_tum-cats"
+      end
 
-    it 'when not specified the class name tableized and with slashes replaced with dashes should be used as the root node name' do
-      xml = @collection.to_xml
-      REXML::Document.new(xml).elements[1].name.should == "quan_tum-cats"
-    end
+      it 'should be used as the root node name by #to_xml' do
+        @collection.load([1])
 
-    it 'should be used as the root node name by #to_xml' do
-      @collection.load([1])
+        xml = @collection.to_xml(:collection_element_name => "somanycats")
+        REXML::Document.new(xml).elements[1].name.should == "somanycats"
+      end
 
-      xml = @collection.to_xml(:collection_element_name => "somanycats")
-      REXML::Document.new(xml).elements[1].name.should == "somanycats"
-    end
+      it 'should respect :element_name for collection elements' do
+        @collection.load([1])
 
-    it 'should respect :element_name for collection elements' do
-      @collection.load([1])
-
-      xml = @collection.to_xml(:collection_element_name => "somanycats", :element_name => 'cat')
-      REXML::Document.new(xml).elements[1].elements[1].name.should == "cat"
+        xml = @collection.to_xml(:collection_element_name => "somanycats", :element_name => 'cat')
+        REXML::Document.new(xml).elements[1].elements[1].name.should == "cat"
+      end
     end
   end
 end
