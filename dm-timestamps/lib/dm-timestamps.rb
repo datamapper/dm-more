@@ -53,4 +53,6 @@ module DataMapper
 
     class InvalidTimestampName < RuntimeError; end
   end # module Timestamp
+  # include Timestamp or Timestamps, it still works
+  Timestamps = Timestamp
 end # module DataMapper
