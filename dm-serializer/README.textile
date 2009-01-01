@@ -56,6 +56,8 @@ cows.to_xml(:collection_element_name => 'kine')   # => <kine><bovine><id>1</id><
 </code>
 </pre>
 
+If you would like a nice speed boost (~5x), @require 'libxml'@ before @dm-serializer@, and LibXML will be used rather than REXML.
+
 h2. @to_csv@
 
 @to_csv@ currently doesn't support any options yet. It will in the future. It will not support serializing child associations.
