@@ -7,6 +7,11 @@ TODO
 autotest/discover.rb
 autotest/dmserializer_rspec.rb
 lib/dm-serializer.rb
+lib/dm-serializer/common.rb
+lib/dm-serializer/to_json.rb
+lib/dm-serializer/to_xml.rb
+lib/dm-serializer/to_yaml.rb
+lib/dm-serializer/to_csv.rb
 lib/dm-serializer/version.rb
 spec/fixtures/cow.rb
 spec/fixtures/planet.rb
