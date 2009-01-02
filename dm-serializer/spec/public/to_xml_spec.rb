@@ -53,6 +53,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
           value
         end
       end.new
+      DataMapper::Serialize::XMLSerializers.instance_eval { remove_const('SERIALIZER') }
       DataMapper::Serialize::XMLSerializers::SERIALIZER = DataMapper::Serialize::XMLSerializers::const_get(lib)
     end
 
