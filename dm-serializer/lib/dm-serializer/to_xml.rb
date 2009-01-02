@@ -1,4 +1,5 @@
 require 'dm-serializer/common'
+require 'dm-serializer/xml_serializers'
 require 'rexml/document'
 
 module DataMapper
@@ -11,69 +12,32 @@ module DataMapper
     end
 
     protected
-     
-    if defined?(::LibXML)
-      def to_xml_document(opts={}, doc=nil)
-        doc ||= ::LibXML::XML::Document.new
-        default_xml_element_name = lambda { Extlib::Inflection.underscore(self.class.name).tr("/", "-") }
-        root = ::LibXML::XML::Node.new(opts[:element_name] || default_xml_element_name[])
-        doc.root.nil? ? doc.root = root :
-                        doc.root << root
-        properties_to_serialize(opts).each do |property|
-          value = send(property.name)
-          root << node = ::LibXML::XML::Node.new(property.name.to_s)
-          if property.key?
-            node["type"] = property.type.to_s.downcase
-          end          
-          node << value.to_s unless value.nil?
-        end
-
-        # add methods
-        (opts[:methods] || []).each do |meth|
-          if self.respond_to?(meth)
-            xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
-            value = send(meth)
-            root << ::LibXML::XML::Node.new(xml_name, value.to_s) unless value.nil?
-          end
-        end
-
-        doc      
+    # This method requires certain methods to be implemented in the individual 
+    # serializer library subclasses:
+    # new_document
+    # root_node
+    # add_property_node
+    # add_node
+    def to_xml_document(opts={}, doc = nil)
+      xml = XMLSerializers::SERIALIZER
+      doc ||= xml.new_document
+      default_xml_element_name = lambda { Extlib::Inflection.underscore(self.class.name).tr("/", "-") }
+      root = xml.root_node(doc, opts[:element_name] || default_xml_element_name[])
+      properties_to_serialize(opts).each do |property|
+        value = send(property.name)
+        attrs = (property.type == String) ? {} : {'type' => property.type.to_s.downcase}
+        xml.add_node(root, property.name.to_s, value, attrs)
       end
-    else
-      require 'rexml/document'
 
-      # Return a REXML::Document representing this Resource
-      #
-      # @return <REXML::Document> an XML representation of this Resource
-      def to_xml_document(opts={}, doc=nil)
-        doc ||= REXML::Document.new
-        default_xml_element_name = lambda { Extlib::Inflection.underscore(self.class.name).tr("/", "-") }
-        root = doc.add_element(opts[:element_name] || default_xml_element_name[])
-
-        #TODO old code base was converting single quote to double quote on attribs
-
-        propset = properties_to_serialize(opts)
-        propset.each do |property|
-            value = send(property.name)
-            node = root.add_element(property.name.to_s)
-            unless property.type == String
-              node.attributes["type"] = property.type.to_s.downcase
-            end
-            node << REXML::Text.new(value.to_s) unless value.nil?
+      (opts[:methods] || []).each do |meth|
+        if self.respond_to?(meth)
+          xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
+          value = send(meth)
+          xml.add_node(root, xml_name, value.to_s) unless value.nil? 
         end
-
-        # add methods
-        (opts[:methods] || []).each do |meth|
-          if self.respond_to?(meth)
-            xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
-            node = root.add_element(xml_name)
-            value = send(meth)
-            node << REXML::Text.new(value.to_s, :raw => true) unless value.nil?
-          end
-        end
-        doc
       end
-    end
+      doc
+    end   
   end
 
   class Collection
@@ -83,31 +47,16 @@ module DataMapper
 
     protected
 
-    if defined?(::LibXML)
-      def to_xml_document(opts={})
-        doc = ::LibXML::XML::Document.new
-        default_collection_element_name = lambda { Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-") }
-        doc.root = root = ::LibXML::XML::Node.new(opts[:collection_element_name] || default_collection_element_name[])
-        root['type'] = 'array'
-
-        each do |item|
-          item.send(:to_xml_document, opts, doc)
-        end
-        doc
+    def to_xml_document(opts = {})
+      xml = DataMapper::Serialize::XMLSerializers::SERIALIZER
+      doc = xml.new_document
+      default_collection_element_name = lambda {Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")}
+      root = xml.root_node(doc, opts[:collection_element_name] || default_collection_element_name[], {'type' => 'array'})
+      self.each do |item|
+        item.send(:to_xml_document, opts, doc)
       end
-    else
-      require 'rexml/document'
-      def to_xml_document(opts={})
-        doc = ::REXML::Document.new
-        default_collection_element_name = lambda { Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-") }
-        root = doc.add_element(opts[:collection_element_name] || default_collection_element_name[])
-
-        root.attributes["type"] = 'array'
-        each do |item|
-          item.send(:to_xml_document, opts, root)
-        end
-        doc
-      end
+      doc
     end
   end
 end
+

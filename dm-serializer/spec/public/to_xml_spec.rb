@@ -3,7 +3,8 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 {
   'REXML'  => nil,
-  'LibXML' => 'libxml'
+  'LibXML' => 'libxml',
+  'Nokogiri' => 'nokogiri'
 }.each do |lib, file_to_require|
   begin
     require file_to_require if file_to_require
@@ -52,6 +53,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
           value
         end
       end.new
+      DataMapper::Serialize::XMLSerializers::SERIALIZER = DataMapper::Serialize::XMLSerializers::const_get(lib)
     end
 
     it_should_behave_like "A serialization method"
