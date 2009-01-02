@@ -13,6 +13,10 @@ lib/dm-serializer/to_xml.rb
 lib/dm-serializer/to_yaml.rb
 lib/dm-serializer/to_csv.rb
 lib/dm-serializer/version.rb
+lib/dm-serializer/xml_serializers.rb
+lib/dm-serializer/xml_serializers/libxml.rb
+lib/dm-serializer/xml_serializers/nokogiri.rb
+lib/dm-serializer/xml_serializers/rexml.rb
 spec/fixtures/cow.rb
 spec/fixtures/planet.rb
 spec/fixtures/quan_tum_cat.rb
