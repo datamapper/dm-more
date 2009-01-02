@@ -42,7 +42,7 @@ module DataMapper
         return true if valid
 
         field = Extlib::Inflection.humanize(@field_name)
-        error_message = @options[:message] || '%s has an invalid format'.t(field)
+        error_message = @options[:message] || ValidationErrors.default_error_messages[:invalid].t(field)
         error_message = error_message.call(field, value) if error_message.respond_to?(:call)
 
         add_error(target, error_message, @field_name)

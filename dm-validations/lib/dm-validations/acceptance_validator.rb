@@ -7,10 +7,6 @@ module DataMapper
     # @since  0.9
     class AcceptanceValidator < GenericValidator
 
-      def self.default_message_for_field(field_name)
-        '%s is not accepted'.t(Extlib::Inflection.humanize(field_name))
-      end
-
       def initialize(field_name, options = {})
         super
         @options = options
@@ -22,7 +18,7 @@ module DataMapper
 
       def call(target)
         unless valid?(target)
-          error_message = @options[:message] || DataMapper::Validate::AcceptanceValidator.default_message_for_field(@field_name)
+          error_message = @options[:message] || ValidationErrors.default_error_messages[:accepted].t(Extlib::Inflection.humanize(@field_name))
           add_error(target, error_message , @field_name)
           return false
         end

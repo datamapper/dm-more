@@ -9,6 +9,33 @@ module DataMapper
 
       include Enumerable
 
+      @@default_error_messages = {
+        :absent => '%s must be absent',
+        :inclusion => '%s must be one of [%s]',
+        :invalid => '%s has an invalid format',
+        :confirmation => '%s does not match the confirmation',
+        :accepted  => "%s is not accepted",
+        :nil => '%s must not be nil',
+        :blank => '%s must not be blank',
+        :length_between => '%s must be between %s and %s characters long',
+        :too_long => '%s must be less than %s characters long',
+        :too_short => '%s must be more than %s characters long',
+        :wrong_length => '%s must be %s characters long',
+        :taken => '%s is already taken',
+        :not_a_number => '%s must be a number',
+        :not_an_integer => '%s must be an integer',
+        :greater_than => '%s must be greater than %s',
+        :greater_than_or_equal_to => "%s must be greater than or equal to %s",
+        :equal_to => "%s must be equal to %s",
+        :less_than => '%s must be less than %s',
+        :less_than_or_equal_to => "%s must be less than or equal to %s",
+        :value_between => '%s must be between %s and %s',
+        :primitive => '%s must be of type %s'
+      }
+ 
+      # Holds a hash with all the default error messages that can be replaced by your own copy or localizations.
+      cattr_accessor :default_error_messages
+
       # Clear existing validation errors.
       def clear!
         errors.clear
