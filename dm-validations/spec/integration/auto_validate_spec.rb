@@ -65,6 +65,7 @@ describe "Automatic Validation from Property Definition" do
 
     boat = SailBoat.new
     boat.valid_for_presence_test?.should == false
+    boat.errors.on(:name).should include('Name must not be blank')
     boat.name = 'Float'
     boat.valid_for_presence_test?.should == true
   end
@@ -75,6 +76,7 @@ describe "Automatic Validation from Property Definition" do
     boat.valid_for_length_test_1?.should == true  #no minimum length
     boat.description = 'ABCDEFGHIJK' #11
     boat.valid_for_length_test_1?.should == false
+    boat.errors.on(:description).should include('Description must be less than 10 characters long')
     boat.description = 'ABCDEFGHIJ' #10
     boat.valid_for_length_test_1?.should == true
   end
@@ -88,6 +90,7 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_length_test_2
     boat.notes = 'ABCDEFGHIJK' #11
     boat.should_not be_valid_for_length_test_2
+    boat.errors.on(:notes).should include('Notes must be between 2 and 10 characters long')
     boat.notes = 'ABCDEFGHIJ' #10
     boat.should be_valid_for_length_test_2
   end
@@ -100,6 +103,7 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_format_test
     boat.code = 'BAD CODE'
     boat.should_not be_valid_for_format_test
+    boat.errors.on(:code).should include('Code has an invalid format')
   end
 
   it "should auto validate all strings for max length" do
@@ -112,7 +116,7 @@ describe "Automatic Validation from Property Definition" do
     t.should be_valid
     t.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
     t.should_not be_valid
-    t.errors.full_messages.should include('Name must be less than 50 characters long')
+    t.errors.on(:name).should include('Name must be less than 50 characters long')
   end
 
   it "should auto validate the primitive type" do
@@ -122,6 +126,7 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_primitive_test
     boat.build_date = 'ABC'
     boat.should_not be_valid_for_primitive_test
+    boat.errors.on(:build_date).should include('Build date must be of type Date')
   end
 
   it "should not auto add any validators if the option :auto_validation => false was given" do
@@ -164,13 +169,13 @@ describe "Automatic Validation from Property Definition" do
     it 'should not allow floats' do
       @boat.set(:id => 1.0)
       @boat.should_not be_valid
-      @boat.errors.on(:id).should == [ 'Id must be an integer' ]
+      @boat.errors.on(:id).should include('Id must be an integer')
     end
 
     it 'should not allow decimals' do
       @boat.set(:id => BigDecimal('1'))
       @boat.should_not be_valid
-      @boat.errors.on(:id).should == [ 'Id must be an integer' ]
+      @boat.errors.on(:id).should include('Id must be an integer')
     end
   end
 
@@ -213,6 +218,7 @@ describe "Automatic Validation from Property Definition" do
     it 'should not allow nil' do
       @boat.set(:bool => nil)
       @boat.should_not be_valid
+      @boat.errors.on(:bool).should include('Bool must not be nil')
     end
   end
 
@@ -234,6 +240,7 @@ describe "Automatic Validation from Property Definition" do
     it 'should not allow nil' do
       @boat.set(:bool => nil)
       @boat.should_not be_valid
+      @boat.errors.on(:bool).should include('Bool must not be nil')
     end
   end
 
@@ -280,6 +287,7 @@ describe "Automatic Validation from Property Definition" do
     it 'should not accept value not in range' do
       @boat.limited = "blah"
       @boat.should_not be_valid
+      @boat.errors.on(:limited).should include('Limited must be one of [foo, bar, bang]')
     end
 
   end
@@ -293,8 +301,7 @@ describe "Automatic Validation from Property Definition" do
       end
       boat = custom_boat.new
       boat.should_not be_valid
-
-      boat.errors.on(:name).should eql(["This boat must have name"])
+      boat.errors.on(:name).should include('This boat must have name')
     end
 
     it "should have correct error messages" do

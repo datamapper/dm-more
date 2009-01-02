@@ -83,7 +83,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       repository do
         u = User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')
         u.should_not be_valid_for_testing_property
+        u.errors.on(:user_name).should include('User name is already taken')
         u.should_not be_valid_for_testing_association
+        u.errors.on(:user_name).should include('User name is already taken')
 
 
         u = User.new(:id => 2, :organisation_id => 2, :user_name  => 'guy')

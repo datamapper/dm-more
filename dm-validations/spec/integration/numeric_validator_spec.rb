@@ -20,9 +20,12 @@ describe DataMapper::Validate::NumericValidator do
   it "should validate a floating point value on the instance of a resource" do
     b = Bill.new
     b.should_not be_valid
+    b.errors.on(:amount_1).should include('Amount 1 must be a number')
+    b.errors.on(:amount_2).should include('Amount 2 must be a number')
     b.amount_1 = 'ABC'
     b.amount_2 = 27.343
     b.should_not be_valid
+    b.errors.on(:amount_1).should include('Amount 1 must be a number')
     b.amount_1 = '34.33'
     b.should be_valid
   end
@@ -37,12 +40,20 @@ describe DataMapper::Validate::NumericValidator do
     end
     b = Bill.new
     b.valid?.should_not == true
+    b.errors.on(:quantity_1).should include('Quantity 1 must be an integer')
+    b.errors.on(:quantity_2).should include('Quantity 2 must be an integer')
     b.quantity_1 = '12.334'
     b.quantity_2 = 27.343
     b.valid?.should_not == true
+    b.errors.on(:quantity_1).should include('Quantity 1 must be an integer')
+    # FIXME: The next line should pass, but :quantity_2 has no errors. This is
+    #        because 27.343 has been truncated to 27 by the time it reaches the
+    #        validation. Is this a bug?
+    #b.errors.on(:quantity_2).should include('Quantity 2 must be an integer')
     b.quantity_1 = '34.33'
     b.quantity_2 = 22
     b.valid?.should_not == true
+    b.errors.on(:quantity_1).should include('Quantity 1 must be an integer')
     b.quantity_1 = '34'
     b.valid?.should == true
 

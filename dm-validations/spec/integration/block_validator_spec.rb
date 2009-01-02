@@ -25,7 +25,7 @@ describe DataMapper::Validate::ValidatesWithBlock do
     Ship.new.valid_for_testing_success?.should == true
     ship = Ship.new
     ship.valid_for_testing_failure?.should == false
-    ship.errors.full_messages.include?('Validation failed').should == true
+    ship.errors.on(:fail_validation).should include('Validation failed')
   end
 
   it "should validate via a block and add error to field" do

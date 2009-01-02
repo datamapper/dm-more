@@ -41,6 +41,7 @@ describe DataMapper::Validate::ConfirmationValidator do
     canoe.name = 'White Water'
     canoe.name_confirmation = 'Not confirmed'
     canoe.should_not be_valid
+    canoe.errors.on(:name).should include('Name does not match the confirmation')
     canoe.errors.full_messages.first.should == 'Name does not match the confirmation'
 
     canoe.name_confirmation = 'White Water'
@@ -64,7 +65,9 @@ describe DataMapper::Validate::ConfirmationValidator do
       validators.clear!
       validates_is_confirmed :name, :allow_nil => false
     end
-    Canoe.new.should_not be_valid
+    canoe = Canoe.new
+    canoe.should_not be_valid
+    canoe.errors.on(:name).should include('Name does not match the confirmation')
   end
 
   it "should allow the name of the confirmation field to be set" do

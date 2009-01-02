@@ -41,13 +41,13 @@ describe DataMapper::Validate::MethodValidator do
     Ship.new.valid_for_testing_success?.should == true
     ship = Ship.new
     ship.valid_for_testing_failure?.should == false
-    ship.errors.full_messages.include?('Validation failed').should == true
+    ship.errors.on(:fail_validation).should include('Validation failed')
   end
 
   it "should run multiple validation methods" do
     ship = Ship.new
     ship.valid_for_multiple_validations?.should == false
-    ship.errors.full_messages.should include('Second Validation was false')
+    ship.errors.on(:second_validation).should include('Second Validation was false')
   end
 
   it "should validate via a method and add error to field" do

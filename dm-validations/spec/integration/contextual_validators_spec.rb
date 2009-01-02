@@ -17,6 +17,7 @@ describe DataMapper::Validate::ContextualValidators do
     k.valid?(:sold).should == true
     k.salesman = 'John Doe'
     k.valid?(:sold).should_not == true
+    k.errors.on(:salesman).should include('Salesman must be absent')
   end
 
   it "should raise an exception if you provide an invalid context to save" do

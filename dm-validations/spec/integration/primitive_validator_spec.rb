@@ -16,6 +16,7 @@ describe DataMapper::Validate::PrimitiveValidator do
 
     b.birth_date = 'ABC'
     b.should_not be_valid
+    b.errors.on(:birth_date).should include('Birth date must be of type Date')
     b.birth_date.should eql('ABC')
     b.birth_date = '2008-01-01'
     b.should be_valid

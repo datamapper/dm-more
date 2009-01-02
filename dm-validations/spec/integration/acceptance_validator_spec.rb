@@ -31,7 +31,7 @@ describe DataMapper::Validate::AcceptanceValidator do
     it "should add the default message when invalid" do
       @s.sailyness = "0"
       @s.valid?.should == false
-      @s.errors.full_messages.join(" ").should =~ /#{DataMapper::Validate::AcceptanceValidator.default_message_for_field("sailyness")}/
+      @s.errors.on(:sailyness).should include('Sailyness is not accepted')
     end
   end
   describe "with :allow_nil => false" do
@@ -81,7 +81,7 @@ describe DataMapper::Validate::AcceptanceValidator do
     it "should append the custom message when invalid" do
       @s.sailyness = "0"
       @s.valid?.should == false
-      @s.errors.full_messages.join(" ").should =~ /hehu!/
+      @s.errors.on(:sailyness).should include('hehu!')
     end
   end
 end
