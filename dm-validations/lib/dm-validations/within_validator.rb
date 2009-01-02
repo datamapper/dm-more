@@ -22,9 +22,9 @@ module DataMapper
           if @options[:set].first != -n && @options[:set].last != n
             error_message = @options[:message] || ValidationErrors.default_error_messages[:value_between].t(field_name, @options[:set].first, @options[:set].last)
           elsif @options[:set].first == -n
-            error_message = @options[:message] || ValidationErrors.default_error_messages[:less_than].t(field_name, @options[:set].last)
+            error_message = @options[:message] || ValidationErrors.default_error_messages[:less_than_or_equal_to].t(field_name, @options[:set].last)
           elsif @options[:set].last == n
-            error_message = @options[:message] || ValidationErrors.default_error_messages[:greater_than].t(field_name, @options[:set].first)
+            error_message = @options[:message] || ValidationErrors.default_error_messages[:greater_than_or_equal_to].t(field_name, @options[:set].first)
           end
         else
           error_message = ValidationErrors.default_error_messages[:inclusion].t(field_name, @options[:set].join(', '))

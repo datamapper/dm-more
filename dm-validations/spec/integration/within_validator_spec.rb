@@ -13,11 +13,11 @@ describe DataMapper::Validate::WithinValidator do
     class Inf
       include DataMapper::Resource
       property :id, Integer, :serial => true
-      property :greater_than, String, :auto_validation => false
-      property :less_than, String, :auto_validation => false
-      property :between, String, :auto_validation => false
-      validates_within :greater_than, :set => (10..n)
-      validates_within :less_than, :set => (-n..10)
+      property :gte, Integer, :auto_validation => false
+      property :lte, Integer, :auto_validation => false
+      property :between, Integer, :auto_validation => false
+      validates_within :gte, :set => (10..n)
+      validates_within :lte, :set => (-n..10)
       validates_within :between, :set => (10..20)
     end
 
@@ -42,9 +42,14 @@ describe DataMapper::Validate::WithinValidator do
   it "should validate a value within range with infinity" do
     inf = Inf.new
     inf.should_not be_valid
-    inf.errors.on(:greater_than).first.should == 'Greater than must be greater than 10'
-    inf.errors.on(:less_than).first.should == 'Less than must be less than 10'
+    inf.errors.on(:gte).first.should == 'Gte must be greater than or equal to 10'
+    inf.errors.on(:lte).first.should == 'Lte must be less than or equal to 10'
     inf.errors.on(:between).first.should == 'Between must be between 10 and 20'
+
+    inf.gte = 10
+    inf.lte = 10
+    inf.between = 10
+    inf.valid?.should == true
   end
 
   it "should validate a value by its default" do
