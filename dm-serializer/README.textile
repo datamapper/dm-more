@@ -8,9 +8,7 @@ h2. How it works
 
 One method is added to each model/collection for each serialization type - @to_json@, @to_xml@, @to_yaml@, and @to_csv@. With the exception of @to_csv@, all of these methods share the same interface. @to_json@ will be used for examples. Any method specific behaviour is documented in its own section below.
 
-<pre>
-<code>
-require 'dm-serializer'
+<pre><code>require 'dm-serializer'
 
 class Cow
   include DataMapper::Resource
@@ -31,34 +29,24 @@ cow = Cow.create(
 cow.to_json                      # => { "id": 1, "name": "Berta" }
 cow.to_json(:only    => [:name]) # => { "name": "Berta" } 
 cow.to_json(:exclude => [:id])   # => { "name": "Berta" }
-cow.to_json(:methods => [:desc]) # => { "id": 1, "name": "Berta", "desc": "A Cow" } 
-</code>
-</pre>
+cow.to_json(:methods => [:desc]) # => { "id": 1, "name": "Berta", "desc": "A Cow" }</code></pre>
 
 You can include associations by passing the association accessor the @:methods@ option.
 
 If you want to only load a particular serialization method, that's cool, you can do that:
 
-<pre>
-<code>
-require 'dm-serializer/to_json'
-</code>
-</pre>
+<pre><code>require 'dm-serializer/to_json'</code></pre>
 
-h2. @to_xml@
+h2. to_xml
 
 @to_xml@ supports some extra options to allow you to override the element names
 
-<pre>
-<code>
-cow.to_xml(            :element_name => 'bovine') # => <bovine><id>1</id><name>Berta</name></bovine>
-cows.to_xml(:collection_element_name => 'kine')   # => <kine><bovine><id>1</id><name>Berta</name></bovine></kine>
-</code>
-</pre>
+<pre><code>cow.to_xml(            :element_name => 'bovine') # => <bovine><id>1</id><name>Berta</name></bovine>
+cows.to_xml(:collection_element_name => 'kine')   # => <kine><bovine><id>1</id><name>Berta</name></bovine></kine></code></pre>
 
 If you would like a nice speed boost (~5x), require @libxml@ or @nokogiri@ before @dm-serializer@, and that library will be used rather than REXML.
 
-h2. @to_csv@
+h2. to_csv
 
 @to_csv@ currently doesn't support any options yet. It will in the future. It will not support serializing child associations.
 
