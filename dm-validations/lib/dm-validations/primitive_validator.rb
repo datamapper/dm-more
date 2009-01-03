@@ -26,7 +26,7 @@ module DataMapper
       protected
 
       def default_error(property)
-        ValidationErrors.default_error_messages[:primitive].t(Extlib::Inflection.humanize(field_name), property.primitive)
+        ValidationErrors.default_error_message(:primitive, field_name, property.primitive)
       end
 
     end # class PrimitiveValidator

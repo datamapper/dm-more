@@ -39,19 +39,19 @@ module DataMapper
         case @validation_method
         when :range then
           unless valid = @range.include?(field_value.size)
-            error_message = ValidationErrors.default_error_messages[:length_between].t(field, min, max)
+            error_message = ValidationErrors.default_error_message(:length_between, field, min, max)
           end
         when :min then
           unless valid = field_value.size >= min
-            error_message = ValidationErrors.default_error_messages[:too_short].t(field, min)
+            error_message = ValidationErrors.default_error_message(:too_short, field, min)
           end
         when :max then
           unless valid = field_value.size <= max
-            error_message = ValidationErrors.default_error_messages[:too_long].t(field, max)
+            error_message = ValidationErrors.default_error_message(:too_long, field, max)
           end
         when :equals then
           unless valid = field_value.size == equal
-            error_message = ValidationErrors.default_error_messages[:wrong_length].t(field, equal)
+            error_message = ValidationErrors.default_error_message(:wrong_length, field, equal)
           end
         end
 

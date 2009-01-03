@@ -18,7 +18,7 @@ module DataMapper
 
       def call(target)
         unless valid?(target)
-          error_message = @options[:message] || ValidationErrors.default_error_messages[:accepted].t(Extlib::Inflection.humanize(field_name))
+          error_message = @options[:message] || ValidationErrors.default_error_message(:accepted, field_name)
           add_error(target, error_message , field_name)
           return false
         end

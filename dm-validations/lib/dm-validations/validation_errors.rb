@@ -34,7 +34,12 @@ module DataMapper
       }
  
       # Holds a hash with all the default error messages that can be replaced by your own copy or localizations.
-      cattr_accessor :default_error_messages
+      cattr_writer :default_error_messages
+
+      def self.default_error_message(key, field, *values)
+        field = Extlib::Inflection.humanize(field)
+        @@default_error_messages[key] % [field, *values].flatten
+      end
 
       # Clear existing validation errors.
       def clear!

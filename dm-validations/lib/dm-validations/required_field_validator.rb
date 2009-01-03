@@ -34,7 +34,7 @@ module DataMapper
 
       def default_error(property)
         actual = boolean_type?(property) ? :nil : :blank
-        ValidationErrors.default_error_messages[actual].t(Extlib::Inflection.humanize(field_name))
+        ValidationErrors.default_error_message(actual, field_name)
       end
 
       # Is +property+ a boolean property?
