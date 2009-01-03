@@ -18,15 +18,20 @@ describe DataMapper::Serialize, '#to_yaml' do
       def deserialize(result)
         stringify_keys = lambda {|hash| hash.inject({}) {|a, (key, value)| a.update(key.to_s => value) }}
         result = YAML.load(result)
-        if result.is_a?(Array)
-          result.collect(&stringify_keys)
-        else
-          stringify_keys[result]
-        end
+        (process = lambda {|object|
+          if object.is_a?(Array)
+            object.collect(&process)
+          elsif object.is_a?(Hash)
+            stringify_keys[object]
+          else  
+            object
+          end
+        })[result]
       end
     end.new
   end
 
-  it_should_behave_like "A serialization method"
+  it_should_behave_like 'A serialization method'
+  it_should_behave_like 'A serialization method that also serializes core classes'
 
 end

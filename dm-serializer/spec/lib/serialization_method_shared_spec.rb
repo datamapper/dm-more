@@ -1,6 +1,47 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
+share_examples_for 'A serialization method that also serializes core classes' do
+  # This spec ensures that we don't break any serialization methods attached
+  # to core classes, such as Array
+  before(:all) do
+    %w[ @harness ].each do |ivar|
+      raise "+#{ivar}+ should be defined in before block" unless instance_variable_get(ivar)
+    end
+
+    DataMapper.auto_migrate!
+  end
+
+  before(:each) do
+    Cow.all.destroy!
+    Planet.all.destroy!
+    FriendedPlanet.all.destroy!
+  end
+
+  it 'serializes an array of extended objects' do
+    Cow.create(
+      :id        => 89,
+      :composite => 34,
+      :name      => 'Berta',
+      :breed     => 'Guernsey'
+    )
+    result = @harness.test(Cow.all.to_a)
+    result[0].values_at("id", "composite", "name", "breed").should == 
+      [89, 34, "Berta", "Guernsey"]
+  end
+
+  it 'serializes an array of collections' do
+    query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+    collection = DataMapper::Collection.new(query) do |c|
+      c.load([1, 2, 'Betsy', 'Jersey'])
+      c.load([89, 34, 'Berta', 'Guernsey'])
+    end
+    result = @harness.test([collection])
+    result[0][1].values_at("id", "composite", "name", "breed").should == 
+      [89, 34, "Berta", "Guernsey"]
+  end
+end
+
 share_examples_for 'A serialization method' do
   before(:all) do
     %w[ @harness ].each do |ivar|

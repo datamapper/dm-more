@@ -29,38 +29,7 @@ describe DataMapper::Serialize, '#to_json' do
   end
 
   it_should_behave_like "A serialization method"
-
-  it "should serialize an array of collections" do
-    deserialized_collection = JSON.parse([@collection].to_json).first
-    betsy = deserialized_collection.first
-    berta = deserialized_collection.last
-
-    betsy["id"].should        == 1
-    betsy["composite"].should == 2
-    betsy["name"].should      == "Betsy"
-    betsy["breed"].should     == "Jersey"
-
-    berta["id"].should        == 10
-    berta["composite"].should == 20
-    berta["name"].should      == "Berta"
-    berta["breed"].should     == "Guernsey"
-  end
-
-  it "should serialize an array of extended objects" do
-    deserialized_collection = JSON.parse(@collection.to_a.to_json)
-    betsy = deserialized_collection.first
-    berta = deserialized_collection.last
-
-    betsy["id"].should        == 1
-    betsy["composite"].should == 2
-    betsy["name"].should      == "Betsy"
-    betsy["breed"].should     == "Jersey"
-
-    berta["id"].should        == 10
-    berta["composite"].should == 20
-    berta["name"].should      == "Berta"
-    berta["breed"].should     == "Guernsey"
-  end
+  it_should_behave_like 'A serialization method that also serializes core classes'
 
   it "handles options given to a collection properly" do
     deserialized_collection = JSON.parse(@collection.to_json(:only => [:composite]))

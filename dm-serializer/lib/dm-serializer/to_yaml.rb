@@ -5,8 +5,16 @@ module DataMapper
     # Serialize a Resource to YAML
     #
     # @return <YAML> a YAML representation of this Resource
-    def to_yaml(opts = {})
-      YAML::quick_emit(object_id,opts) do |out|
+    def to_yaml(opts_or_emitter = {})
+      if opts_or_emitter.is_a?(YAML::Syck::Emitter)
+        emitter = opts_or_emitter
+        opts = {}
+      else
+        emitter = {}
+        opts = opts_or_emitter
+      end
+
+      YAML::quick_emit(object_id,emitter) do |out|
         out.map(nil,to_yaml_style) do |map|
           propset = properties_to_serialize(opts)
           propset.each do |property|
@@ -28,9 +36,13 @@ module DataMapper
   end
 
   class Collection
-    def to_yaml(opts = {})
-      # FIXME: Don't double handle the YAML (remove the YAML.load)
-      to_a.collect {|x| YAML.load(x.to_yaml(opts)) }.to_yaml
+    def to_yaml(opts_or_emitter = {})
+      if opts_or_emitter.is_a?(YAML::Syck::Emitter)
+        to_a.to_yaml(opts_or_emitter)
+      else
+        # FIXME: Don't double handle the YAML (remove the YAML.load)
+        to_a.collect {|x| YAML.load(x.to_yaml(opts_or_emitter)) }.to_yaml
+      end
     end
   end
 end

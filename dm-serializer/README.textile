@@ -62,6 +62,12 @@ h2. @to_csv@
 
 @to_csv@ currently doesn't support any options yet. It will in the future. It will not support serializing child associations.
 
+h2. Arrays, Hashes, and other core classes
+
+@dm-serializer@ only adds serialization methods to DataMapper objects and collections, however some libraries used (json, yaml) add methods to core classes, such as @Array@. Note that passing @dm-serializer@ options (such as @:only@) to these methods is *not supported*.
+
+<pre><code>Cow.all.to_a.to_yaml(:only => 'name') # WILL NOT WORK</code></pre>
+
 h2. Beware
 
 If you go spelunking through the code you will find other undocumented options. Use at your own risk, I plan on removing or changing these in the near future.
