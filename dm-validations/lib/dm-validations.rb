@@ -89,13 +89,13 @@ module DataMapper
     # Check if a resource is valid in a given context
     #
     def valid?(context = :default)
-      self.class.validators.execute(context,self)
+      self.class.validators.execute(context, self)
     end
 
     # Begin a recursive walk of the model checking validity
     #
     def all_valid?(context = :default)
-      recursive_valid?(self,context,true)
+      recursive_valid?(self, context, true)
     end
 
     # Do recursive validity checking
@@ -105,11 +105,11 @@ module DataMapper
       target.instance_variables.each do |ivar|
         ivar_value = target.instance_variable_get(ivar)
         if ivar_value.validatable?
-          valid = valid && recursive_valid?(ivar_value,context,valid)
+          valid = valid && recursive_valid?(ivar_value, context, valid)
         elsif ivar_value.respond_to?(:each)
           ivar_value.each do |item|
             if item.validatable?
-              valid = valid && recursive_valid?(item,context,valid)
+              valid = valid && recursive_valid?(item, context, valid)
             end
           end
         end

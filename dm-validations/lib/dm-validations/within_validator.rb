@@ -29,7 +29,7 @@ module DataMapper
           error_message = ValidationErrors.default_error_message(:inclusion, field_name, @options[:set].join(', '))
         end
 
-        add_error(target, error_message , field_name)
+        add_error(target, error_message, field_name)
         return false
       end
 

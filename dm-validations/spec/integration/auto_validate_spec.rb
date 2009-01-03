@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 module TypecastBypassSetter
   # Bypass typecasting so we can set values for specs
   def set(attributes)
-    attributes.each do |k,v|
+    attributes.each do |k, v|
       instance_variable_set("@#{k}", v)
     end
   end
@@ -244,7 +244,7 @@ describe "Automatic Validation from Property Definition" do
     end
   end
 
-  { :float => Float, :big_decimal => BigDecimal }.each do |column,type|
+  { :float => Float, :big_decimal => BigDecimal }.each do |column, type|
     describe "for #{type} properties" do
       before do
         @boat = SailBoat.new(:id => 1)

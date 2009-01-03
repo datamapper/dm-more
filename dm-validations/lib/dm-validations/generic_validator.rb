@@ -43,7 +43,7 @@ module DataMapper
       # TODO - should the field_name for a general message be :default???
       #
       def add_error(target, message, field_name = :general)
-        target.errors.add(field_name,message)
+        target.errors.add(field_name, message)
       end
 
       # Call the validator. "call" is used so the operation is BoundMethod and

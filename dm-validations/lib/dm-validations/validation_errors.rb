@@ -57,7 +57,7 @@ module DataMapper
 
       # Collect all errors into a single list.
       def full_messages
-        errors.inject([]) do |list,pair|
+        errors.inject([]) do |list, pair|
           list += pair.last
         end
       end
@@ -71,7 +71,7 @@ module DataMapper
       end
 
       def each
-        errors.map.each do |k,v|
+        errors.map.each do |k, v|
           next if v.blank?
           yield(v)
         end

@@ -51,7 +51,7 @@ module DataMapper
             # for floats, if scale is not set
 
             #total number of digits is less or equal precision
-            return true if value.gsub(/[^\d]/,'').length <= precision
+            return true if value.gsub(/[^\d]/, '').length <= precision
 
             #number of digits before decimal == precision, and the number is x.0. same as scale = 0
             return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/

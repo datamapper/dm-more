@@ -7,7 +7,7 @@ describe DataMapper::Validate::WithinValidator do
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :type_of_number, String, :auto_validation => false
-      validates_within :type_of_number, :set => ['Home','Work','Cell']
+      validates_within :type_of_number, :set => ['Home', 'Work', 'Cell']
     end
 
     class Inf
