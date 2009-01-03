@@ -25,7 +25,7 @@ module DataMapper
 
         if @options[:integer_only]
           return true if value =~ /\A[+-]?\d+\z/
-          error_message ||= ValidationErrors.default_error_messages[:not_an_integer].t(Extlib::Inflection.humanize(@field_name))
+          error_message ||= ValidationErrors.default_error_messages[:not_an_integer].t(Extlib::Inflection.humanize(field_name))
         else
           # FIXME: if precision and scale are not specified, can we assume that it is an integer?
           #        probably not, as floating point numbers don't have hard
@@ -58,10 +58,10 @@ module DataMapper
           else
             return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
           end
-          error_message ||= ValidationErrors.default_error_messages[:not_a_number].t(Extlib::Inflection.humanize(@field_name))
+          error_message ||= ValidationErrors.default_error_messages[:not_a_number].t(Extlib::Inflection.humanize(field_name))
         end
 
-        add_error(target, error_message, @field_name)
+        add_error(target, error_message, field_name)
 
         # TODO: check the gt, gte, lt, lte, and eq options
 

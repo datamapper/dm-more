@@ -24,7 +24,7 @@ module DataMapper
       end
 
       def call(target)
-        value = target.validation_property_value(@field_name)
+        value = target.validation_property_value(field_name)
         return true if @options[:allow_nil] && value.nil?
 
         validation = @options[:as] || @options[:with]
@@ -36,16 +36,16 @@ module DataMapper
           when Proc   then validator.call(value)
           when Regexp then value =~ validator
           else
-            raise UnknownValidationFormat, "Can't determine how to validate #{target.class}##{@field_name} with #{validator.inspect}"
+            raise UnknownValidationFormat, "Can't determine how to validate #{target.class}##{field_name} with #{validator.inspect}"
         end
 
         return true if valid
 
-        field = Extlib::Inflection.humanize(@field_name)
+        field = Extlib::Inflection.humanize(field_name)
         error_message = @options[:message] || ValidationErrors.default_error_messages[:invalid].t(field)
         error_message = error_message.call(field, value) if error_message.respond_to?(:call)
 
-        add_error(target, error_message, @field_name)
+        add_error(target, error_message, field_name)
 
         false
       end

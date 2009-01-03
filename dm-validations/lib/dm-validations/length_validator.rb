@@ -24,14 +24,14 @@ module DataMapper
       end
 
       def call(target)
-        field_value = target.validation_property_value(@field_name)
+        field_value = target.validation_property_value(field_name)
         return true if @options[:allow_nil] && field_value.nil?
 
         field_value = '' if field_value.nil?
 
         # XXX: HACK seems hacky to do this on every validation, probably should
         #      do this elsewhere?
-        field = Extlib::Inflection.humanize(@field_name)
+        field = Extlib::Inflection.humanize(field_name)
         min = @range ? @range.min : @min
         max = @range ? @range.max : @max
         equal = @equal
@@ -57,7 +57,7 @@ module DataMapper
 
         error_message = @options[:message] || error_message
 
-        add_error(target, error_message, @field_name) unless valid
+        add_error(target, error_message, field_name) unless valid
 
         return valid
       end

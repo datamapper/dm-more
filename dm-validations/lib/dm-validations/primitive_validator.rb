@@ -13,12 +13,12 @@ module DataMapper
       end
 
       def call(target)
-        value = target.validation_property_value(@field_name)
-        property = target.validation_property(@field_name)
+        value = target.validation_property_value(field_name)
+        property = target.validation_property(field_name)
         return true if value.nil? || value.kind_of?(property.primitive) || property.primitive == TrueClass && value.kind_of?(FalseClass)
 
         error_message = @options[:message] || default_error(property)
-        add_error(target, error_message, @field_name)
+        add_error(target, error_message, field_name)
 
         false
       end
@@ -26,7 +26,7 @@ module DataMapper
       protected
 
       def default_error(property)
-        ValidationErrors.default_error_messages[:primitive].t(Extlib::Inflection.humanize(@field_name), property.primitive)
+        ValidationErrors.default_error_messages[:primitive].t(Extlib::Inflection.humanize(field_name), property.primitive)
       end
 
     end # class PrimitiveValidator

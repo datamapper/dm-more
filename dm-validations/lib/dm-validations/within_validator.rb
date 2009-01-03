@@ -17,20 +17,20 @@ module DataMapper
         includes = @options[:set].include?(target.send(field_name))
         return true if includes
 
-        field_name = Extlib::Inflection.humanize(@field_name)
+        field = Extlib::Inflection.humanize(field_name)
         if @options[:set].is_a?(Range)
           if @options[:set].first != -n && @options[:set].last != n
-            error_message = @options[:message] || ValidationErrors.default_error_messages[:value_between].t(field_name, @options[:set].first, @options[:set].last)
+            error_message = @options[:message] || ValidationErrors.default_error_messages[:value_between].t(field, @options[:set].first, @options[:set].last)
           elsif @options[:set].first == -n
-            error_message = @options[:message] || ValidationErrors.default_error_messages[:less_than_or_equal_to].t(field_name, @options[:set].last)
+            error_message = @options[:message] || ValidationErrors.default_error_messages[:less_than_or_equal_to].t(field, @options[:set].last)
           elsif @options[:set].last == n
-            error_message = @options[:message] || ValidationErrors.default_error_messages[:greater_than_or_equal_to].t(field_name, @options[:set].first)
+            error_message = @options[:message] || ValidationErrors.default_error_messages[:greater_than_or_equal_to].t(field, @options[:set].first)
           end
         else
-          error_message = ValidationErrors.default_error_messages[:inclusion].t(field_name, @options[:set].join(', '))
+          error_message = ValidationErrors.default_error_messages[:inclusion].t(field, @options[:set].join(', '))
         end
 
-        add_error(target, error_message , @field_name)
+        add_error(target, error_message , field_name)
         return false
       end
 

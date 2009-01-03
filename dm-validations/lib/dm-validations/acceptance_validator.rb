@@ -18,8 +18,8 @@ module DataMapper
 
       def call(target)
         unless valid?(target)
-          error_message = @options[:message] || ValidationErrors.default_error_messages[:accepted].t(Extlib::Inflection.humanize(@field_name))
-          add_error(target, error_message , @field_name)
+          error_message = @options[:message] || ValidationErrors.default_error_messages[:accepted].t(Extlib::Inflection.humanize(field_name))
+          add_error(target, error_message , field_name)
           return false
         end
 
@@ -27,7 +27,7 @@ module DataMapper
       end
 
       def valid?(target)
-        field_value = target.instance_variable_get("@#{@field_name}")
+        field_value = target.instance_variable_get("@#{field_name}")
         return true if @options[:allow_nil] && field_value.nil?
         return false if !@options[:allow_nil] && field_value.nil?
 
