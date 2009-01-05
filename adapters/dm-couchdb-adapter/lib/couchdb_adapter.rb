@@ -17,7 +17,7 @@ require Pathname(__FILE__).dirname + 'couchdb_adapter/view'
 module DataMapper
   module Resource
     # Converts a Resource to a JSON representation.
-    def to_json(dirty = false)
+    def to_couch_json(dirty = false)
       property_list = self.class.properties.select { |key, value| dirty ? self.dirty_attributes.key?(key) : true }
       data = {}
       for property in property_list do
@@ -68,9 +68,9 @@ module DataMapper
             resource.instance_variable_get(property.instance_variable_name)
           end
           if key.compact.empty?
-            result = http_post("/#{self.escaped_db_name}", resource.to_json(true))
+            result = http_post("/#{self.escaped_db_name}", resource.to_couch_json(true))
           else
-            result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json(true))
+            result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_couch_json(true))
           end
           if result["ok"]
             resource.id = result["id"]
@@ -105,7 +105,7 @@ module DataMapper
           key = resource.class.key(self.name).map do |property|
             resource.instance_variable_get(property.instance_variable_name)
           end
-          result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_json)
+          result = http_put("/#{self.escaped_db_name}/#{key}", resource.to_couch_json)
           if result["ok"]
             resource.id = result["id"]
             resource.rev = result["rev"]

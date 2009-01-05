@@ -19,3 +19,11 @@ rescue Errno::ECONNREFUSED
   warn "CouchDB could not be contacted at #{COUCHDB_LOCATION}, skipping online dm-couchdb-adapter specs"
   COUCHDB_AVAILABLE = false
 end
+
+begin
+  gem 'dm-serializer'
+  require 'dm-serializer'
+  DMSERIAL_AVAILABLE = true
+rescue LoadError
+  DMSERIAL_AVAILABLE = false
+end

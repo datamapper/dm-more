@@ -254,5 +254,34 @@ if COUCHDB_AVAILABLE
       end
 
     end
+
+    describe 'JSON serialization' do
+      if DMSERIAL_AVAILABLE
+        before(:all) do
+          @moe = User.create(:name => "Moe", :age => 46, :wealth => 20)
+          @larry = User.create(:name => "Larry", :age => 42, :wealth => 10)
+          @curly = User.create(:name => "Curly", :age => 44, :wealth => 1)
+        end
+
+        after(:all) do
+          [@moe, @larry, @curly].each { |stooge| stooge.destroy }
+        end
+
+        it "should properly serialize a single resource" do
+          moe_serial = JSON.parse(@moe.to_json)
+          moe_serial['name'].should == "Moe"
+          moe_serial['age'].should == 46
+          moe_serial['wealth'].should == 20
+        end
+
+        it "should properly serialize a resource collection" do
+          stooges = JSON.parse(User.all.to_json)
+          stooges.count.should == 3
+          stooges.each { |stooge| stooge['name'].should_not be_blank }
+        end
+      else
+        it "requires dm-serializer to run serialization tests"
+      end
+    end
   end
 end
