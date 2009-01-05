@@ -253,6 +253,12 @@ if COUCHDB_AVAILABLE
         employee.destroy.should be_true
       end
 
+      it "should load descendents on parent.by_name" do
+        employee = Employee.new(:name => 'Bob', :rank => 'Peon')
+        employee.save.should be_true
+        Person.by_name(:key => 'Bob').include?(employee).should be_true
+        employee.destroy.should be_true
+      end
     end
 
     describe 'JSON serialization' do
