@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 # run the specs with dm-validations, if available
 begin
-  gem 'dm-validations', '~>0.9.8'
+  gem 'dm-validations', '~>0.9.9'
   require 'dm-validations'
 rescue LoadError
   # do nothing

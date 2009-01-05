@@ -3,7 +3,7 @@ require 'rubygems'
 dir = Pathname(__FILE__).dirname.expand_path + 'dm-aggregates'
 
 require dir + 'version'
-gem 'dm-core', '~>0.9.8'
+gem 'dm-core', '~>0.9.9'
 require 'dm-core'
 
 
