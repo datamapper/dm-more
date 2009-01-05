@@ -3,7 +3,7 @@ require 'pathname'
 
 require Pathname(__FILE__).dirname + 'dm-adjust/version'
 
-gem 'dm-core', '~>0.9.9'
+gem 'dm-core', '~>0.9.10'
 require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-adjust'

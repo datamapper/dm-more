@@ -3,7 +3,7 @@ require 'rubygems'
 require 'pathname'
 
 # Add all external dependencies for the plugin here
-gem 'dm-core', '~>0.9.9'
+gem 'dm-core', '~>0.9.10'
 require 'dm-core'
 
 # Require plugin-files
