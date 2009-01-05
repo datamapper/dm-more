@@ -27,6 +27,13 @@ describe DataMapper::Validate::WithinValidator do
       property :holder, String, :auto_validation => false, :default => 'foo'
       validates_within :holder, :set => ['foo', 'bar', 'bang']
     end
+
+    class Nullable
+      include DataMapper::Resource
+      property :id, Integer, :serial => true
+      property :nullable, Integer, :auto_validation => false
+      validates_within :nullable, :set => (1..5), :allow_nil => true
+    end
   end
 
   it "should validate a value on an instance of a resource within a predefined
@@ -55,5 +62,10 @@ describe DataMapper::Validate::WithinValidator do
   it "should validate a value by its default" do
     tel = Receiver.new
     tel.should be_valid
+  end
+
+  it "should allow a nil value if :allow_nil is true" do
+    nullable = Nullable.new
+    nullable.should be_valid
   end
 end

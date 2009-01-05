@@ -14,7 +14,9 @@ module DataMapper
       end
 
       def call(target)
-        return true if @options[:set].include?(target.send(field_name))
+        value = target.send(field_name)
+        return true if @options[:allow_nil] && value.nil?
+        return true if @options[:set].include?(value)
 
         if @options[:set].is_a?(Range)
           if @options[:set].first != -n && @options[:set].last != n
