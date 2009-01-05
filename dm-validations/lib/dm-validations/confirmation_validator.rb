@@ -25,7 +25,7 @@ module DataMapper
       end
 
       def valid?(target)
-        field_value = target.instance_variable_get("@#{field_name}")
+        field_value = target.send(field_name)
         return true if @options[:allow_nil] && field_value.nil?
         return false if !@options[:allow_nil] && field_value.nil?
 
