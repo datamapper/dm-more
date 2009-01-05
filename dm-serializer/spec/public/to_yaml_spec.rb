@@ -23,7 +23,7 @@ describe DataMapper::Serialize, '#to_yaml' do
             object.collect(&process)
           elsif object.is_a?(Hash)
             stringify_keys[object]
-          else  
+          else
             object
           end
         })[result]

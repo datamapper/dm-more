@@ -1,5 +1,5 @@
 require "rubygems"
-require 'pathname' 
+require 'pathname'
 
 gem 'dm-core', '~>0.9.9'
 require 'dm-core'
@@ -87,4 +87,3 @@ Benchmark.warmer(TIMES) do
     end
   end
 end
-

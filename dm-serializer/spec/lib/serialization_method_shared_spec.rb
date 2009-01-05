@@ -26,7 +26,7 @@ share_examples_for 'A serialization method that also serializes core classes' do
       :breed     => 'Guernsey'
     )
     result = @harness.test(Cow.all.to_a)
-    result[0].values_at("id", "composite", "name", "breed").should == 
+    result[0].values_at("id", "composite", "name", "breed").should ==
       [89, 34, "Berta", "Guernsey"]
   end
 
@@ -37,7 +37,7 @@ share_examples_for 'A serialization method that also serializes core classes' do
       c.load([89, 34, 'Berta', 'Guernsey'])
     end
     result = @harness.test([collection])
-    result[0][1].values_at("id", "composite", "name", "breed").should == 
+    result[0][1].values_at("id", "composite", "name", "breed").should ==
       [89, 34, "Berta", "Guernsey"]
   end
 end

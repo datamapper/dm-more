@@ -19,5 +19,5 @@ module DataMapper
       end
 
     end
-  end 
+  end
 end

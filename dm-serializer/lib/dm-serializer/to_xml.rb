@@ -12,7 +12,7 @@ module DataMapper
     end
 
     protected
-    # This method requires certain methods to be implemented in the individual 
+    # This method requires certain methods to be implemented in the individual
     # serializer library subclasses:
     # new_document
     # root_node
@@ -33,11 +33,11 @@ module DataMapper
         if self.respond_to?(meth)
           xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
           value = send(meth)
-          xml.add_node(root, xml_name, value.to_s) unless value.nil? 
+          xml.add_node(root, xml_name, value.to_s) unless value.nil?
         end
       end
       doc
-    end   
+    end
   end
 
   class Collection
@@ -59,4 +59,3 @@ module DataMapper
     end
   end
 end
-
