@@ -1,7 +1,7 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'dm-core', '~>0.9.9'
+gem 'dm-core', '~>0.9.8'
 require 'dm-core'
 
 ROOT = Pathname(__FILE__).dirname.parent.expand_path
