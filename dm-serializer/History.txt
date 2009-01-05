@@ -1,3 +1,17 @@
+=== 0.9.9 / 2009-01-04
+
+* 1 major enhancement:
+
+  * Uses LibXML or Nokogiri if available for a ~6x improvement in
+    serialization performance.
+
+* 4 minor enhancements:
+
+  * Added :element_name and :collection_element_name options to #to_xml
+  * Removed #xml_element_name override in #to_xml
+  * Removed :read_only_attributes option from #to_json
+  * Removed #serialized_properties override in #to_json
+
 === 0.9.8 / 2008-12-07
 
 * 2 minor enhancements:

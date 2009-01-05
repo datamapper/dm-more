@@ -1,8 +1,12 @@
-=== 0.9.9 / Unreleased
+=== 0.9.9 / 2009-01-04
 
-* 1 enhancement:
+* 1 minor enhancement:
 
   * Added #generate! method to create invalid fixture
+
+* 1 bug fix:
+
+  * Updated spec to use local dm-validations if possible
 
 === 0.9.8 / 2008-12-07
 

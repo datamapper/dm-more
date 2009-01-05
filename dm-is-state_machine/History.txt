@@ -1,10 +1,17 @@
+=== 0.9.9 / 2009-01-04
+
+* 1 minor enhancement:
+
+  * Added transition! to allow before/after hooks to execute on state
+    transitions.
+
 === 0.9.8 / 2008-12-07
 
 * No changes this version
 
 === 0.9.7 / 2008-11-18
 
-4 minor enhancements:
+* 4 minor enhancements:
 
   * Added support to pass a symbol to a transition, which will call the
     corresponding method.  This means you don't have to put a whole

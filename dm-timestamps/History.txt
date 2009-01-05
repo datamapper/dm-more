@@ -1,3 +1,9 @@
+=== 0.9.9 / 2009-01-04
+
+* 1 bug fix:
+
+  * Updated auto_validation to false for timestamps
+
 === 0.9.8 / 2008-12-07
 
 * 2 minor enhancements:

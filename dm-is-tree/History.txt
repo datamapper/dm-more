@@ -1,3 +1,9 @@
+=== 0.9.9 / 2009-01-04
+
+* 1 minor enhancement:
+
+  * Ensure the :order parameter is an array of symbols
+
 === 0.9.8 / 2008-12-07
 
 * No changes this version

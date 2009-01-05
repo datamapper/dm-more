@@ -1,3 +1,9 @@
+=== 0.9.9 / 2009-01-04
+
+* 1 bug fix:
+
+  * Fixed to work with Models using STI
+
 === 0.9.8 / 2008-12-07
 
 * No changes this version
