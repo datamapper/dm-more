@@ -238,7 +238,7 @@ module DataMapper
           key = "[#{key}]"
         end
 
-        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_temp_view#{query_string(query)}")
+        request = Net::HTTP::Post.new("/#{self.escaped_db_name}/_slow_view#{query_string(query)}")
         request["Content-Type"] = "application/json"
 
         couchdb_type_condition = ["doc.couchdb_type == '#{query.model.to_s}'"]
@@ -303,7 +303,7 @@ module DataMapper
               end
             end
         end
-        query_string << "count=#{query.limit}" if query.limit
+        query_string << "limit=#{query.limit}" if query.limit
         query_string << "descending=#{query.add_reversed?}" if query.add_reversed?
         query_string << "skip=#{query.offset}" if query.offset != 0
         query_string.empty? ? nil : "?#{query_string.join('&')}"
