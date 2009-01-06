@@ -26,7 +26,7 @@ module DataMapper
               options = args.pop
             end
             query = Query.new(repository, self)
-            query.view_options = options
+            query.view_options = options || {}
             query.view = '#{@name}'
             if options.is_a?(Hash) && options.has_key?(:repository)
               repository(options.delete(:repository)).read_many(query)

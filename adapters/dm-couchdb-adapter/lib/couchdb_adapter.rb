@@ -214,13 +214,28 @@ module DataMapper
         end
       end
 
+      ##
+      # Prepares a REST request to a stored view. If :keys is specified in
+      # the view options a POST request will be created per the CouchDB
+      # multi-document-fetch API.
+      #
+      # @param query<DataMapper::Query> the query
+      # @return request<Net::HTTPRequest> a request object
+      #
+      # @api private
       def view_request(query)
-        uri = "/#{self.escaped_db_name}/" +
-              "_view/" +
-              "#{query.model.base_model.to_s}/" +
-              "#{query.view}" +
-              "#{query_string(query)}"
-        request = Net::HTTP::Get.new(uri)
+        keys = query.view_options.delete(:keys)
+        uri = "/#{self.escaped_db_name}/_view/" +
+          "#{query.model.base_model.to_s}/" +
+          "#{query.view}" +
+          "#{query_string(query)}"
+        if keys
+          request = Net::HTTP::Post.new(uri)
+          request.body = { :keys => keys }.to_json
+        else
+          request = Net::HTTP::Get.new(uri)
+        end
+        request
       end
 
       def get_request(query)
@@ -228,6 +243,14 @@ module DataMapper
         request = Net::HTTP::Get.new(uri)
       end
 
+      ##
+      # Prepares a REST request to a temporary view. Though convenient for
+      # development, "slow" views should generally be avoided.
+      # 
+      # @param query<DataMapper::Query> the query
+      # @return request<Net::HTTPRequest> a request object
+      # 
+      # @api private
       def ad_hoc_request(query)
         if query.order.empty?
           key = "null"

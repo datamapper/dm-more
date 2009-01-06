@@ -186,12 +186,12 @@ if COUCHDB_AVAILABLE
       end
 
       before(:each) do
-        @user = User.new(:name => "Jamie", :age => 67, :wealth => 11.5)
-        @user.save
+        @jamie = User.create(:name => "Jamie", :age => 67, :wealth => 11.5)
+        @aaron = User.create(:name => "Aaron", :age => 30, :wealth => 20)
       end
 
       after(:each) do
-        @user.destroy
+        [@jamie, @aaron].each { |user| user.destroy }
       end
 
       it "should be able to call stored views" do
@@ -208,6 +208,11 @@ if COUCHDB_AVAILABLE
 
       it "should return a value from a view with reduce defined" do
         User.count.should == [ OpenStruct.new({ "value" => User.all.length, "key" => nil }) ]
+      end
+
+      it "should be able to perform ordered multi-key fetch on a view" do
+        User.by_name(:keys => ["Aaron", "Jamie"]).should == [@aaron, @jamie]
+        User.by_name(:keys => ["Jamie", "Aaron"]).should == [@jamie, @aaron]
       end
 
     end
