@@ -38,7 +38,7 @@ if COUCHDB_AVAILABLE
     property :type, Discriminator
     property :name, String
 
-    view :by_name, { "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }
+    view(:by_name) {{ "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }}
   end
 
   class Employee < Person

@@ -28,10 +28,10 @@ module DataMapper
             couchdb_types.collect {|type| "doc.couchdb_type == '#{type}'"}.join(' || ')
           end
 
-          def view(name, body = nil)
+          def view(name, &block)
             @views ||= Hash.new { |h,k| h[k] = {} }
             view = View.new(self, name)
-            @views[repository.name][name] = Proc.new { body }
+            @views[repository.name][name] = block_given? ? block : lambda {}
             view
           end
 

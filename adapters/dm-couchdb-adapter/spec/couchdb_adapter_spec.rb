@@ -16,10 +16,10 @@ if COUCHDB_AVAILABLE
     property :location, JsonObject
 
     # creates methods for accessing stored/indexed views in the CouchDB database
-    view :by_name, { "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }
-    view :by_age,  { "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.age, doc); } }" }
-    view :count,   { "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(null, 1); } }",
-                      "reduce" => "function(keys, values) { return sum(values); }" }
+    view(:by_name) {{ "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }}
+    view(:by_age)  {{ "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.age, doc); } }" }}
+    view(:count)   {{ "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(null, 1); } }",
+                      "reduce" => "function(keys, values) { return sum(values); }" }}
 
     belongs_to :company
 
