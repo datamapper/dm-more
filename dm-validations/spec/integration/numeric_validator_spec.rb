@@ -46,10 +46,12 @@ describe DataMapper::Validate::NumericValidator do
     b.quantity_2 = 27.343
     b.valid?.should_not == true
     b.errors.on(:quantity_1).should include('Quantity 1 must be an integer')
-    # FIXME: The next line should pass, but :quantity_2 has no errors. This is
-    #        because 27.343 has been truncated to 27 by the time it reaches the
-    #        validation. Is this a bug?
-    #b.errors.on(:quantity_2).should include('Quantity 2 must be an integer')
+    pending 'dm-core truncates float to integer' do
+      # FIXME: The next line should pass, but :quantity_2 has no errors. This is
+      #        because 27.343 has been truncated to 27 by the time it reaches the
+      #        validation. Is this a bug?
+      b.errors.on(:quantity_2).should include('Quantity 2 must be an integer')
+    end
     b.quantity_1 = '34.33'
     b.quantity_2 = 22
     b.valid?.should_not == true
