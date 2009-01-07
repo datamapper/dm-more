@@ -58,11 +58,14 @@ module DataMapper
       #
       # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
       def is_tree(options = {})
-        configuration = { :child_key => :parent_id }
+        configuration = { :class_name => name, :child_key => :parent_id }
         configuration.update(options) if Hash === options
+        
+        configuration[:child_key] = Array(configuration[:child_key])
+        configuration[:order] = Array(configuration[:order]) if configuration[:order]
 
-        belongs_to :parent, :class_name => name, :child_key => [ configuration[:child_key] ]
-        has n, :children, :class_name => name, :child_key => [ configuration[:child_key] ]
+        belongs_to :parent, configuration.reject { |k,v| k == :order }
+        has n, :children, configuration
 
         include DataMapper::Is::Tree::InstanceMethods
         extend  DataMapper::Is::Tree::ClassMethods
