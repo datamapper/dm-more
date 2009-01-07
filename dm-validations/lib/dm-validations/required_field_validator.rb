@@ -13,12 +13,12 @@ module DataMapper
       end
 
       def call(target)
-        value = target.validation_property_value(@field_name)
-        property = target.validation_property(@field_name)
+        value = target.validation_property_value(field_name)
+        property = target.validation_property(field_name)
         return true if present?(value, property)
 
         error_message = @options[:message] || default_error(property)
-        add_error(target, error_message, @field_name)
+        add_error(target, error_message, field_name)
 
         false
       end
@@ -33,8 +33,8 @@ module DataMapper
       end
 
       def default_error(property)
-        actual = boolean_type?(property) ? "nil".t : "blank".t
-        "%s must not be %s".t(Extlib::Inflection.humanize(@field_name), actual)
+        actual = boolean_type?(property) ? :nil : :blank
+        ValidationErrors.default_error_message(actual, field_name)
       end
 
       # Is +property+ a boolean property?

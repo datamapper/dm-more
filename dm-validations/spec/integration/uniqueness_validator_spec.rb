@@ -33,7 +33,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
          Organisation.new(:id=>1, :name=>'Org One', :domain=>'taken').save
          Organisation.new(:id=>2, :name=>'Org Two', :domain=>'two').save
 
-         User.new(:id=>1,:organisation_id=>1,:user_name=>'guy').save
+         User.new(:id=>1, :organisation_id=>1, :user_name=>'guy').save
       end
     end
 
@@ -42,11 +42,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         o = Organisation.get!(1)
         o.should be_valid
 
-        o = Organisation.new(:id=>20,:name=>"Org Twenty", :domain=>nil)
+        o = Organisation.new(:id=>20, :name=>"Org Twenty", :domain=>nil)
         o.should be_valid
         o.save
 
-        o = Organisation.new(:id=>30,:name=>"Org Thirty", :domain=>nil)
+        o = Organisation.new(:id=>30, :name=>"Org Thirty", :domain=>nil)
         o.should be_valid
       end
     end
@@ -56,11 +56,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         o = Organisation.get!(1)
         o.should be_valid
 
-        o = Organisation.new(:id=>2,:name=>"Org Two", :domain=>"taken")
+        o = Organisation.new(:id=>2, :name=>"Org Two", :domain=>"taken")
         o.should_not be_valid
         o.errors.on(:domain).should include('Domain is already taken')
 
-        o = Organisation.new(:id=>2,:name=>"Org Two", :domain=>"not_taken")
+        o = Organisation.new(:id=>2, :name=>"Org Two", :domain=>"not_taken")
         o.should be_valid
       end
     end
@@ -83,7 +83,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       repository do
         u = User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')
         u.should_not be_valid_for_testing_property
+        u.errors.on(:user_name).should include('User name is already taken')
         u.should_not be_valid_for_testing_association
+        u.errors.on(:user_name).should include('User name is already taken')
 
 
         u = User.new(:id => 2, :organisation_id => 2, :user_name  => 'guy')

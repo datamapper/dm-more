@@ -24,11 +24,13 @@ describe DataMapper::Validate::AbsentFieldValidator do
 
     kayak.salesman = 'Joe'
     kayak.valid_for_sold?.should_not == true
+    kayak.errors.on(:salesman).should include('Salesman must be absent')
   end
 
   it "should validate the absence of a value and ensure defaults" do
     pirogue = Pirogue.new
     pirogue.should_not be_valid_for_sold
+    pirogue.errors.on(:salesman).should include('Salesman must be absent')
   end
 
 end

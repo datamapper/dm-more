@@ -13,7 +13,18 @@ module DataMapper
             foreign_table = parent.storage_name(repository_name)
             foreign_keys  = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
 
-            create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys)
+            one_to_many_relationship = parent.relationships.values.select { |rel| rel.child_model == model }.first
+            delete_constraint_type = case one_to_many_relationship.delete_constraint
+            when :protect, nil
+              "NO ACTION"
+            when :destroy, :destroy!
+              "CASCADE"
+            when :nullify
+              "SET NULL"
+            when :skip
+              nil
+            end
+            create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys, delete_constraint_type) if delete_constraint_type
           end.compact
         end
 
@@ -29,14 +40,16 @@ module DataMapper
 
         private
 
-        def create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys)
+        #TODO: ON (DELETE|UPDATE) CASCADE must be given for the 'destroy' case
+        # ON (DELETE|UPDATE) SET NULL must be given for the 'nullify' case
+        def create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys, delete_constraint_type)
           <<-EOS.compress_lines
             ALTER TABLE #{quote_table_name(table_name)}
             ADD CONSTRAINT #{quote_constraint_name(constraint_name)}
             FOREIGN KEY (#{keys * ', '})
             REFERENCES #{quote_table_name(foreign_table)} (#{foreign_keys * ', '})
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION
+            ON DELETE #{delete_constraint_type}
+            ON UPDATE #{delete_constraint_type}
           EOS
         end
 

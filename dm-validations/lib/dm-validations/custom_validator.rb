@@ -50,7 +50,7 @@ module DataMapper
         #  error_message = @options[:message] || error_message || '%s is invalid'.t(field)
         #  error_message = error_message.call(field, value) if Proc === error_message
         #
-        #  add_error(target, error_message , @field_name)
+        #  add_error(target, error_message, @field_name)
         #end
 
         #return valid

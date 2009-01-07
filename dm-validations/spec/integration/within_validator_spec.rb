@@ -7,17 +7,17 @@ describe DataMapper::Validate::WithinValidator do
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :type_of_number, String, :auto_validation => false
-      validates_within :type_of_number, :set => ['Home','Work','Cell']
+      validates_within :type_of_number, :set => ['Home', 'Work', 'Cell']
     end
 
     class Inf
       include DataMapper::Resource
       property :id, Integer, :serial => true
-      property :greater_than, String, :auto_validation => false
-      property :less_than, String, :auto_validation => false
-      property :between, String, :auto_validation => false
-      validates_within :greater_than, :set => (10..n)
-      validates_within :less_than, :set => (-n..10)
+      property :gte, Integer, :auto_validation => false
+      property :lte, Integer, :auto_validation => false
+      property :between, Integer, :auto_validation => false
+      validates_within :gte, :set => (10..n)
+      validates_within :lte, :set => (-n..10)
       validates_within :between, :set => (10..20)
     end
 
@@ -26,6 +26,13 @@ describe DataMapper::Validate::WithinValidator do
       property :id, Integer, :serial => true
       property :holder, String, :auto_validation => false, :default => 'foo'
       validates_within :holder, :set => ['foo', 'bar', 'bang']
+    end
+
+    class Nullable
+      include DataMapper::Resource
+      property :id, Integer, :serial => true
+      property :nullable, Integer, :auto_validation => false
+      validates_within :nullable, :set => (1..5), :allow_nil => true
     end
   end
 
@@ -42,13 +49,23 @@ describe DataMapper::Validate::WithinValidator do
   it "should validate a value within range with infinity" do
     inf = Inf.new
     inf.should_not be_valid
-    inf.errors.on(:greater_than).first.should == 'Greater than must be greater than 10'
-    inf.errors.on(:less_than).first.should == 'Less than must be less than 10'
+    inf.errors.on(:gte).first.should == 'Gte must be greater than or equal to 10'
+    inf.errors.on(:lte).first.should == 'Lte must be less than or equal to 10'
     inf.errors.on(:between).first.should == 'Between must be between 10 and 20'
+
+    inf.gte = 10
+    inf.lte = 10
+    inf.between = 10
+    inf.valid?.should == true
   end
 
   it "should validate a value by its default" do
     tel = Receiver.new
     tel.should be_valid
+  end
+
+  it "should allow a nil value if :allow_nil is true" do
+    nullable = Nullable.new
+    nullable.should be_valid
   end
 end

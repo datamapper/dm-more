@@ -14,8 +14,8 @@ module DataMapper
       end
 
       def call(target)
-        result,message = target.send(@options[:method])
-        add_error(target,message,@field_name) if !result
+        result, message = target.send(@options[:method])
+        add_error(target, message, field_name) unless result
         result
       end
 

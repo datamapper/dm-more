@@ -14,23 +14,23 @@ module DataMapper
       end
 
       def call(target)
-        includes = @options[:set].include?(target.send(field_name))
-        return true if includes
+        value = target.send(field_name)
+        return true if @options[:allow_nil] && value.nil?
+        return true if @options[:set].include?(value)
 
-        field_name = Extlib::Inflection.humanize(@field_name)
         if @options[:set].is_a?(Range)
           if @options[:set].first != -n && @options[:set].last != n
-            error_message = @options[:message] || "%s must be between %s and %s".t(field_name, @options[:set].first, @options[:set].last)
+            error_message = @options[:message] || ValidationErrors.default_error_message(:value_between, field_name, @options[:set].first, @options[:set].last)
           elsif @options[:set].first == -n
-            error_message = @options[:message] || "%s must be less than %s".t(field_name, @options[:set].last)
+            error_message = @options[:message] || ValidationErrors.default_error_message(:less_than_or_equal_to, field_name, @options[:set].last)
           elsif @options[:set].last == n
-            error_message = @options[:message] || "%s must be greater than %s".t(field_name, @options[:set].first)
+            error_message = @options[:message] || ValidationErrors.default_error_message(:greater_than_or_equal_to, field_name, @options[:set].first)
           end
         else
-          error_message = "%s must be one of [%s]".t(field_name, @options[:set].join(', '))
+          error_message = ValidationErrors.default_error_message(:inclusion, field_name, @options[:set].join(', '))
         end
 
-        add_error(target, error_message , @field_name)
+        add_error(target, error_message, field_name)
         return false
       end
 
