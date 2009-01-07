@@ -19,7 +19,7 @@ module DataMapper
       #     property :parent_id, Integer
       #     property :name, String
       #
-      #     is :tree :order => "name"
+      #     is :tree, :order => "name"
       #   end
       #
       #   root
@@ -53,6 +53,7 @@ module DataMapper
       # * <tt>root</tt> - Returns the root of the current node (<tt>root</tt> when called on <tt>grandchild2</tt>)
       #
       # Author:: Timothy Bennett (http://lanaer.com)
+      # Maintainer:: Garrett Heaver (http://www.linkedin.com/pub/dir/garrett/heaver)
 
       # Configuration options are:
       #
@@ -60,9 +61,8 @@ module DataMapper
       def is_tree(options = {})
         configuration = { :class_name => name, :child_key => :parent_id }
         configuration.update(options) if Hash === options
-        
-        configuration[:child_key] = Array(configuration[:child_key])
-        configuration[:order] = Array(configuration[:order]) if configuration[:order]
+
+        [:child_key, :order].each { |key| configuration[key] = Array(configuration[key]) if configuration[key] }
 
         belongs_to :parent, configuration.reject { |k,v| k == :order }
         has n, :children, configuration

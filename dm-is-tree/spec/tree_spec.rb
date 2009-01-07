@@ -8,6 +8,7 @@ describe DataMapper::Is::Tree do
       
       property :id, Serial
       property :parent_id, Integer
+      property :name, String
     end
   end
   
@@ -19,6 +20,16 @@ describe DataMapper::Is::Tree do
   it "should create a children relationship" do
     Tree.is :tree
     Tree.relationships.include?(:children).should == true
+  end
+  
+  it "should create a class method called roots" do
+    Tree.is :tree
+    Tree.respond_to?(:roots).should == true
+  end
+  
+  it "should create a class method called first_root" do
+    Tree.is :tree
+    Tree.respond_to?(:first_root).should == true
   end
   
   describe "parent relationship" do
@@ -39,7 +50,7 @@ describe DataMapper::Is::Tree do
     end
     
     it "should not set any order" do
-      Tree.is :tree, :order => :parent_id
+      Tree.is :tree, :order => :name
       Tree.relationships[:parent].options.include?(:order).should == false
     end
     
@@ -68,9 +79,29 @@ describe DataMapper::Is::Tree do
     end
     
     it "should use the order from the options if it is supplied" do
-      Tree.is :tree, :order => :parent_id
-      Tree.relationships[:children].options[:order].should == Array(:parent_id)
+      Tree.is :tree, :order => :name
+      Tree.relationships[:children].options[:order].should == Array(:name)
     end
+    
+  end
+  
+  describe "roots method" do
+    
+    it "should return all instances where the child_key is nil"
+    
+    it "should not set any order if none is supplied in the options"
+    
+    it "should use the order from the options if it is supplied"
+    
+  end
+  
+  describe "first_root method" do
+    
+    it "should return the first instance where the child_key is nil"
+    
+    it "should not set any order if none is supplied in the options"
+    
+    it "should use the order from the options if it is supplied"
     
   end
   
