@@ -110,24 +110,4 @@ describe DataMapper::Is::Tree do
     
   end
   
-  describe "roots method" do
-    
-    it "should return all instances where the child_key is nil"
-    
-    it "should not set any order if none is supplied in the options"
-    
-    it "should use the order from the options if it is supplied"
-    
-  end
-  
-  describe "first_root method" do
-    
-    it "should return the first instance where the child_key is nil"
-    
-    it "should not set any order if none is supplied in the options"
-    
-    it "should use the order from the options if it is supplied"
-    
-  end
-  
 end
