@@ -9,6 +9,6 @@ lib/dm-is-tree/is/tree.rb
 lib/dm-is-tree/is/version.rb
 spec/spec.opts
 spec/spec_helper.rb
-spec/tree_spec.rb
+spec/unit/tree_spec.rb
 tasks/install.rb
 tasks/spec.rb

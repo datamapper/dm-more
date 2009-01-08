@@ -32,6 +32,31 @@ describe DataMapper::Is::Tree do
     Tree.should respond_to(:first_root)
   end
   
+  it "should create an alias of class method first_root called root (ActiveRecord compatability)" do
+	Tree.is :tree
+	Tree.method(:first_root).should == Tree.method(:root)
+  end
+  
+  it "should create an instance method called ancestors" do
+	Tree.is :tree
+	Tree.new.should respond_to(:ancestors)
+  end
+  
+  it "should create an instance method called root" do
+	Tree.is :tree
+	Tree.new.should respond_to(:root)
+  end
+  
+  it "should create an instance method called siblings" do
+	Tree.is :tree
+	Tree.new.should respond_to(:siblings)
+  end
+  
+  it "should create an instance method called generation" do
+	Tree.is :tree
+	Tree.new.should respond_to(:generation)
+  end
+  
   describe "parent relationship" do
     
     it "should set the class_name from the current class" do
