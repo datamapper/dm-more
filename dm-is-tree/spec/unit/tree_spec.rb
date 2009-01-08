@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/spec_helper"
+require File.dirname(__FILE__) + "/../spec_helper"
 
 describe DataMapper::Is::Tree do
   
@@ -14,22 +14,22 @@ describe DataMapper::Is::Tree do
   
   it "should create a parent relationship" do
     Tree.is :tree
-    Tree.relationships.include?(:parent).should == true
+    Tree.relationships.should have_key(:parent)
   end
   
   it "should create a children relationship" do
     Tree.is :tree
-    Tree.relationships.include?(:children).should == true
+    Tree.relationships.should have_key(:children)
   end
   
   it "should create a class method called roots" do
     Tree.is :tree
-    Tree.respond_to?(:roots).should == true
+    Tree.should respond_to(:roots)
   end
   
   it "should create a class method called first_root" do
     Tree.is :tree
-    Tree.respond_to?(:first_root).should == true
+    Tree.should respond_to(:first_root)
   end
   
   describe "parent relationship" do
@@ -51,7 +51,7 @@ describe DataMapper::Is::Tree do
     
     it "should not set any order" do
       Tree.is :tree, :order => :name
-      Tree.relationships[:parent].options.include?(:order).should == false
+      Tree.relationships[:parent].options.should_not have_key(:order)
     end
     
   end
@@ -75,7 +75,7 @@ describe DataMapper::Is::Tree do
     
     it "should not set any order if none is supplied in the options" do
       Tree.is :tree
-      Tree.relationships[:children].options.include?(:order).should == false
+      Tree.relationships[:children].options.should_not have_key(:order)
     end
     
     it "should use the order from the options if it is supplied" do

@@ -19,25 +19,25 @@ module DataMapper
       #     property :parent_id, Integer
       #     property :name, String
       #
-      #     is :tree, :order => "name"
+      #     is :tree, :order => :name
       #   end
       #
-      #   root
-      #     +- child
+      #    root
+      #      +- child
       #          +- grandchild1
       #          +- grandchild2
       #
-      #   root        = Category.create("name" => "root")
-      #   child       = root.children.create("name" => "child")
-      #   grandchild1 = child1.children.create("name" => "grandchild1")
-      #   grandchild2 = child2.children.create("name" => "grandchild2")
+      #   root = Category.create(:name => "root")
+      #   child = root.children.create(:name => "child")
+      #   grandchild1 = child1.children.create(:name => "grandchild1")
+      #   grandchild2 = child2.children.create(:name => "grandchild2")
       #
-      #   root.parent   # => nil
+      #   root.parent  # => nil
       #   child.parent  # => root
-      #   root.children # => [child]
-      #   root.children.first.children.first # => grandchild1
+      #   root.children  # => [child]
+      #   root.children.first.children.first  # => grandchild1
       #   Category.first_root  # => root
-      #   Category.roots       # => [root]
+      #   Category.roots  # => [root]
       #
       # The following instance methods are added:
       # * <tt>children</tt> - Returns all nodes with the current node as their parent, in the order specified by
@@ -52,8 +52,8 @@ module DataMapper
       #   when called on <tt>grandchild2</tt>)
       # * <tt>root</tt> - Returns the root of the current node (<tt>root</tt> when called on <tt>grandchild2</tt>)
       #
-      # Author:: Timothy Bennett (http://lanaer.com)
-      # Maintainer:: Garrett Heaver (http://www.linkedin.com/pub/dir/garrett/heaver)
+      # Original Author:: Timothy Bennett (http://lanaer.com)
+      # Current Maintainer:: Garrett Heaver (http://www.linkedin.com/pub/dir/garrett/heaver)
 
       # Configuration options are:
       #
@@ -88,7 +88,7 @@ module DataMapper
       def is_a_tree(options = {})
         warn('#is_a_tree is depreciated. use #is :tree instead.')
         is :tree, options
-      end
+      end	  
       alias_method :can_has_tree, :is_tree # just for fun ;)
 
       module ClassMethods
