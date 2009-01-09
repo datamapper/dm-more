@@ -48,7 +48,6 @@ if COUCHDB_AVAILABLE
       :couch
     end
 
-    property :type, Discriminator
     property :name, String
   end
 
@@ -237,6 +236,11 @@ if COUCHDB_AVAILABLE
     end
 
     describe 'STI' do
+
+      before(:all) do
+        Person.auto_migrate!
+      end
+
       it "should override default type" do
         person = Person.new(:name => 'Bob')
         person.save.should be_true
@@ -287,12 +291,13 @@ if COUCHDB_AVAILABLE
 
         it "should properly serialize a resource collection" do
           stooges = JSON.parse(User.all.to_json)
-          stooges.count.should == 3
+          stooges.length.should == 3
           stooges.each { |stooge| stooge['name'].should_not be_blank }
         end
       else
         it "requires dm-serializer to run serialization tests"
       end
     end
+
   end
 end
