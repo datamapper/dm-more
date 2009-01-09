@@ -59,26 +59,17 @@ module DataMapper
       #
       # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
       def is_tree(options = {})
-        configuration = { :class_name => name, :child_key => :parent_id }
-        configuration.update(options) if Hash === options
-
-        [:child_key, :order].each { |key| configuration[key] = Array(configuration[key]) if configuration[key] }
-
-        belongs_to :parent, configuration.reject { |k,v| k == :order }
-        has n, :children, configuration
+        options = { :class_name => name, :child_key => :parent_id }.merge(options) if Hash === options
+        @tree_options = options
 
         include DataMapper::Is::Tree::InstanceMethods
         extend  DataMapper::Is::Tree::ClassMethods
 
-        class_eval <<-CLASS, __FILE__, __LINE__
-          def self.roots
-            all :#{configuration[:child_key]} => nil, :order => [#{configuration[:order].inspect}]
-          end
+        assc_options = { :class_name => options[:class_name], :child_key => Array(options[:child_key]) }
+        has_n_options = options[:order] ? { :order => Array(options[:order]) }.merge(assc_options) : assc_options
 
-          def self.first_root
-            first :#{configuration[:child_key]} => nil, :order => [#{configuration[:order].inspect}]
-          end
-        CLASS
+        belongs_to :parent, assc_options
+        has n, :children, has_n_options
 
         class << self
           alias_method :root, :first_root # for people used to the ActiveRecord acts_as_tree
@@ -88,13 +79,27 @@ module DataMapper
       def is_a_tree(options = {})
         warn('#is_a_tree is depreciated. use #is :tree instead.')
         is :tree, options
-      end	  
+      end
       alias_method :can_has_tree, :is_tree # just for fun ;)
 
       module ClassMethods
+        attr_reader :tree_options
+
+        def roots
+          options = { tree_options[:child_key] => nil }
+          options = { :order => Array(tree_options[:order]) }.merge(options) if tree_options[:order]
+          all options
+        end
+
+        def first_root
+          options = { tree_options[:child_key] => nil }
+          options = { :order => Array(tree_options[:order]) }.merge(options) if tree_options[:order]
+          first options
+        end
       end
 
       module InstanceMethods
+
         # Returns list of ancestors, starting with the root.
         #
         #   grandchild1.ancestors # => [root, child]
