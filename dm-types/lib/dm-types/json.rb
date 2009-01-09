@@ -1,4 +1,11 @@
-require 'json'
+begin
+  gem "json"
+  require "json/ext"
+rescue LoadError
+  gem "json_pure"
+  require "json/pure"
+end
+
 
 module DataMapper
   module Types
