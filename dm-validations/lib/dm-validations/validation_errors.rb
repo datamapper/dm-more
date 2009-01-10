@@ -32,7 +32,7 @@ module DataMapper
         :value_between => '%s must be between %s and %s',
         :primitive => '%s must be of type %s'
       }
- 
+
       # Holds a hash with all the default error messages that can be replaced by your own copy or localizations.
       cattr_writer :default_error_messages
 

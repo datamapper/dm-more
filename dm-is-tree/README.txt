@@ -10,7 +10,7 @@ class Category
   property :id, Serial
   property :parent_id, Integer
   property :name, String
-  
+
   is :tree, :order => :name
 end
 
