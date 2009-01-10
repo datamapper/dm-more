@@ -66,6 +66,14 @@ describe DataMapper::Validate::WithinValidator do
 
   it "should allow a nil value if :allow_nil is true" do
     nullable = Nullable.new
+
+    nullable.nullable = nil
+    nullable.should be_valid
+
+    nullable.nullable = 11
+    nullable.should_not be_valid
+
+    nullable.nullable = 3
     nullable.should be_valid
   end
 end
