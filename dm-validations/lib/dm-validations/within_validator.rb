@@ -18,16 +18,18 @@ module DataMapper
         return true if @options[:allow_nil] && value.nil?
         return true if @options[:set].include?(value)
 
-        if @options[:set].is_a?(Range)
-          if @options[:set].first != -n && @options[:set].last != n
-            error_message = @options[:message] || ValidationErrors.default_error_message(:value_between, field_name, @options[:set].first, @options[:set].last)
-          elsif @options[:set].first == -n
-            error_message = @options[:message] || ValidationErrors.default_error_message(:less_than_or_equal_to, field_name, @options[:set].last)
-          elsif @options[:set].last == n
-            error_message = @options[:message] || ValidationErrors.default_error_message(:greater_than_or_equal_to, field_name, @options[:set].first)
+        set = @options[:set]
+        msg = @options[:message]
+        if set.is_a?(Range)
+          if set.first != -n && set.last != n
+            error_message = msg || ValidationErrors.default_error_message(:value_between, field_name, set.first, set.last)
+          elsif set.first == -n
+            error_message = msg || ValidationErrors.default_error_message(:less_than_or_equal_to, field_name, set.last)
+          elsif set.last == n
+            error_message = msg || ValidationErrors.default_error_message(:greater_than_or_equal_to, field_name, set.first)
           end
         else
-          error_message = ValidationErrors.default_error_message(:inclusion, field_name, @options[:set].join(', '))
+          error_message = ValidationErrors.default_error_message(:inclusion, field_name, set.join(', '))
         end
 
         add_error(target, error_message, field_name)
