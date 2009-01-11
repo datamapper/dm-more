@@ -11,7 +11,6 @@ rescue LoadError
   require "json/pure"
 end
 require 'net/http'
-require 'ostruct'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/attachments'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/couch_resource'
@@ -125,7 +124,7 @@ module DataMapper
           http.request(build_request(query))
         end
         if query.view && query.model.views[query.view.to_sym].has_key?('reduce')
-          doc['rows'].map {|row| OpenStruct.new(row)}
+          doc['rows']
         else
           collection =
           if doc['rows'] && !doc['rows'].empty?

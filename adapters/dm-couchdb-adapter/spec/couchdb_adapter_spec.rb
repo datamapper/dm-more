@@ -206,7 +206,7 @@ if COUCHDB_AVAILABLE
       end
 
       it "should return a value from a view with reduce defined" do
-        User.count.should == [ OpenStruct.new({ "value" => User.all.length, "key" => nil }) ]
+        User.count.should == [ { "value" => User.all.length, "key" => nil } ]
       end
 
       it "should be able to perform ordered multi-key fetch on a view" do
