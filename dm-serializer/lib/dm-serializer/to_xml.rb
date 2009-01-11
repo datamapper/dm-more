@@ -36,7 +36,7 @@ module DataMapper
           xml.add_node(root, xml_name, value.to_s) unless value.nil?
         end
       end
-      doc
+      xml.output(doc)
     end
   end
 

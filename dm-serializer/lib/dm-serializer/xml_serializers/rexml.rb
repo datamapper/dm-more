@@ -16,8 +16,11 @@ module DataMapper
           node << ::REXML::Text.new(value.to_s) unless value.nil?
           node
         end
-      end
 
+        def self.output(doc)
+          doc.to_s
+        end
+      end
     end
   end
 end

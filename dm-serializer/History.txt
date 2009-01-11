@@ -1,3 +1,9 @@
+=== 0.9.10 / Unreleased
+
+* 1 bug fix:
+
+  * libxml and nokogiri no longer output an xml prologue
+
 === 0.9.9 / 2009-01-04
 
 * 1 major enhancement:

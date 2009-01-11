@@ -22,6 +22,10 @@ module DataMapper
           parent << node
           node
         end
+
+        def self.output(doc)
+          doc.to_s.sub(/.*\s+/, '')
+        end
       end
     end
   end
