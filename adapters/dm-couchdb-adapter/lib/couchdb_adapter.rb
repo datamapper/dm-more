@@ -5,8 +5,13 @@ require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
 gem 'dm-core', '~>0.9.10'
 require 'dm-core'
-require 'json'
-require 'ostruct'
+begin
+  gem "json"
+  require "json/ext"
+rescue LoadError
+  gem "json_pure"
+  require "json/pure"
+end
 require 'net/http'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/attachments'
