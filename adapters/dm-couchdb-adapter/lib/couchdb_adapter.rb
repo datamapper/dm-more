@@ -1,5 +1,3 @@
-# TODO: Debug logging
-
 require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
@@ -13,6 +11,7 @@ rescue LoadError
   require "json/pure"
 end
 require 'net/http'
+require 'ostruct'
 require 'uri'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/attachments'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/couch_resource'
@@ -351,18 +350,22 @@ module DataMapper
       end
 
       def http_put(uri, data = nil)
+        DataMapper.logger.debug("PUT #{uri}")
         request { |http| http.put(uri, data) }
       end
 
       def http_post(uri, data)
+        DataMapper.logger.debug("POST #{uri}")
         request { |http| http.post(uri, data) }
       end
 
       def http_get(uri)
+        DataMapper.logger.debug("GET #{uri}")
         request { |http| http.get(uri) }
       end
 
       def http_delete(uri)
+        DataMapper.logger.debug("DELETE #{uri}")
         request { |http| http.delete(uri) }
       end
 
