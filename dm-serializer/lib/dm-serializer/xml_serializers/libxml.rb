@@ -25,7 +25,7 @@ module DataMapper
         end
 
         def self.output(doc)
-          doc.to_s.sub(/.*\s+/, '')
+          doc.root.to_s
         end
       end
     end
