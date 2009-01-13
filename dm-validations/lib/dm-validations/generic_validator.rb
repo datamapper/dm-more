@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module DataMapper
   module Validate
 
@@ -28,8 +29,8 @@ module DataMapper
       # that is sub-classing this GenericValidator
       #
       def initialize(field, opts = {})
-        @if_clause = opts.has_key?(:if) ? opts[:if] : nil
-        @unless_clause = opts.has_key?(:unless) ? opts[:unless] : nil
+        @if_clause     = opts.delete(:if)
+        @unless_clause = opts.delete(:unless)
       end
 
       # Add an error message to a target resource. If the error corresponds to a
