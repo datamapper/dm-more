@@ -65,7 +65,7 @@ ADAPTERS.each do |adapter|
       lambda { @c1 = Cow.create(:name => "Bea", :stable_id => s.id + 1) }.should raise_error
     end
 
-    # :dependent associations
+    # :constraint associations
     # value  | on deletion of parent...
     # ---------------------------------
     # :protect | raises exception if there are child records
@@ -74,8 +74,8 @@ ADAPTERS.each do |adapter|
     # :nullify | sets parent id to nil in child associations
     # :skip | does not do anything with children (they'll become orphan records)
 
-    describe "dependent options" do
-      describe "when no dependent options are given" do
+    describe "constraint options" do
+      describe "when no constraint options are given" do
 
         it "should destroy the parent if there are no children in the association" do
           @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
@@ -92,10 +92,10 @@ ADAPTERS.each do |adapter|
 
       end
 
-      describe "when :dependent => :protect is given" do
+      describe "when :constraint => :protect is given" do
         before do
           class Farmer
-            has n, :cows, :dependent => :protect
+            has n, :cows, :constraint => :protect
           end
           class Cow
             belongs_to :farmer
@@ -123,10 +123,10 @@ ADAPTERS.each do |adapter|
 
       end
 
-      describe "when :dependent => :destroy is given" do
+      describe "when :constraint => :destroy is given" do
         before do
           class Farmer
-            has n, :cows, :dependent => :destroy
+            has n, :cows, :constraint => :destroy
           end
           class Cow
             belongs_to :farmer
@@ -157,10 +157,10 @@ ADAPTERS.each do |adapter|
 
       end
 
-      describe "when :dependent => :nullify is given" do
+      describe "when :constraint => :nullify is given" do
         before do
           class Farmer
-            has n, :cows, :dependent => :nullify
+            has n, :cows, :constraint => :nullify
           end
           class Cow
             belongs_to :farmer
@@ -185,10 +185,10 @@ ADAPTERS.each do |adapter|
 
       end # describe
 
-      describe "when :dependent => :skip is given" do
+      describe "when :constraint => :skip is given" do
         before do
           class Farmer
-            has n, :cows, :dependent => :skip
+            has n, :cows, :constraint => :skip
           end
           class Cow
             belongs_to :farmer
@@ -220,14 +220,14 @@ ADAPTERS.each do |adapter|
         it "should raise an error" do
           lambda do
             class Farmer
-              has n, :cows, :dependent => :chocolate
+              has n, :cows, :constraint => :chocolate
             end
           end.should raise_error(ArgumentError)
         end
 
       end
 
-    end # describe 'dependent options'
+    end # describe 'constraint options'
 
   end # DataMapper::Constraints
 end # ADAPTERS.each

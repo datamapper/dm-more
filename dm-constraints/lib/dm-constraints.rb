@@ -16,7 +16,7 @@ module DataMapper
   module Associations
     class Relationship
       attr_reader :delete_constraint
-      OPTIONS << :dependent
+      OPTIONS << :constraint
 
       def initialize(name, repository_name, child_model, parent_model, options = {})
         assert_kind_of 'name',            name,            Symbol
@@ -40,7 +40,7 @@ module DataMapper
         @parent_model      = parent_model
         @parent_properties = parent_properties  # may be nil
         @options           = options
-        @delete_constraint = options[:dependent]
+        @delete_constraint = options[:constraint]
 
         # attempt to load the child_key if the parent and child model constants are defined
         if model_defined?(@child_model) && model_defined?(@parent_model)
@@ -86,7 +86,7 @@ module DataMapper
       relationship = klass.setup(options.delete(:name), self, options)
 
       delete_constraint_options = DELETE_CONSTRAINT_OPTIONS.map { |o| ":#{o}" }
-      raise ArgumentError, ":dependent option must be one of #{delete_constraint_options * ', '}" if options[:dependent] && !DELETE_CONSTRAINT_OPTIONS.include?(options[:dependent])
+      raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}" if options[:constraint] && !DELETE_CONSTRAINT_OPTIONS.include?(options[:constraint])
 
       # Please leave this in - I will release contextual serialization soon
       # which requires this -- guyvdb
