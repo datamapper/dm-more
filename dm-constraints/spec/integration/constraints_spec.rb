@@ -71,7 +71,7 @@ ADAPTERS.each do |adapter|
     # :protect | raises exception if there are child records
     # :destroy | deletes children
     # :destroy! | deletes children directly without instantiating the resource, bypassing any hooks
-    # :nullify | sets parent id to nil in child associations
+    # :set_nil | sets parent id to nil in child associations
     # :skip | does not do anything with children (they'll become orphan records)
 
     describe "constraint options" do
@@ -157,10 +157,10 @@ ADAPTERS.each do |adapter|
 
       end
 
-      describe "when :constraint => :nullify is given" do
+      describe "when :constraint => :set_nil is given" do
         before do
           class Farmer
-            has n, :cows, :constraint => :nullify
+            has n, :cows, :constraint => :set_nil
           end
           class Cow
             belongs_to :farmer

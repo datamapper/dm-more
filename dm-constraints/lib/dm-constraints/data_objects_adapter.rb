@@ -19,7 +19,7 @@ module DataMapper
               "NO ACTION"
             when :destroy, :destroy!
               "CASCADE"
-            when :nullify
+            when :set_nil
               "SET NULL"
             when :skip
               nil
@@ -40,8 +40,6 @@ module DataMapper
 
         private
 
-        #TODO: ON (DELETE|UPDATE) CASCADE must be given for the 'destroy' case
-        # ON (DELETE|UPDATE) SET NULL must be given for the 'nullify' case
         def create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys, delete_constraint_type)
           <<-EOS.compress_lines
             ALTER TABLE #{quote_table_name(table_name)}

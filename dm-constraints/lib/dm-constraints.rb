@@ -54,7 +54,7 @@ end
 
 module DataMapper
   module Associations
-    DELETE_CONSTRAINT_OPTIONS = [:protect, :destroy, :destroy!, :nullify, :skip]
+    DELETE_CONSTRAINT_OPTIONS = [:protect, :destroy, :destroy!, :set_nil, :skip]
     def has(cardinality, name, options = {})
 
       # NOTE: the reason for this fix is that with the ability to pass in two

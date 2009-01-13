@@ -12,7 +12,7 @@ module DataMapper
             if children && children.respond_to?(:each)
               children.each { |child| child.destroy }
             end
-          when :nullify
+          when :set_nil
             if children && children.respond_to?(:each)
               children.each do |child|
                 child.class.many_to_one_relationships.each do |mto_rel|
