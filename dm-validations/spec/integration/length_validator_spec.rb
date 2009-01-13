@@ -1,22 +1,20 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
+class MotorLaunch
+  include DataMapper::Resource
+  property :id, Integer, :serial => true
+  property :name, String, :auto_validation => false
+end
+
+class BoatDock
+  include DataMapper::Resource
+  property :id, Integer, :serial => true
+  property :name, String, :auto_validation => false, :default => "I'm a long string"
+  validates_length :name, :min => 3
+end
+
 describe DataMapper::Validate::LengthValidator do
-  before(:all) do
-    class MotorLaunch
-      include DataMapper::Resource
-      property :id, Integer, :serial => true
-      property :name, String, :auto_validation => false
-    end
-
-    class BoatDock
-      include DataMapper::Resource
-      property :id, Integer, :serial => true
-      property :name, String, :auto_validation => false, :default => "I'm a long string"
-      validates_length :name, :min => 3
-    end
-  end
-
   it "should be able to consider things valid even if we have a custom error message" do
     class Jabberwock
       include DataMapper::Resource
