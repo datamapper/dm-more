@@ -1,6 +1,23 @@
 module DataMapper
   module Constraints
     module DeleteConstraint
+      
+      def self.included(base)
+        base.extend(ClassMethods)
+      end
+      
+      module ClassMethods
+        DELETE_CONSTRAINT_OPTIONS = [:protect, :destroy, :destroy!, :set_nil, :skip]
+        def check_delete_constraint_type(cardinality, name, options = {})
+          constraint_type = options[:constraint]
+          return if constraint_type.nil?
+          delete_constraint_options = DELETE_CONSTRAINT_OPTIONS.map { |o| ":#{o}" }
+          if !DELETE_CONSTRAINT_OPTIONS.include?(constraint_type)
+            raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}"
+          end
+        end        
+      end
+      
       def check_delete_constraints
         model.relationships.each do |rel_name, rel|
           children = self.send(rel_name)
@@ -23,6 +40,8 @@ module DataMapper
           end # case
         end # relationships
       end # check_delete_constraints
+      
+      
     end # DeleteConstraint
   end # Constraints
 end # DataMapper

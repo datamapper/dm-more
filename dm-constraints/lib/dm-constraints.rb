@@ -52,64 +52,26 @@ module DataMapper
   end
 end
 
-module DataMapper
-  module Associations
-    DELETE_CONSTRAINT_OPTIONS = [:protect, :destroy, :destroy!, :set_nil, :skip]
-    def has(cardinality, name, options = {})
-
-      # NOTE: the reason for this fix is that with the ability to pass in two
-      # hashes into has() there might be instances where people attempt to
-      # pass in the options into the name part and not know why things aren't
-      # working for them.
-      if name.kind_of?(Hash)
-        name_through, through = name.keys.first, name.values.first
-        cardinality_string = cardinality.to_s == 'Infinity' ? 'n' : cardinality.inspect
-        warn("In #{self.name} 'has #{cardinality_string}, #{name_through.inspect} => #{through.inspect}' is deprecated. Use 'has #{cardinality_string}, #{name_through.inspect}, :through => #{through.inspect}' instead")
-      end
-
-      options = options.merge(extract_min_max(cardinality))
-      options = options.merge(extract_throughness(name))
-
-      # do not remove this. There is alot of confusion on people's
-      # part about what the first argument to has() is.  For the record it
-      # is the min cardinality and max cardinality of the association.
-      # simply put, it constraints the number of resources that will be
-      # returned by the association.  It is not, as has been assumed,
-      # the number of results on the left and right hand side of the
-      # reltionship.
-      if options[:min] == n && options[:max] == n
-        raise ArgumentError, 'Cardinality may not be n..n.  The cardinality specifies the min/max number of results from the association', caller
-      end
-
-      klass = options[:max] == 1 ? OneToOne : OneToMany
-      klass = ManyToMany if options[:through] == DataMapper::Resource
-      relationship = klass.setup(options.delete(:name), self, options)
-
-      delete_constraint_options = DELETE_CONSTRAINT_OPTIONS.map { |o| ":#{o}" }
-      raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}" if options[:constraint] && !DELETE_CONSTRAINT_OPTIONS.include?(options[:constraint])
-
-      # Please leave this in - I will release contextual serialization soon
-      # which requires this -- guyvdb
-      # TODO convert this to a hook in the plugin once hooks work on class
-      # methods
-      self.init_has_relationship_for_serialization(relationship) if self.respond_to?(:init_has_relationship_for_serialization)
-
-      relationship
-    end
-  end
-end
 
 module DataMapper
   module Constraints
-
+    
     include DeleteConstraint
+    
+    module ClassMethods
+      include DeleteConstraint::ClassMethods
+    end
+        
     def self.included(model)
-      model.class_eval <<-EOS, __FILE__, __LINE__
+      model.extend(ClassMethods)
+      model.class_eval do
+        before_class_method :has, :check_delete_constraint_type
         if method_defined?(:destroy)
           before :destroy, :check_delete_constraints
         end
-      EOS
+      end
     end
+    
   end
 
   class AutoMigrator
