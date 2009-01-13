@@ -17,7 +17,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     property :landscaper_id, Integer
     property :name, String, :auto_validation => false
   
-    belongs_to :landscaper #has :landscaper, 1..n
+    belongs_to :landscaper
   
     validates_present :name, :when => :property_test
     validates_present :landscaper, :when => :association_test
