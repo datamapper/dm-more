@@ -14,11 +14,11 @@ describe DataMapper::Validate::LengthValidator do
       validates_length :snickersnack, :within => 3..40, :message => "worble warble"
     end
     wock = Jabberwock.new
-    wock.valid?.should == false
+    wock.should_not be_valid
     wock.errors.on(:snickersnack).should include('worble warble')
     wock.snickersnack = "hello"
     wock.id = 1
-    wock.valid?.should == true
+    wock.should be_valid
   end
 
   it "lets user specify a minimum length of a string field" do
@@ -28,7 +28,7 @@ describe DataMapper::Validate::LengthValidator do
 
     launch = MotorLaunch.new
     launch.name = 'Ab'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be more than 3 characters long')
   end
 
@@ -40,7 +40,7 @@ describe DataMapper::Validate::LengthValidator do
 
     launch = MotorLaunch.new
     launch.name = 'Ab'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be more than 3 characters long')
   end
 
@@ -52,7 +52,7 @@ describe DataMapper::Validate::LengthValidator do
 
     launch = MotorLaunch.new
     launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be less than 5 characters long')
   end
 
@@ -63,7 +63,7 @@ describe DataMapper::Validate::LengthValidator do
     end
     launch = MotorLaunch.new
     launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be less than 5 characters long')
   end
 
@@ -75,15 +75,15 @@ describe DataMapper::Validate::LengthValidator do
 
     launch = MotorLaunch.new
     launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
 
     launch.name = 'A'
-    launch.valid?.should == false
+    launch.should_not be_valid
     launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
 
     launch.name = 'Ride'
-    launch.valid?.should == true
+    launch.should be_valid
   end
 
   it "aliases :within for :in" do
