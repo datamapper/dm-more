@@ -15,7 +15,7 @@ class BoatDock
 end
 
 describe DataMapper::Validate::LengthValidator do
-  it "should be able to consider things valid even if we have a custom error message" do
+  it "lets user specify custom error message" do
     class Jabberwock
       include DataMapper::Resource
       property :id, Integer, :key => true
@@ -30,7 +30,7 @@ describe DataMapper::Validate::LengthValidator do
     wock.valid?.should == true
   end
 
-  it "should be able to set a minimum length of a string field" do
+  it "lets user specify a minimum length of a string field" do
     class MotorLaunch
       validates_length :name, :min => 3
     end
@@ -41,7 +41,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.errors.on(:name).should include('Name must be more than 3 characters long')
   end
 
-  it "should be able to alias :minimum for :min " do
+  it "aliases :minimum for :min" do
     class MotorLaunch
       validators.clear!
       validates_length :name, :minimum => 3
@@ -53,7 +53,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.errors.on(:name).should include('Name must be more than 3 characters long')
   end
 
-  it "should be able to set a maximum length of a string field" do
+  it "lets user specify a maximum length of a string field" do
     class MotorLaunch
       validators.clear!
       validates_length :name, :max => 5
@@ -65,7 +65,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.errors.on(:name).should include('Name must be less than 5 characters long')
   end
 
-  it "should be able to alias :maximum for :max" do
+  it "aliases :maximum for :max" do
     class MotorLaunch
       validators.clear!
       validates_length :name, :maximum => 5
@@ -76,7 +76,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.errors.on(:name).should include('Name must be less than 5 characters long')
   end
 
-  it "should be able to specify a length range of a string field" do
+  it "lets user specify a length as range" do
     class MotorLaunch
       validators.clear!
       validates_length :name, :in => (3..5)
@@ -95,7 +95,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.valid?.should == true
   end
 
-  it "should be able to alias :within for :in" do
+  it "aliases :within for :in" do
     class MotorLaunch
       validators.clear!
       validates_length :name, :within => (3..5)
@@ -106,7 +106,7 @@ describe DataMapper::Validate::LengthValidator do
     launch.valid?.should == true
   end
 
-  it "should pass if a default fulfills the requirements" do
+  it "passes if a default fulfills the requirements" do
     doc = BoatDock.new
     doc.should be_valid
   end
