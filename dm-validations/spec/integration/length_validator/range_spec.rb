@@ -5,25 +5,82 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
-describe DataMapper::Validate::LengthValidator do
-  it "lets user specify a length as range" do
-    class MotorLaunch
-      validators.clear!
-      validates_length :name, :in => (3..5)
-    end
+class MotorLaunch
+  validators.clear!
+  validates_length :name, :in => (3..5)
+end
 
-    launch = MotorLaunch.new
-    launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
-    launch.should_not be_valid
-    launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
 
-    launch.name = 'A'
-    launch.should_not be_valid
-    launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
-
-    launch.name = 'Ride'
-    launch.should be_valid
+describe MotorLaunch do
+  before :each do
+    @launch = MotorLaunch.new
   end
+  
+  describe "with a value that is out of range bounds (too long)" do
+    before :each do
+      @launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
+      @launch.valid?
+    end
+    
+    it "is invalid" do
+      @launch.should_not be_valid
+    end
+    it "includes range bounds and field name in error message" do
+      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+    end
+  end
+
+
+  describe "with a value that is out of range bounds (too short)" do
+    before :each do
+      @launch.name = 'L'
+      @launch.valid?
+    end
+    
+    it "is invalid" do
+      @launch.should_not be_valid
+    end
+    it "includes range bounds and field name in error message" do
+      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+    end
+  end
+
+
+  # arguable but reasonable for 80% of cases
+  # to treat nil as a 0 lengh value
+  # reported in
+  # http://datamapper.lighthouseapp.com/projects/20609/tickets/646
+  describe "with a nil value" do
+    before :each do
+      @launch.name = nil
+      @launch.valid?
+    end
+    
+    it "is invalid" do
+      @launch.should_not be_valid
+    end
+    it "includes range bounds and field name in error message" do
+      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+    end
+  end
+
+
+
+  describe "with a value that is within range bounds" do
+    before :each do
+      @launch.name = 'Lisp'
+      @launch.valid?
+    end
+    
+    it "is valid" do
+      @launch.should be_valid
+    end
+    it "has blank error message" do
+      @launch.errors.on(:name).should be_blank
+    end
+  end
+
+
 
   it "aliases :within for :in" do
     class MotorLaunch
@@ -34,5 +91,5 @@ describe DataMapper::Validate::LengthValidator do
     launch = MotorLaunch.new
     launch.name = 'Ride'
     launch.valid?.should == true
-  end  
+  end
 end
