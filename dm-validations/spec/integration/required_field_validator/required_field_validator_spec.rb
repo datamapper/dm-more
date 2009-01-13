@@ -5,35 +5,6 @@ require __dir__.parent.parent + 'spec_helper'
 require __dir__ + 'spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
-  class Landscaper
-    include DataMapper::Resource
-    property :id, Integer, :key => true
-    property :name, String
-  end
-  
-  class Garden
-    include DataMapper::Resource
-    property :id, Integer, :key => true
-    property :landscaper_id, Integer
-    property :name, String, :auto_validation => false
-  
-    belongs_to :landscaper
-  
-    validates_present :name, :when => :property_test
-    validates_present :landscaper, :when => :association_test
-  end
-  
-  class Fertilizer
-    include DataMapper::Resource
-    property :id, Integer, :serial => true
-    property :brand, String, :auto_validation => false, :default => 'Scotts'
-    validates_present :brand, :when => :property_test
-  end
-  
-  Landscaper.auto_migrate!
-  Garden.auto_migrate!
-  Fertilizer.auto_migrate!
-
   describe "Resources" do  
     it "should validate the presence of a property value on an instance of a resource" do
       garden = Garden.new
