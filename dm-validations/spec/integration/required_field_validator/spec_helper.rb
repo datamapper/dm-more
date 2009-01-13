@@ -1,58 +1,62 @@
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
-  class Landscaper
+
+  #
+  # SCMs
+  #
+  # This example may look stupid (I am sure it is),
+  # but it is way better than foobars and easier to read/add cases
+  # compared to gardening examples because every software engineer has idea
+  # about SCMs and not every software engineer does gardening often.
+  #
+
+  class ScmOperation
     include DataMapper::Resource
 
     #
-    # Properties
+    # Property
     #
 
-    property :id, Integer, :key => true
-    property :name, String
-  end
+    property :id,                 Integer, :serial => true
+    
+    # operation name
+    property :name,               String,  :auto_validation => false
 
-  class Garden
-    include DataMapper::Resource
-
-    #
-    # Properties
-    #
-
-    property :id,            Integer, :key => true
-    property :landscaper_id, Integer
-    property :name,          String, :auto_validation => false
-
-    #
-    # Associations
-    #
-
-    belongs_to :landscaper
+    property :committer_name,     String,  :auto_validation => false, :default => "Just another Ruby hacker"
+    property :author_name,        String,  :auto_validation => false, :default => "Just another Ruby hacker"
+    property :network_connection, Boolean, :auto_validation => false
+    property :message,            Text,    :auto_validation => false
+    property :clean_working_copy, Boolean, :auto_validation => false    
 
     #
     # Validations
     #
 
-    validates_present :name, :when => :property_test
-    validates_present :landscaper, :when => :association_test
+    validates_present :name
   end
-  
-  class Fertilizer
-    include DataMapper::Resource
 
-    #
-    # Properties
-    #
-
-    property :id,    Integer, :serial => true
-    property :brand, String, :auto_validation => false, :default => 'Scotts'
-
+  class SubversionOperation < ScmOperation
     #
     # Validations
     #
 
-    validates_present :brand, :when => :property_test
+    validates_present :network_connection, :when => :committing
   end
-  
-  Landscaper.auto_migrate!
-  Garden.auto_migrate!
-  Fertilizer.auto_migrate!
+
+  class GitOperation < ScmOperation
+    #
+    # Validations
+    #
+
+    validates_present :author_name,        :when => :committing
+    validates_present :committer_name,     :when => :committing
+    
+    validates_present :message,            :when => :committing
+    validates_present :network_connection, :when => :pushing
+    validates_present :clean_working_copy, :when => :pulling
+  end
+
+
+  ScmOperation.auto_migrate!
+  SubversionOperation.auto_migrate!
+  GitOperation.auto_migrate!
 end
