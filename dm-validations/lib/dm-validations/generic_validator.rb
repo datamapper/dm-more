@@ -14,8 +14,7 @@ module DataMapper
     # @since  0.9
     class GenericValidator
 
-      attr_accessor :if_clause
-      attr_accessor :unless_clause
+      attr_accessor :if_clause, :unless_clause
 
       # Construct a validator. Capture the :if and :unless clauses when present.
       #
