@@ -98,8 +98,8 @@ describe DataMapper::Validate::ConfirmationValidator do
       validates_is_confirmed :name
     end
 
-    raft = Raft.new
+    raft = Raft.new(:id => 10)
     raft.name = 'Lifeboat'
-    lambda { raft.should_not be_valid }.should_not raise_error
+    raft.should_not be_valid
   end
 end
