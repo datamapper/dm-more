@@ -137,6 +137,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is valid for committing" do
         @operation.should be_valid_for_committing
+        @operation.errors.on(:network_connection).should be_blank
       end
 
       it "is not valid for pushing" do
