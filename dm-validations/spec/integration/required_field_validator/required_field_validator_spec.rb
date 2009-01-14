@@ -141,12 +141,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is not valid for pushing" do
         @operation.should_not be_valid_for_pushing
-        @operation.errors.on(:network_connection).first[:pushing].should include("though git is advanced, it cannot push without network connectivity")
+        @operation.errors.on(:network_connection).
+          first[:pushing].should include("cannot push without network connectivity")
       end
 
       it "is not valid for pulling" do
         @operation.should_not be_valid_for_pulling
-        @operation.errors.on(:network_connection).first[:pulling].should include("you must have network connectivity to pull from others")
+        @operation.errors.on(:network_connection).
+          first[:pulling].should include("you must have network connectivity to pull from others")
       end
 
       it "is not valid in default context" do
