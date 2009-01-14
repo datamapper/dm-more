@@ -234,6 +234,30 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.should_not be_valid
       end
     end # describe "with a network connection"
+
+
+
+    describe "with empty message" do
+      before(:each) do
+        @operation.message = ""
+      end
+
+      it "is NOT valid for committing" do
+        @operation.should_not be_valid_for_committing
+      end
+
+      it "IS valid for pushing" do
+        @operation.should be_valid_for_pushing
+      end
+
+      it "IS valid for pulling" do
+        @operation.should be_valid_for_pulling
+      end
+
+      it "is not valid in default context" do
+        @operation.should_not be_valid
+      end
+    end # describe "with empty message"
   end # describe GitOperation
 
 
