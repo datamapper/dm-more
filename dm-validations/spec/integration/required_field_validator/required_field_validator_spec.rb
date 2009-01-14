@@ -243,6 +243,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it "is NOT valid for committing" do
+        # empty string is not considered present for
+        # a text value
         @operation.should_not be_valid_for_committing
 
         # sanity check since this empty vs blank vs nil
