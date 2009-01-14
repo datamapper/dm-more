@@ -54,7 +54,7 @@ module DataMapper
       #                         against
       # @return <Boolean> true if valid, otherwise false
       def call(target)
-        raise "DataMapper::Validate::GenericValidator::call must be overriden in #{self.class.to_s}"
+        raise NotImplementedError, "DataMapper::Validate::GenericValidator::call must be overriden in a subclass"
       end
 
       def field_name
