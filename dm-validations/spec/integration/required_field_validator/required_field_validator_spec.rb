@@ -46,8 +46,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # no specific actions for this case! yay!
       end
 
-      it "is valid (because default value jumps in)" do
+      it "is valid for committing (because default value jumps in)" do
         @operation.should be_valid_for_committing
+      end
+
+      it "is not valid in default context" do
+        # context here is :default
+        @operation.should_not be_valid
       end
 
       it "has default value set" do
@@ -56,6 +61,53 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # tested in
         @operation.committer_name.should == "Just another Ruby hacker"
       end
-    end
-  end
-end
+    end # describe "without explicitly specified committer name"
+
+    describe "without network connection" do
+      before(:each) do
+        # now note that false make sense from readability
+        # point of view but is incorrect from validator
+        # point of view ;)
+        @operation.network_connection = nil
+      end
+
+      it "is valid for committing" do
+        @operation.should be_valid_for_committing
+      end
+
+      it "is not valid for pushing" do
+        @operation.should_not be_valid_for_pushing
+      end
+
+      it "is not valid for pulling" do
+        @operation.should_not be_valid_for_pulling
+      end
+
+      it "is not valid in default context" do
+        @operation.should_not be_valid
+      end
+    end # describe "without network connection"
+
+    describe "with a network connection" do
+      before(:each) do
+        @operation.network_connection = false
+      end
+
+      it "is valid for committing" do
+        @operation.should be_valid_for_committing
+      end
+
+      it "is valid for pushing" do
+        @operation.should be_valid_for_pushing
+      end
+
+      it "is valid for pulling" do
+        @operation.should be_valid_for_pulling
+      end
+
+      it "is not valid in default context" do
+        @operation.should_not be_valid
+      end
+    end # describe "with a network connection"
+  end # describe GitOperation
+end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
