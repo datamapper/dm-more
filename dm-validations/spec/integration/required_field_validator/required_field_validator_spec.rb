@@ -244,6 +244,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is NOT valid for committing" do
         @operation.should_not be_valid_for_committing
+
+        # sanity check since this empty vs blank vs nil
+        # thing is a shaky ground
+        @operation.message = "RUBY ON RAILS CAN SCALE NOW!!! w00t!!!"
+        @operation.should be_valid_for_committing
       end
 
       it "IS valid for pushing" do
