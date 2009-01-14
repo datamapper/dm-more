@@ -62,4 +62,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   ScmOperation.auto_migrate!
   SubversionOperation.auto_migrate!
   GitOperation.auto_migrate!
+
+  __dir__ = File.dirname(__FILE__)
+  require File.join(__dir__, "shared_examples")
 end
