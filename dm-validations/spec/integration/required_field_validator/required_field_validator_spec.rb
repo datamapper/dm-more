@@ -265,6 +265,67 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.should_not be_valid
       end
     end # describe "with empty message"
+
+
+
+    describe "with empty committer name" do
+      before(:each) do
+        @operation.committer_name = ""
+      end
+
+      it "is NOT valid for committing" do
+        # empty string is not considered present for
+        # a String value
+        @operation.should_not be_valid_for_committing
+
+        # sanity check since this empty vs blank vs nil
+        # thing is a shaky ground
+        @operation.committer_name = "l33t k0dr"
+        @operation.should be_valid_for_committing
+      end
+
+      it "IS valid for pushing" do
+        @operation.should be_valid_for_pushing
+      end
+
+      it "IS valid for pulling" do
+        @operation.should be_valid_for_pulling
+      end
+
+      it "is not valid in default context" do
+        @operation.should_not be_valid
+      end
+    end # describe "with empty committer field"
+
+
+    describe "with empty author name" do
+      before(:each) do
+        @operation.author_name = ""
+      end
+
+      it "is NOT valid for committing" do
+        # empty string is not considered present for
+        # a String value
+        @operation.should_not be_valid_for_committing
+
+        # sanity check since this empty vs blank vs nil
+        # thing is a shaky ground
+        @operation.author_name = "l33t k0dr"
+        @operation.should be_valid_for_committing
+      end
+
+      it "IS valid for pushing" do
+        @operation.should be_valid_for_pushing
+      end
+
+      it "IS valid for pulling" do
+        @operation.should be_valid_for_pulling
+      end
+
+      it "is not valid in default context" do
+        @operation.should_not be_valid
+      end
+    end # describe "with empty author field"
   end # describe GitOperation
 
 
