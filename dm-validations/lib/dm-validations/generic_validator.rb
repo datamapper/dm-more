@@ -15,6 +15,7 @@ module DataMapper
     class GenericValidator
 
       attr_accessor :if_clause, :unless_clause
+      attr_reader :field_name
 
       # Construct a validator. Capture the :if and :unless clauses when present.
       #
@@ -54,10 +55,6 @@ module DataMapper
       # @return <Boolean> true if valid, otherwise false
       def call(target)
         raise NotImplementedError, "DataMapper::Validate::GenericValidator::call must be overriden in a subclass"
-      end
-
-      def field_name
-        @field_name
       end
 
       # Determines if this validator should be run against the
