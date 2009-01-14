@@ -76,7 +76,7 @@ module DataMapper
     # resource we can check if they respond to validatable? before trying to
     # recursivly validate them
     #
-    def validatable?()
+    def validatable?
       true
     end
 
