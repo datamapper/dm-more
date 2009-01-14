@@ -39,6 +39,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       @metric.should be_valid
     end
 
+    describe "with percentage = 0.0" do
+      before(:each) do
+        @metric.percent = 0.0
+      end
+
+      it "IS valid" do
+        # yes, presence validator does not care
+        @metric.should be_valid
+      end
+    end # describe "with percentage = 0.0"
+
+
+
     describe "with percentage = 0" do
       before(:each) do
         @metric.percent = 0
@@ -63,7 +76,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end # describe "with percentage = 100"
 
 
-    describe "with percentage = 100.0 (float!)" do
+    describe "with percentage = 100.0" do
       before(:each) do
         @metric.percent = 100.0
       end
@@ -71,7 +84,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @metric.should be_valid
       end
-    end # describe "with percentage = 100.0 (float!)"
+    end # describe "with percentage = 100.0"
 
 
     describe "with percentage = -1100" do
@@ -86,14 +99,26 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end # describe "with percentage = -1100"
 
 
+    describe "with percentage = -1100.5" do
+      before(:each) do
+        # presence validator does not care
+        @metric.percent = -1100.5
+      end
+
+      it "IS valid" do
+        @metric.should be_valid
+      end
+    end # describe "with percentage = -1100.5"
+
+
     describe "with percentage = nil" do
       before(:each) do
         @metric.percent = nil
       end
 
       it "is NOT valid" do
-        # nil = missing for integer value
-        # and HgCommit only has default validation context
+        # nil = missing for float value
+        # and CpuConsumption only has default validation context
         @metric.should_not be_valid
 
         # sanity check
