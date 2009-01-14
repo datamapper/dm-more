@@ -10,7 +10,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       @operation = GitOperation.new
     end
 
-    describe "with no name set" do
+    describe "unnamed SCM operation", :shared => true do
       before :each do
         @operation.name = nil
         @operation.valid?
@@ -20,8 +20,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.should_not be_valid
       end
 
-      it "is not valid for any particular purpose of validation" do
-        @operation.should_not be_valid_for_committing
+      it "is not valid in default validation context" do
+        @operation.should_not be_valid(:default)
       end
 
       it "points to blank name in the error message" do
@@ -41,6 +41,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
                                     :message            => "I did it! I did it!! Hell yeah!!!")
     end
 
+    describe "without operation name" do
+      before(:each) do
+        @operation.name = nil
+      end
+      it_should_behave_like "unnamed SCM operation"
+    end
+
     describe "without explicitly specified committer name" do
       before :each do
         # no specific actions for this case! yay!
@@ -48,6 +55,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is valid for committing (because default value jumps in)" do
         @operation.should be_valid_for_committing
+        @operation.should be_valid(:committing)
       end
 
       it "is not valid in default context" do
@@ -70,11 +78,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is valid for committing" do
         @operation.should be_valid_for_committing
+        @operation.should be_valid(:committing)
       end
 
       it "is not valid in default context" do
-        # context here is :default
         @operation.should_not be_valid
+        @operation.should_not be_valid(:default)
       end
 
       it "has value set" do
@@ -94,11 +103,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "is valid for committing (because default value jumps in)" do
         @operation.should be_valid_for_committing
+        @operation.should be_valid(:committing)
       end
 
       it "is not valid in default context" do
         # context here is :default
         @operation.should_not be_valid
+        @operation.should_not be_valid(:default)
       end
 
       it "has default value set" do
@@ -224,4 +235,30 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
     end # describe "with a network connection"
   end # describe GitOperation
+
+
+  describe SubversionOperation do
+    before(:each) do
+      @operation = SubversionOperation.new :name    => "ci", :network_connection => true,
+                                           :message => "v1.5.8", :clean_working_copy => true
+    end
+
+    describe "without operation name" do
+      before(:each) do
+        @operation.name = nil
+      end
+      it_should_behave_like "unnamed SCM operation"
+    end
+
+    describe "without network connection" do
+      before(:each) do
+        @operation.network_connection = nil
+      end
+
+      it "virtually useless" do
+        @operation.should_not be_valid_for_committing
+        @operation.should_not be_valid_for_log_viewing
+      end
+    end # describe "without network connection"
+  end
 end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES

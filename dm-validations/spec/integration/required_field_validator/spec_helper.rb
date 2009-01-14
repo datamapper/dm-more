@@ -39,7 +39,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :network_connection, :when => :committing
+    validates_present :network_connection, :when => [:committing, :log_viewing]
   end
 
   class GitOperation < ScmOperation
