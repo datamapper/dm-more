@@ -51,7 +51,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     validates_present :committer_name,     :when => :committing
     
     validates_present :message,            :when => :committing
-    validates_present :network_connection, :when => [:pushing, :pulling]
+    validates_present :network_connection, :when => [:pushing, :pulling], :message => {
+      :pushing => "though git is advanced, it cannot push without network connectivity",
+      :pulling => "you must have network connectivity to pull from others"
+    }
     validates_present :clean_working_copy, :when => :pulling
   end
 
