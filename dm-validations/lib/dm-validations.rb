@@ -186,21 +186,21 @@ module DataMapper
       # if it does not already exist
       #
       def create_context_instance_methods(context)
-        name = "valid_for_#{context.to_s}?"
+        name = "valid_for_#{context.to_s}?"           # valid_for_signup?
         if !self.instance_methods.include?(name)
           class_eval <<-EOS, __FILE__, __LINE__
-            def #{name}
-              valid?('#{context.to_s}'.to_sym)
-            end
+            def #{name}                               # def valid_for_signup?
+              valid?('#{context.to_s}'.to_sym)        #   valid?('signup'.to_sym)
+            end                                       # end
           EOS
         end
 
-        all = "all_valid_for_#{context.to_s}?"
+        all = "all_valid_for_#{context.to_s}?"        # all_valid_for_signup?
         if !self.instance_methods.include?(all)
           class_eval <<-EOS, __FILE__, __LINE__
-            def #{all}
-              all_valid?('#{context.to_s}'.to_sym)
-            end
+            def #{all}                                # def all_valid_for_signup?
+              all_valid?('#{context.to_s}'.to_sym)    #   all_valid?('signup'.to_sym)
+            end                                       # end
           EOS
         end
       end
