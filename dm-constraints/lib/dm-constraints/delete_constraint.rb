@@ -15,15 +15,19 @@ module DataMapper
           if !DELETE_CONSTRAINT_OPTIONS.include?(constraint_type)
             raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}"
           end
-        end        
+        end
       end
-      
+
+      def add_delete_constraint_option(name, repository_name, child_model, parent_model, options = {})
+        @delete_constraint = options[:constraint]        
+      end
+            
       def check_delete_constraints
         model.relationships.each do |rel_name, rel|
           children = self.send(rel_name)
           case rel.delete_constraint
           when nil, :protect
-            # only block deletion if the resource is a parent in a relationship and has children
+            # only prevent deletion if the resource is a parent in a relationship and has children
             throw(:halt, false) if children && children.respond_to?(:empty?) && !children.empty?
           when :destroy
             if children && children.respond_to?(:each)
