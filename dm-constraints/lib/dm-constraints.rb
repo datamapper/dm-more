@@ -24,9 +24,9 @@ module DataMapper
       # initialize is a private method in Relationship
       # and private methods can not be "advised" (hooked into)
       # in extlib.
-      public(:initialize)
-      before :initialize, :add_delete_constraint_option
-      private(:initialize)
+      with_changed_method_visibility(:initialize, :private, :public) do
+        before :initialize, :add_delete_constraint_option
+      end
     end
   end
 end

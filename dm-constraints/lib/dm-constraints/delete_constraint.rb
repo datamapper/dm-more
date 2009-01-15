@@ -16,6 +16,14 @@ module DataMapper
             raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}"
           end
         end
+        
+        # TODO: that should be moved to a 'util-like' module
+        def with_changed_method_visibility(method, from_visibility, to_visibility, &block)
+          send(to_visibility, method)
+          yield
+          send(from_visibility, method)
+        end
+        
       end
 
       def add_delete_constraint_option(name, repository_name, child_model, parent_model, options = {})
