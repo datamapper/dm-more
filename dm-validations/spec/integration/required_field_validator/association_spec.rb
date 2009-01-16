@@ -70,7 +70,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       @album  = @artist.albums.new(:name => "Sirens of the sea")
     end
 
-    describe 'without missing artist' do
+    describe 'with a missing artist' do
       before :each do
         @album.artist = nil
       end
