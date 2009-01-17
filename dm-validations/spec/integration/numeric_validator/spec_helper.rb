@@ -49,3 +49,29 @@ class City
   validates_is_number :founded_in, :message => "Foundation year must be an integer"
 end
 City.auto_migrate!
+
+
+
+class Country
+  #
+  # Behaviors
+  #
+
+  include DataMapper::Resource
+
+  #
+  # Properties
+  #
+
+  property :id,         Serial
+  property :name,       String
+
+  property :area,       String, :integer_only => true
+
+  #
+  # Validations
+  #
+
+  validates_is_number :area, :message => "Please use integers to specify area"
+end
+Country.auto_migrate!

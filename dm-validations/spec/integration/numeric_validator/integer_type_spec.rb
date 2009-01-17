@@ -9,7 +9,7 @@ describe City do
     @city = City.new(:name => "Tokyo", :founded_in => 1603)
   end
 
-  describe "with height as integer" do
+  describe "with foundation year as integer" do
     before(:each) do
       # no op in this case
     end
@@ -20,7 +20,7 @@ describe City do
   end
 
 
-  describe "with height as integer" do
+  describe "with foundation year as integer" do
     before(:each) do
       @city.founded_in = 1603
     end
@@ -31,7 +31,7 @@ describe City do
   end
 
 
-  describe "with height as string containing only integers" do
+  describe "with foundation year as string containing only integers" do
     before(:each) do
       @city.founded_in = "1603"
     end
@@ -42,7 +42,7 @@ describe City do
   end
 
 
-  describe "with height as string containing a float" do
+  describe "with foundation year as string containing a float" do
     before(:each) do
       @city.founded_in = "1603.6"
     end
@@ -53,7 +53,7 @@ describe City do
   end
 
 
-  describe "with height as string containing random alphanumeric characters" do
+  describe "with foundation year as string containing random alphanumeric characters" do
     before(:each) do
       @city.founded_in = "founded-in=1603"
     end
@@ -68,7 +68,7 @@ describe City do
   end
 
 
-  describe "with height as string containing random punctuation characters" do
+  describe "with foundation year as string containing random punctuation characters" do
     before(:each) do
       @city.founded_in = "$$ * $?"
     end
