@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 class BasketballPlayer
   #
-  # Behavior
+  # Behaviors
   #
 
   include DataMapper::Resource
@@ -10,7 +10,7 @@ class BasketballPlayer
   # Properties
   #
 
-  property :id,     Integer, :serial => true
+  property :id,     Serial
   property :name,   String
 
   property :height, Float, :auto_validation => false
@@ -24,3 +24,28 @@ class BasketballPlayer
 end
 
 BasketballPlayer.auto_migrate!
+
+
+
+class City
+  #
+  # Behaviors
+  #
+
+  include DataMapper::Resource
+
+  #
+  # Properties
+  #
+
+  property :id,         Serial
+  property :name,       String
+
+  property :founded_in, Integer, :auto_validation => false
+
+  #
+  # Validations
+  #
+
+  validates_is_number :founded_in, :message => "Foundation year must be an integer"
+end
