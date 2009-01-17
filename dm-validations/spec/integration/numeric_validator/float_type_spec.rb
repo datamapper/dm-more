@@ -58,10 +58,13 @@ describe BasketballPlayer do
       @mj.height = "height=198.1"
     end
 
+    it "is set to 0.0" do
+      @mj.height.should == 0.0
+    end
+
     it "IS  valid" do
       # float property is set to 0.0 here
       @mj.should be_valid
-      @mj.height.should == 0.0
     end
   end
 
@@ -71,10 +74,13 @@ describe BasketballPlayer do
       @mj.height = "$$ * $?"
     end
 
+    it "is set to 0.0" do
+      @mj.height.should == 0.0
+    end
+
     it "IS  valid" do
       # float property is set to 0.0 here
       @mj.should be_valid
-      @mj.height.should == 0.0
     end
   end
   
