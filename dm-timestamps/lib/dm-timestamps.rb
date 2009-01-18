@@ -23,7 +23,7 @@ module DataMapper
     private
 
     def set_timestamps
-      return unless dirty?
+      return unless dirty? || new_record?
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
         if model.properties.has_property?(name)
           model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)
