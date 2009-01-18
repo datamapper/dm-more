@@ -8,9 +8,7 @@ require Pathname(__FILE__).dirname.expand_path / 'dm-is-versioned' / 'is' / 'ver
 
 # Include the plugin in Resource
 module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::Versioned
-    end # module ClassMethods
-  end # module Resource
+  module Model
+    include DataMapper::Is::Versioned
+  end # module Model
 end # module DataMapper

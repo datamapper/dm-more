@@ -12,9 +12,7 @@ require Pathname(__FILE__).dirname.expand_path / 'dm-is-searchable' / 'is' / 'se
 
 # Include the plugin in Resource
 module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::Searchable
-    end # module ClassMethods
-  end # module Resource
+  module Model
+    include DataMapper::Is::Searchable
+  end # module Model
 end # module DataMapper

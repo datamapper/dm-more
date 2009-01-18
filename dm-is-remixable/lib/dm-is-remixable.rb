@@ -7,9 +7,7 @@ require 'dm-core'
 require Pathname(__FILE__).dirname.expand_path / 'dm-is-remixable' / 'is' / 'remixable'
 
 module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::Remixable
-    end # module ClassMethods
-  end # module Resource
+  module Model
+    include DataMapper::Is::Remixable
+  end # module Model
 end # module DataMapper

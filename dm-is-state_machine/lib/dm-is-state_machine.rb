@@ -16,11 +16,9 @@ require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 
 
 # Include the plugin in Resource
 module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::StateMachine
-    end # module ClassMethods
-  end # module Resource
+  module Model
+    include DataMapper::Is::StateMachine
+  end # module Model
 end # module DataMapper
 
 # An alternative way to do the same thing as above:

@@ -12,9 +12,7 @@ require Pathname(__FILE__).dirname.expand_path / 'dm-is-viewable' / 'is' / 'view
 
 # Include the plugin in Resource
 module DataMapper
-  module Resource
-    module ClassMethods
-      include DataMapper::Is::Viewable
-    end # module ClassMethods
-  end # module Resource
+  module Model
+    include DataMapper::Is::Viewable
+  end # module Model
 end # module DataMapper
