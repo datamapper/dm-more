@@ -19,7 +19,7 @@ describe DataMapper::Tags do
   describe ".has_tags_on" do
     it "should accept an array of context names" do
       Object.send(:remove_const, :HasTagsOnTestModel) if defined?(HasTagsOnTestModel)
-      class HasTagsOnTestModel
+      class ::HasTagsOnTestModel
         include DataMapper::Resource
         property :id, Serial
       end
@@ -28,7 +28,7 @@ describe DataMapper::Tags do
 
     it "should create taggable functionality for each of the context names passed" do
       Object.send(:remove_const, :TestModel) if defined?(TestModel)
-      class TestModel
+      class ::TestModel
         include DataMapper::Resource
         property :id, Serial
 
@@ -49,7 +49,7 @@ describe DataMapper::Tags do
   describe ".has_tags" do
     it "should create a taggable with 'tags' context regardless of passed arguments" do
       Object.send(:remove_const, :TagsOnly) if defined?(TagsOnly)
-      class TagsOnly
+      class ::TagsOnly
         include DataMapper::Resource
         property :id, Serial
         has_tags :pets, :skills

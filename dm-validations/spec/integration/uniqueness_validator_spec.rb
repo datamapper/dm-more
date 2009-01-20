@@ -5,7 +5,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe DataMapper::Validate::UniquenessValidator do
 
     before do
-      class Organisation
+      class ::Organisation
         include DataMapper::Resource
         property :id, Serial
         property :name, String
@@ -14,7 +14,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         validates_is_unique :domain, :allow_nil => true
       end
 
-      class User
+      class ::User
         include DataMapper::Resource
         property :id, Serial
         property :organisation_id, Integer
@@ -66,7 +66,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it 'should validate uniqueness on a string key' do
-      class Department
+      class ::Department
         include DataMapper::Resource
         property :name, String, :key => true
 

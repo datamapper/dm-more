@@ -8,14 +8,14 @@ if COUCHDB_AVAILABLE
 
     before do
       Object.send(:remove_const, :NonCouch) if defined?(NonCouch)
-      class NonCouch
+      class ::NonCouch
         include DataMapper::Resource
 
         property :id, Serial
       end
 
       Object.send(:remove_const, :Message) if defined?(Message)
-      class Message
+      class ::Message
         include DataMapper::CouchResource
         def self.default_repository_name
           :couch

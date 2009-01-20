@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 describe DataMapper::Validate::ContextualValidators do
 
   before :all do
-    class Kayak
+    class ::Kayak
       include DataMapper::Resource
       property :id, Integer, :key => true
       property :salesman, String, :auto_validation => false

@@ -18,7 +18,7 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 Spec::Runner.configure do |config|
   config.before(:each) do
     Object.send(:remove_const, :TaggedModel) if defined?(TaggedModel)
-    class TaggedModel
+    class ::TaggedModel
       include DataMapper::Resource
       property :id, Serial
 
@@ -26,7 +26,7 @@ Spec::Runner.configure do |config|
     end
 
     Object.send(:remove_const, :AnotherTaggedModel) if defined?(AnotherTaggedModel)
-    class AnotherTaggedModel
+    class ::AnotherTaggedModel
       include DataMapper::Resource
       property :id, Serial
 
@@ -34,7 +34,7 @@ Spec::Runner.configure do |config|
     end
 
     Object.send(:remove_const, :DefaultTaggedModel) if defined?(DefaultTaggedModel)
-    class DefaultTaggedModel
+    class ::DefaultTaggedModel
       include DataMapper::Resource
       property :id, Serial
 
@@ -42,7 +42,7 @@ Spec::Runner.configure do |config|
     end
 
     Object.send(:remove_const, :UntaggedModel) if defined?(UntaggedModel)
-    class UntaggedModel
+    class ::UntaggedModel
       include DataMapper::Resource
       property :id, Serial
     end

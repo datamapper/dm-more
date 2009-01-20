@@ -37,6 +37,6 @@ end
 require spec_dir_path + 'lib/serialization_method_shared_spec'
 
 # require fixture resources
-Dir[spec_dir_path + "fixtures/*.rb"].each do |fixture_file|
+Dir[(spec_dir_path + "fixtures/*.rb").to_s].each do |fixture_file|
   require fixture_file
 end

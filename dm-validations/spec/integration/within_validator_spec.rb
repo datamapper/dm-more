@@ -3,14 +3,14 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::WithinValidator do
   before(:all) do
-    class Telephone
+    class ::Telephone
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :type_of_number, String, :auto_validation => false
       validates_within :type_of_number, :set => ['Home', 'Work', 'Cell']
     end
 
-    class Inf
+    class ::Inf
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :gte, Integer, :auto_validation => false
@@ -21,14 +21,14 @@ describe DataMapper::Validate::WithinValidator do
       validates_within :between, :set => (10..20)
     end
 
-    class Receiver
+    class ::Receiver
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :holder, String, :auto_validation => false, :default => 'foo'
       validates_within :holder, :set => ['foo', 'bar', 'bang']
     end
 
-    class Nullable
+    class ::Nullable
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :nullable, Integer, :auto_validation => false

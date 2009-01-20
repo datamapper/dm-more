@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::IPAddress do
   before(:all) do
-    class IPAddressTest
+    class ::IPAddressTest
       include DataMapper::Resource
 
       property :id, Serial

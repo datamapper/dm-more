@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate do
   before :all do
-    class Yacht
+    class ::Yacht
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :name, String, :auto_validation => false
@@ -15,7 +15,7 @@ describe DataMapper::Validate do
   describe '#validations' do
       it 'should support more different validations of a different type' do
           number_of_validators_before = Yacht.validators.contexts[:default].length
-            class Yacht
+            class ::Yacht
                 validates_is_unique :name
             end
           number_of_validators_after = Yacht.validators.contexts[:default].length
@@ -59,7 +59,7 @@ describe DataMapper::Validate do
 
     describe 'with context specified' do
       before :all do
-        class Yacht
+        class ::Yacht
           validates_length :name, :min => 2, :context => [ :strict_name ]
         end
       end
@@ -143,7 +143,7 @@ describe DataMapper::Validate do
   end
 
   it "should allow multiple user defined contexts for a validator" do
-    class Yacht
+    class ::Yacht
       property :port, String, :auto_validation => false
       validates_present :port, :context => [:at_sea, :in_harbor]
     end
@@ -154,7 +154,7 @@ describe DataMapper::Validate do
   end
 
   it "should alias :on and :when for :context" do
-    class Yacht
+    class ::Yacht
       property :owner, String, :auto_validation => false
       property :bosun, String, :auto_validation => false
 
@@ -166,7 +166,7 @@ describe DataMapper::Validate do
   end
 
   it "should alias :group for :context (backward compat with Validatable??)" do
-    class Yacht
+    class ::Yacht
       property :captain, String, :auto_validation => false
       validates_present :captain, :group => [:captained_vessel]
     end
@@ -174,7 +174,7 @@ describe DataMapper::Validate do
   end
 
   it "should add a method valid_for_<context_name>? for each context" do
-    class Yacht
+    class ::Yacht
       property :engine_size, String, :auto_validation => false
       validates_present :engine_size, :when => :power_boat
     end
@@ -189,7 +189,7 @@ describe DataMapper::Validate do
   end
 
   it "should add a method all_valid_for_<context_name>? for each context" do
-    class Yacht
+    class ::Yacht
       property :mast_height, String, :auto_validation => false
       validates_present :mast_height, :when => :sailing_vessel
     end
@@ -200,7 +200,7 @@ describe DataMapper::Validate do
   it "should be able to translate the error message" # needs String::translations
 
   it "should be able to get the error message for a given field" do
-    class Yacht
+    class ::Yacht
       property :wood_type, String, :auto_validation => false
       validates_present :wood_type, :on => :wooden_boats
     end
@@ -212,7 +212,7 @@ describe DataMapper::Validate do
   end
 
   it "should be able to specify a custom error message" do
-    class Yacht
+    class ::Yacht
       property :year_built, String, :auto_validation => false
       validates_present :year_built, :when => :built, :message => 'Year built is a must enter field'
     end
@@ -223,7 +223,7 @@ describe DataMapper::Validate do
   end
 
   it "should execute a Proc when provided in an :if clause and run validation if the Proc returns true" do
-    class Dingy
+    class ::Dingy
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :owner, String, :auto_validation => false
@@ -236,7 +236,7 @@ describe DataMapper::Validate do
 
     Dingy.new.valid?.should == true
 
-    class Dingy
+    class ::Dingy
       def owned?
         true
       end
@@ -246,7 +246,7 @@ describe DataMapper::Validate do
   end
 
   it "should execute a symbol or method name provided in an :if clause and run validation if the method returns true" do
-    class Dingy
+    class ::Dingy
       validators.clear!
       validates_present :owner, :if => :owned?
 
@@ -257,7 +257,7 @@ describe DataMapper::Validate do
 
     Dingy.new.valid?.should == true
 
-    class Dingy
+    class ::Dingy
       def owned?
         true
       end
@@ -267,7 +267,7 @@ describe DataMapper::Validate do
   end
 
   it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
-    class RowBoat
+    class ::RowBoat
       include DataMapper::Resource
       property :id, Integer, :serial => true
       validates_present :salesman, :unless => Proc.new{|resource| resource.sold?}
@@ -279,7 +279,7 @@ describe DataMapper::Validate do
 
     RowBoat.new.valid?.should_not == true
 
-    class RowBoat
+    class ::RowBoat
       def sold?
         true
       end
@@ -289,7 +289,7 @@ describe DataMapper::Validate do
   end
 
   it "should execute a symbol or method name provided in an :unless clause and not run validation if the method returns true" do
-    class Dingy
+    class ::Dingy
       validators.clear!
       validates_present :salesman, :unless => :sold?
 
@@ -300,7 +300,7 @@ describe DataMapper::Validate do
 
     Dingy.new.valid?.should_not == true  #not sold and no salesman
 
-    class Dingy
+    class ::Dingy
       def sold?
         true
       end
@@ -310,7 +310,7 @@ describe DataMapper::Validate do
   end
 
   it "should perform automatic recursive validation #all_valid? checking all instance variables (and ivar.each items if valid)" do
-    class Invoice
+    class ::Invoice
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :customer, String, :auto_validation => false
@@ -329,7 +329,7 @@ describe DataMapper::Validate do
       end
     end
 
-    class LineItem
+    class ::LineItem
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :price, String, :auto_validation => false
@@ -340,7 +340,7 @@ describe DataMapper::Validate do
       end
     end
 
-    class Comment
+    class ::Comment
       include DataMapper::Resource
       property :id, Integer, :serial => true
       property :note, String, :auto_validation => false
@@ -370,7 +370,7 @@ describe DataMapper::Validate do
   end
 
   it "should retrieve private instance variables for validation" do
-    class Raft
+    class ::Raft
       include DataMapper::Resource
       property :length, Integer, :accessor => :private
 
@@ -383,7 +383,7 @@ describe DataMapper::Validate do
   end
 
   it "should duplicate validations to STI models" do
-    class Company
+    class ::Company
       include DataMapper::Resource
 
       validates_present :title, :message => "Company name is a required field"
@@ -393,10 +393,10 @@ describe DataMapper::Validate do
       property :type,     Discriminator
     end
 
-    class ServiceCompany < Company
+    class ::ServiceCompany < Company
     end
 
-    class ProductCompany < Company
+    class ::ProductCompany < Company
     end
     company = ServiceCompany.new
     company.should_not be_valid

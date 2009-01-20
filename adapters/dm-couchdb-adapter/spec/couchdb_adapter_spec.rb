@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
 if COUCHDB_AVAILABLE
-  class User
+  class ::User
     include DataMapper::CouchResource
     def self.default_repository_name
       :couch
@@ -29,7 +29,7 @@ if COUCHDB_AVAILABLE
     end
   end
 
-  class Company
+  class ::Company
     include DataMapper::CouchResource
     def self.default_repository_name
       :couch
@@ -42,7 +42,7 @@ if COUCHDB_AVAILABLE
     has n, :users
   end
 
-  class Person
+  class ::Person
     include DataMapper::CouchResource
     def self.default_repository_name
       :couch
@@ -51,11 +51,11 @@ if COUCHDB_AVAILABLE
     property :name, String
   end
 
-  class Employee < Person
+  class ::Employee < Person
     property :rank, String
   end
 
-  class Broken
+  class ::Broken
     include DataMapper::CouchResource
     def self.default_repository_name
       :couch

@@ -161,7 +161,7 @@ module DataMapper
 
       def http_post(uri, data)
         request do |http|
-          request = Net::HTTP::Post.new(uri, data, {"Content-Type", "application/xml"})
+          request = Net::HTTP::Post.new(uri, data, 'Content-Type' => 'application/xml')
           request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
           http.request(request)
         end

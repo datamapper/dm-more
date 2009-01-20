@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + '/migration'
 
 module DataMapper
   module MigrationRunner
-    @@migrations ||= []
-
     # Creates a new migration, and adds it to the list of migrations to be run.
     # Migrations can be defined in any order, they will be sorted and run in the
     # correct order.
@@ -42,10 +40,9 @@ module DataMapper
     # you write a migration using a model, then later change the model, there's a
     # possibility the migration will no longer work. Using SQL will always work.
     def migration( number, name, opts = {}, &block )
-      @@migrations ||= []
-      raise "Migration name conflict: '#{name}'" if @@migrations.map { |m| m.name }.include?(name.to_s)
+      raise "Migration name conflict: '#{name}'" if migrations.map { |m| m.name }.include?(name.to_s)
 
-      @@migrations << DataMapper::Migration.new( number, name.to_s, opts, &block )
+      migrations << DataMapper::Migration.new( number, name.to_s, opts, &block )
     end
 
     # Run all migrations that need to be run. In most cases, this would be called by a
@@ -55,7 +52,7 @@ module DataMapper
     # has an optional argument 'level' which if supplied, only performs the migrations
     # with a position less than or equal to the level.
     def migrate_up!(level = nil)
-      @@migrations.sort.each do |migration|
+      migrations.sort.each do |migration|
         if level.nil?
           migration.perform_up()
         else
@@ -69,7 +66,7 @@ module DataMapper
     # has an optional argument 'level' which, if supplied, only performs the
     # down migrations with a postion greater than the level.
     def migrate_down!(level = nil)
-      @@migrations.sort.reverse.each do |migration|
+      migrations.sort.reverse.each do |migration|
         if level.nil?
           migration.perform_down()
         else
@@ -79,7 +76,7 @@ module DataMapper
     end
 
     def migrations
-      @@migrations
+      @migrations ||= []
     end
 
   end

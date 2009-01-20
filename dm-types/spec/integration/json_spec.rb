@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::Json do
   before(:all) do
-    class JsonTest
+    class ::JsonTest
       include DataMapper::Resource
 
       property :id, Serial

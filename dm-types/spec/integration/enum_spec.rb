@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::Enum do
   before(:all) do
-    class Bug
+    class ::Bug
       include DataMapper::Resource
 
       property :id, Integer, :serial => true

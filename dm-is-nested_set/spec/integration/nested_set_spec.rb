@@ -30,7 +30,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe DataMapper::Is::NestedSet do
     before do
       Object.send(:remove_const, :User) if defined?(User)
-      class User
+      class ::User
         include DataMapper::Resource
 
         property :id, Serial
@@ -40,7 +40,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       Object.send(:remove_const, :Category) if defined?(Category)
-      class Category
+      class ::Category
         include DataMapper::Resource
 
         property :id, Integer, :serial => true
@@ -55,7 +55,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       Object.send(:remove_const, :CustomCategory) if defined?(CustomCategory)
-      class CustomCategory < Category; end
+      class ::CustomCategory < Category; end
 
       DataMapper.auto_migrate!
 

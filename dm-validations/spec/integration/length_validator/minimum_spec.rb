@@ -7,7 +7,7 @@ require __dir__ + 'spec_helper'
 
 describe DataMapper::Validate::LengthValidator do
   it "lets user specify a minimum length of a string field" do
-    class MotorLaunch
+    class ::MotorLaunch
       validates_length :name, :min => 3
     end
 
@@ -18,7 +18,7 @@ describe DataMapper::Validate::LengthValidator do
   end
 
   it "aliases :minimum for :min" do
-    class MotorLaunch
+    class ::MotorLaunch
       validators.clear!
       validates_length :name, :minimum => 3
     end

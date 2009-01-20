@@ -1,10 +1,15 @@
 require 'dm-serializer/common'
 
-begin
-  gem('fastercsv')
-  require 'faster_csv'
-rescue LoadError
-  nil
+if RUBY_VERSION >= '1.9.0'
+ require 'csv'
+else
+  begin
+    gem 'fastercsv', '~>1.4.0'
+    require 'fastercsv'
+    CSV = FasterCSV
+  rescue LoadError
+    nil
+  end
 end
 
 module DataMapper
@@ -13,10 +18,10 @@ module DataMapper
     #
     # @return <String> a CSV representation of the Resource
     def to_csv(writer = '')
-      FasterCSV.generate(writer) do |csv|
+      CSV.generate(writer) do |csv|
         row = []
         self.class.properties(repository.name).each do |property|
-         row << send(property.name).to_s
+          row << send(property.name).to_s
         end
         csv << row
       end

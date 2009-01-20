@@ -1,3 +1,15 @@
+if RUBY_VERSION >= '1.9.0'
+ require 'csv'
+else
+  begin
+    gem 'fastercsv', '~>1.4.0'
+    require 'fastercsv'
+    CSV = FasterCSV
+  rescue LoadError
+    nil
+  end
+end
+
 module DataMapper
   module Types
     class Csv < DataMapper::Type
@@ -6,7 +18,7 @@ module DataMapper
 
       def self.load(value, property)
         case value
-        when String then FasterCSV.parse(value)
+        when String then CSV.parse(value)
         when Array then value
         else nil
         end
@@ -15,7 +27,7 @@ module DataMapper
       def self.dump(value, property)
         case value
         when Array then
-          FasterCSV.generate do |csv|
+          CSV.generate do |csv|
             value.each { |row| csv << row }
           end
         when String then value

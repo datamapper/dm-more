@@ -3,14 +3,14 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::AbsentFieldValidator do
   before(:all) do
-    class Kayak
+    class ::Kayak
       include DataMapper::Resource
       property :id, Integer, :key => true
       property :salesman, String, :auto_validation => false
       validates_absent :salesman, :when => :sold
     end
 
-    class Pirogue
+    class ::Pirogue
       include DataMapper::Resource
       property :id, Integer, :key => true
       property :salesman, String, :default => 'Layfayette'

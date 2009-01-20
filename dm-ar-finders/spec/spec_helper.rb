@@ -11,7 +11,7 @@ def load_driver(name, default_uri)
     DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
 
     FileUtils.touch LOG_PATH
-    DataMapper::Logger.new(LOG_PATH, 0)
+    DataMapper::Logger.new(LOG_PATH, :debug)
     at_exit { DataMapper.logger.close }
     true
   rescue LoadError => e

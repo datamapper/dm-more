@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::ConfirmationValidator do
   before(:all) do
-    class Canoe
+    class ::Canoe
       include DataMapper::Resource
 
       property :id,                Integer, :serial => true
@@ -16,7 +16,7 @@ describe DataMapper::Validate::ConfirmationValidator do
   end
 
   it "should only validate if the attribute is dirty" do
-    class Transformer
+    class ::Transformer
       include DataMapper::Resource
 
       property :id,                Integer, :serial => true
@@ -61,7 +61,7 @@ describe DataMapper::Validate::ConfirmationValidator do
   end
 
   it "should not pass validation with a nil value when specified to" do
-    class Canoe
+    class ::Canoe
       validators.clear!
       validates_is_confirmed :name, :allow_nil => false
     end
@@ -71,7 +71,7 @@ describe DataMapper::Validate::ConfirmationValidator do
   end
 
   it "should allow the name of the confirmation field to be set" do
-    class Canoe
+    class ::Canoe
       validators.clear!
       validates_is_confirmed :name, :confirm => :name_check
       def name_check=(value)
@@ -89,7 +89,7 @@ describe DataMapper::Validate::ConfirmationValidator do
   end
 
   it "should not require that the confirmation field be a property" do
-    class Raft
+    class ::Raft
       include DataMapper::Resource
       attr_accessor :name, :name_confirmation
 

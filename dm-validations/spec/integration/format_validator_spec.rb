@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::FormatValidator do
   before :all do
-    class BillOfLading
+    class ::BillOfLading
       include DataMapper::Resource
 
       property :id,       Serial

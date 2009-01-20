@@ -8,7 +8,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     before(:all) do
-      class GreenSmoothie
+      class ::GreenSmoothie
         include DataMapper::Resource
         property :id, Integer, :serial => true
         property :name, String

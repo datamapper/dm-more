@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::URI do
   before(:all) do
-    class URITest
+    class ::URITest
       include DataMapper::Resource
 
       property :id, Integer, :serial => true

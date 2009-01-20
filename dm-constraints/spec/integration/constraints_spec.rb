@@ -10,7 +10,7 @@ ADAPTERS.each do |adapter|
     before do
       DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[adapter]
 
-      class Stable
+      class ::Stable
         include DataMapper::Resource
         include DataMapper::Constraints
 
@@ -21,7 +21,7 @@ ADAPTERS.each do |adapter|
         has n, :cows
       end
 
-      class Farmer
+      class ::Farmer
         include DataMapper::Resource
         include DataMapper::Constraints
 
@@ -31,7 +31,7 @@ ADAPTERS.each do |adapter|
         has n, :cows
       end
 
-      class Cow
+      class ::Cow
         include DataMapper::Resource
         include DataMapper::Constraints
 
@@ -94,10 +94,10 @@ ADAPTERS.each do |adapter|
 
       describe "when :constraint => :protect is given" do
         before do
-          class Farmer
+          class ::Farmer
             has n, :cows, :constraint => :protect
           end
-          class Cow
+          class ::Cow
             belongs_to :farmer
           end
         end
@@ -125,10 +125,10 @@ ADAPTERS.each do |adapter|
 
       describe "when :constraint => :destroy is given" do
         before do
-          class Farmer
+          class ::Farmer
             has n, :cows, :constraint => :destroy
           end
-          class Cow
+          class ::Cow
             belongs_to :farmer
           end
           DataMapper.auto_migrate!
@@ -159,10 +159,10 @@ ADAPTERS.each do |adapter|
 
       describe "when :constraint => :set_nil is given" do
         before do
-          class Farmer
+          class ::Farmer
             has n, :cows, :constraint => :set_nil
           end
-          class Cow
+          class ::Cow
             belongs_to :farmer
           end
           DataMapper.auto_migrate!
@@ -187,10 +187,10 @@ ADAPTERS.each do |adapter|
 
       describe "when :constraint => :skip is given" do
         before do
-          class Farmer
+          class ::Farmer
             has n, :cows, :constraint => :skip
           end
-          class Cow
+          class ::Cow
             belongs_to :farmer
           end
           DataMapper.auto_migrate!
@@ -219,7 +219,7 @@ ADAPTERS.each do |adapter|
 
         it "should raise an error" do
           lambda do
-            class Farmer
+            class ::Farmer
               has n, :cows, :constraint => :chocolate
             end
           end.should raise_error(ArgumentError)

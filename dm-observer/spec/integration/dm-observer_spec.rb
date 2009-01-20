@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Observer do
   before :all do
-    class Adam
+    class ::Adam
       include DataMapper::Resource
 
       property :id, Integer, :serial => true
@@ -33,7 +33,7 @@ describe DataMapper::Observer do
     end
     Adam.auto_migrate!
 
-    module Alcohol
+    module ::Alcohol
       class Beer
         include DataMapper::Resource
 
@@ -53,7 +53,7 @@ describe DataMapper::Observer do
     Alcohol::Beer.auto_migrate!
 
 
-    class AdamObserver
+    class ::AdamObserver
       include DataMapper::Observer
 
       observe Adam
@@ -72,7 +72,7 @@ describe DataMapper::Observer do
 
     end
 
-    class DrinkingObserver
+    class ::DrinkingObserver
       include DataMapper::Observer
 
       observe Adam, Alcohol::Beer

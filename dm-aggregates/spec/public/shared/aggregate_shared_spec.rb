@@ -1,14 +1,14 @@
 shared_examples_for 'It Has Setup Resources' do
   before :all do
     # A simplistic example, using with an Integer property
-    class Knight
+    class ::Knight
       include DataMapper::Resource
 
       property :id,   Serial
       property :name, String
     end
 
-    class Dragon
+    class ::Dragon
       include DataMapper::Resource
 
       property :id,                Serial
@@ -25,7 +25,7 @@ shared_examples_for 'It Has Setup Resources' do
     # A more complex example, with BigDecimal and Float properties
     # Statistics taken from CIA World Factbook:
     # https://www.cia.gov/library/publications/the-world-factbook/
-    class Country
+    class ::Country
       include DataMapper::Resource
 
       property :id,                  Serial

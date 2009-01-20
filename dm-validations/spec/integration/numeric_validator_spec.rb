@@ -31,7 +31,7 @@ describe DataMapper::Validate::NumericValidator do
   end
 
   it "should validate an integer value on the instance of a resource" do
-    class Bill
+    class ::Bill
       property :quantity_1, String, :auto_validation => false
       property :quantity_2, Integer, :auto_validation => false
 
@@ -68,7 +68,7 @@ describe DataMapper::Validate::NumericValidator do
 
   describe 'auto validation' do
     before :all do
-      class Fish
+      class ::Fish
         include DataMapper::Resource
         property :id,     Integer, :serial => true
         property :scales, Integer
@@ -78,7 +78,7 @@ describe DataMapper::Validate::NumericValidator do
     describe 'Float' do
       describe 'with default precision and scale' do
         before :all do
-          class CloudFish < Fish
+          class ::CloudFish < Fish
             property :average_weight, Float
           end
         end
@@ -122,7 +122,7 @@ describe DataMapper::Validate::NumericValidator do
 
       describe 'with default precision and scaleof 0' do
         before :all do
-          class RobotFish < Fish
+          class ::RobotFish < Fish
             property :average_weight, Float, :scale => 0
           end
         end
@@ -161,7 +161,7 @@ describe DataMapper::Validate::NumericValidator do
 
       describe 'with a precision of 4 and a scale of 2' do
         before :all do
-          class GoldFish < Fish
+          class ::GoldFish < Fish
             property :average_weight, Float, :precision => 4, :scale => 2
           end
         end
@@ -208,7 +208,7 @@ describe DataMapper::Validate::NumericValidator do
 
       describe 'with a precision of 2 and a scale of 2' do
         before :all do
-          class SilverFish < Fish
+          class ::SilverFish < Fish
             property :average_weight, Float, :precision => 2, :scale => 2
           end
         end

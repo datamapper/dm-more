@@ -1,16 +1,14 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-require 'fastercsv'
-
 describe DataMapper::Types::Csv, ".load" do
   it 'should parse the value if a string is provided' do
-    FasterCSV.should_receive(:parse).with('csv_string').once
+    CSV.should_receive(:parse).with('csv_string').once
     DataMapper::Types::Csv.load('csv_string', :property)
   end
 
   it 'should do nothing if the value is a string' do
-    FasterCSV.should_not_receive(:parse)
+    CSV.should_not_receive(:parse)
     DataMapper::Types::Csv.load([], :property).should == []
   end
 
@@ -26,7 +24,7 @@ describe DataMapper::Types::Csv, ".dump" do
   end
 
   it 'should do nothing if the value is a string' do
-    FasterCSV.should_not_receive(:generate)
+    CSV.should_not_receive(:generate)
     DataMapper::Types::Csv.dump('string', :property).should == 'string'
   end
 

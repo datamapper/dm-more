@@ -28,8 +28,8 @@ describe DataMapper::Serialize, '#to_csv' do
 
   it "should serialize a collection to CSV" do
     result = @collection.to_csv.gsub(/[[:space:]]+\n/, "\n")
-    result.to_a[0].split(',')[0..3].should == ['1','2','Betsy','Jersey']
-    result.to_a[1].split(',')[0..3].should == ['10','20','Berta','Guernsey']
+    result.split("\n")[0].split(',')[0..3].should == ['1','2','Betsy','Jersey']
+    result.split("\n")[1].split(',')[0..3].should == ['10','20','Berta','Guernsey']
   end
 
   describe "multiple repositories" do

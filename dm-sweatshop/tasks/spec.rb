@@ -8,7 +8,7 @@ begin
   desc 'Run specifications'
   Spec::Rake::SpecTask.new(:spec) do |t|
     t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
-    t.spec_files = Pathname.glob((ROOT + 'spec/**/*_spec.rb').to_s)
+    t.spec_files = Pathname.glob((ROOT + 'spec/**/*_spec.rb').to_s).map { |f| f.to_s }
 
     begin
       gem 'rcov', '~>0.8'

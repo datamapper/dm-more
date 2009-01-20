@@ -18,7 +18,7 @@ describe MotorLaunch do
   
   describe "with a value that is out of range bounds (too long)" do
     before :each do
-      @launch.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
+      @launch.name = 'a'
       @launch.valid?
     end
     
@@ -83,7 +83,7 @@ describe MotorLaunch do
 
 
   it "aliases :within for :in" do
-    class MotorLaunch
+    class ::MotorLaunch
       validators.clear!
       validates_length :name, :within => (3..5)
     end

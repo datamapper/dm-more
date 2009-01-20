@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 describe DataMapper::Validate::AcceptanceValidator do
   describe "with standard options" do
     before(:all) do
-      class SkimBat
+      class ::SkimBat
         include DataMapper::Resource
         property :id,        Integer, :serial => true
         property :sailyness, Boolean

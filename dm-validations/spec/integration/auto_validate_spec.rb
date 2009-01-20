@@ -114,7 +114,7 @@ describe "Automatic Validation from Property Definition" do
     end
     t = klass.new(:id => 1)
     t.should be_valid
-    t.name = 'Lip­smackin­thirst­quenchin­acetastin­motivatin­good­buzzin­cool­talkin­high­walkin­fast­livin­ever­givin­cool­fizzin'
+    t.name = 'a' * 51
     t.should_not be_valid
     t.errors.on(:name).should include('Name must be less than 50 characters long')
   end
@@ -269,7 +269,7 @@ describe "Automatic Validation from Property Definition" do
 
   describe 'for within validator' do
     before :all do
-      class LimitedBoat
+      class ::LimitedBoat
         include DataMapper::Resource
         property :id,       Integer,  :serial => true
         property :limited,  String,   :set => ['foo', 'bar', 'bang'], :default => 'foo'

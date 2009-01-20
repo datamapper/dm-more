@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::Enum do
   before(:all) do
-    class YamlTest
+    class ::YamlTest
       include DataMapper::Resource
 
       property :id, Serial
@@ -11,7 +11,7 @@ describe DataMapper::Types::Enum do
     end
     YamlTest.auto_migrate!
 
-    class SerializeMe
+    class ::SerializeMe
       attr_accessor :name
     end
   end

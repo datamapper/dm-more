@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'pathname'
 require 'iconv'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
@@ -5,7 +7,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 describe DataMapper::Types::Slug do
 
   before(:all) do
-    class SlugTest
+    class ::SlugTest
       include DataMapper::Resource
 
       property :id, Serial

@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate::MethodValidator do
   before(:all) do
-    class Ship
+    class ::Ship
       include DataMapper::Resource
       property :id, Integer, :key => true
       property :name, String

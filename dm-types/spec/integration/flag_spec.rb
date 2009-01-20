@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::Flag do
   before(:all) do
-    class Shirt
+    class ::Shirt
       include DataMapper::Resource
       property :id, Serial
       property :sizes, DM::Flag[:xs, :small, :medium, :large, :xl, :xxl]
