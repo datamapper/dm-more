@@ -137,8 +137,14 @@ end
 %w[ ci spec clean clobber check_manifest ].each do |command|
   task command do
     GEM_PATHS.each do |gem_name|
-      Dir.chdir(gem_name){ rake command }
+      Dir.chdir(gem_name){ rake "#{command}; true" }
     end
+  end
+end
+
+task :update_manifest do
+  GEM_PATHS.each do |gem_name|
+    Dir.chdir(gem_name){ rake 'check_manifest | patch; true' }
   end
 end
 
