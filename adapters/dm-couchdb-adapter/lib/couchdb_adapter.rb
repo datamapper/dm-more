@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
-gem 'dm-core', '~>0.9.10'
+gem 'dm-core', '~>0.9.11'
 require 'dm-core'
 begin
   gem "json"

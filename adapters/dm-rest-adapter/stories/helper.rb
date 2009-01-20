@@ -2,7 +2,7 @@ require 'pathname'
 require 'rubygems'
 require 'tempfile'
 
-gem 'dm-core', '~>0.9.10'
+gem 'dm-core', '~>0.9.11'
 require 'dm-core'
 
 gem 'rspec', '~>1.1.11'

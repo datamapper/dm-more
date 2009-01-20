@@ -3,13 +3,13 @@ require 'pathname'
 require 'rexml/document'
 require 'rubygems'
 
-gem 'dm-core', '~>0.9.10'
+gem 'dm-core', '~>0.9.11'
 require 'dm-core'
 
-gem 'extlib', '~>0.9.10'
+gem 'extlib', '~>0.9.11'
 require 'extlib'
 
-#gem 'dm-serializer', '~>0.9.10'
+#gem 'dm-serializer', '~>0.9.11'
 require 'dm-serializer'
 
 require Pathname(__FILE__).dirname + 'rest_adapter/version'
