@@ -1,3 +1,9 @@
+=== 0.9.10 / 2009-01-19
+
+* 1 minor enhancement:
+
+  * Updated to set the timestamp for new records
+
 === 0.9.9 / 2009-01-04
 
 * 1 bug fix:

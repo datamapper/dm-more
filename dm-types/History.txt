@@ -1,3 +1,15 @@
+=== 0.9.10 / 2009-01-19
+
+* 1 bug fix:
+
+  * Return empty array for a flag type property when value is nil or <= 0
+
+* 2 minor enhancements:
+
+  * Updated Csv, Json, Yaml types to use a Text primitive rather than
+    a String
+  * Allow Flag property to be nullable
+
 === 0.9.9 / 2009-01-04
 
 * 1 bug fix:

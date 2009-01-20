@@ -1,3 +1,19 @@
+=== 0.9.10 / 2009-01-19
+
+* 2 minor enhancements:
+
+  * Confirmed upload feature working
+  * Implemented multi-key fetch
+  * Return a Hash instead of Struct increasing performance
+
+* 4 bug fixes:
+
+  * Fixed conflict with to_json from dm-serializer
+  * Stop escaping the slash in auto_migrate to match new CouchDB
+    behavior
+  * Fixed lazy evaluation of views
+  * Internal fixes for CouchDB r731863
+
 === 0.9.9 / 2009-01-04
 
 * 1 bug fix:

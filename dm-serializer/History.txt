@@ -1,4 +1,8 @@
-=== 0.9.10 / Unreleased
+=== 0.9.10 / 2009-01-19
+
+* 1 minor enhancement:
+
+  * Don't emit XML prologue when using libxml or nokogiri
 
 * 1 bug fix:
 
