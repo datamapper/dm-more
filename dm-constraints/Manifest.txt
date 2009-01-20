@@ -6,6 +6,7 @@ Rakefile
 TODO
 lib/dm-constraints.rb
 lib/dm-constraints/data_objects_adapter.rb
+lib/dm-constraints/delete_constraint.rb
 lib/dm-constraints/mysql_adapter.rb
 lib/dm-constraints/postgres_adapter.rb
 lib/dm-constraints/version.rb
