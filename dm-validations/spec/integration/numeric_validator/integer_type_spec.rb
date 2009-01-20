@@ -81,7 +81,7 @@ describe City do
       @city.should_not be_valid
     end
   end
-  
+
 
   describe "with unknown foundation date" do
     before(:each) do
@@ -96,5 +96,5 @@ describe City do
       @city.valid?
       @city.errors.on(:founded_in).should include("Foundation year must be an integer")
     end
-  end  
+  end
 end

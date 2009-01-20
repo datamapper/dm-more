@@ -73,7 +73,7 @@ describe Country do
       @country.should_not be_valid
     end
   end
-  
+
 
   describe "with unknown area" do
     before(:each) do
@@ -88,5 +88,5 @@ describe Country do
       @country.valid?
       @country.errors.on(:area).should include("Please use integers to specify area")
     end
-  end  
+  end
 end

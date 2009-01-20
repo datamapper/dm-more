@@ -16,17 +16,17 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         def empty; ""     end
         def nil;   nil    end
       end
-  
+
       @pc = PlainClass.new
     end
-  
+
     it "should fail validation with empty, nil, or blank fields" do
       @pc.should_not be_valid
       @pc.errors.on(:empty).should    include("Empty must not be blank")
       @pc.errors.on(:nil).should      include("Nil must not be blank")
       @pc.errors.on(:accessor).should include("Accessor must not be blank")
     end
-  
+
     it "giving accessor a value should remove validation error" do
       @pc.accessor = "full"
       @pc.valid?

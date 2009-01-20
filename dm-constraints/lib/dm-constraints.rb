@@ -17,10 +17,10 @@ module DataMapper
     class Relationship
       include Extlib::Hook
       include DataMapper::Constraints::DeleteConstraint
-      
+
       attr_reader :delete_constraint
       OPTIONS << :constraint
-      
+
       # initialize is a private method in Relationship
       # and private methods can not be "advised" (hooked into)
       # in extlib.
@@ -33,13 +33,13 @@ end
 
 module DataMapper
   module Constraints
-    
+
     include DeleteConstraint
-    
+
     module ClassMethods
       include DeleteConstraint::ClassMethods
     end
-        
+
     def self.included(model)
       model.extend(ClassMethods)
       model.class_eval do
@@ -49,7 +49,7 @@ module DataMapper
         end
       end
     end
-    
+
   end
 
   class AutoMigrator

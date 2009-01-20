@@ -17,7 +17,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     #
 
     property :id,                 Integer, :serial => true
-    
+
     # operation name
     property :name,               String,  :auto_validation => false
 
@@ -25,7 +25,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     property :author_name,        String,  :auto_validation => false, :default => "Just another Ruby hacker"
     property :network_connection, Boolean, :auto_validation => false
     property :message,            Text,    :auto_validation => false
-    property :clean_working_copy, Boolean, :auto_validation => false    
+    property :clean_working_copy, Boolean, :auto_validation => false
 
     #
     # Validations
@@ -49,7 +49,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :author_name,        :when => :committing
     validates_present :committer_name,     :when => :committing
-    
+
     validates_present :message,            :when => :committing
     validates_present :network_connection, :when => [:pushing, :pulling], :message => {
       :pushing => "though git is advanced, it cannot push without network connectivity",

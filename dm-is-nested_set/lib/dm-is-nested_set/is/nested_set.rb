@@ -198,8 +198,8 @@ module DataMapper
             self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
             return false
           end
-          
-          
+
+
           DataMapper::Transaction.new(self.repository) do |transaction|
 
             ##
@@ -211,7 +211,7 @@ module DataMapper
               raise RecursiveNestingError if position > self.lft && position < self.rgt
               # find out how wide this node is, as we need to make a gap large enough for it to fit in
               gap = self.rgt - self.lft + 1
-              
+
               # make a gap at position, that is as wide as this node
               self.model.base_model.adjust_gap!(nested_set,position-1,gap)
 
@@ -219,7 +219,7 @@ module DataMapper
               self.reload_attributes(:lft,:rgt)
               old_position = self.lft
               offset = position - old_position
-              
+
               nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
               # close the gap this movement left behind.
               self.model.base_model.adjust_gap!(nested_set,old_position,-gap)

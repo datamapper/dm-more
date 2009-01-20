@@ -59,7 +59,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :name, :artist
   end
-  Artist.auto_migrate!  
+  Artist.auto_migrate!
   Album.auto_migrate!
 
 

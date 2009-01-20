@@ -15,13 +15,13 @@ describe MotorLaunch do
   before :each do
     @launch = MotorLaunch.new
   end
-  
+
   describe "with a value that is out of range bounds (too long)" do
     before :each do
       @launch.name = 'a'
       @launch.valid?
     end
-    
+
     it "is invalid" do
       @launch.should_not be_valid
     end
@@ -36,7 +36,7 @@ describe MotorLaunch do
       @launch.name = 'L'
       @launch.valid?
     end
-    
+
     it "is invalid" do
       @launch.should_not be_valid
     end
@@ -55,7 +55,7 @@ describe MotorLaunch do
       @launch.name = nil
       @launch.valid?
     end
-    
+
     it "is invalid" do
       @launch.should_not be_valid
     end
@@ -71,7 +71,7 @@ describe MotorLaunch do
       @launch.name = 'Lisp'
       @launch.valid?
     end
-    
+
     it "is valid" do
       @launch.should be_valid
     end

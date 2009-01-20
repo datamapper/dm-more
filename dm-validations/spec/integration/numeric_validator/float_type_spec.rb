@@ -83,7 +83,7 @@ describe BasketballPlayer do
       @mj.should be_valid
     end
   end
-  
+
 
   describe "with nil height" do
     before(:each) do
@@ -98,5 +98,5 @@ describe BasketballPlayer do
       @mj.valid?
       @mj.errors.on(:height).should include("Height must be a number")
     end
-  end  
+  end
 end

@@ -1,7 +1,7 @@
 This is a datamapper adapter to couchdb.
 
 NOTE: some functionality and their specs are based on functionality that is in
-edge couch but not in stable.  If you want everything to work, use edge.  
+edge couch but not in stable.  If you want everything to work, use edge.
 Otherwise, your milage may vary.  Good luck and let me know about any bugs.
 
 == Setup

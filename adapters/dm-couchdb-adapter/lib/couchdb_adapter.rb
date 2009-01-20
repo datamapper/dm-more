@@ -249,10 +249,10 @@ module DataMapper
       ##
       # Prepares a REST request to a temporary view. Though convenient for
       # development, "slow" views should generally be avoided.
-      # 
+      #
       # @param query<DataMapper::Query> the query
       # @return request<Net::HTTPRequest> a request object
-      # 
+      #
       # @api private
       def ad_hoc_request(query)
         if query.order.empty?
