@@ -6,7 +6,7 @@ require 'rubygems'
 gem 'dm-core', '~>0.9.10'
 require 'dm-core'
 
-gem 'extlib', '~>0.9.9'
+gem 'extlib', '~>0.9.10'
 require 'extlib'
 
 #gem 'dm-serializer', '~>0.9.10'
