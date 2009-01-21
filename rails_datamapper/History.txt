@@ -1,0 +1,3 @@
+=== 0.9.11 / not released
+
+  * Made a gem
