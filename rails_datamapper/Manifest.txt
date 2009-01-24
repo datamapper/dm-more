@@ -14,3 +14,5 @@ generators/dm_model/templates/unit_test.rb
 generators/rspec_dm_model/rspec_dm_model_generator.rb
 generators/rspec_dm_model/templates/model.rb
 generators/rspec_dm_model/templates/model_spec.rb
+generators/dm_install/dm_install_generator.rb
+generators/dm_install/templates/datamapper.rake
