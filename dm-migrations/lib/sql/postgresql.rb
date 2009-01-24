@@ -32,6 +32,10 @@ module SQL
       statement
     end
 
+    def create_table_statement(quoted_table_name)
+      "CREATE TABLE #{quoted_table_name}"
+    end
+
     class Table < SQL::Table
       def initialize(adapter, table_name)
         @adapter, @name = adapter, table_name

@@ -4,6 +4,14 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 ADAPTERS.each do |adapter|
   describe "Using Adapter #{adapter}," do
     describe DataMapper::Migration, "#create_table helper" do
+      before :all do
+        case adapter
+        when :sqlite3  then repository(adapter).adapter.extend(SQL::Sqlite3)
+        when :mysql    then repository(adapter).adapter.extend(SQL::Mysql)
+        when :postgres then repository(adapter).adapter.extend(SQL::Postgresql)
+        end
+      end
+
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
           column :id, Integer, :serial => true
@@ -46,6 +54,21 @@ ADAPTERS.each do |adapter|
         col.instance_eval("@type").should include("200")
       end
 
+      case adapter
+      when :mysql
+        it "should create an InnoDB database for MySQL" do
+          #can't get an exact == comparison here because character set and collation may differ per connection
+          @creator.to_sql.should match(/^CREATE TABLE `people` ENGINE = InnoDB CHARACTER SET \w+ COLLATE \w+ \(`id` serial PRIMARY KEY, `name` varchar\(50\), `long_string` VARCHAR\(200\)\)$/)
+        end
+      when :postgres
+        it "should output a CREATE TABLE statement when sent #to_sql" do
+          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" serial PRIMARY KEY, "name" varchar(50), "long_string" VARCHAR(200))}
+        end
+      when :sqlite3
+        it "should output a CREATE TABLE statement when sent #to_sql" do
+          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50), "long_string" VARCHAR(200))}
+        end
+      end
     end
 
     describe DataMapper::Migration, "#modify_table helper" do
