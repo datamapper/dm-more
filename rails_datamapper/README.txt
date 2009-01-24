@@ -8,6 +8,10 @@ config.gem "rails_datamapper"
 
 == Generators
 
+This will install the datamapper rake tasks:
+
+script/generate dm_install
+
 Two generators are added by default
 
 script/generate dm_model
