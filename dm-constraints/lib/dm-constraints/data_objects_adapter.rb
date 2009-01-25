@@ -14,7 +14,7 @@ module DataMapper
             foreign_keys  = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
 
             one_to_many_relationship = parent.relationships.values.select { |rel| rel.child_model == model }.first
-            delete_constraint_type = case one_to_many_relationship.delete_constraint
+            delete_constraint_type = case one_to_many_relationship.nil? ? :protect : one_to_many_relationship.delete_constraint
             when :protect, nil
               "NO ACTION"
             when :destroy, :destroy!

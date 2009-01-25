@@ -43,10 +43,22 @@ ADAPTERS.each do |adapter|
         belongs_to :farmer
       end
 
+      #Used to test a belongs_to association with no has() association
+      #on the other end
+      class ::Pig
+        include DataMapper::Resource
+        include DataMapper::Constraints
+
+        property :id,   Serial
+        property :name, String
+
+        belongs_to :farmer
+      end
+
       DataMapper.auto_migrate!
     end
 
-    it "is included when DataMapper::Searchable is loaded" do
+    it "is included when DataMapper::Constraints is loaded" do
       Cow.new.should be_kind_of(DataMapper::Constraints)
     end
 
@@ -217,6 +229,9 @@ ADAPTERS.each do |adapter|
         before do
         end
 
+        class ::Farmer
+        end
+
         it "should raise an error" do
           lambda do
             class ::Farmer
@@ -229,5 +244,40 @@ ADAPTERS.each do |adapter|
 
     end # describe 'constraint options'
 
+    describe "belongs_to without matching has association" do
+      it "should destroy the parent if there are no children in the association" do
+        @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
+        @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
+        @p1 = Pig.create(:name => "Bea", :farmer => @f2)
+        @f1.destroy.should == true
+      end
+      case adapter
+      when :mysql
+        it "should raise a MysqlError when destroying the parent if there are children in the association" do
+          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @p1 = Pig.create(:name => "Bea", :farmer => @f)
+          lambda {@f.destroy}.should raise_error(MysqlError)
+        end
+      when :postgres
+        it "should raise a PostgresError when destroying the parent if there are children in the association" do
+          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @p1 = Pig.create(:name => "Bea", :farmer => @f)
+          lambda {@f.destroy}.should raise_error(PostgresError)
+        end
+      else
+        it "should destroy the parent if there are children in the association and the adapter does not support constraints" do
+          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @p1 = Pig.create(:name => "Bea", :farmer => @f)
+          @f.destroy.should == true
+        end
+      end
+
+      it "the child should be destroyable" do
+        @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+        @p = Pig.create(:name => "Bea", :farmer => @f)
+        @p.destroy.should == true
+      end
+
+    end # describe 'belongs_to without matching has association'
   end # DataMapper::Constraints
 end # ADAPTERS.each
