@@ -24,7 +24,7 @@ script/generate rspec_dm_model --skip-migration
 
 To avoid any dependency on active record add this to your projects environment.rb
 
-config.frameworks -= [ :active_record ]  
+config.frameworks -= [ :active_record ]
 
 == Future
 I really should sort out migrations but with rails3 round the corner don't hold your breath
