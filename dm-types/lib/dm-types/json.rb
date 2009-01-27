@@ -39,5 +39,6 @@ module DataMapper
         end
       end
     end # class Json
+    JSON = Json
   end # module Types
 end # module DataMapper
