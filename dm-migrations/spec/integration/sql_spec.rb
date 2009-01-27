@@ -15,7 +15,7 @@ ADAPTERS.each do |adapter|
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
           column :id, Integer, :serial => true
-          column :name, 'varchar(50)'
+          column :name, 'varchar(50)', :nullable => false
           column :long_string, String, :size => 200
         end
       end
@@ -54,19 +54,23 @@ ADAPTERS.each do |adapter|
         col.instance_eval("@type").should include("200")
       end
 
+      it "should generate a NOT NULL column when :nullable is false" do
+        @creator.instance_eval("@columns")[1].type.should match(/NOT NULL/)
+      end
+
       case adapter
       when :mysql
         it "should create an InnoDB database for MySQL" do
           #can't get an exact == comparison here because character set and collation may differ per connection
-          @creator.to_sql.should match(/^CREATE TABLE `people` ENGINE = InnoDB CHARACTER SET \w+ COLLATE \w+ \(`id` serial PRIMARY KEY, `name` varchar\(50\), `long_string` VARCHAR\(200\)\)$/)
+          @creator.to_sql.should match(/^CREATE TABLE `people` ENGINE = InnoDB CHARACTER SET \w+ COLLATE \w+ \(`id` serial PRIMARY KEY, `name` varchar\(50\) NOT NULL, `long_string` VARCHAR\(200\)\)$/)
         end
       when :postgres
         it "should output a CREATE TABLE statement when sent #to_sql" do
-          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" serial PRIMARY KEY, "name" varchar(50), "long_string" VARCHAR(200))}
+          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" serial PRIMARY KEY, "name" varchar(50) NOT NULL, "long_string" VARCHAR(200))}
         end
       when :sqlite3
         it "should output a CREATE TABLE statement when sent #to_sql" do
-          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50), "long_string" VARCHAR(200))}
+          @creator.to_sql.should == %q{CREATE TABLE "people" ("id" INTEGER PRIMARY KEY AUTOINCREMENT, "name" varchar(50) NOT NULL, "long_string" VARCHAR(200))}
         end
       end
     end

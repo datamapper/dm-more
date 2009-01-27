@@ -58,7 +58,9 @@ module SQL
       def build_type(type_class)
         schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
         schema[:serial?] ||= schema[:serial]
-        schema[:nullable?] ||= schema[:nullable] || !schema[:not_null]
+        unless schema.has_key?(:nullable?)
+          schema[:nullable?] = schema.has_key?(:nullable) ? schema[:nullable] : !schema[:not_null]
+        end
         if type_class.is_a?(String)
           schema[:primitive] = type_class
         else
