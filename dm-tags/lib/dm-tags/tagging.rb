@@ -10,6 +10,8 @@ class Tagging
   belongs_to :tag
 
   def taggable
-    eval("#{taggable_type}.get!(#{taggable_id})") if taggable_type and taggable_id
+    if taggable_type and taggable_id
+      Object.const_get(taggable_type).send(:get!, taggable_id)
+    end
   end
 end
