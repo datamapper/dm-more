@@ -6,6 +6,7 @@ include DataMapper::Tags
 describe Tagging do
   before do
     @tagging = Tagging.new
+    @tagged_model =TaggedModel.create
   end
 
   it "should be a model which includes DataMapper::Resource" do
@@ -18,8 +19,6 @@ describe Tagging do
     @tagging.attributes.should have_key(:tag_id)
     @tagging.attributes.should have_key(:taggable_id)
     @tagging.attributes.should have_key(:taggable_type)
-    # @tagging.attributes.should have_key(:tagger_id)
-    # @tagging.attributes.should have_key(:tagger_type)
     @tagging.attributes.should have_key(:tag_context)
   end
 
@@ -42,10 +41,8 @@ describe Tagging do
 
   it "should have a method Tagging#taggable which returns the associated taggable instance" do
     @tagging.should respond_to(:taggable)
-    @tagging.taggable.should_not be
-    @tagging.taggable_id = 11111
-    @tagging.taggable_type = "TaggedModel"
-    TaggedModel.should_receive(:get!).with(11111)
-    @tagging.taggable
+    @tagging.taggable_id =  @tagged_model.id
+    @tagging.taggable_type = @tagged_model.class.to_s
+    @tagging.taggable.should == @tagged_model
   end
 end

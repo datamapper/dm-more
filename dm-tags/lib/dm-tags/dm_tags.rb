@@ -1,7 +1,9 @@
 require 'rubygems'
 
 gem 'dm-core', '~>0.9.11'
+gem 'dm-validations', '~>0.9.11'
 require 'dm-core'
+require 'dm-validations'
 
 module DataMapper
   module Resource
