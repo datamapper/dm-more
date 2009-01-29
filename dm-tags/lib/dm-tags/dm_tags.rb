@@ -24,10 +24,10 @@ module DataMapper
       def tagged_with(string, options = {})
         tag = Tag.first(:name => string)
         conditions = {}
-        conditions[:tag_id] = tag.id
-        conditions[:tag_context] = options[:on] if options.has_key?(:on)
-        conditions[:taggable_type] = self.to_s
-        Tagging.all(conditions).map { |tagging| tagging.taggable }
+        conditions['taggings.tag_id'] = tag.id
+        conditions['taggings.tag_context'] = options.delete(:on) if options[:on]
+        conditions.merge!(options)
+        all(conditions)
       end
 
       def taggable?
@@ -39,6 +39,19 @@ module DataMapper
       def has_tags_on(*associations)
         associations.flatten!
         associations.uniq!
+
+        class_eval do
+          has n, :taggings, :class_name => "Tagging", :child_key => [:taggable_id],
+          :taggable_type => self.to_s
+
+          before :destroy, :destroy_taggings unless respond_to?(:destroy_taggings)
+
+          def destroy_taggings
+            taggings.destroy!
+          end unless respond_to?(:destroy_taggings)
+
+          private :taggings, :taggings=, :destroy_taggings
+        end
 
         self.extend(DataMapper::Tags::SingletonMethods)
 
