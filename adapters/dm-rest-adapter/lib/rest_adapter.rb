@@ -150,36 +150,20 @@ module DataMapper
       def is_single_resource_query?(query)
         query.conditions.length == 1 && query.conditions.first.first == :eql && query.conditions.first[1].name == :id
       end
-
-      def http_put(uri, data = nil)
+ 
+      def run_verb(verb, uri, data = nil)
         request do |http|
-          request = Net::HTTP::Put.new(uri, data)
+          mod = Net::HTTP::module_eval(Inflection.camelize(verb))
+          request = mod.new(uri, 'Content-Type' => 'application/xml')
           request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
-          http.request(request)
+          http.request(request, data)
         end
       end
-
-      def http_post(uri, data)
-        request do |http|
-          request = Net::HTTP::Post.new(uri, data, 'Content-Type' => 'application/xml')
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
-          http.request(request)
-        end
-      end
-
-      def http_get(uri)
-        request do |http|
-          request = Net::HTTP::Get.new(uri)
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
-          http.request(request)
-        end
-      end
-
-      def http_delete(uri)
-        request do |http|
-          request = Net::HTTP::Delete.new(uri)
-          request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
-          http.request(request)
+      
+      # this is used to run the http verbs like http_post, http_put, http_delete etc.
+      def method_missing(method, *args)
+        if verb = method.to_s.match(/^http_(\w*)$/)
+          run_verb(verb.to_s.split("_").last, args[0], args[1])
         end
       end
 
