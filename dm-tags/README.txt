@@ -1,7 +1,6 @@
 = dm-tags
 
-http://dm-tags.rubyforge.org/
-http://github.com/bobby/dm-tags/
+http://github.com/datamapper/dm-more/tree/master
 
 == Description
 
@@ -61,6 +60,14 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
   MyModel.tagged_with('test', :on => 'tags') #=> [#<MyModel id=1>]
   MyModel.tagged_with('test', :on => 'skills') #=> [#<MyModel id=2>]
 
+
+  #Helper methods for text fields
+  model.tag_collection = "tag1, tag2, tag3"
+  model.save
+  model.tag_collection => "tag1, tag2, tag3"
+  model.tags
+  #=> [#<Tag id=1 name="tag1">, #<Tag id=2 name="tag2">, #<Tag id=3 name="tag3">]
+
   # Traditional 'tags only' tagging
 
   class TagsOnly
@@ -86,7 +93,7 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
 
 == Installation
 
-  git clone http://github.com/bobby/dm-tags
+  git clone http://github.com/datamapper/dm-more/tree/master
   cd dm-tags
   rake install
 

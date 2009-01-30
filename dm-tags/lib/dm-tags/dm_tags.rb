@@ -97,6 +97,21 @@ module DataMapper
 
               self.frozen_#{singular}_list = #{association}.map { |tag| tag.name }.join(',')
             end
+
+            ##
+            # Helper methods to make setting tags easier
+            # FIXME: figure out why calling #{singular}_list=(string) won't work
+            def #{singular}_collection=(string)
+              @#{singular}_list = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
+            end
+
+            ##
+            # Helper methods to make setting tags easier
+            #
+            def #{singular}_collection
+              #{association}.map { |tag| tag.name }.join(', ')
+            end
+
           RUBY
         end
       end

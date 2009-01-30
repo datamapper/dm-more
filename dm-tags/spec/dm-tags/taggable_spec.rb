@@ -51,6 +51,15 @@ describe "Taggable" do
     @taggable.skills.sort_by{|skill| skill.id}.should_not == [tag3, Tag.first(:name => 'tag4')]
   end
 
+  it "should set tags with a string, and return a string (form helpers)" do
+    @taggable = TaggedModel.new
+    tags_string = "tag-a, tag-b, tag-c"
+    @taggable.tag_collection = tags_string
+    @taggable.save
+    @taggable.tag_collection.should == tags_string
+    @taggable.tags.size.should == 3
+  end
+
   describe ".tagged_with" do
     it "should have a class method .tagged_with" do
       DefaultTaggedModel.should respond_to(:tagged_with)
