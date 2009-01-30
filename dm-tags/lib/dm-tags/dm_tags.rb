@@ -117,8 +117,7 @@ module DataMapper
             #
             def add_#{singular}(string)
               tag_array = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
-              @#{singular}_list ||= []
-              @#{singular}_list = (tag_array + @#{singular}_list)
+              @#{singular}_list = (tag_array + #{singular}_list)
             end
 
           RUBY

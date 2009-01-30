@@ -60,7 +60,7 @@ describe "Taggable" do
     @taggable.tags.size.should == 3
   end
 
-  it "should be able to add tags" do
+  it "should be able to add tags and not overwrite old tags" do
     @taggable = TaggedModel.new
     @taggable.add_tag("tag-1")
     @taggable.save
@@ -68,6 +68,11 @@ describe "Taggable" do
     @taggable.add_tag("tag-2, tag-3")
     @taggable.save
     @taggable.tags.size.should == 3
+    @taggable.add_tag("tag-4")
+    @taggable.tag_list.include?("tag-4").should be_true
+    @taggable.tag_list.include?("tag-1").should be_true
+    @taggable.save
+    @taggable.tags.size.should == 4
   end
 
   describe ".tagged_with" do
