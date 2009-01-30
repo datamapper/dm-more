@@ -9,7 +9,9 @@ class Tagging
 
   belongs_to :tag
 
-  validates_present :taggable_type, :taggable_id
+  if respond_to?(:validates_present)
+    validates_present :taggable_type, :taggable_id
+  end
 
   def taggable
     Object.const_get(taggable_type).send(:get!, taggable_id)
