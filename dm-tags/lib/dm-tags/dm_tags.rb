@@ -58,7 +58,7 @@ module DataMapper
           singular    = association.singular
 
           class_eval <<-RUBY
-            property :frozen_#{singular}_list, String
+            property :frozen_#{singular}_list, Text
 
             has n, :#{singular}_taggings, :class_name => "Tagging", :child_key => [:taggable_id], :taggable_type => self.to_s, :tag_context => "#{association}"
 
