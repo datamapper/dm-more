@@ -112,6 +112,15 @@ module DataMapper
               #{association}.map { |tag| tag.name }.join(', ')
             end
 
+            ##
+            # Like tag_collection= except it only add's tags
+            #
+            def add_#{singular}(string)
+              tag_array = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
+              @#{singular}_list ||= []
+              @#{singular}_list = (tag_array + @#{singular}_list)
+            end
+
           RUBY
         end
       end

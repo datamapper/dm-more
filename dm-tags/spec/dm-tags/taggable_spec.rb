@@ -60,6 +60,16 @@ describe "Taggable" do
     @taggable.tags.size.should == 3
   end
 
+  it "should be able to add tags" do
+    @taggable = TaggedModel.new
+    @taggable.add_tag("tag-1")
+    @taggable.save
+    @taggable.tags.size.should == 1
+    @taggable.add_tag("tag-2, tag-3")
+    @taggable.save
+    @taggable.tags.size.should == 3
+  end
+
   describe ".tagged_with" do
     it "should have a class method .tagged_with" do
       DefaultTaggedModel.should respond_to(:tagged_with)
