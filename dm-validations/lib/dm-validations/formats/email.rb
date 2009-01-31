@@ -1,3 +1,5 @@
+# encoding: binary
+
 module DataMapper
   module Validate
     module Format
