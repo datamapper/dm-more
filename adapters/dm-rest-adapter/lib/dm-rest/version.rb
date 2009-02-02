@@ -1,5 +1,3 @@
-module DataMapper
-  class RestAdapter
-    VERSION = '0.9.11'
-  end
+module DataMapperRest
+  VERSION = '0.9.12'
 end
