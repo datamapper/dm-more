@@ -1,19 +1,12 @@
-require 'pathname'
 require 'rubygems'
-require File.dirname(__FILE__)+'/../lib/rest_adapter'
+require File.dirname(__FILE__)+'/../lib/dm-rest'
 
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
-
+root = File.expand_path(File.dirname(__FILE__) + '/../')
 # use local dm-serializer if running from dm-more directly
-lib = ROOT.parent.parent.join('dm-serializer', 'lib').expand_path
-$LOAD_PATH.unshift(lib) if lib.directory?
+# lib = root.parent.parent.join('dm-serializer', 'lib').expand_path
+# $LOAD_PATH.unshift(lib) if lib.directory?
 
-DataMapper.setup(:default, {
-  :adapter  => 'rest',
-  :format => 'xml',
-  :host => 'localhost',
-  :port => '3001'
-})
+load File.expand_path(root + '/config/database.rb')
 
 class Book
   include DataMapper::Resource
