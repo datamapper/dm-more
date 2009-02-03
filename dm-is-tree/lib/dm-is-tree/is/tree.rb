@@ -59,13 +59,19 @@ module DataMapper
       #
       # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
       def is_tree(options = {})
-        options = { :class_name => name, :child_key => :parent_id }.merge(options) if Hash === options
+        
+        if options[:class_name]
+          warn '+options[:class_name]+ is deprecated, use :model instead'
+          options[:model] = options.delete(:class_name)
+        end
+        
+        options = { :model => name, :child_key => :parent_id }.merge(options) if Hash === options
         @tree_options = options
 
         include DataMapper::Is::Tree::InstanceMethods
         extend  DataMapper::Is::Tree::ClassMethods
 
-        assc_options = { :class_name => options[:class_name], :child_key => Array(options[:child_key]) }
+        assc_options = { :model => options[:model], :child_key => Array(options[:child_key]) }
         has_n_options = options[:order] ? { :order => Array(options[:order]) }.merge(assc_options) : assc_options
 
         belongs_to :parent, assc_options
@@ -123,7 +129,7 @@ module DataMapper
         #
         #   grandchild1.siblings # => [grandchild2]
         def siblings
-          generation - [self]
+          generation.reject{|r| r.key == self.key }
         end
 
         # Returns all children of the current node’s parent.
