@@ -6,7 +6,7 @@ describe DataMapper::Validate::AcceptanceValidator do
     before(:all) do
       class ::SkimBat
         include DataMapper::Resource
-        property :id,        Integer, :serial => true
+        property :id,        Serial
         property :sailyness, Boolean
         validates_is_accepted :sailyness
       end

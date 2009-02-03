@@ -16,7 +16,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Property
     #
 
-    property :id,                 Integer, :serial => true
+    property :id,                 Serial
 
     # operation name
     property :name,               String,  :auto_validation => false

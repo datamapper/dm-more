@@ -16,7 +16,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Properties
     #
 
-    property :id,   Integer, :serial => true
+    property :id,   Serial
     property :name, String,  :auto_validation => false
 
     #
@@ -43,7 +43,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Properties
     #
 
-    property :id,        Integer, :serial => true
+    property :id,        Serial
     property :name,      String,  :auto_validation => false
     property :artist_id, Integer, :index => :artist
 

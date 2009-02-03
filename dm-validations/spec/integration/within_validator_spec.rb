@@ -5,14 +5,14 @@ describe DataMapper::Validate::WithinValidator do
   before(:all) do
     class ::Telephone
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :type_of_number, String, :auto_validation => false
       validates_within :type_of_number, :set => ['Home', 'Work', 'Cell']
     end
 
     class ::Inf
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :gte, Integer, :auto_validation => false
       property :lte, Integer, :auto_validation => false
       property :between, Integer, :auto_validation => false
@@ -23,14 +23,14 @@ describe DataMapper::Validate::WithinValidator do
 
     class ::Receiver
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :holder, String, :auto_validation => false, :default => 'foo'
       validates_within :holder, :set => ['foo', 'bar', 'bang']
     end
 
     class ::Nullable
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :nullable, Integer, :auto_validation => false
       validates_within :nullable, :set => (1..5), :allow_nil => true
     end

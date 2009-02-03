@@ -5,7 +5,7 @@ describe DataMapper::Validate do
   before :all do
     class ::Yacht
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :name, String, :auto_validation => false
 
       validates_present :name
@@ -225,7 +225,7 @@ describe DataMapper::Validate do
   it "should execute a Proc when provided in an :if clause and run validation if the Proc returns true" do
     class ::Dingy
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :owner, String, :auto_validation => false
       validates_present :owner, :if => Proc.new{|resource| resource.owned?}
 
@@ -269,7 +269,7 @@ describe DataMapper::Validate do
   it "should execute a Proc when provided in an :unless clause and not run validation if the Proc returns true" do
     class ::RowBoat
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       validates_present :salesman, :unless => Proc.new{|resource| resource.sold?}
 
       def sold?
@@ -312,7 +312,7 @@ describe DataMapper::Validate do
   it "should perform automatic recursive validation #all_valid? checking all instance variables (and ivar.each items if valid)" do
     class ::Invoice
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :customer, String, :auto_validation => false
       validates_present :customer
 
@@ -331,7 +331,7 @@ describe DataMapper::Validate do
 
     class ::LineItem
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :price, String, :auto_validation => false
       validates_is_number :price
 
@@ -342,7 +342,7 @@ describe DataMapper::Validate do
 
     class ::Comment
       include DataMapper::Resource
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :note, String, :auto_validation => false
 
       validates_present :note
@@ -388,7 +388,7 @@ describe DataMapper::Validate do
 
       validates_present :title, :message => "Company name is a required field"
 
-      property :id,       Integer, :serial => true, :key => true
+      property :id,       Serial
       property :title,    String
       property :type,     Discriminator
     end

@@ -3,7 +3,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 class Bill # :nodoc:
   include DataMapper::Resource
-  property :id, Integer, :serial => true
+  property :id, Serial
   property :amount_1, String, :auto_validation => false
   property :amount_2, Float, :auto_validation => false
   validates_is_number :amount_1, :amount_2
@@ -11,7 +11,7 @@ end
 
 class Hillary # :nodoc:
   include DataMapper::Resource
-  property :id, Integer, :serial => true
+  property :id, Serial
   property :amount_1, Float, :auto_validation => false, :default => 0.01
   validates_is_number :amount_1
 end
@@ -70,7 +70,7 @@ describe DataMapper::Validate::NumericValidator do
     before :all do
       class ::Fish
         include DataMapper::Resource
-        property :id,     Integer, :serial => true
+        property :id,     Serial
         property :scales, Integer
       end
     end

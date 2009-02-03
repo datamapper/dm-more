@@ -6,7 +6,7 @@ describe DataMapper::Validate::ConfirmationValidator do
     class ::Canoe
       include DataMapper::Resource
 
-      property :id,                Integer, :serial => true
+      property :id,                Serial
       property :name,              String
       property :name_confirmation, String
       property :size,              Integer
@@ -19,7 +19,7 @@ describe DataMapper::Validate::ConfirmationValidator do
     class ::Transformer
       include DataMapper::Resource
 
-      property :id,                Integer, :serial => true
+      property :id,                Serial
       property :name,              String
       property :assoc,             String
 
@@ -93,7 +93,7 @@ describe DataMapper::Validate::ConfirmationValidator do
       include DataMapper::Resource
       attr_accessor :name, :name_confirmation
 
-      property :id, Integer, :serial => true
+      property :id, Serial
 
       validates_is_confirmed :name
     end
