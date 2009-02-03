@@ -2,17 +2,26 @@ require 'net/http'
 
 module DataMapperRest    
   # Stolen from ActiveResource
+  # TODO: Support https?
   class Connection
-    attr_accessor :uri
+    attr_accessor :uri, :format
     
-    def initialize(uri)
-      @uri = uri
+    def initialize(config)
+      create_uri(config)
+      @format = Format.new(config[:format])
+    end
+    
+    # grab the hash from the datamapper config and construct a real URI from it
+    # use it later to make lunch
+    def create_uri(config)
+      @uri = URI::HTTP.build(:host => config[:host], :port => config[:port])
+      @uri.userinfo = config[:login], config[:password] if config.has_key?(:login) && config.has_key?(:password)
     end
     
     def run_verb(verb, data = nil)
       request do |http|
         mod = Net::HTTP::module_eval(Inflection.camelize(verb))
-        request = mod.new(@uri, 'Content-Type' => 'application/xml')
+        request = mod.new(@uri, @format.header)
         request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
         result = http.request(request, data)
         
@@ -24,20 +33,20 @@ module DataMapperRest
     def method_missing(method, *args)
       @uri.path = "/#{args[0]}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(\w*)$/)
-        run_verb(verb.to_s.split("_").last, @uri + args[0], args[1])
+        run_verb(verb.to_s.split("_").last, args[0])
       end
     end
 
     def request(&block)
       res = nil
-      Net::HTTP.start(@uri[:host], @uri[:port].to_i) do |http|
+      Net::HTTP.start(@uri.host, @uri.port) do |http|
         res = yield(http)
       end
       res
     end
     
     # Handles response and error codes from remote service.
-    def self.handle_response(response)
+    def handle_response(response)
       case response.code.to_i
         when 301,302
           raise(Redirection.new(response))
