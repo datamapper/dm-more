@@ -33,7 +33,7 @@ describe DataMapper::Validate::ConfirmationValidator do
     tf.should be_valid
     tf.save.should == true
     tf = Transformer.first
-    tf.update_attributes(:assoc => "Autobot!").should == true
+    tf.update(:assoc => "Autobot!").should == true
   end
 
   it "should validate the confirmation of a value on an instance of a resource" do

@@ -21,6 +21,8 @@ describe DataMapper::Validate::ContextualValidators do
   end
 
   it "should raise an exception if you provide an invalid context to save" do
+    # FIXME it seems that our save doesnt pass on arguments to hooks no matter what
+    lambda { Kayak.new.check_validations(:invalid_context) }.should raise_error
     lambda { Kayak.new.save(:invalid_context) }.should raise_error
     lambda { Kayak.new.save(false) }.should raise_error
   end

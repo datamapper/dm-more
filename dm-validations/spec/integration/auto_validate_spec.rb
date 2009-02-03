@@ -109,7 +109,7 @@ describe "Automatic Validation from Property Definition" do
   it "should auto validate all strings for max length" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id, Serial
+      property :id, DataMapper::Types::Serial
       property :name, String
     end
     t = klass.new(:id => 1)
@@ -132,7 +132,7 @@ describe "Automatic Validation from Property Definition" do
   it "should not auto add any validators if the option :auto_validation => false was given" do
     klass = Class.new do
       include DataMapper::Resource
-      property :id,   Serial,                     :auto_validation => false
+      property :id,   DataMapper::Types::Serial,                     :auto_validation => false
       property :name, String,                     :nullable => false, :auto_validation => false
       property :bool, DataMapper::Types::Boolean, :nullable => false, :auto_validation => false
     end
@@ -271,7 +271,7 @@ describe "Automatic Validation from Property Definition" do
     before :all do
       class ::LimitedBoat
         include DataMapper::Resource
-        property :id,       Serial
+        property :id,       DataMapper::Types::Serial
         property :limited,  String,   :set => ['foo', 'bar', 'bang'], :default => 'foo'
       end
     end
@@ -296,7 +296,7 @@ describe "Automatic Validation from Property Definition" do
     it "should have correct error message" do
       custom_boat = Class.new do
         include DataMapper::Resource
-        property :id,   Serial
+        property :id,   DataMapper::Types::Serial
         property :name, String,  :nullable => false, :message => "This boat must have name"
       end
       boat = custom_boat.new
@@ -307,7 +307,7 @@ describe "Automatic Validation from Property Definition" do
     it "should have correct error messages" do
       custom_boat = Class.new do
         include DataMapper::Resource
-        property :id,   Serial
+        property :id,   DataMapper::Types::Serial
         property :name, String,  :nullable => false, :length => 5..20, :format => /^[a-z]+$/,
                  :messages => {
                    :presence => "This boat must have name",

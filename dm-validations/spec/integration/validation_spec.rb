@@ -116,7 +116,7 @@ describe DataMapper::Validate do
     end
 
     it "should run validations" do
-      Yacht.create.new_record?.should be_true
+      Yacht.create.new?.should be_true
     end
   end
 
