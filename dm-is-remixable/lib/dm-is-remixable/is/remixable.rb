@@ -90,7 +90,7 @@ module DataMapper
         #   cardinality <~Fixnum> 1, n, x ...
         #   remixable   <Symbol> plural of remixable; i.e. Comment => :comments
         #   options     <Hash>   options hash
-        #                       :class_name <String> Remixed Model name (Also creates a storage_name as tableize(:class_name))
+        #                       :model      <String> Remixed Model name (Also creates a storage_name as tableize(:model))
         #                                   This is the class that will be created from the Remixable Module
         #                                   The storage_name can be changed via 'enhance' in the class that is remixing
         #                                   Default: self.name.downcase + "_" + remixable.suffix.pluralize
@@ -110,9 +110,7 @@ module DataMapper
         #
         #   One-To-Many; Class-To-Remixable
         #
-        #   remix n, :addressables,
-        #     :class_name => "UserAddress",
-        #     :as         => "addresses"
+        #   remix n, :addressables, :model => "UserAddress", :as => "addresses"
         #
         #   Tables: users, user_addresses
         #   Classes: User, UserAddress
@@ -148,11 +146,16 @@ module DataMapper
           unless remixable_module.is_remixable?
             raise Exception, "#{remixable_module} is not remixable"
           end
+          
+          if options[:class_name]
+            warn '+options[:class_name]+ is deprecated, use :model instead'
+            options[:model] = options.delete(:class_name)
+          end
 
           #Merge defaults/options
           options = {
             :as         => nil,
-            :class_name => Extlib::Inflection.classify(self.name.snake_case + "_" + remixable_module.suffix.pluralize),
+            :model => Extlib::Inflection.classify(self.name.snake_case + "_" + remixable_module.suffix.pluralize),
             :for        => nil,
             :on         => nil,
             :unique     => false,
@@ -160,15 +163,15 @@ module DataMapper
           }.merge(options)
 
           #Make sure the class hasn't been remixed already
-          unless Object.full_const_defined?(Extlib::Inflection.classify(options[:class_name]))
+          unless Object.full_const_defined?(Extlib::Inflection.classify(options[:model]))
 
             #Storage name of our remixed model
-            options[:table_name] = Extlib::Inflection.tableize(options[:class_name])
+            options[:table_name] = Extlib::Inflection.tableize(options[:model])
 
             #Other model to mix with in case of M:M through Remixable
             options[:other_model] = options[:for] || options[:on]
 
-            DataMapper.logger.info "Generating Remixed Model: #{options[:class_name]}"
+            DataMapper.logger.info "Generating Remixed Model: #{options[:model]}"
             model = generate_remixed_model(remixable_module, options)
 
             # map the remixable to the remixed model
@@ -197,7 +200,7 @@ module DataMapper
               remix_one_to_many cardinality, model, options
             end
           else
-            DataMapper.logger.warn "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:class_name]}"
+            DataMapper.logger.warn "#{__FILE__}:#{__LINE__} warning: already remixed constant #{options[:model]}"
           end
         end
 
@@ -227,8 +230,8 @@ module DataMapper
         #
         #   class Article
         #     include DataMapper::Resource
-        #     remix n, :taggings, :for => User, :class_name => "UserArticleTagging"
-        #     remix n, :taggings, :for => Bot,  :class_name => "BotArticleTagging"
+        #     remix n, :taggings, :for => User, :model => "UserArticleTagging"
+        #     remix n, :taggings, :for => Bot,  :model => "BotArticleTagging"
         #
         #     enhance :taggings, "UserArticleTagging" do
         #       property :updated_at, DateTime
@@ -254,7 +257,7 @@ module DataMapper
           unless model.nil?
             model.class_eval &block
           else
-            raise Exception, "#{remixable} must be remixed with :class_name option as #{remixable_model} before it can be enhanced"
+            raise Exception, "#{remixable} must be remixed with :model option as #{remixable_model} before it can be enhanced"
           end
         end
 
@@ -285,7 +288,7 @@ module DataMapper
         #   model       <Class> remixed model that 'self' is relating to
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
-          self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
+          self.has cardinality, (options[:as] || options[:table_name]).to_sym, :model => model.name
           model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :nullable => false
           model.belongs_to belongs_to_name(self.name)
         end
@@ -306,7 +309,7 @@ module DataMapper
 
           # Is M:M between two different classes or the same class
           unless self.name == options[:other_model].name
-            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
+            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :model => model.name
             options[:other_model].has cardinality, options[:table_name].intern
 
             model.belongs_to belongs_to_name(self.name)
@@ -314,9 +317,9 @@ module DataMapper
           else
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
 
-            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :class_name => model.name
+            self.has cardinality, (options[:as] || options[:table_name]).to_sym, :model => model.name
             model.belongs_to belongs_to_name(self.name)
-            model.belongs_to options[:via].intern, :class_name => options[:other_model].name, :child_key => ["#{options[:via]}_id".intern]
+            model.belongs_to options[:via].intern, :model => options[:other_model].name, :child_key => ["#{options[:via]}_id".intern]
           end
         end
 
@@ -335,7 +338,7 @@ module DataMapper
           end
 
           #Give remixed model a name and create its constant
-          model = Object.full_const_set(options[:class_name], klass)
+          model = Object.full_const_set(options[:model], klass)
 
           #Get instance methods & validators
           model.send(:include,remixable)

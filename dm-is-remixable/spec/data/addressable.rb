@@ -4,7 +4,7 @@ module Addressable
   is :remixable,
     :suffix => "address"
 
-  property :id,         Integer, :key => true, :serial => true
+  property :id,         Serial
 
   property :address1,   String, :length => 255
   property :address2,   String, :length => 255

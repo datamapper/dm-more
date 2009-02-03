@@ -127,7 +127,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it "should create a storage name based on the class name" do
-
+      puts Article.remixables[:image][:article_image][:model].inspect
+      puts Article.remixables[:image][:article_image][:model].storage_names.inspect
+      # FIXME .. storage_name is set correctly ({:sqlite3=>"article_images"}), 
+      # but default does not route to sqlite3 because model has been created 
+      # after spec-setup?
       Article.remixables[:image][:article_image][:model].storage_names[:default].should == "article_images"
       User.remixables[:billable][:account][:model].storage_names[:default].should == "accounts"
     end

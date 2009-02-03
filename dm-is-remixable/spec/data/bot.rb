@@ -6,9 +6,7 @@ require Pathname(__FILE__).dirname / "rating"
 class Bot
   include DataMapper::Resource
 
-  property :id,             Integer,
-    :key          => true,
-    :serial       => true
+  property :id, Serial
 
   property :bot_name,     String,
     :nullable     => false,

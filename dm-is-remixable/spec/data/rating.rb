@@ -1,7 +1,6 @@
 module My
   module Nested
     module Remixable
-
       module Rating
 
         def self.included(base)
@@ -14,8 +13,7 @@ module My
 
         # properties
 
-        property :id,      Integer, :serial => true
-
+        property :id, Integer, :key => true, :serial => true #Serial
         property :user_id, Integer, :nullable => false
         property :rating,  Integer, :nullable => false, :default => 0
 
@@ -31,7 +29,6 @@ module My
         end
 
       end
-
     end
   end
 end

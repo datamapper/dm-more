@@ -3,7 +3,7 @@ module Image
 
   is :remixable
 
-  property :id,           Integer, :key => true, :serial => true
+  property :id,           Serial
   property :description,  String
   property :path,         String
 

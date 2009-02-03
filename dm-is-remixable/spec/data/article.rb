@@ -9,7 +9,7 @@ require Pathname(__FILE__).dirname / "tag"
 class Article
   include DataMapper::Resource
 
-  property :id, Integer, :key => true, :serial => true
+  property :id, Serial
   property :title, String
   property :url, String
 
@@ -22,9 +22,9 @@ class Article
 
   remix n, "My::Nested::Remixable::Rating", :as => :ratings
 
-  remix n, :taggable, :as => "user_taggings", :for => "User", :class_name => "UserTagging"
+  remix n, :taggable, :as => "user_taggings", :for => "User", :model => "UserTagging"
 
-  remix n, :taggable, :as => "bot_taggings", :for => "Bot", :class_name => "BotTagging"
+  remix n, :taggable, :as => "bot_taggings", :for => "Bot", :model => "BotTagging"
 
   enhance :viewables do
     belongs_to :user

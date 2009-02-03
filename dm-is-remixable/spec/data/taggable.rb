@@ -7,11 +7,8 @@ module Taggable
 
   is :remixable
 
-  property :id, Integer, :key => true, :serial => true
+  property :id, Serial
   property :tag_id, Integer
-
-
-
 
   module ClassMethods
 

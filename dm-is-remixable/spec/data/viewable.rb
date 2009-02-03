@@ -4,7 +4,7 @@ module Viewable
   is :remixable,
     :suffix => "view"
 
-  property :id, Integer, :key => true, :serial => true
+  property :id, Serial
 
   property :created_at, DateTime
   property :ip, String
