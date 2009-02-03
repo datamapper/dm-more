@@ -3,7 +3,8 @@ require 'yaml'
 module DataMapper
   module Types
     class Yaml < DataMapper::Type
-      primitive Text
+      primitive String
+      size 65535
       lazy true
 
       def self.load(value, property)

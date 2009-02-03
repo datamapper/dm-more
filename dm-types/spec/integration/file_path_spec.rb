@@ -6,7 +6,7 @@ describe DataMapper::Types::FilePath do
     class ::FilePathTest
       include DataMapper::Resource
 
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :path, FilePath
     end
     FilePathTest.auto_migrate!
