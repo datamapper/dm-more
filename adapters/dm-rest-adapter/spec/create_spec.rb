@@ -14,7 +14,7 @@ describe 'A REST adapter' do
     end
 
     it 'should make an HTTP Post' do
-      @adapter.should_receive(:http_post).with('/books.xml', @book.to_xml)
+      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml)
       @book.save
     end
   end
