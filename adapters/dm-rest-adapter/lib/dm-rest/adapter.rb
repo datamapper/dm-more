@@ -36,7 +36,7 @@ module DataMapperRest
     # TODO: Need to account for query.conditions (i.e., [[:eql, #<Property:Book:id>, 1]] for books/1)
     def read_many(query)
       resource_name = Inflection.underscore(query.model.name)
-      Collection.new(query) do |collection|
+      ::DataMapper::Collection.new(query) do |collection|
         case query.conditions
         when []
           resources_meta = read_set_all(repository, query, resource_name)
