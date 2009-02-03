@@ -8,13 +8,15 @@ describe DataMapper::Serialize, '#to_csv' do
 
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
+    
+    resources = [
+      {:id => 1, :composite => 2, :name => 'Betsy', :breed => 'Jersey'},
+      {:id => 10, :composite => 20, :name => 'Berta', :breed => 'Guernsey'}
+    ]
+    
+    @collection = DataMapper::Collection.new(query, resources)
 
-    @collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([10, 20, 'Berta', 'Guernsey'])
-    end
-
-    @empty_collection = DataMapper::Collection.new(query) {}
+    @empty_collection = DataMapper::Collection.new(query)
   end
 
   it "should serialize a resource to CSV" do
@@ -23,6 +25,7 @@ describe DataMapper::Serialize, '#to_csv' do
     peter.composite = 344
     peter.name = 'Peter'
     peter.breed = 'Long Horn'
+
     peter.to_csv.chomp.split(',')[0..3].should == ['44','344','Peter','Long Horn']
   end
 

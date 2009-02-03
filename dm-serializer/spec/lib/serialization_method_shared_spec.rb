@@ -32,10 +32,14 @@ share_examples_for 'A serialization method that also serializes core classes' do
 
   it 'serializes an array of collections' do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([89, 34, 'Berta', 'Guernsey'])
-    end
+    
+    resources = [
+      Cow.load([1, 2, 'Betsy', 'Jersey'],query),
+      Cow.load([89, 34, 'Berta', 'Guernsey'],query)
+    ]
+    
+    collection = DataMapper::Collection.new(query, resources)
+    
     result = @harness.test([collection])
     result[0][1].values_at("id", "composite", "name", "breed").should ==
       [89, 34, "Berta", "Guernsey"]

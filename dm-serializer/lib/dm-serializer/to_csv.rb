@@ -20,6 +20,7 @@ module DataMapper
     def to_csv(writer = '')
       CSV.generate(writer) do |csv|
         row = []
+        puts self.class.properties(repository.name).inspect
         self.class.properties(repository.name).each do |property|
           row << send(property.name).to_s
         end
