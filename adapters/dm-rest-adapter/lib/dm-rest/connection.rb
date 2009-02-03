@@ -1,11 +1,13 @@
 require 'net/http'
 
 module DataMapperRest    
-  # Stolen from ActiveResource
+  # Somewhat stolen from ActiveResource
   # TODO: Support https?
   class Connection
     attr_accessor :uri, :format
     
+    # Config is a hash with resource uri info ie. 
+    # {:adapter  => 'rest', :format => 'xml', :host => 'localhost', :port => '4000', :login => 'admin', :password => 'secret'}
     def initialize(config)
       create_uri(config)
       @format = Format.new(config[:format])
@@ -19,6 +21,7 @@ module DataMapperRest
     end
     
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
+    # TODO: handle nested resources
     def method_missing(method, *args)
       @uri.path = "/#{args[0]}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(\w*)$/)
