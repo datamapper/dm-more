@@ -9,6 +9,7 @@ require 'dm-serializer'
 require 'dm-rest/version'
 require 'dm-rest/adapter'
 require 'dm-rest/connection'
+require 'dm-rest/formats'
 require 'dm-rest/exceptions'
 
 DataMapper::Adapters::RestAdapter = DataMapperRest::Adapter
