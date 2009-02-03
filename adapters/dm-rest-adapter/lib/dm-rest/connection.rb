@@ -22,7 +22,7 @@ module DataMapperRest
       request do |http|
         mod = Net::HTTP::module_eval(Inflection.camelize(verb))
         request = mod.new(@uri, @format.header)
-        request.basic_auth(@uri[:login], @uri[:password]) unless @uri[:login].blank?
+        request.basic_auth(@uri.user, @uri.password) unless @uri[:login].blank?
         result = http.request(request, data)
         
         handle_response(result)
@@ -33,7 +33,7 @@ module DataMapperRest
     def method_missing(method, *args)
       @uri.path = "/#{args[0]}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(\w*)$/)
-        run_verb(verb.to_s.split("_").last, args[0])
+        run_verb(verb.to_s.split("_").last, args[1])
       end
     end
 
