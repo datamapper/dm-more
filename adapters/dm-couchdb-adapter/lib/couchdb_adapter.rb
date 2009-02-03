@@ -3,6 +3,10 @@ require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
 gem 'dm-core', '>=0.10.0'
 require 'dm-core'
+
+gem 'data_objects', '~>0.9.12'
+require 'data_objects'
+
 begin
   gem "json"
   require "json/ext"
