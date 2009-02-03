@@ -30,8 +30,8 @@ class Cow
   property :name,      String
   property :breed,     String
 
-  has n, :baby_cows, :class_name => 'Cow'
-  belongs_to :mother_cow, :class_name => 'Cow'
+  has n, :baby_cows, :model => 'Cow'
+  belongs_to :mother_cow, :model => 'Cow'
 end
 
 require "benchwarmer"

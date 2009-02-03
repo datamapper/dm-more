@@ -7,7 +7,7 @@ class Planet
   # Sorry these associations don't make any sense
   # I just needed a many-to-many association to test against
   has n, :friended_planets
-  has n, :friend_planets, :through => :friended_planets, :class_name => 'Planet'
+  has n, :friend_planets, :through => :friended_planets, :model => 'Planet'
 
   def category
     case self.name.downcase
@@ -29,5 +29,5 @@ class FriendedPlanet
   property :friend_planet_name, String, :key => true
 
   belongs_to :planet, :child_key => [:planet_name]
-  belongs_to :friend_planet, :class_name => 'Planet', :child_key => [:friend_planet_name]
+  belongs_to :friend_planet, :model => 'Planet', :child_key => [:friend_planet_name]
 end
