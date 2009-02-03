@@ -1,6 +1,12 @@
 require 'pathname'
 require 'rubygems'
 
+gem 'dm-core', '>=0.10.0'
+require 'dm-core'
+
+gem 'rspec', '~>1.1.11'
+require 'spec'
+
 ROOT = Pathname(__FILE__).dirname.parent.expand_path
 
 # use local dm-serializer if running from dm-more directly

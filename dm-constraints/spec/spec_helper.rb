@@ -4,7 +4,7 @@ require 'rubygems'
 gem 'rspec', '~>1.1.11'
 require 'spec'
 
-gem 'dm-core', '~>0.9.11'
+gem 'dm-core', '>=0.10.0'
 require 'dm-core'
 
 ADAPTERS = []

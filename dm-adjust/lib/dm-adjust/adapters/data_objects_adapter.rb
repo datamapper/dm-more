@@ -1,6 +1,6 @@
 module DataMapper
   module Adapters
-    class DataObjectsAdapter
+    class DataObjectsAdapter < AbstractAdapter
       def adjust(attributes, query)
         statement = adjust_statement(attributes.keys, query)
         bind_values = attributes.values + query.bind_values
@@ -12,10 +12,12 @@ module DataMapper
 
         def adjust_statement(properties, query)
           repository = query.repository
+          
+          qualify = query.links.any?
 
-          statement = "UPDATE #{quote_table_name(query.model.storage_name(repository.name))}"
+          statement = "UPDATE #{quote_name(query.model.storage_name(repository.name))}"
           statement << " SET #{set_adjustment_statement(repository, properties)}"
-          statement << " WHERE #{conditions_statement(query)}" if query.conditions.any?
+          statement << " WHERE #{where_statement(query.conditions, qualify)}" if query.conditions.any?
           statement
         rescue => e
            DataMapper.logger.error("QUERY INVALID: #{query.inspect} (#{e})")
@@ -23,7 +25,7 @@ module DataMapper
         end
 
         def set_adjustment_statement(repository, properties)
-          properties.map { |p| [quote_column_name(p.field(repository.name))] * 2 * " = " + " + (?)" } * ", "
+          properties.map { |p| [quote_name(p.field)] * 2 * " = " + " + (?)" } * ", "
         end
 
       end # module SQL

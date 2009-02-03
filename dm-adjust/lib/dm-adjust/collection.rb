@@ -1,6 +1,6 @@
 module DataMapper
   class Collection
-
+    
     def adjust(attributes = {}, reload = false)
       raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
     end
@@ -24,8 +24,11 @@ module DataMapper
       model.properties(repository.name).slice(*attributes.keys).each do |property|
         adjust_attributes[property] = attributes[property.name] if property
       end
-
-      each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save } if loaded?
+      
+      if loaded?
+        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save } 
+        return true
+      end
 
       # if none of the attributes that are adjusted is part of the collection-query
       # there is no need to load the collection (it will not change after adjustment)
@@ -44,11 +47,10 @@ module DataMapper
         end
       end
 
-      repository.adjust(adjust_attributes,scoped_query)
+      repository.adjust(adjust_attributes,scoped_query({}))
 
       # Reload affected objects in identity-map. if collection was affected, dont use the scope.
       (altered ? model : self).all(reload_query).reload(:fields => attributes.keys) if reload_query && reload_query.any?
-
       # if preload was set to false, and collection was affected by updates,
       # something is now officially borked. We'll try the best we can (still many cases this is borked for)
       query.conditions.each do |c|
@@ -56,7 +58,7 @@ module DataMapper
           case c[2]
             when Numeric then c[2] += adjustment
             when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
-          end if adjustment = adjust_attributes[c[1]]
+          end
         end
       end if altered
 
