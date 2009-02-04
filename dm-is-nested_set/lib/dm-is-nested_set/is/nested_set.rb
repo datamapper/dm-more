@@ -21,8 +21,8 @@ module DataMapper
         # be cut down to 1 instead of 2 queries. this would be the other way, but seems hackish:
         # options[:child_key].each{|pname| property(pname, Integer) unless properties.detect{|p| p.name == pname}}
 
-        belongs_to :parent,   :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
-        has n,     :children, :class_name => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+        belongs_to :parent,   :model => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+        has n,     :children, :model => self.name, :child_key => options[:child_key], :order => [:lft.asc]
 
         before :create do
           if !self.parent
