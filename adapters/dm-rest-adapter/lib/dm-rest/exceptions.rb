@@ -44,6 +44,9 @@ module DataMapperRest
   # 409 Conflict
   class ResourceConflict < ClientError; end # :nodoc:
 
+  # 422
+  class ResourceInvalid < ClientError; end # :nodoc:
+
   # 5xx Server Error
   class ServerError < ConnectionError; end # :nodoc:
 
