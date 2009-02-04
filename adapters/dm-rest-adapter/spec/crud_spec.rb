@@ -14,19 +14,21 @@ describe 'A REST adapter' do
     end
 
     it 'should make an HTTP Post' do
-      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml)
+      @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml)
       @book.save
-    end
+    end    
   end
 
   describe 'when deleting an existing resource' do
     before do
       @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
       @book.stub!(:new_record?).and_return(false)
+      @book.stub!(:id).and_return(1)
     end
 
     it 'should do an HTTP DELETE' do
-      @adapter.should_receive(:http_delete)
+      # TODO: Is it good returning receiving nil?                      
+      @adapter.connection.should_receive(:http_delete)
       @book.destroy
     end
 
@@ -50,7 +52,7 @@ describe 'A REST adapter' do
         @id = 1
         @response = mock(Net::HTTPResponse)
         @response.stub!(:body).and_return(book_xml)
-        @adapter.stub!(:http_get).and_return(@response)
+        @adapter.connection.stub!(:http_get).and_return(@response)
       end
 
       it 'should return the resource' do
@@ -61,7 +63,7 @@ describe 'A REST adapter' do
       end
 
       it 'should do an HTTP GET' do
-        @adapter.should_receive(:http_get).with('/books/1.xml').and_return(@response)
+        @adapter.connection.should_receive(:http_get).with('/books/1.xml').and_return(@response)
         Book.get(@id)
       end
 
@@ -77,7 +79,7 @@ describe 'A REST adapter' do
         @response = mock(Net::HTTPNotFound)
         @response.stub!(:content_type).and_return('text/html')
         @response.stub!(:body).and_return('<html></html>')
-        @adapter.stub!(:http_get).and_return(@response)
+        @adapter.connection.stub!(:http_get).and_return(@response)
         id = 4200
         Book.get(id).should be_nil
       end
@@ -107,7 +109,7 @@ describe 'A REST adapter' do
       BOOK
       @response = mock(Net::HTTPResponse)
       @response.stub!(:body).and_return(books_xml)
-      @adapter.stub!(:http_get).and_return(@response)
+      @adapter.connection.stub!(:http_get).and_return(@response)
     end
 
     it 'should get a non-empty list' do
@@ -119,7 +121,7 @@ describe 'A REST adapter' do
     end
 
     it 'should do an HTTP GET' do
-      @adapter.should_receive(:http_get).and_return(@response)
+      @adapter.connection.should_receive(:http_get).and_return(@response)
       Book.first
     end
   end
@@ -146,9 +148,8 @@ describe 'A REST adapter' do
       end
     end
 
-    it 'should do an HTTP PUT' do
-      adapter = @repository.adapter #DataMapper::Repository.adapters[:default]
-      adapter.should_receive(:http_put).with('/books/42.xml', @book.to_xml)
+    it 'should do an HTTP PUT' do                                                            
+      @adapter.connection.should_receive(:http_put).with('/books/42.xml', @book.to_xml)
       @repository.scope do
         @book.save
       end
