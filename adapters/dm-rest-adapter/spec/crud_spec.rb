@@ -7,6 +7,31 @@ describe 'A REST adapter' do
     @adapter = DataMapper::Repository.adapters[:default]
   end
 
+  describe 'when saving a resource' do
+
+    before do
+      @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
+    end
+
+    it 'should make an HTTP Post' do
+      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml)
+      @book.save
+    end
+  end
+
+  describe 'when deleting an existing resource' do
+    before do
+      @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
+      @book.stub!(:new_record?).and_return(false)
+    end
+
+    it 'should do an HTTP DELETE' do
+      @adapter.should_receive(:http_delete)
+      @book.destroy
+    end
+
+  end
+
   describe 'when getting one resource' do
 
     describe 'if the resource exists' do
@@ -98,4 +123,35 @@ describe 'A REST adapter' do
       Book.first
     end
   end
+
+  describe 'when updating an existing resource' do
+    before do
+      @books_xml = <<-XML
+      <book>
+        <id type='integer'>42</id>
+        <title>Starship Troopers</title>
+        <author>Robert Heinlein</author>
+        <created-at type='datetime'>2008-06-08T17:02:28Z</created-at>
+      </book>
+      XML
+      repository do |repo|
+        @repository = repo
+        @book = Book.new(:id => 42,
+                         :title => 'Starship Troopers',
+                         :author => 'Robert Heinlein',
+                         :created_at => DateTime.parse('2008-06-08T17:02:28Z'))
+        @book.instance_eval { @new_record = false }
+        @repository.identity_map(Book)[@book.key] = @book
+        @book.title = "Mary Had a Little Lamb"
+      end
+    end
+
+    it 'should do an HTTP PUT' do
+      adapter = @repository.adapter #DataMapper::Repository.adapters[:default]
+      adapter.should_receive(:http_put).with('/books/42.xml', @book.to_xml)
+      @repository.scope do
+        @book.save
+      end
+    end
+  end  
 end
