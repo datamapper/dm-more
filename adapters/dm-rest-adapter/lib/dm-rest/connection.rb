@@ -4,6 +4,7 @@ module DataMapperRest
   # Somewhat stolen from ActiveResource
   # TODO: Support https?
   class Connection
+    include Extlib
     attr_accessor :uri, :format
     
     # Config is a hash with resource uri info ie. 
@@ -21,7 +22,7 @@ module DataMapperRest
     end
     
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
-    # TODO: handle nested resources
+    # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
       @uri.path = "/#{args[0]}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(\w*)$/)
@@ -34,8 +35,8 @@ module DataMapperRest
       def run_verb(verb, data = nil)
         request do |http|
           mod = Net::HTTP::module_eval(Inflection.camelize(verb))
-          request = mod.new(@uri, @format.header)
-          request.basic_auth(@uri.user, @uri.password) unless @uri[:login].blank?
+          request = mod.new(@uri.to_s, @format.header)
+          request.basic_auth(@uri.user, @uri.password) if @uri.userinfo
           result = http.request(request, data)
         
           handle_response(result)
