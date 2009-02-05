@@ -152,11 +152,6 @@ describe 'A REST adapter' do
     it 'should receive one Resource for each entity in the XML' do
       Book.all.size.should == 2
     end
-
-    it 'should do an HTTP GET' do
-      @adapter.connection.should_receive(:http_get).and_return(@response)
-      Book.first
-    end
   end
 
   describe 'when updating an existing resource' do
