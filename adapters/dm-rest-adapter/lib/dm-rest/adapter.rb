@@ -69,9 +69,6 @@ module DataMapperRest
 
         response = connection.http_get("/#{resource_name.pluralize}/#{id}.xml")
 
-        # KLUGE: Rails returns HTML if it can't find a resource.  A properly RESTful app would return a 404, right?
-        return nil if response.is_a? Net::HTTPNotFound || response.content_type == "text/html"
-
         data = response.body
         resource_meta = parse_resource(data, query.model, query)
       end
