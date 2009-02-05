@@ -159,16 +159,28 @@ describe 'A REST adapter' do
       BOOK
       @response = mock(Net::HTTPResponse)
       @response.stub!(:body).and_return(books_xml)
-      @adapter.connection.stub!(:http_get).and_return(@response)
     end
 
     it 'should get a non-empty list' do
+      @adapter.connection.stub!(:http_get).and_return(@response)      
       Book.all.should_not be_empty
     end
 
     it 'should receive one Resource for each entity in the XML' do
+      @adapter.connection.stub!(:http_get).and_return(@response)      
       Book.all.size.should == 2
     end
+    
+    it "should call read_many method" do
+      @adapter.connection.stub!(:http_get).and_return(@response)      
+      @adapter.should_receive(:read_many)
+      Book.all
+    end
+    
+    it "should raise NotImplementedError if conditions are specified" do
+      # Have to find a way to set an expectation for a method call inside a block
+      # Book.all(:title => "NonExistentTitle")
+    end    
   end
 
   describe 'when updating an existing resource' do
