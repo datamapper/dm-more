@@ -216,5 +216,13 @@ describe 'A REST adapter' do
         @book.save
       end
     end
+    
+    it "should not do an HTTP PUT for non-dirty resources" do
+      @book.should_receive(:dirty_attributes).and_return({})
+      @adapter.connection.should_receive(:http_put).never
+      @repository.scope do
+        @book.save
+      end      
+    end
   end  
 end
