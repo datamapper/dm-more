@@ -1,6 +1,6 @@
 module DataMapper
   class Collection
-    
+
     def adjust(attributes = {}, reload = false)
       raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
     end
@@ -24,9 +24,9 @@ module DataMapper
       model.properties(repository.name).slice(*attributes.keys).each do |property|
         adjust_attributes[property] = attributes[property.name] if property
       end
-      
+
       if loaded?
-        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save } 
+        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save }
         return true
       end
 

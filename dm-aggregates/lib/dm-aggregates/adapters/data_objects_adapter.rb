@@ -1,11 +1,11 @@
 module DataMapper
   module Adapters
     class DataObjectsAdapter < AbstractAdapter
-      
+
       def aggregate(query)
         # with_reader(select_statement(query), query.bind_values) do |reader|
         #   results = []
-        # 
+        #
         #   while(reader.next!) do
         #     row = query.fields.zip(reader.values).map do |field,value|
         #       if field.respond_to?(:operator)
@@ -14,13 +14,13 @@ module DataMapper
         #         field.typecast(value)
         #       end
         #     end
-        # 
+        #
         #     results << (query.fields.size > 1 ? row : row[0])
         #   end
-        # 
+        #
         #   results
         # end
-        
+
         with_connection do |connection|
           command = connection.create_command(select_statement(query))
           command.set_types(query.fields.map { |p| p.primitive })
@@ -48,11 +48,11 @@ module DataMapper
             reader.close if reader
           end
         end
-        
-        
+
+
       end
-      
-      
+
+
 
       private
 

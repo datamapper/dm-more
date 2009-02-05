@@ -59,12 +59,12 @@ module DataMapper
       #
       # * <tt>child_key</tt> - specifies the column name to use for tracking of the tree (default: +parent_id+)
       def is_tree(options = {})
-        
+
         if options[:class_name]
           warn '+options[:class_name]+ is deprecated, use :model instead'
           options[:model] = options.delete(:class_name)
         end
-        
+
         options = { :model => name, :child_key => :parent_id }.merge(options) if Hash === options
         @tree_options = options
 

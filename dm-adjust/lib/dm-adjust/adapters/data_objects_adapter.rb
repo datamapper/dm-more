@@ -12,7 +12,7 @@ module DataMapper
 
         def adjust_statement(properties, query)
           repository = query.repository
-          
+
           qualify = query.links.any?
 
           statement = "UPDATE #{quote_name(query.model.storage_name(repository.name))}"

@@ -146,7 +146,7 @@ module DataMapper
           unless remixable_module.is_remixable?
             raise Exception, "#{remixable_module} is not remixable"
           end
-          
+
           if options[:class_name]
             warn '+options[:class_name]+ is deprecated, use :model instead'
             options[:model] = options.delete(:class_name)

@@ -52,7 +52,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           repository(:default) do |repos|
             @specific = Person.all(:salary => 20000)
             @specific.adjust!({:salary => 5000},true)
-          
+
             # Both of these are seemingly equal
             # puts @specific.query.inspect
             # puts Person.all(:salary => 25000).query.inspect
@@ -61,7 +61,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
             # puts @specific.all.length # is 0
             # puts Person.all(@specific.query.relative({})).length # 0
             # puts Person.all(:salary => 25000).length # 6 !
-          
+
             Person.all(:salary => 25000).length.should == 6
             @specific.all.length.should == 6
           end

@@ -8,12 +8,12 @@ describe DataMapper::Serialize, '#to_csv' do
 
   before(:all) do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-    
+
     resources = [
       {:id => 1, :composite => 2, :name => 'Betsy', :breed => 'Jersey'},
       {:id => 10, :composite => 20, :name => 'Berta', :breed => 'Guernsey'}
     ]
-    
+
     @collection = DataMapper::Collection.new(query, resources)
 
     @empty_collection = DataMapper::Collection.new(query)
