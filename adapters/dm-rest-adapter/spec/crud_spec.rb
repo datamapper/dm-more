@@ -111,14 +111,10 @@ describe 'A REST adapter' do
     end
 
     describe 'if the resource does not exist' do
-      it 'should return nil' do
-        @id = 1
-        @response = mock(Net::HTTPNotFound)
-        @response.stub!(:content_type).and_return('text/html')
-        @response.stub!(:body).and_return('<html></html>')
-        @adapter.connection.stub!(:http_get).and_return(@response)
-        id = 4200
-        Book.get(id).should be_nil
+      it 'should raise DataMapperRest::ResourceNotFound' do                                                           
+        id = 4200        
+        @adapter.connection.stub!(:run_verb).with('get', nil).and_raise(DataMapperRest::ResourceNotFound.new("Error"))
+        lambda{ Book.get(id) }.should raise_error(DataMapperRest::ResourceNotFound)
       end
     end
   end
