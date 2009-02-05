@@ -11,16 +11,20 @@ module DataMapperRest
     end
 
     # Creates a new resource in the specified repository.
+    # TODO: rescue from errors
     def create(resources)
+      created = 0
       resources.each do |resource|
-        result = connection.http_post(resource_name(resource), resource.to_xml)
-        # resource.id = result.
-        # TODO: Fix commented out code below to work through the identity_map of the repository
-        # values = parse_resource(result.body, resource.class)
-        # resource.id = updated_resource.id
+        response = connection.http_post(resource_name(resource), resource.to_xml)
+        data = response.body
         
-        # TODO: We're not using the response to update the DataMapper::Resource with the newly acquired ID!!!
+        id_field = resource.class.key(resource.repository.name).find {|p| p.serial?}
+        
+        id_field.set!(resource, normalized_id(data, resource.class)) if id_field
+        created += 1  
       end
+      
+      created
     end
 
     # read_set
@@ -180,6 +184,11 @@ module DataMapperRest
       doc.elements.collect("#{resource_name.pluralize}/#{resource_name}") do |entity_element|
         values_from_rexml(entity_element, dm_model_class)
       end
+    end
+    
+    def normalized_id(xml, dm_model_class)
+      doc = REXML::Document::new(xml)
+      entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(dm_model_class)}/id").text
     end
 
     def resource_name_from_model(model)

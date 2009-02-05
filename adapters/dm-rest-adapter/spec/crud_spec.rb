@@ -4,19 +4,36 @@ require 'spec_helper'
 describe 'A REST adapter' do
 
   before do
-    @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')    
+    @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')  
     @adapter = DataMapper::Repository.adapters[:default]
   end
 
   describe 'when saving a new resource' do
-
-    it 'should make an HTTP POST' do
-      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml)
-      @book.save
+    
+    before(:each) do
+      @mock_resp = mock("response")
+      @mock_resp.should_receive(:body).and_return @book.to_xml
     end
 
+    it "should create a book" do
+      @mock_http = mock("http")
+      Net::HTTP.should_receive(:start).and_yield @mock_http
+      
+      @mock_resp.should_receive(:code).and_return 200
+
+      @mock_http.should_receive(:request).and_return @mock_resp
+      
+      @book.id = 1
+      @book.save.should eql(true)
+    end
+
+    it 'should make an HTTP POST' do
+      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml).and_return @mock_resp
+      @book.save
+    end 
+
     it 'should call run_verb with POST' do
-      @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml)
+      @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml).and_return @mock_resp
       @book.save
     end    
   end
