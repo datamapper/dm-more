@@ -4,16 +4,18 @@ require 'spec_helper'
 describe 'A REST adapter' do
 
   before do
+    @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')    
     @adapter = DataMapper::Repository.adapters[:default]
   end
 
-  describe 'when saving a resource' do
+  describe 'when saving a new resource' do
 
-    before do
-      @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
+    it 'should make an HTTP POST' do
+      @adapter.connection.should_receive(:http_post).with('books', @book.to_xml)
+      @book.save
     end
 
-    it 'should make an HTTP Post' do
+    it 'should call run_verb with POST' do
       @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml)
       @book.save
     end    
@@ -21,17 +23,28 @@ describe 'A REST adapter' do
 
   describe 'when deleting an existing resource' do
     before do
-      @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
       @book.stub!(:new_record?).and_return(false)
-      @book.stub!(:id).and_return(1)
     end
 
     it 'should do an HTTP DELETE' do
-      # TODO: Is it good returning receiving nil?                      
       @adapter.connection.should_receive(:http_delete)
       @book.destroy
     end
-
+    
+    it "should raise NotImplementedError if is not a single resource query" do
+      @adapter.should_receive(:is_single_resource_query?).and_return(false)       
+      lambda {@book.destroy}.should raise_error(NotImplementedError)      
+    end
+    
+    it 'should call run_verb with DELETE and no data' do
+      @adapter.connection.should_receive(:run_verb).with('delete', nil)
+      @book.destroy
+    end
+    
+    it "should return false if the record does not exist in the repository" do
+      @book.should_receive(:new_record?).and_return(true)      
+      @book.destroy.should eql(false)
+    end
   end
 
   describe 'when getting one resource' do
@@ -61,17 +74,41 @@ describe 'A REST adapter' do
         book.id.should be_an_instance_of(Fixnum)
         book.id.should == 1
       end
+      
+      it "should have its attributes well formed" do
+        book = Book.get(@id)
+        book.author.should == 'Stephen King'
+        book.title.should == 'The Shining'
+      end
 
       it 'should do an HTTP GET' do
         @adapter.connection.should_receive(:http_get).with('/books/1.xml').and_return(@response)
         Book.get(@id)
       end
 
-      it "it be equal to itself" do
+      it "should be equal to itself" do
         Book.get(@id).should == Book.get(@id)
       end
+      
+      it "should return its cached version when it was already fetched" do
+        book = mock(Book, :kind_of? => Book)
+        repo = mock(DataMapper::Repository)
+        ident_map = mock(DataMapper::IdentityMap)
+        
+        Book.should_receive(:repository).and_return(repo)
+        repo.should_receive(:identity_map).and_return(ident_map)
+        ident_map.stub!(:get).with([@id]).and_return(book)        
+        
+        # The remote resource won't be called when a cached object exists
+        Book.should_receive(:first).never        
+        Book.get(@id).should be_a_kind_of(Book)
+      end
+      
+      it "should call read_one method" do
+        @adapter.should_receive(:read_one)
+        Book.get(@id)
+      end
     end
-
 
     describe 'if the resource does not exist' do
       it 'should return nil' do
