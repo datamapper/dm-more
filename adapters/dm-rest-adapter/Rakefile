@@ -6,13 +6,13 @@ JRUBY   = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform?
 SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-require ROOT + 'lib/dm-rest/version'
+require ROOT + 'lib/rest_adapter/version'
 
 AUTHOR = 'Scott Burton @ Joyent Inc'
 EMAIL  = 'scott.burton [a] joyent [d] com'
 GEM_NAME = 'dm-rest-adapter'
 GEM_VERSION = DataMapperRest::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', "~>0.9.10"]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 

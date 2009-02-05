@@ -1,5 +1,5 @@
 require 'rubygems'
-require File.dirname(__FILE__)+'/../lib/dm-rest'
+require File.dirname(__FILE__)+'/../lib/rest_adapter'
 
 root = File.expand_path(File.dirname(__FILE__) + '/../')
 # use local dm-serializer if running from dm-more directly
