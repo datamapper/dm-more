@@ -8,7 +8,7 @@ module DataMapper
       only_properties     = Array(options[:only])
       excluded_properties = Array(options[:exclude])
 
-      self.class.properties(repository.name).reject do |p|
+      model.properties(repository.name).reject do |p|
         if only_properties.include? p.name
           false
         else
@@ -16,9 +16,7 @@ module DataMapper
         end
       end
     end
-  end
 
-  module Resource
-    include Serialize
+    Model.append_inclusions self
   end
 end

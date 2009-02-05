@@ -67,7 +67,7 @@ module DataMapper
   class Collection
     def to_json(*args)
       opts = args.first || {}
-      "[" << map {|e| e.to_json(opts)}.join(",") << "]"
+      '[' << map { |e| e.to_json(opts) }.join(',') << ']'
     end
   end
 end

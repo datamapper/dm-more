@@ -34,15 +34,15 @@ share_examples_for 'A serialization method that also serializes core classes' do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
     resources = [
-      Cow.load([1, 2, 'Betsy', 'Jersey'],query),
-      Cow.load([89, 34, 'Berta', 'Guernsey'],query)
+      [  1,  2, 'Betsy', 'Jersey'   ],
+      [ 89, 34, 'Berta', 'Guernsey' ],
     ]
 
-    collection = DataMapper::Collection.new(query, resources)
+    collection = DataMapper::Collection.new(query, resources.map { |r| query.model.load(r, query) })
 
-    result = @harness.test([collection])
-    result[0][1].values_at("id", "composite", "name", "breed").should ==
-      [89, 34, "Berta", "Guernsey"]
+    result = @harness.test(collection)
+    result[0].values_at("id", "composite", "name", "breed").should == resources[0]
+    result[1].values_at("id", "composite", "name", "breed").should == resources[1]
   end
 end
 
@@ -166,19 +166,22 @@ share_examples_for 'A serialization method' do
 
     it 'should serialize a collection' do
       query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-      collection = DataMapper::Collection.new(query) do |c|
-        c.load([1, 2, 'Betsy', 'Jersey'])
-        c.load([10, 20, 'Berta', 'Guernsey'])
-      end
+
+      resources = [
+        [  1,  2, 'Betsy', 'Jersey'   ],
+        [ 10, 20, 'Berta', 'Guernsey' ],
+      ]
+
+      collection = DataMapper::Collection.new(query, resources.map { |r| query.model.load(r, query) })
 
       result = @harness.test(collection)
-      result[0].values_at("id", "composite", "name", "breed").should == [1,  2, 'Betsy', 'Jersey']
-      result[1].values_at("id", "composite", "name", "breed").should == [10,  20, 'Berta', 'Guernsey']
+      result[0].values_at("id", "composite", "name", "breed").should == resources[0]
+      result[1].values_at("id", "composite", "name", "breed").should == resources[1]
     end
 
     it 'should serialize an empty collection' do
       query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
-      collection = DataMapper::Collection.new(query) {}
+      collection = DataMapper::Collection.new(query)
 
       result = @harness.test(collection)
       result.should be_empty

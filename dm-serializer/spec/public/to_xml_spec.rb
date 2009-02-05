@@ -81,24 +81,25 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
     describe ':collection_element_name for Collection' do
       before(:each) do
-        query = DataMapper::Query.new(DataMapper::repository(:default), QuanTum::Cat)
-        @collection = DataMapper::Collection.new(query) {}
+        @model = QuanTum::Cat
+        @query = DataMapper::Query.new(DataMapper::repository(:default), @model)
+        @collection = DataMapper::Collection.new(@query)
       end
 
       it 'when not specified the class name tableized and with slashes replaced with dashes should be used as the root node name' do
-        xml = @collection.to_xml
+        xml = DataMapper::Collection.new(@query).to_xml
         REXML::Document.new(xml).elements[1].name.should == "quan_tum-cats"
       end
 
       it 'should be used as the root node name by #to_xml' do
-        @collection.load([1])
+        @collection = DataMapper::Collection.new(@query, [ @model.load([1], @query) ])
 
         xml = @collection.to_xml(:collection_element_name => "somanycats")
         REXML::Document.new(xml).elements[1].name.should == "somanycats"
       end
 
       it 'should respect :element_name for collection elements' do
-        @collection.load([1])
+        @collection = DataMapper::Collection.new(@query, [ @model.load([1], @query) ])
 
         xml = @collection.to_xml(:collection_element_name => "somanycats", :element_name => 'cat')
         REXML::Document.new(xml).elements[1].elements[1].name.should == "cat"

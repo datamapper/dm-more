@@ -10,10 +10,12 @@ describe DataMapper::Serialize, '#to_json' do
     DataMapper.auto_migrate!
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
-    @collection = DataMapper::Collection.new(query) do |c|
-      c.load([1, 2, 'Betsy', 'Jersey'])
-      c.load([10, 20, 'Berta', 'Guernsey'])
-    end
+    resources = [
+      [ 1,  2,  'Betsy', 'Jersey'   ],
+      [ 10, 20, 'Berta', 'Guernsey' ],
+    ]
+
+    @collection = DataMapper::Collection.new(query, resources.map { |r| query.model.load(r, query) })
 
     @harness = Class.new(SerializerTestHarness) do
       def method_name

@@ -6,6 +6,6 @@ class Cow
   property :name,      String
   property :breed,     String
 
-  has n, :baby_cows, :model => 'Cow'
-  belongs_to :mother_cow, :model => 'Cow'
+  belongs_to :mother_cow, :model => self
+  has n, :baby_cows, :model => self, :child_key => [ :mother_cow_id, :mother_cow_composite ]
 end
