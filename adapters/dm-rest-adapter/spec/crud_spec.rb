@@ -62,7 +62,7 @@ describe 'A REST adapter' do
 
   describe 'when deleting an existing resource' do
     before do
-      @book.stub!(:new_record?).and_return(false)
+      @book.stub!(:new?).and_return(false)
     end
 
     it 'should do an HTTP DELETE' do
@@ -81,7 +81,7 @@ describe 'A REST adapter' do
     end
 
     it "should return false if the record does not exist in the repository" do
-      @book.should_receive(:new_record?).and_return(true)
+      @book.should_receive(:new?).and_return(true)
       @book.destroy.should eql(false)
     end
   end
@@ -220,13 +220,13 @@ describe 'A REST adapter' do
         <created-at type='datetime'>2008-06-08T17:02:28Z</created-at>
       </book>
       XML
-      repository do |repo|
+      DataMapper.repository do |repo|
         @repository = repo
         @book = Book.new(:id => 42,
                          :title => 'Starship Troopers',
                          :author => 'Robert Heinlein',
                          :created_at => DateTime.parse('2008-06-08T17:02:28Z'))
-        @book.instance_eval { @new_record = false }
+        @book.instance_eval { @new = false }
         @repository.identity_map(Book)[@book.key] = @book
         @book.title = "Mary Had a Little Lamb"
       end

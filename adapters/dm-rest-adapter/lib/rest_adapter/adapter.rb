@@ -7,7 +7,7 @@ module DataMapperRest
     include Extlib
 
     def connection
-      @connection ||= Connection.new(@uri, @format)
+      @connection ||= Connection.new(normalized_uri, @format)
     end
 
     # Creates a new resource in the specified repository.
@@ -36,20 +36,19 @@ module DataMapperRest
     # IN PROGRESS
     # TODO: Need to account for query.conditions (i.e., [[:eql, #<Property:Book:id>, 1]] for books/1)
     def read_many(query)
+      model         = query.model
       resource_name = Inflection.underscore(query.model.name)
-      ::DataMapper::Collection.new(query) do |collection|
-        case query.conditions
-        when []
-          resources_meta = read_set_all(repository, query, resource_name)
-        else
-          resources_meta = read_set_for_condition(repository, query, resource_name)
+
+      resources_meta = case query.conditions
+        when [] then read_set_all(query, resource_name)
+        else         read_set_for_condition(query, resource_name)
+      end
+
+      resources_meta.map do |resource_meta|
+        if resource_meta.has_key?(:associations)
+          load_nested_resources_from resource_meta[:associations], query
         end
-        resources_meta.each do |resource_meta|
-          if resource_meta.has_key?(:associations)
-            load_nested_resources_from resource_meta[:associations], query
-          end
-          collection.load(resource_meta[:values])
-        end
+        model.load(resource_meta[:values], query)
       end
     end
 
@@ -58,13 +57,13 @@ module DataMapperRest
       resource_name = resource_name_from_query(query)
       resources_meta = nil
       if query.conditions.empty? && query.limit == 1
-        results = read_set_all(repository, query, resource_name)
+        results = read_set_all(query, resource_name)
         resource_meta = results.first unless results.empty?
       else
         id = query.conditions.first[2]
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
 
-        response = connection.http_get("#{resource_name.pluralize}/#{id}")
+        response = connection.http_get("/#{resource_name.pluralize}/#{id}")
 
         data = response.body
         resource_meta = parse_resource(data, query.model, query)
@@ -90,7 +89,7 @@ module DataMapperRest
         resource.send("#{attr.name}=", val)
       end
       # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
-      res = connection.http_put("#{resource_name_from_query(query).pluralize}/#{id}", resource.to_xml)
+      res = connection.http_put("/#{resource_name_from_query(query).pluralize}/#{id}", resource.to_xml)
       # TODO: Raise error if cannot reach server
       res.kind_of?(Net::HTTPSuccess) ? 1 : 0
     end
@@ -98,34 +97,34 @@ module DataMapperRest
     def delete(query)
       raise NotImplementedError.new unless is_single_resource_query? query
       id = query.conditions.first[2]
-      res = connection.http_delete("#{resource_name_from_query(query).pluralize}/#{id}")
+      res = connection.http_delete("/#{resource_name_from_query(query).pluralize}/#{id}")
       res.kind_of?(Net::HTTPSuccess) ? 1 : 0
     end
 
   protected
 
-    def normalize_uri(uri_or_options)
-      @format = uri_or_options[:format].nil? ? "xml" : uri_or_options[:format]
+    def initialize(*)
+      super
+      @format = @options.fetch(:format, 'xml')
+    end
 
-      if uri_or_options.kind_of?(String) || uri_or_options.kind_of?(Addressable::URI)
-        uri_or_options = DataObjects::URI.parse(uri_or_options)
-      end
+    def normalized_uri
+      @normalized_uri ||=
+        begin
+          query = @options.except(:adapter, :user, :password, :host, :port, :path, :fragment)
+          query = nil if query.empty?
 
-      if uri_or_options.kind_of?(DataObjects::URI)
-        return uri_or_options
-      end
-
-      query = uri_or_options.except(:adapter, :username, :password, :host, :port, :format, :login).map { |pair| pair.join('=') }.join('&')
-      query = nil if query.blank? # not sure if the query is usable
-
-      return DataObjects::URI.parse(Addressable::URI.new(
-        :scheme       => "http",
-        :adapter      => uri_or_options[:adapter].to_s,
-        :user         => uri_or_options[:login],
-        :password     => uri_or_options[:password],
-        :host         => uri_or_options[:host],
-        :port         => uri_or_options[:port]
-      ))
+          Addressable::URI.new(
+            :scheme       => 'http',
+            :user         => @options[:user],
+            :password     => @options[:password],
+            :host         => @options[:host],
+            :port         => @options[:port],
+            :path         => @options[:path],
+            :query_values => query,
+            :fragment     => @options[:fragment]
+          ).freeze
+        end
     end
 
     def load_nested_resources_from(nested_resources, query)
@@ -138,7 +137,7 @@ module DataMapperRest
       end
     end
 
-    def read_set_all(repository, query, resource_name)
+    def read_set_all(query, resource_name)
       # TODO: how do we know whether the resource we're talking to is singular or plural?
       res = connection.http_get("#{resource_name.pluralize}")
       data = res.body
@@ -147,7 +146,7 @@ module DataMapperRest
     end
 
     #    GET /books/4200
-    def read_set_for_condition(repository, query, resource_name)
+    def read_set_for_condition(query, resource_name)
       # More complex conditions
       raise NotImplementedError.new
     end
@@ -161,7 +160,7 @@ module DataMapperRest
       resource = {}
       resource[:values] = []
       entity_element.elements.each do |field_element|
-        attribute = dm_model_class.properties(repository.name).find do |property|
+        attribute = dm_model_class.properties(name).find do |property|
           property.name.to_s == field_element.name.to_s.tr('-', '_')
         end
         if attribute
@@ -223,69 +222,11 @@ module DataMapperRest
       raise "No root element matching #{resource_name_from_model(resource.class)} in xml" unless entity_element
 
       entity_element.elements.each do |field_element|
-        attribute = resource.class.properties(repository.name).find { |property| property.name.to_s == field_element.name.to_s.tr('-', '_') }
+        attribute = resource.class.properties(name).find { |property| property.name.to_s == field_element.name.to_s.tr('-', '_') }
         resource.send("#{attribute.name.to_s}=", field_element.text) if attribute && !field_element.text.nil?
         # TODO: add association saving
       end
       resource
     end
-
-    # TODO: this is a temporary hack to allow applications using models with dm-rest-adapter
-    # together with models using other adapters
-    module Migration
-      #
-      # Returns whether the storage_name exists.
-      #
-      # @param storage_name<String> a String defining the name of a storage,
-      #   for example a table name.
-      #
-      # @return <Boolean> true if the storage exists
-      #
-      def storage_exists?(storage_name)
-        true
-      end
-
-      #
-      # Returns whether the field exists.
-      #
-      # @param storage_name<String> a String defining the name of a storage, for example a table name.
-      # @param field_name<String> a String defining the name of a field, for example a column name.
-      #
-      # @return <Boolean> true if the field exists.
-      #
-      def field_exists?(storage_name, field_name)
-        true
-      end
-
-      def upgrade_model_storage(repository, model)
-        true
-      end
-
-      def create_model_storage(repository, model)
-        true
-      end
-
-      def destroy_model_storage(repository, model)
-        true
-      end
-
-      def alter_model_storage(repository, *args)
-        true
-      end
-
-      def create_property_storage(repository, property)
-        true
-      end
-
-      def destroy_property_storage(repository, property)
-        true
-      end
-
-      def alter_property_storage(repository, *args)
-        true
-      end
-
-    end
-    include Migration
   end
 end

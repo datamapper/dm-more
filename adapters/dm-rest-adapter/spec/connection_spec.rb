@@ -6,15 +6,14 @@ describe 'A Connection instance' do
   before do
     @username = "admin"
     @password = "tot@ls3crit"
-    @uri = DataObjects::URI.parse(Addressable::URI.new(
-      :scheme       => 'http',
-      :adapter      => 'rest',
-      :user         => @username,
-      :password     => @password,
-      :host         => 'localhost',
-      :port         => '4000',
-      :query        => nil
-      ))
+    @uri = Addressable::URI.new(
+      :scheme   => 'http',
+      :user     => @username,
+      :password => @password,
+      :host     => 'localhost',
+      :port     => '4000',
+      :query    => nil
+    )
     @connection = DataMapperRest::Connection.new(@uri, "xml")
   end
 
