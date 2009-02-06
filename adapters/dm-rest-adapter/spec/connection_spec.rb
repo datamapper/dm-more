@@ -4,15 +4,26 @@ require 'spec_helper'
 describe 'A Connection instance' do
 
   before do
-    @connection = DataMapperRest::Connection.new({:adapter  => 'rest', :format => 'xml', :host => 'localhost', :port => '4000', :login => 'admin', :password => 'secret'})
+    @username = "admin"
+    @password = "tot@ls3crit"
+    @uri = DataObjects::URI.parse(Addressable::URI.new(
+      :scheme       => 'http',
+      :adapter      => 'rest',
+      :user         => @username,
+      :password     => @password,
+      :host         => 'localhost',
+      :port         => '4000',
+      :query        => nil
+      ))
+    @connection = DataMapperRest::Connection.new(@uri, "xml")
   end
   
   it "should construct a valid uri" do
-    @connection.uri.to_s.should == "http://admin:secret@localhost:4000"
+    @connection.uri.to_s.should == "http://#{@username}:#{@password}@localhost:4000"
     @connection.uri.host.should == "localhost"
     @connection.uri.port.should == 4000
-    @connection.uri.user.should == "admin"
-    @connection.uri.password.should == "secret"
+    @connection.uri.user.should == @username
+    @connection.uri.password.should == @password
   end
   
   it "should return the correct extension and mime type for xml" do
@@ -20,7 +31,7 @@ describe 'A Connection instance' do
   end
   
   it "should return the correct extension and mime type for json" do
-    connection = DataMapperRest::Connection.new({:adapter  => 'rest', :format => 'json', :host => 'localhost', :port => '4000', :login => 'admin', :password => 'secret'})
+    connection = DataMapperRest::Connection.new(@uri, "json")
     connection.format.header.should == {'Content-Type' => "application/json"}
   end
 

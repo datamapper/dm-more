@@ -7,7 +7,7 @@ module DataMapperRest
     include Extlib
     
     def connection
-      @connection ||= Connection.new(@uri)
+      @connection ||= Connection.new(@uri, @format)
     end
 
     # Creates a new resource in the specified repository.
@@ -106,6 +106,31 @@ module DataMapperRest
     end
 
   protected
+  
+    def normalize_uri(uri_or_options)
+      @format = uri_or_options[:format].nil? ? "xml" : uri_or_options[:format]
+      
+      if uri_or_options.kind_of?(String) || uri_or_options.kind_of?(Addressable::URI)
+        uri_or_options = DataObjects::URI.parse(uri_or_options)
+      end
+
+      if uri_or_options.kind_of?(DataObjects::URI)
+        return uri_or_options
+      end
+
+      query = uri_or_options.except(:adapter, :username, :password, :host, :port, :format, :login).map { |pair| pair.join('=') }.join('&')
+      query = nil if query.blank? # not sure if the query is usable
+
+      return DataObjects::URI.parse(Addressable::URI.new(
+        :scheme       => "http",
+        :adapter      => uri_or_options[:adapter].to_s,
+        :user         => uri_or_options[:login],
+        :password     => uri_or_options[:password],
+        :host         => uri_or_options[:host],
+        :port         => uri_or_options[:port]
+      ))
+    end
+  
     def load_nested_resources_from(nested_resources, query)
       nested_resources.each do |resource_meta|
         # TODO: Houston, we have a problem.  Model#load expects a Query.  When we're nested, we don't have a query yet...

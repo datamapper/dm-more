@@ -7,26 +7,15 @@ module DataMapperRest
     include Extlib
     attr_accessor :uri, :format
     
-    # Config is a hash with resource uri info ie. 
-    # {:adapter  => 'rest', :format => 'xml', :host => 'localhost', :port => '4000', :login => 'admin', :password => 'secret'}
-    def initialize(config)
-      create_uri(config)
-      @format = Format.new(config[:format])
-    end
-    
-    # grab the hash from the datamapper config and construct a real URI from it
-    # use it later to make lunch
-    def create_uri(config)
-      @uri = URI::HTTP.build(:host => config[:host], :port => config[:port])
-      @uri.userinfo = config[:login], config[:password] if config.has_key?(:login) && config.has_key?(:password)
-    rescue URI::InvalidComponentError
-      raise "login or password format can only contain alpha-numeric characters"
+    def initialize(uri, format)
+      @uri = uri
+      @format = Format.new(format)
     end
     
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
     # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
-      @uri.path = "/#{args[0]}" # Should be the form of /resources
+      @uri.path += "/#{args[0]}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(get|post|put|delete|head)$/)
         run_verb(verb.to_s.split("_").last, args[1])
       end
@@ -38,7 +27,7 @@ module DataMapperRest
         request do |http|
           mod = Net::HTTP::module_eval(Inflection.camelize(verb))
           request = mod.new(@uri.to_s, @format.header)
-          request.basic_auth(@uri.user, @uri.password) if @uri.userinfo
+          request.basic_auth(@uri.user, @uri.password) if @uri.user && @uri.password
           result = http.request(request, data)
         
           handle_response(result)
