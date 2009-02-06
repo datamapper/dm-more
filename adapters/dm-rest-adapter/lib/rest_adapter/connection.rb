@@ -19,13 +19,15 @@ module DataMapperRest
     def create_uri(config)
       @uri = URI::HTTP.build(:host => config[:host], :port => config[:port])
       @uri.userinfo = config[:login], config[:password] if config.has_key?(:login) && config.has_key?(:password)
+    rescue URI::InvalidComponentError
+      raise "login or password format can only contain alpha-numeric characters"
     end
     
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
     # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
       @uri.path = "/#{args[0]}" # Should be the form of /resources
-      if verb = method.to_s.match(/^http_(\w*)$/)
+      if verb = method.to_s.match(/^http_(get|post|put|delete|head)$/)
         run_verb(verb.to_s.split("_").last, args[1])
       end
     end

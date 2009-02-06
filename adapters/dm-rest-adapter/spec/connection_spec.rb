@@ -45,6 +45,12 @@ describe 'A Connection instance' do
       @connection.should_receive(:run_verb).with("delete", "<somexml>")
       @connection.http_delete("foobars", "<somexml>")
     end
+    
+    it "should only accept the listed verbs" do
+      @connection.should_not_receive(:run_verb).with("delete", "<somexml>")
+      @connection.http_explode("foobars", "<somexml>")
+    end
+    
   end
   
   describe "when receiving error response codes" do
