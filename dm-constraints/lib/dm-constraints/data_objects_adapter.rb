@@ -78,6 +78,7 @@ module DataMapper
           def auto_migrate_constraints_down(repository_name, *descendants)
             descendants = DataMapper::Resource.descendants.to_a if descendants.empty?
             descendants.each do |model|
+              repository_name ||= model.repository(repository_name).name
               if model.storage_exists?(repository_name)
                 adapter = model.repository(repository_name).adapter
                 next unless adapter.respond_to?(:destroy_constraints_statements)
@@ -90,6 +91,7 @@ module DataMapper
           def auto_migrate_constraints_up(retval, repository_name, *descendants)
             descendants = DataMapper::Resource.descendants.to_a if descendants.empty?
             descendants.each do |model|
+              repository_name ||= model.repository(repository_name).name
               adapter = model.repository(repository_name).adapter
               next unless adapter.respond_to?(:create_constraints_statements)
               statements = adapter.create_constraints_statements(repository_name, model)
