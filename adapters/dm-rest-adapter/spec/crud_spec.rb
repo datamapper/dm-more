@@ -99,7 +99,7 @@ describe 'A REST adapter' do
       end
 
       it 'should do an HTTP GET' do
-        @adapter.connection.should_receive(:http_get).with('/books/1.xml').and_return(@response)
+        @adapter.connection.should_receive(:http_get).with('books/1').and_return(@response)
         Book.get(@id)
       end
 
@@ -211,7 +211,7 @@ describe 'A REST adapter' do
     end
 
     it 'should do an HTTP PUT' do                                                            
-      @adapter.connection.should_receive(:http_put).with('/books/42.xml', @book.to_xml)
+      @adapter.connection.should_receive(:http_put).with('books/42', @book.to_xml)
       @repository.scope do
         @book.save
       end

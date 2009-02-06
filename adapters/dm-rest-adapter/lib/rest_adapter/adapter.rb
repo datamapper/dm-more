@@ -67,7 +67,7 @@ module DataMapperRest
         id = query.conditions.first[2]
         # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
 
-        response = connection.http_get("/#{resource_name.pluralize}/#{id}.xml")
+        response = connection.http_get("#{resource_name.pluralize}/#{id}")
 
         data = response.body
         resource_meta = parse_resource(data, query.model, query)
@@ -93,7 +93,7 @@ module DataMapperRest
         resource.send("#{attr.name}=", val)
       end
       # KLUGE: Again, we're assuming below that we're dealing with a pluralized resource mapping
-      res = connection.http_put("/#{resource_name_from_query(query).pluralize}/#{id}.xml", resource.to_xml)
+      res = connection.http_put("#{resource_name_from_query(query).pluralize}/#{id}", resource.to_xml)
       # TODO: Raise error if cannot reach server
       res.kind_of?(Net::HTTPSuccess) ? 1 : 0
     end
@@ -101,7 +101,7 @@ module DataMapperRest
     def delete(query)
       raise NotImplementedError.new unless is_single_resource_query? query
       id = query.conditions.first[2]
-      res = connection.http_delete("/#{resource_name_from_query(query).pluralize}/#{id}.xml")
+      res = connection.http_delete("#{resource_name_from_query(query).pluralize}/#{id}")
       res.kind_of?(Net::HTTPSuccess) ? 1 : 0
     end
 
@@ -143,7 +143,7 @@ module DataMapperRest
 
     def read_set_all(repository, query, resource_name)
       # TODO: how do we know whether the resource we're talking to is singular or plural?
-      res = connection.http_get("/#{resource_name.pluralize}.xml")
+      res = connection.http_get("#{resource_name.pluralize}")
       data = res.body
       parse_resources(data, query.model, query)
       # TODO: Raise error if cannot reach server
