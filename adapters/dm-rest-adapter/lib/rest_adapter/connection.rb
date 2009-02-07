@@ -15,7 +15,7 @@ module DataMapperRest
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
     # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
-      @uri.path += "/#{args[0]}" # Should be the form of /resources
+      @uri.path += "/#{args[0]}.#{@format.mime}" # Should be the form of /resources
       if verb = method.to_s.match(/^http_(get|post|put|delete|head)$/)
         run_verb(verb.to_s.split("_").last, args[1])
       end
