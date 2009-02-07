@@ -9,7 +9,7 @@ module DataMapperRest
     end
 
     def to_s
-      "Resource action failed with code: #{response.code}, message: #{response.message if response.respond_to?(:message)}"
+      "Resource action failed with code: #{response.code}, message: #{response.message if response.respond_to?(:message)}, body: #{response.body}"
     end
   end
 
