@@ -11,7 +11,7 @@ module DataMapperRest
     end
 
     # Creates a new resource in the specified repository.
-    # TODO: rescue from errors
+    # TODO: map all remote resource attributes to this resource
     def create(resources)
       created = 0
       resources.each do |resource|
@@ -224,5 +224,63 @@ module DataMapperRest
     def resource_name_from_query(query)
       resource_name_from_model(query.model)
     end
+    
+    # TODO: this is a temporary hack to allow applications using models with dm-rest-adapter
+    # together with models using other adapters
+    module Migration
+      #
+      # Returns whether the storage_name exists.
+      #
+      # @param storage_name<String> a String defining the name of a storage,
+      #   for example a table name.
+      #
+      # @return <Boolean> true if the storage exists
+      #
+      def storage_exists?(storage_name)
+        true
+      end
+
+      #
+      # Returns whether the field exists.
+      #
+      # @param storage_name<String> a String defining the name of a storage, for example a table name.
+      # @param field_name<String> a String defining the name of a field, for example a column name.
+      #
+      # @return <Boolean> true if the field exists.
+      #
+      def field_exists?(storage_name, field_name)
+        true
+      end
+
+      def upgrade_model_storage(repository, model)
+        true
+      end
+
+      def create_model_storage(repository, model)
+        true
+      end
+
+      def destroy_model_storage(repository, model)
+        true
+      end
+
+      def alter_model_storage(repository, *args)
+        true
+      end
+
+      def create_property_storage(repository, property)
+        true
+      end
+
+      def destroy_property_storage(repository, property)
+        true
+      end
+
+      def alter_property_storage(repository, *args)
+        true
+      end
+
+    end
+    include Migration
   end
 end
