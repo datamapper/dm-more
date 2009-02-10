@@ -1,14 +1,6 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-# run the specs with dm-validations, if available
-begin
-  gem 'dm-validations', '~>0.9.11'
-  require 'dm-validations'
-rescue LoadError
-  # do nothing
-end
-
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Timestamp' do
     describe "Timestamp (shared behavior)", :shared => true do
@@ -96,10 +88,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           property :id,         Serial
           property :name,       String
-          property :created_at, DateTime
-          property :created_on, Date
-          property :updated_at, DateTime
-          property :updated_on, Date
+          property :created_at, DateTime, :nullable => false, :auto_validation => false
+          property :created_on, Date,     :nullable => false, :auto_validation => false
+          property :updated_at, DateTime, :nullable => false, :auto_validation => false
+          property :updated_on, Date,     :nullable => false, :auto_validation => false
 
           auto_migrate!
         end
@@ -123,26 +115,26 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         it "should set the *at properties" do
           @klass.timestamps :at
 
-          @klass.properties.should have_property(:created_at)
+          @klass.properties.should be_named(:created_at)
           @klass.properties[:created_at].type.should == DateTime
-          @klass.properties.should have_property(:updated_at)
+          @klass.properties.should be_named(:updated_at)
           @klass.properties[:updated_at].type.should == DateTime
         end
 
         it "should set the *on properties" do
           @klass.timestamps :on
 
-          @klass.properties.should have_property(:created_on)
+          @klass.properties.should be_named(:created_on)
           @klass.properties[:created_on].type.should == Date
-          @klass.properties.should have_property(:updated_on)
+          @klass.properties.should be_named(:updated_on)
           @klass.properties[:updated_on].type.should == Date
         end
 
         it "should set multiple properties" do
           @klass.timestamps :created_at, :updated_on
 
-          @klass.properties.should have_property(:created_at)
-          @klass.properties.should have_property(:updated_on)
+          @klass.properties.should be_named(:created_at)
+          @klass.properties.should be_named(:updated_on)
         end
 
         it "should fail on unknown property name" do

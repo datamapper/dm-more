@@ -4,6 +4,14 @@ require 'rubygems'
 gem 'rspec', '~>1.1.11'
 require 'spec'
 
+# run the specs with dm-validations, if available
+begin
+  gem 'dm-validations', '~>0.10.0'
+  require 'dm-validations'
+rescue LoadError
+  # do nothing
+end
+
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-timestamps'
 
 def load_driver(name, default_uri)

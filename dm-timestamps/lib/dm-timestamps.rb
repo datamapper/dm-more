@@ -4,29 +4,26 @@ gem 'dm-core', '>=0.10.0'
 require 'dm-core'
 
 module DataMapper
-  module Timestamp
-    Resource.append_inclusions self
-
+  module Timestamps
     TIMESTAMP_PROPERTIES = {
-      :updated_at => [ DateTime, lambda { |r, p| DateTime.now                                    } ],
-      :updated_on => [ Date,     lambda { |r, p| Date.today                                      } ],
-      :created_at => [ DateTime, lambda { |r, p| r.created_at || (DateTime.now if r.new_record?) } ],
-      :created_on => [ Date,     lambda { |r, p| r.created_on || (Date.today   if r.new_record?) } ],
+      :updated_at => [ DateTime, lambda { |r, p| DateTime.now                             } ],
+      :updated_on => [ Date,     lambda { |r, p| Date.today                               } ],
+      :created_at => [ DateTime, lambda { |r, p| r.created_at || (DateTime.now if r.new?) } ],
+      :created_on => [ Date,     lambda { |r, p| r.created_on || (Date.today   if r.new?) } ],
     }.freeze
 
     def self.included(model)
-      model.before :create, :set_timestamps
-      model.before :update, :set_timestamps
+      model.before :save, :set_timestamps
       model.extend ClassMethods
     end
 
     private
 
     def set_timestamps
-      return unless dirty? || new_record?
+      return unless dirty?
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
-        if model.properties.has_property?(name)
-          model.properties[name].set(self, proc.call(self, model.properties[name])) unless attribute_dirty?(name)
+        if property = properties[name]
+          property.set(self, proc.call(self, property)) unless attribute_dirty?(name)
         end
       end
     end
@@ -52,7 +49,9 @@ module DataMapper
     end # module ClassMethods
 
     class InvalidTimestampName < RuntimeError; end
+
+    Model.append_inclusions self
   end # module Timestamp
   # include Timestamp or Timestamps, it still works
-  Timestamps = Timestamp
+  Timestamp = Timestamps
 end # module DataMapper
