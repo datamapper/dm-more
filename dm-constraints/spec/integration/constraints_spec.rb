@@ -323,7 +323,12 @@ ADAPTERS.each do |adapter|
 
           it "should let the parent to be destroyed" do
             @f.destroy.should == true
-            @f.should be_new_record
+            @f.should be_new_record           
+          end
+
+          it "should destroy the children" do
+            @f.destroy.should == true
+            @f.cows.all? { |c| c.should be_new_record }
           end
 
           it "should destroy the children" do
@@ -368,13 +373,15 @@ ADAPTERS.each do |adapter|
             has n, :cows, :constraint => :destroy!
           end
           class ::Cow
-            # property :farmer_id, Integer
             belongs_to :farmer
           end
           DataMapper.auto_migrate!
         end
 
         it "should destroy the parent and the children, too" do
+          #NOTE: the repository wrapper is needed in order for
+          # the identity map to work (otherwise @c1 in the below two calls
+          # would refer to different instances)          
           repository do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
