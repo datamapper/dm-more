@@ -115,11 +115,29 @@ module DataMapper
           next if rel.is_a?(DataMapper::Associations::RelationshipChain)
 
           children = self.send(rel_name)
-          if children.kind_of?(DataMapper::Collection)
-            check_collection_delete_constraints(rel,children)
-          elsif children
-            check_resource_delete_constraints(rel,children)
-          end
+          case rel.delete_constraint
+          when nil, :protect
+            throw(:halt, false) if children && children.respond_to?(:empty?) && !children.empty?
+          when :destroy
+            if children && children.respond_to?(:each)
+              children.each { |child| child.destroy }
+            end
+          when :destroy!
+            if children
+              # not sure why but this lazy_load is necessary
+              # otherwise children will not be deleted with destroy!
+              children.lazy_load
+              children.destroy!
+            end
+          when :set_nil
+            if children && children.respond_to?(:each)
+              children.each do |child|
+                child.class.many_to_one_relationships.each do |mto_rel|
+                  child.send("#{mto_rel.name}=", nil) if child.send(mto_rel.name).eql?(self)
+                end
+              end
+            end
+          end # case
         end # relationships
       end # check_delete_constraints
 
