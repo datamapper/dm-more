@@ -152,18 +152,18 @@ ADAPTERS.each do |adapter|
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
           end
-          
+
           it "should let the parent to be destroyed" do
             @f.destroy.should == true
-            @f.should be_new_record           
+            @f.should be_new_record
           end
-          
+
           it "should destroy the children" do
             @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
         end
-        
+
         it "the child should be destroyable" do
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
@@ -189,24 +189,24 @@ ADAPTERS.each do |adapter|
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
           end
-          
+
           it "should let the parent to be destroyed" do
             @f.destroy.should == true
-            @f.should be_new_record           
+            @f.should be_new_record
           end
-          
+
           it "should destroy the children" do
             @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
         end
-        
+
         it "the child should be destroyable" do
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
         end
-        
+
       end
 
       describe "when :constraint => :set_nil is given" do
@@ -226,12 +226,12 @@ ADAPTERS.each do |adapter|
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
           end
-          
+
           it "should let the parent to be destroyed" do
             @f.destroy.should == true
-            @f.should be_new_record           
+            @f.should be_new_record
           end
-          
+
           it "should set the foreign_key ids of children to nil" do
             @f.destroy
             @f.cows.all? { |c| c.farmer.should be_nil }
@@ -263,12 +263,12 @@ ADAPTERS.each do |adapter|
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
           end
-          
+
           it "should let the parent to be destroyed" do
             @f.destroy.should == true
-            @f.should be_new_record           
+            @f.should be_new_record
           end
-          
+
           it "should let the children become orphan records" do
             @f.destroy
             @c1.farmer.should be_new_record
