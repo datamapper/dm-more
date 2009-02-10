@@ -175,51 +175,31 @@ ADAPTERS.each do |adapter|
             has n, :cows, :constraint => :destroy!
           end
           class ::Cow
-            property :farmer_id, Integer
+            # property :farmer_id, Integer
             belongs_to :farmer
           end
           DataMapper.auto_migrate!
         end
 
         it "should destroy the parent and the children, too" do
-          #NOTE: the repository wrapper is needed in order for
-          # the identity map to work (otherwise @c1 in the below two calls
-          # would refer to different instances)
           repository do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-            Cow.first(:name => "Riksa", :farmer_id => @f.id).should_not be_nil
-            Cow.first(:name => "Bea", :farmer_id => @f.id).should_not be_nil
+            @f.cows.lazy_load
             @f.destroy.should == true
             @f.should be_new_record
-            Cow.first(:name => "Riksa", :farmer_id => @f.id).should be_nil
-            Cow.first(:name => "Bea", :farmer_id => @f.id).should be_nil
-          end
+            @c1.should be_new_record
+            @c2.should be_new_record
+          end          
         end
-
+        
         it "the child should be destroyable" do
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
         end
-
-        it "should destroy all child with all parent" do
-            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-            @f1 = Farmer.create(:first_name => "Jack", :last_name => "Doe")
-            @c1 = Cow.create(:name => "Bea", :farmer => @f)
-            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-            @c3 = Cow.create(:name => "Beatrice", :farmer => @f1)
-            Cow.first(:name => "Riksa", :farmer_id => @f.id).should_not be_nil
-            Cow.first(:name => "Bea", :farmer_id => @f.id).should_not be_nil
-            Cow.first(:name => "Beatrice", :farmer_id => @f1.id).should_not be_nil
-            Farmer.all.destroy!
-            Cow.first(:name => "Riksa", :farmer_id => @f.id).should be_nil
-            Cow.first(:name => "Bea", :farmer_id => @f.id).should be_nil
-            Cow.first(:name => "Beatrice", :farmer_id => @f1.id).should be_nil
-            Farmer.all.should be_empty
-        end
-
+        
       end
 
       describe "when :constraint => :set_nil is given" do

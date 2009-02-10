@@ -35,11 +35,17 @@ module DataMapper
           children = self.send(rel_name)
           case rel.delete_constraint
           when nil, :protect
-            # only prevent deletion if the resource is a parent in a relationship and has children
             throw(:halt, false) if children && children.respond_to?(:empty?) && !children.empty?
           when :destroy
             if children && children.respond_to?(:each)
               children.each { |child| child.destroy }
+            end
+          when :destroy!
+            if children
+              # not sure why but this lazy_load is necessary
+              # otherwise children will not be deleted with destroy!
+              children.lazy_load
+              children.destroy!
             end
           when :set_nil
             if children && children.respond_to?(:each)
