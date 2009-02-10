@@ -159,7 +159,7 @@ ADAPTERS.each do |adapter|
           end
           
           it "should destroy the children" do
-            @f.destroy.should == true
+            @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
         end
@@ -196,7 +196,7 @@ ADAPTERS.each do |adapter|
           end
           
           it "should destroy the children" do
-            @f.destroy.should == true
+            @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
         end
@@ -220,13 +220,22 @@ ADAPTERS.each do |adapter|
           DataMapper.auto_migrate!
         end
 
-        it "destroying the parent should set children foreign keys to nil" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f)
-          @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-          cows = @f.cows
-          @f.destroy.should == true
-          cows.all? { |cow| cow.farmer.should be_nil }
+        describe "on deletion of the parent" do
+          before(:each) do
+            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f)
+            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
+          end
+          
+          it "should let the parent to be destroyed" do
+            @f.destroy.should == true
+            @f.should be_new_record           
+          end
+          
+          it "should set the foreign_key ids of children to nil" do
+            @f.destroy
+            @f.cows.all? { |c| c.farmer.should be_nil }
+          end
         end
 
         it "the child should be destroyable" do
@@ -248,13 +257,23 @@ ADAPTERS.each do |adapter|
           DataMapper.auto_migrate!
         end
 
-        it "destroying the parent should be allowed, children should become orphan records" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f)
-          @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-          @f.destroy.should == true
-          @c1.farmer.should be_new_record
-          @c2.farmer.should be_new_record
+        describe "on deletion of the parent" do
+          before(:each) do
+            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f)
+            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
+          end
+          
+          it "should let the parent to be destroyed" do
+            @f.destroy.should == true
+            @f.should be_new_record           
+          end
+          
+          it "should let the children become orphan records" do
+            @f.destroy
+            @c1.farmer.should be_new_record
+            @c2.farmer.should be_new_record
+          end
         end
 
         it "the child should be destroyable" do
