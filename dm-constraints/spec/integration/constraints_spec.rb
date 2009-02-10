@@ -327,7 +327,7 @@ ADAPTERS.each do |adapter|
           end
 
           it "should destroy the children" do
-            @f.destroy.should == true
+            @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
 
@@ -391,7 +391,7 @@ ADAPTERS.each do |adapter|
           end
           
           it "should destroy the children" do
-            @f.destroy.should == true
+            @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
           end
         end
