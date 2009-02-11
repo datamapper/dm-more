@@ -127,7 +127,7 @@ module DataMapper
     # Note: DataMapper validations can be used on non-DataMapper resources.
     # In such cases, the return value will be nil.
     def validation_property(field_name)
-      if respond_to?(:model) && (properties = model.properties(self.repository.name)) && properties.has_property?(field_name)
+      if respond_to?(:model) && (properties = model.properties(self.repository.name)) && properties.named?(field_name)
         properties[field_name]
       end
     end

@@ -27,7 +27,7 @@ module DataMapper
         }
 
         scope.each do |item|
-          if target.model.properties(repository_name).has_property?(item)
+          if target.model.properties(repository_name).named?(item)
             opts[item] = target.validation_property_value(item)
           elsif target.model.relationships(repository_name).has_key?(item)
             target.validation_association_keys(item).each do |key|

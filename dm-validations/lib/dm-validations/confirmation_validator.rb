@@ -29,7 +29,7 @@ module DataMapper
         return true if @options[:allow_nil] && field_value.nil?
         return false if !@options[:allow_nil] && field_value.nil?
 
-        if target.class.properties.has_property?(field_name)
+        if target.class.properties.named?(field_name)
           return true unless target.attribute_dirty?(field_name)
         end
 
