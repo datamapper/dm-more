@@ -20,9 +20,6 @@ module DataMapperRest
         
         populate_resource_from_xml(data, resource)
         
-        id_field = resource.class.key(resource.repository.name).find {|p| p.serial?}
-        
-        id_field.set!(resource, normalized_id(data, resource.class)) if id_field
         created += 1  
       end
       
@@ -210,14 +207,6 @@ module DataMapperRest
       end
     end
     
-    def normalized_id(xml, dm_model_class)
-      doc = REXML::Document::new(xml)
-      entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(dm_model_class)}/id")
-      raise "No ID present in #{xml}" unless entity_element.text
-      
-      entity_element.text
-    end
-
     def resource_name_from_model(model)
       Inflection.underscore(model.name)
     end
