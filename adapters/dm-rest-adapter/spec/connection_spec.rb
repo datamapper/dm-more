@@ -69,6 +69,8 @@ describe 'A Connection instance' do
     before do
       @mock_http = mock("http")
       Net::HTTP.should_receive(:start).with(@connection.uri.host, @connection.uri.port).and_yield @mock_http
+      @mock_resp = mock("response")
+      @mock_resp.stub!(:body).and_return ""
     end
     
     it "should raise 404" do
@@ -105,7 +107,9 @@ describe 'A Connection instance' do
     end
     
     it "should raise ResourceInvalid on 422" do
-      @mock_http.should_receive(:request).and_return Net::HTTPResponse.new(1, 422, "WTF")
+      @mock_resp.should_receive(:code).twice.and_return 422
+      @mock_resp.should_receive(:message).and_return "WTF"
+      @mock_http.should_receive(:request).and_return @mock_resp
 
       lambda {@connection.http_post("foobars", "<somexml>")}.should raise_error(DataMapperRest::ResourceInvalid, "Resource action failed with code: 422, message: WTF")
     end

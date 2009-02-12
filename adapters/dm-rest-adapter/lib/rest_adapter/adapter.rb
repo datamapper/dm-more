@@ -16,9 +16,7 @@ module DataMapperRest
       created = 0
       resources.each do |resource|
         response = connection.http_post(resource_name(resource), resource.to_xml)
-        data = response.body
-        
-        populate_resource_from_xml(data, resource)
+        populate_resource_from_xml(response.body, resource)
         
         created += 1  
       end
@@ -220,12 +218,14 @@ module DataMapperRest
     end
     
     def populate_resource_from_xml(xml, resource)
+      puts xml
       doc = REXML::Document::new(xml)
       entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(resource.class)}")
+      raise "No root element matching #{resource_name_from_model(resource.class)} in xml" unless entity_element
       
       entity_element.elements.each do |field_element|
         attribute = resource.class.properties(repository.name).find { |property| property.name.to_s == field_element.name.to_s.tr('-', '_') }
-        resource.send("#{attribute.name.to_s}=", field_element.text) if attribute
+        resource.send("#{attribute.name.to_s}=", field_element.text) if attribute && !field_element.text.nil?
         # TODO: add association saving
       end
       resource

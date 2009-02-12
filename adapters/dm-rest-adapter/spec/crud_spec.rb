@@ -36,7 +36,28 @@ describe 'A REST adapter' do
     it 'should call run_verb with POST' do
       @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml).and_return @mock_resp
       @book.save
-    end    
+    end
+    
+  end
+  
+  describe 'when returning incorrect xml from a save' do
+    before(:all) do      
+      @mock_resp = mock("response")
+    end
+    
+    it "should raise error on missing root element in xml" do
+      @mock_resp.should_receive(:body).and_return ""
+      @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml).and_return @mock_resp
+      
+      lambda {@book.save}.should raise_error(RuntimeError, "No root element matching book in xml")
+    end
+    
+    it "should not raise an error if the root xml is empty" do
+      @mock_resp.should_receive(:body).and_return "<book></book>"
+      @adapter.connection.should_receive(:run_verb).with('post', @book.to_xml).and_return @mock_resp
+      
+      lambda {@book.save}.should_not raise_error(RuntimeError)
+    end
   end
 
   describe 'when deleting an existing resource' do
