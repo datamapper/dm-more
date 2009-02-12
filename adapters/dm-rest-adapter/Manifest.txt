@@ -6,6 +6,7 @@ README.txt
 Rakefile
 TODO
 config/database.rb.example
+dm-rest-adapter.gemspec
 lib/rest_adapter.rb
 lib/rest_adapter/adapter.rb
 lib/rest_adapter/connection.rb
