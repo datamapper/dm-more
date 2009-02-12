@@ -12,6 +12,8 @@ describe 'A REST adapter' do
     
     before(:each) do
       @mock_resp = mock("response")
+      
+      @book.id = 1
       @mock_resp.should_receive(:body).and_return @book.to_xml
     end
 
@@ -23,7 +25,6 @@ describe 'A REST adapter' do
 
       @mock_http.should_receive(:request).and_return @mock_resp
       
-      @book.id = 1
       @book.save.should eql(true)
     end
 

@@ -18,6 +18,8 @@ module DataMapperRest
         response = connection.http_post(resource_name(resource), resource.to_xml)
         data = response.body
         
+        populate_resource_from_xml(data, resource)
+        
         id_field = resource.class.key(resource.repository.name).find {|p| p.serial?}
         
         id_field.set!(resource, normalized_id(data, resource.class)) if id_field
@@ -210,7 +212,10 @@ module DataMapperRest
     
     def normalized_id(xml, dm_model_class)
       doc = REXML::Document::new(xml)
-      entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(dm_model_class)}/id").text
+      entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(dm_model_class)}/id")
+      raise "No ID present in #{xml}" unless entity_element.text
+      
+      entity_element.text
     end
 
     def resource_name_from_model(model)
@@ -223,6 +228,18 @@ module DataMapperRest
 
     def resource_name_from_query(query)
       resource_name_from_model(query.model)
+    end
+    
+    def populate_resource_from_xml(xml, resource)
+      doc = REXML::Document::new(xml)
+      entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(resource.class)}")
+      
+      entity_element.elements.each do |field_element|
+        attribute = resource.class.properties(repository.name).find { |property| property.name.to_s == field_element.name.to_s.tr('-', '_') }
+        resource.send("#{attribute.name.to_s}=", field_element.text) if attribute
+        # TODO: add association saving
+      end
+      resource
     end
     
     # TODO: this is a temporary hack to allow applications using models with dm-rest-adapter
