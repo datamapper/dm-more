@@ -45,7 +45,14 @@ module DataMapperRest
   class ResourceConflict < ClientError; end # :nodoc:
 
   # 422
-  class ResourceInvalid < ClientError; end # :nodoc:
+  class ResourceInvalid < ClientError; # :nodoc:
+    # On this case, we could try to retrieve the validation_errors from message body:
+    attr_reader :body
+    def initialize(response, message = nil)
+      super(response, message)
+      @body = response.body unless response.body.nil?
+    end
+  end
 
   # 5xx Server Error
   class ServerError < ConnectionError; end # :nodoc:
