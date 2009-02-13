@@ -20,7 +20,7 @@ describe DataMapper::Types::Enum do
     obj = SerializeMe.new
     obj.name = 'Hello!'
 
-    repository(:default) do
+    DataMapper.repository(:default) do
       YamlTest.create(:yaml => [1, 2, 3])
       YamlTest.create(:yaml => obj)
     end

@@ -1,6 +1,8 @@
 module DataMapper
   module Types
-    class Enum < DataMapper::Type(Integer)
+    class Enum < Type
+      primitive Integer
+
       def self.inherited(target)
         target.instance_variable_set("@primitive", self.primitive)
       end

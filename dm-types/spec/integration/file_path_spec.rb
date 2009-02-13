@@ -13,7 +13,7 @@ describe DataMapper::Types::FilePath do
   end
 
   it "should work" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       FilePathTest.create(:path => '/usr')
     end
 

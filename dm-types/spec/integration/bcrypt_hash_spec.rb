@@ -23,7 +23,7 @@ describe 'DataMapper::Types::BCryptHash' do
       end
 
       it "should save a password to the DB on creation" do
-        repository(:default) do
+        DataMapper.repository(:default) do
           User.create(:password => "password1")
         end
         user = User.all

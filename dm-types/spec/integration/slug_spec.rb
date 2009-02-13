@@ -18,7 +18,7 @@ describe DataMapper::Types::Slug do
   end
 
   it "should create the permalink" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       SlugTest.create(:name => 'New DataMapper Type')
     end
 
@@ -26,7 +26,7 @@ describe DataMapper::Types::Slug do
   end
 
   it "should find by a slug" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       SlugTest.create(:name => "This Should Be a Slug")
     end
     slug = "this-should-be-a-slug"
@@ -44,7 +44,7 @@ describe DataMapper::Types::Slug do
   ].each do |name, slug|
 
       it "should sluggify #{name}" do
-        repository(:default) do
+        DataMapper.repository(:default) do
           SlugTest.create(:name => name)
         end
         SlugTest.first(:name => slug).should_not be_nil

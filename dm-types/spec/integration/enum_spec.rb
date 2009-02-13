@@ -13,7 +13,7 @@ describe DataMapper::Types::Enum do
   end
 
   it "should work" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       Bug.create(:status => :crit)
       Bug.create(:status => :warn)
     end

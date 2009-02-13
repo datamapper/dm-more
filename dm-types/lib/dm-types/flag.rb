@@ -1,6 +1,8 @@
 module DataMapper
   module Types
-    class Flag < DataMapper::Type(Integer)
+    class Flag < Type
+      primitive Integer
+
       def self.inherited(target)
         target.instance_variable_set("@primitive", self.primitive)
       end

@@ -13,7 +13,7 @@ describe DataMapper::Types::Json do
   end
 
   it "should work" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       JsonTest.create(:json => '[1, 2, 3]')
     end
 

@@ -5,15 +5,17 @@ describe DataMapper::Types::Flag do
   before(:all) do
     class ::Shirt
       include DataMapper::Resource
-      property :id, Serial
-      property :sizes, DM::Flag[:xs, :small, :medium, :large, :xl, :xxl]
+
+      property :id,    Serial
+      property :sizes, Flag[:xs, :small, :medium, :large, :xl, :xxl]
     end
+
     Shirt.auto_migrate!
   end
 
   it "should save with create({:flag_field => [:flags]})" do
     lambda { Shirt.create(:sizes => [:medium, :large]) }.should_not raise_error
-    repository do
+    DataMapper.repository do
       Shirt.get(1).sizes.should == [:medium, :large]
     end
   end
@@ -22,7 +24,7 @@ describe DataMapper::Types::Flag do
     shirt = Shirt.new
     shirt.sizes = [:small, :xs]
     lambda { shirt.save }.should_not raise_error
-    repository do
+    DataMapper.repository do
       Shirt.get(2).sizes.should == [:xs, :small]
     end
   end

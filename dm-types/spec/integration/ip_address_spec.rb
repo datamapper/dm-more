@@ -13,7 +13,7 @@ describe DataMapper::Types::IPAddress do
   end
 
   it "should work" do
-    repository(:default) do
+    DataMapper.repository(:default) do
       IPAddressTest.create(:ip => '127.0.0.1')
     end
 
