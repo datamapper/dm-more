@@ -9,7 +9,7 @@ module DataMapper
 
       adjust_attributes = {}
 
-      model.properties(repository.name).slice(*attributes.keys).each do |property|
+      model.properties(repository.name).values_at(*attributes.keys).each do |property|
         adjust_attributes[property] = attributes[property.name] if property
       end
 
