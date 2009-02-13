@@ -3,7 +3,8 @@ module DataMapper
     module DataObjectsAdapter
       module SQL
         def create_constraints_statements(repository_name, model)
-          model.many_to_one_relationships.map do |relationship|
+          model.many_to_one_relationships.map do |relationship|    
+                    
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
             next if constraint_exists?(table_name, constraint_name)
@@ -13,7 +14,15 @@ module DataMapper
             foreign_table = parent.storage_name(repository_name)
             foreign_keys  = parent.key.map { |key| property_to_column_name(parent.repository(repository_name), key, false) }
 
-            one_to_many_relationship = parent.relationships.values.select { |rel| rel.child_model == model }.first
+            #Anonymous relationshps for :through => Resource
+            one_to_many_relationship = parent.relationships.values.select { |rel|
+              rel.options[:near_relationship_name] == Extlib::Inflection.tableize(model.name).to_sym
+            }.first
+
+            one_to_many_relationship ||= parent.relationships.values.select { |rel|
+              rel.child_model == model
+            }.first
+            
             delete_constraint_type = case one_to_many_relationship.nil? ? :protect : one_to_many_relationship.delete_constraint
             when :protect, nil
               "NO ACTION"
@@ -24,6 +33,7 @@ module DataMapper
             when :skip
               nil
             end
+
             create_constraints_statement(table_name, constraint_name, keys, foreign_table, foreign_keys, delete_constraint_type) if delete_constraint_type
           end.compact
         end
@@ -33,8 +43,9 @@ module DataMapper
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
             next unless constraint_exists?(table_name, constraint_name)
-
+                    
             destroy_constraints_statement(table_name, constraint_name)
+                    
           end.compact
         end
 

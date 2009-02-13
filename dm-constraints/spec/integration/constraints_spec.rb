@@ -54,6 +54,27 @@ ADAPTERS.each do |adapter|
 
         belongs_to :farmer
       end
+      
+      #Used to test M:M :through => Resource relationships
+      class ::Chicken
+        include DataMapper::Resource
+        include DataMapper::Constraints
+
+        property :id,   Serial
+        property :name, String
+        
+        has n, :tags, :through => Resource
+      end
+      
+      class ::Tag
+        include DataMapper::Resource
+        include DataMapper::Constraints
+        
+        property :id,     Serial
+        property :phrase, String
+        
+        has n, :chickens, :through => Resource
+      end
 
       DataMapper.auto_migrate!
     end
@@ -87,6 +108,7 @@ ADAPTERS.each do |adapter|
     # :skip | does not do anything with children (they'll become orphan records)
 
     describe "constraint options" do
+            
       describe "when no constraint options are given" do
 
         it "should destroy the parent if there are no children in the association" do
@@ -112,25 +134,114 @@ ADAPTERS.each do |adapter|
           class ::Cow
             belongs_to :farmer
           end
+          class ::Chicken
+            has n, :tags, :through => Resource, :constraint => :protect
+          end
+          class ::Tag
+            has n, :chickens, :through => Resource, :constraint => :protect
+          end
         end
 
         it "should destroy the parent if there are no children in the association" do
           @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
           @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
+          
+          #1:M
           @c1 = Cow.create(:name => "Bea", :farmer => @f2)
           @f1.destroy.should == true
+          
+          #M:M
+          @t1   = Tag.create(:phrase => "silly chicken")
+          @t2   = Tag.create(:phrase => "serious chicken")
+          @chk1 = Chicken.create(:name =>"Frank the Chicken", :tags => [@t2])
+                    
+          @t1.destroy.should == true
         end
 
-        it "should not destroy the parent if there are children in the association" do
+        it "should not destroy the parent if there are children in the association" do          
+          #1:M
+          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+          @f2.destroy.should == false
+          
+          #M:M
+          @t1   = Tag.create(:phrase => "big chicken")
+          @chk1 = Chicken.create(:name => "Fat Tony", :tags => [@t1])
+          @t1.destroy.should == false
+        end
+
+        it "the child should be destroyable" do
+          #1:M
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f)
-          @f.destroy.should == false
+          @c = Cow.create(:name => "Bea", :farmer => @f)
+          @c.destroy.should == true
+          
+          #M:M
+          @t1   = Tag.create(:phrase => "creepy chicken")
+          @chk1 = Chicken.create(:name => "Carl Groper", :tags => [@t1])
+          @chk1.tags.clear
+          @chk1.save.should == true
+          Chicken.first(:name => "Carl Groper").tags.empty?.should be(true)
+        end
+
+      end
+
+      describe "when :constraint => :destroy! is given" do
+        before do
+          class ::Farmer
+            has n, :cows, :constraint => :destroy!
+          end
+          class ::Cow
+            belongs_to :farmer
+          end
+          class ::Chicken
+            has n, :tags, :through => Resource, :constraint => :destroy!
+          end
+          class ::Tag
+            has n, :chickens, :through => Resource, :constraint => :destroy!
+          end
+          
+          DataMapper.auto_migrate!
+        end
+
+        it "should destroy! the parent and the children, too" do
+          #NOTE: the repository wrapper is needed in order for
+          # the identity map to work (otherwise @c1 in the below two calls
+          # would refer to different instances)
+          repository do
+            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f)
+            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
+            @f.destroy.should == true
+            @f.should be_new_record
+            @c1.should be_new_record
+            @c2.should be_new_record
+            
+            #M:M
+            @t1   = Tag.create :phrase => "floozy"
+            @t2   = Tag.create :phrase => "dirty"
+            @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
+
+            @chk1.destroy.should == true
+            @chk1.should be_new_record
+
+            #@t1 & @t2 should still exist, the chicken_tags should have been deleted
+            ChickenTag.all.should be_empty
+            @t1.should_not be_new_record
+            @t2.should_not be_new_record
+          end
         end
 
         it "the child should be destroyable" do
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
+          
+          #M:M
+          @t1   = Tag.create(:phrase => "horrible character")
+          @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
+          
+          ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
         end
 
       end
@@ -143,6 +254,13 @@ ADAPTERS.each do |adapter|
           class ::Cow
             belongs_to :farmer
           end
+          class ::Chicken
+            has n, :tags, :through => Resource, :constraint => :destroy
+          end
+          class ::Tag
+            has n, :chickens, :through => Resource, :constraint => :destroy
+          end
+          
           DataMapper.auto_migrate!
         end
 
@@ -161,6 +279,23 @@ ADAPTERS.each do |adapter|
           it "should destroy the children" do
             @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
+            
+            @f.should be_new_record
+            @c1.should be_new_record
+            @c2.should be_new_record
+            
+            #M:M
+            @t1   = Tag.create :phrase => "floozy"
+            @t2   = Tag.create :phrase => "dirty"
+            @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
+
+            @chk1.destroy.should == true
+            @chk1.should be_new_record
+
+            #@t1 & @t2 should still exist, the chicken_tags should have been deleted
+            ChickenTag.all.should be_empty
+            @t1.should_not be_new_record
+            @t2.should_not be_new_record
           end
         end
 
@@ -168,6 +303,12 @@ ADAPTERS.each do |adapter|
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
+          
+          #M:M
+          @t1   = Tag.create(:phrase => "horrible character")
+          @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
+          
+          ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
         end
 
       end
@@ -217,6 +358,7 @@ ADAPTERS.each do |adapter|
           class ::Cow
             belongs_to :farmer
           end
+          
           DataMapper.auto_migrate!
         end
 
@@ -243,6 +385,18 @@ ADAPTERS.each do |adapter|
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
         end
+        
+        it "should raise an exception if :set_nil is given for a :through => Resource relationship" do
+          lambda{
+            class ::Chicken
+              has n, :tags, :through => Resource, :constraint => :set_nil
+            end
+            class ::Tag
+              has n, :chickens, :through => Resource, :constraint => :set_nil
+            end
+            DataMapper.auto_migrate!
+          }.should raise_error
+        end
 
       end # describe
 
@@ -253,6 +407,12 @@ ADAPTERS.each do |adapter|
           end
           class ::Cow
             belongs_to :farmer
+          end
+          class ::Chicken
+            has n, :tags, :through => Resource, :constraint => :skip
+          end
+          class ::Tag
+            has n, :chickens, :through => Resource, :constraint => :skip
           end
           DataMapper.auto_migrate!
         end
@@ -274,14 +434,35 @@ ADAPTERS.each do |adapter|
             @c1.farmer.should be_new_record
             @c2.farmer.should be_new_record
           end
-        end
 
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
-        end
+          it "destroying the parent should be allowed, children should become orphan records" do
+            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f)
+            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
+            @f.destroy.should == true
+            @c1.farmer.should be_new_record
+            @c2.farmer.should be_new_record
+          
+            #M:M
+            @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
+            @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
+            @chk1.destroy.should == true
+            @t1.chicken_tags.should_not be_empty
+            @t1.chicken_tags.first.chicken_id.should == @chk1.id
+            @t1.should_not be_new_record
+          end
 
+          it "the child should be destroyable" do
+            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c = Cow.create(:name => "Bea", :farmer => @f)
+            @c.destroy.should == true
+          
+            #M:M
+            @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
+            @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
+            ChickenTag.first.destroy.should be(true)
+          end
+        end
       end # describe
 
       describe "when an invalid option is given" do

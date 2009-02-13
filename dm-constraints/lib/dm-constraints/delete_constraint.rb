@@ -26,19 +26,41 @@ module DataMapper
 
       end
 
-      def add_delete_constraint_option(name, repository_name, child_model, parent_model, options = {})
-        @delete_constraint = options[:constraint]
+      def add_delete_constraint_option(*params)
+        opts = params.last
+        
+        if opts.is_a?(Hash)
+          opts[:constraint] ||= nil  #Make sure options contains :constraint key, whether nil or not
+          #if it is a chain, set the constraint on the 1:M near relationship(anonymous)
+          if self.is_a?(DataMapper::Associations::RelationshipChain)
+            raise Exception.new(":constraint => :set_nil is not valid for M:M relationships") if opts[:constraint] == :set_nil
+            opts = params.last
+            near_rel = opts[:parent_model].relationships[opts[:near_relationship_name]]
+            near_rel.options[:constraint] = opts[:constraint]
+            near_rel.instance_variable_set "@delete_constraint", opts[:constraint]
+          end
+          
+          @delete_constraint = params.last[:constraint]  
+        end
       end
 
+      # TODO.  Doesnt support 1:1 foreign key constraints
       def check_delete_constraints
         model.relationships.each do |rel_name, rel|
+          #Don't delete across M:M relationships, instead use their anonymous 1:M Relationships
+          next if rel.is_a?(DataMapper::Associations::RelationshipChain)
+          
           children = self.send(rel_name)
           case rel.delete_constraint
           when nil, :protect
-            throw(:halt, false) if children && children.respond_to?(:empty?) && !children.empty?
+            # only prevent deletion if the resource is a parent in a relationship and has children
+            if children && children.respond_to?(:empty?) && !children.empty?
+              DataMapper.logger.info("Could not delete a #{self.class} a child record exists #{children.first.class}")
+              throw(:halt,false) 
+            end
           when :destroy
             if children && children.respond_to?(:each)
-              children.each { |child| child.destroy }
+              children.each{|child| child.destroy}
             end
           when :destroy!
             if children
