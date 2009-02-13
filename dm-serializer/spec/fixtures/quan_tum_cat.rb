@@ -4,8 +4,8 @@ module QuanTum
   class Cat
     include DataMapper::Resource
 
-    property :id, Serial
-    property :name, String
+    property :id,       Serial
+    property :name,     String
     property :location, String
 
     repository(:alternate) do
