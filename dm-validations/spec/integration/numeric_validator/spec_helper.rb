@@ -66,7 +66,7 @@ class Country
   property :id,         Serial
   property :name,       String
 
-  property :area,       String, :integer_only => true
+  property :area,       Integer
 
   #
   # Validations

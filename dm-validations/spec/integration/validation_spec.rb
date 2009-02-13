@@ -2,7 +2,8 @@ require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 describe DataMapper::Validate do
-  before :all do
+  before do
+    Object.send(:remove_const, :Yacht) if defined?(Yacht)
     class ::Yacht
       include DataMapper::Resource
       property :id, Serial
@@ -43,7 +44,7 @@ describe DataMapper::Validate do
       it 'should save if the object is valid for the default context' do
         @yacht.should be_valid
         @yacht.save.should be_true
-        @yacht.should_not be_new_record
+        @yacht.should be_saved
       end
 
       it 'should not save if the object is not valid for the default context' do
@@ -53,12 +54,12 @@ describe DataMapper::Validate do
         @yacht.name = nil
         @yacht.should_not be_valid
         @yacht.save.should be_false
-        @yacht.should be_new_record
+        @yacht.should be_new
       end
     end
 
     describe 'with context specified' do
-      before :all do
+      before do
         class ::Yacht
           validates_length :name, :min => 2, :context => [ :strict_name ]
         end
@@ -72,7 +73,7 @@ describe DataMapper::Validate do
       it 'should save if the object is valid for the specified context' do
         @yacht.should be_valid(:strict_name)
         @yacht.save(:strict_name).should be_true
-        @yacht.should_not be_new_record
+        @yacht.should be_saved
       end
 
       it 'should not save if the object is not valid for the specified context' do
@@ -82,7 +83,7 @@ describe DataMapper::Validate do
         @yacht.name = 'a'
         @yacht.should_not be_valid(:strict_name)
         @yacht.save(:strict_name).should be_false
-        @yacht.should be_new_record
+        @yacht.should be_new
       end
     end
   end
@@ -96,7 +97,7 @@ describe DataMapper::Validate do
     it "should save object without running validations" do
       @yacht.should_not_receive(:valid?)
       @yacht.save!
-      @yacht.should_not be_new_record
+      @yacht.should be_saved
     end
   end
 
@@ -139,7 +140,7 @@ describe DataMapper::Validate do
   end
 
   it "should place a validator in the :default context if a named context is not provided" do
-    Yacht.validators.context(:default).length.should == 2
+    Yacht.validators.context(:default).length.should == 1
   end
 
   it "should allow multiple user defined contexts for a validator" do

@@ -29,7 +29,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       Organisation.auto_migrate!
       User.auto_migrate!
 
-      repository do
+       DataMapper.repository do
          Organisation.new(:id=>1, :name=>'Org One', :domain=>'taken').save
          Organisation.new(:id=>2, :name=>'Org Two', :domain=>'two').save
 
@@ -38,7 +38,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it 'should validate the uniqueness of a value on a resource' do
-      repository do
+       DataMapper.repository do
         o = Organisation.get!(1)
         o.should be_valid
 
@@ -52,7 +52,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it "should not even check if :allow_nil is true" do
-      repository do
+       DataMapper.repository do
         o = Organisation.get!(1)
         o.should be_valid
 
@@ -80,7 +80,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it 'should validate the uniqueness of a value with scope' do
-      repository do
+       DataMapper.repository do
         u = User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')
         u.should_not be_valid_for_testing_property
         u.errors.on(:user_name).should include('User name is already taken')

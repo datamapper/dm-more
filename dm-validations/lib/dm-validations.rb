@@ -29,13 +29,10 @@ require dir / 'support' / 'object'
 
 module DataMapper
   module Validate
+    extend Chainable
 
     def self.included(model)
       model.class_eval <<-EOS, __FILE__, __LINE__
-        if method_defined?(:save)
-          before :save, :check_validations
-        end
-
         class << self
           def create(attributes = {}, context = :default)
             resource = new(attributes)
@@ -56,8 +53,11 @@ module DataMapper
     # Ensures the object is valid for the context provided, and otherwise
     # throws :halt and returns false.
     #
-    def check_validations(context = :default)
-      throw(:halt, false) unless context.nil? || valid?(context)
+    chainable do
+      def save(context = :default)
+        return false unless context.nil? || valid?(context)
+        super()
+      end
     end
 
     # Calls save with a context of nil, thus skipping validations.
@@ -116,7 +116,6 @@ module DataMapper
       end
       return valid && target.valid?
     end
-
 
     def validation_property_value(name)
       self.respond_to?(name, true) ? self.send(name) : nil
@@ -229,6 +228,6 @@ module DataMapper
     end # module ClassMethods
   end # module Validate
 
-  Resource.append_inclusions Validate
+  Model.append_inclusions Validate
   Model.append_extensions Validate::ClassMethods
 end # module DataMapper

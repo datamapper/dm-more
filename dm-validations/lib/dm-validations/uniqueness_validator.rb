@@ -23,7 +23,7 @@ module DataMapper
 
         opts = {
           :fields    => target.model.key,
-          field_name => target.validation_property_value(field_name)
+          field_name => target.validation_property_value(field_name),
         }
 
         scope.each do |item|
@@ -36,7 +36,8 @@ module DataMapper
           end
         end
 
-        resource = repository(repository_name) { target.model.first(opts) }
+
+        resource = DataMapper.repository(repository_name) { target.model.first(opts) }
 
         return true if resource.nil?
 
