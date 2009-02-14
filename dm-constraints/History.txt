@@ -1,6 +1,10 @@
 === 0.9.11 / not released
 
-  * No changes this version
+  * Added :destroy! constraints
+  * Added support for 1:1 constraints
+  * Added support for M:M constraints
+  * Add'l rspecs
+  * Updated readme.txt
 
 === 0.9.10 / 2009-01-19
 

@@ -54,7 +54,7 @@ ADAPTERS.each do |adapter|
 
         belongs_to :farmer
       end
-      
+
       #Used to test M:M :through => Resource relationships
       class ::Chicken
         include DataMapper::Resource
@@ -62,17 +62,17 @@ ADAPTERS.each do |adapter|
 
         property :id,   Serial
         property :name, String
-        
+
         has n, :tags, :through => Resource
       end
-      
+
       class ::Tag
         include DataMapper::Resource
         include DataMapper::Constraints
-        
+
         property :id,     Serial
         property :phrase, String
-        
+
         has n, :chickens, :through => Resource
       end
 
@@ -98,17 +98,8 @@ ADAPTERS.each do |adapter|
       lambda { @c1 = Cow.create(:name => "Bea", :stable_id => s.id + 1) }.should raise_error
     end
 
-    # :constraint associations
-    # value  | on deletion of parent...
-    # ---------------------------------
-    # :protect | raises exception if there are child records
-    # :destroy | deletes children
-    # :destroy! | deletes children directly without instantiating the resource, bypassing any hooks
-    # :set_nil | sets parent id to nil in child associations
-    # :skip | does not do anything with children (they'll become orphan records)
-
     describe "constraint options" do
-            
+
       describe "when no constraint options are given" do
 
         it "should destroy the parent if there are no children in the association" do
@@ -130,6 +121,10 @@ ADAPTERS.each do |adapter|
         before do
           class ::Farmer
             has n, :cows, :constraint => :protect
+            has 1, :pig, :constraint => :protect
+          end
+          class ::Pig
+            belongs_to :farmer
           end
           class ::Cow
             belongs_to :farmer
@@ -145,25 +140,29 @@ ADAPTERS.each do |adapter|
         it "should destroy the parent if there are no children in the association" do
           @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
           @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
-          
-          #1:M
           @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+
+          #1:M & 1:1
           @f1.destroy.should == true
-          
+
           #M:M
           @t1   = Tag.create(:phrase => "silly chicken")
           @t2   = Tag.create(:phrase => "serious chicken")
           @chk1 = Chicken.create(:name =>"Frank the Chicken", :tags => [@t2])
-                    
           @t1.destroy.should == true
         end
 
-        it "should not destroy the parent if there are children in the association" do          
+        it "should not destroy the parent if there are children in the association" do
+          #1:1
+          @f1 = Farmer.create(:first_name => "Mary", :last_name => "Smith")
+          @p1 = Pig.create(:name => "Morton",:farmer => @f1)
+          @f1.destroy.should == false
+
           #1:M
           @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c1 = Cow.create(:name => "Bea", :farmer => @f2)
           @f2.destroy.should == false
-          
+
           #M:M
           @t1   = Tag.create(:phrase => "big chicken")
           @chk1 = Chicken.create(:name => "Fat Tony", :tags => [@t1])
@@ -171,11 +170,16 @@ ADAPTERS.each do |adapter|
         end
 
         it "the child should be destroyable" do
-          #1:M
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+
+          #1:1
+          @p = Pig.create(:name => "Wiggly", :farmer => @f)
+          @p.destroy.should == true
+
+          #1:M
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
-          
+
           #M:M
           @t1   = Tag.create(:phrase => "creepy chicken")
           @chk1 = Chicken.create(:name => "Carl Groper", :tags => [@t1])
@@ -186,6 +190,7 @@ ADAPTERS.each do |adapter|
 
       end
 
+      #Does not support 1:1 relationships, dm-core master does not support Resource#destroy!
       describe "when :constraint => :destroy! is given" do
         before do
           class ::Farmer
@@ -200,7 +205,7 @@ ADAPTERS.each do |adapter|
           class ::Tag
             has n, :chickens, :through => Resource, :constraint => :destroy!
           end
-          
+
           DataMapper.auto_migrate!
         end
 
@@ -209,19 +214,20 @@ ADAPTERS.each do |adapter|
           # the identity map to work (otherwise @c1 in the below two calls
           # would refer to different instances)
           repository do
+            #1:M
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
+            cows = @f.cows
             @f.destroy.should == true
             @f.should be_new_record
-            @c1.should be_new_record
-            @c2.should be_new_record
-            
+            cows.first.should be_nil
+            cows.last.should be_nil
+
             #M:M
             @t1   = Tag.create :phrase => "floozy"
             @t2   = Tag.create :phrase => "dirty"
             @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
-
             @chk1.destroy.should == true
             @chk1.should be_new_record
 
@@ -236,11 +242,11 @@ ADAPTERS.each do |adapter|
           @f = Farmer.create(:first_name => "John", :last_name => "Doe")
           @c = Cow.create(:name => "Bea", :farmer => @f)
           @c.destroy.should == true
-          
+
           #M:M
           @t1   = Tag.create(:phrase => "horrible character")
           @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
-          
+
           ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
         end
 
@@ -250,6 +256,7 @@ ADAPTERS.each do |adapter|
         before do
           class ::Farmer
             has n, :cows, :constraint => :destroy
+            has 1, :pig, :constraint => :destroy
           end
           class ::Cow
             belongs_to :farmer
@@ -260,7 +267,7 @@ ADAPTERS.each do |adapter|
           class ::Tag
             has n, :chickens, :through => Resource, :constraint => :destroy
           end
-          
+
           DataMapper.auto_migrate!
         end
 
@@ -279,39 +286,65 @@ ADAPTERS.each do |adapter|
           it "should destroy the children" do
             @f.destroy
             @f.cows.all? { |c| c.should be_new_record }
-            
             @f.should be_new_record
-            @c1.should be_new_record
-            @c2.should be_new_record
-            
+          end
+
+          it "should destroy the parent and the children, too" do
+            #NOTE: the repository wrapper is needed in order for
+            # the identity map to work (otherwise @c1 in the below two calls
+            # would refer to different instances)
+            repository do
+              #1:1
+              @f1 = Farmer.create(:first_name => "Ted", :last_name => "Cornhusker")
+              @p1 = Pig.create(:name => "BaconBits", :farmer => @f1)
+              @f1.destroy.should == true
+              @f1.should be_new_record
+              @p1.should be_new_record
+
+              #1:M
+              @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+              @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+              @c2 = Cow.create(:name => "Riksa", :farmer => @f2)
+              @f2.destroy.should == true
+              @f2.should be_new_record
+              @c1.should be_new_record
+              @c2.should be_new_record
+
+              #M:M
+              @t1   = Tag.create :phrase => "floozy"
+              @t2   = Tag.create :phrase => "dirty"
+              @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
+
+              @chk1.destroy.should == true
+              @chk1.should be_new_record
+
+              #@t1 & @t2 should still exist, the chicken_tags should have been deleted
+              ChickenTag.all.should be_empty
+              @t1.should_not be_new_record
+              @t2.should_not be_new_record
+            end
+          end
+
+          it "the child should be destroyable" do
+            #1:1
+            @f1 = Farmer.create(:first_name => "Mary", :last_name => "Strawback")
+            @p = Pig.create(:name => "Porkchop", :farmer => @f1)
+            @p.destroy.should == true
+
+            #1:m
+            @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c = Cow.create(:name => "Bea", :farmer => @f2)
+            @c.destroy.should == true
+
             #M:M
-            @t1   = Tag.create :phrase => "floozy"
-            @t2   = Tag.create :phrase => "dirty"
-            @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
+            @t1   = Tag.create(:phrase => "horrible character")
+            @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
 
-            @chk1.destroy.should == true
-            @chk1.should be_new_record
-
-            #@t1 & @t2 should still exist, the chicken_tags should have been deleted
-            ChickenTag.all.should be_empty
-            @t1.should_not be_new_record
-            @t2.should_not be_new_record
+            ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
           end
         end
 
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
-          
-          #M:M
-          @t1   = Tag.create(:phrase => "horrible character")
-          @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
-          
-          ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
-        end
-
-      end
+      end # when :constraint => :destroy is given
 
       describe "when :constraint => :destroy! is given" do
         before do
@@ -350,15 +383,18 @@ ADAPTERS.each do |adapter|
 
       end
 
+      # ?? M:M Relationships are not supported, see "when checking constraint types" tests at bottom
+
       describe "when :constraint => :set_nil is given" do
         before do
           class ::Farmer
             has n, :cows, :constraint => :set_nil
+            has 1, :pig, :constraint => :set_nil
           end
           class ::Cow
             belongs_to :farmer
           end
-          
+
           DataMapper.auto_migrate!
         end
 
@@ -378,32 +414,44 @@ ADAPTERS.each do |adapter|
             @f.destroy
             @f.cows.all? { |c| c.farmer.should be_nil }
           end
-        end
 
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
-        end
-        
-        it "should raise an exception if :set_nil is given for a :through => Resource relationship" do
-          lambda{
-            class ::Chicken
-              has n, :tags, :through => Resource, :constraint => :set_nil
-            end
-            class ::Tag
-              has n, :chickens, :through => Resource, :constraint => :set_nil
-            end
-            DataMapper.auto_migrate!
-          }.should raise_error
-        end
+          it "destroying the parent should set children foreign keys to nil" do
+            #1:1
+            @f1 = Farmer.create(:first_name => "Mr", :last_name => "Hands")
+            @p = Pig.create(:name => "Greasy", :farmer => @f1)
+            pig = @f1.pig
 
-      end # describe
+            @f1.destroy.should == true
+            pig.farmer.should be_nil
+
+            #1:m
+            @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+            @c2 = Cow.create(:name => "Riksa", :farmer => @f2)
+            cows = @f2.cows
+            @f2.destroy.should == true
+            cows.all? { |cow| cow.farmer.should be_nil }
+          end
+
+          it "the child should be destroyable" do
+            #1:1
+            @f1 = Farmer.create(:first_name => "Hammertoe", :last_name =>"Nicklebacher")
+            @p = Pig.create(:name => "Prancy Pants", :farmer => @f1)
+            @p.destroy.should == true
+
+            #1:m
+            @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @c = Cow.create(:name => "Bea", :farmer => @f2)
+            @c.destroy.should == true
+          end
+        end # describe "on deletion of the parent"
+      end # describe "when :constraint => :set_nil is given" do
 
       describe "when :constraint => :skip is given" do
         before do
           class ::Farmer
             has n, :cows, :constraint => :skip
+            has 1, :pig, :constraint => :skip
           end
           class ::Cow
             belongs_to :farmer
@@ -434,45 +482,113 @@ ADAPTERS.each do |adapter|
             @c1.farmer.should be_new_record
             @c2.farmer.should be_new_record
           end
-
-          it "destroying the parent should be allowed, children should become orphan records" do
-            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-            @c1 = Cow.create(:name => "Bea", :farmer => @f)
-            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-            @f.destroy.should == true
-            @c1.farmer.should be_new_record
-            @c2.farmer.should be_new_record
-          
-            #M:M
-            @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
-            @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
-            @chk1.destroy.should == true
-            @t1.chicken_tags.should_not be_empty
-            @t1.chicken_tags.first.chicken_id.should == @chk1.id
-            @t1.should_not be_new_record
-          end
-
-          it "the child should be destroyable" do
-            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-            @c = Cow.create(:name => "Bea", :farmer => @f)
-            @c.destroy.should == true
-          
-            #M:M
-            @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
-            @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
-            ChickenTag.first.destroy.should be(true)
-          end
         end
-      end # describe
 
-      describe "when an invalid option is given" do
+        it "destroying the parent should be allowed, children should become orphan records" do
+          #1:1
+          @f1 = Farmer.create(:first_name => "William", :last_name => "Shepard")
+          @p  = Pig.create(:name => "Jiggles The Pig", :farmer => @f1)
+          @f1.destroy.should == true
+          @p.farmer.should be_new_record
+          @p.should_not be_new_record
+          Pig.first(:name => "Jiggles The Pig").farmer_first_name.should_not be_nil
+
+          #1:M
+          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+          @c2 = Cow.create(:name => "Riksa", :farmer => @f2)
+          @f2.destroy.should == true
+          @c1.farmer.should be_new_record
+          @c2.farmer.should be_new_record
+        end
+
+
+        it "the child should be destroyable" do
+          #1:1
+          @f1 = Farmer.create(:first_name => "John", :last_name => "Deere")
+          @p = Pig.create(:name => "Percival", :farmer => @f1)
+          @p.destroy.should == true
+
+          #1:m
+          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @c = Cow.create(:name => "Bea", :farmer => @f2)
+          @c.destroy.should == true
+
+          #M:M
+          @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
+          @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
+          @chk1.destroy.should == true
+          @t1.chicken_tags.should_not be_empty
+          @t1.chicken_tags.first.chicken_id.should == @chk1.id
+          @t1.should_not be_new_record
+        end
+
+        it "the child should be destroyable" do
+          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+          @c = Cow.create(:name => "Bea", :farmer => @f)
+          @c.destroy.should == true
+
+          #M:M
+          @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
+          @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
+          ChickenTag.first.destroy.should be(true)
+        end
+
+      end # describe "when :constraint => :skip is given"
+
+      describe "when checking constraint types" do
         before do
         end
 
         class ::Farmer
         end
 
-        it "should raise an error" do
+        #M:M relationships results in a join table composed of a two part primary key
+        # setting a portion of the primary key is not possible for two reasons:
+        # 1. the columns are defined as :nullable => false
+        # 2. there could be duplicate rows if more than one of either of the types
+        #   was deleted while being associated to the same type on the other side of the relationshp
+        #   Given
+        #   Turkey(Name: Ted, ID: 1) =>
+        #       Tags[Tag(Phrase: awesome, ID: 1), Tag(Phrase: fat, ID: 2)]
+        #   Turkey(Name: Steve, ID: 2) =>
+        #       Tags[Tag(Phrase: awesome, ID: 1), Tag(Phrase: flamboyant, ID: 3)]
+        #
+        #   Table turkeys_tags would look like (turkey_id, tag_id)
+        #     (1, 1)
+        #     (1, 2)
+        #     (2, 1)
+        #     (2, 3)
+        #
+        #   If both turkeys were deleted and pk was set null
+        #     (null, 1)
+        #     (null, 2)
+        #     (null, 1) #at this time there would be a duplicate row error
+        #     (null, 3)
+        #
+        #   I would suggest setting :constraint to :skip in this scenario which will leave
+        #     you with orphaned rows.
+        it "should raise an error if :set_nil is given for a M:M relationship" do
+          lambda{
+            class ::Chicken
+              has n, :tags, :through => Resource, :constraint => :set_nil
+            end
+            class ::Tag
+              has n, :chickens, :through => Resource, :constraint => :set_nil
+            end
+          }.should raise_error(ArgumentError)
+        end
+
+        # Resource#destroy! is not suppored in dm-master
+        it "should raise an error if :destroy! is given for a 1:1 relationship" do
+          lambda do
+            class ::Farmer
+              has 1, :pig, :constraint => :destroy!
+            end
+          end.should raise_error(ArgumentError)
+        end
+
+        it "should raise an error if an unknown type is given" do
           lambda do
             class ::Farmer
               has n, :cows, :constraint => :chocolate
@@ -490,26 +606,6 @@ ADAPTERS.each do |adapter|
         @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
         @p1 = Pig.create(:name => "Bea", :farmer => @f2)
         @f1.destroy.should == true
-      end
-      case adapter
-      when :mysql
-        it "should raise a MysqlError when destroying the parent if there are children in the association" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @p1 = Pig.create(:name => "Bea", :farmer => @f)
-          lambda {@f.destroy}.should raise_error(MysqlError)
-        end
-      when :postgres
-        it "should raise a PostgresError when destroying the parent if there are children in the association" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @p1 = Pig.create(:name => "Bea", :farmer => @f)
-          lambda {@f.destroy}.should raise_error(PostgresError)
-        end
-      else
-        it "should destroy the parent if there are children in the association and the adapter does not support constraints" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @p1 = Pig.create(:name => "Bea", :farmer => @f)
-          @f.destroy.should == true
-        end
       end
 
       it "the child should be destroyable" do

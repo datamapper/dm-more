@@ -59,6 +59,10 @@ module DataMapper
       include DeleteConstraint::ClassMethods
     end
 
+    ##
+    # Add before hooks to #has to check for proper constraint definitions
+    # Add before hooks to #destroy to properly constrain children
+    #
     def self.included(model)
       model.extend(ClassMethods)
       model.class_eval do
