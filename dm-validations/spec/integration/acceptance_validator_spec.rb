@@ -8,6 +8,10 @@ describe DataMapper::Validate::AcceptanceValidator do
         include DataMapper::Resource
         property :id,        Integer, :serial => true
         property :sailyness, Boolean
+        property :allow_nil_test, String
+        property :explicit_accept_required, String
+        property :explicit_accept_optional, String
+        
         validates_is_accepted :sailyness
       end
       @s = SkimBat.new
@@ -27,6 +31,12 @@ describe DataMapper::Validate::AcceptanceValidator do
       @s.sailyness = nil
       @s.valid?.should == true
     end
+    
+    it "should allow a blank value" do
+      @s.allow_nil_test = ''
+      @s.should be_valid
+    end
+    
 
     it "should add the default message when invalid" do
       @s.sailyness = "0"
@@ -38,14 +48,39 @@ describe DataMapper::Validate::AcceptanceValidator do
     before(:all) do
       SkimBat.class_eval do
         validators.clear!
-        validates_is_accepted :sailyness, :allow_nil => false
+        validates_is_accepted :allow_nil_test, :allow_nil => false
       end
       @s = SkimBat.new
     end
 
     it "should not allow nil acceptance" do
-      @s.sailyness = nil
+      @s.allow_nil_test = nil
       @s.valid?.should == false
+    end
+    
+    it "should not allow an empty string" do
+      @s.allow_nil_test = ''
+      @s.should_not be_valid
+    end
+  end
+
+  describe "with :allow_nil => true" do
+    before(:all) do
+      SkimBat.class_eval do
+        validators.clear!
+        validates_is_accepted :allow_nil_test, :allow_nil => true
+      end
+      @s = SkimBat.new
+    end
+
+    it "should  allow nil acceptance" do
+      @s.allow_nil_test = nil
+      @s.valid?.should == true
+    end
+    
+    it "should allow an empty string" do
+      @s.allow_nil_test = ''
+      @s.should be_valid
     end
   end
 

@@ -18,7 +18,7 @@ describe DataMapper::Validate::FormatValidator do
       }
 
       validates_format :email, :as => :email_address
-      validates_format :url, :as => :url
+      validates_format :url, :as => :url, :allow_nil => false
 
       validates_format :username, :with => /[a-z]/, :message => 'Username must have at least one letter', :allow_nil => true
     end
@@ -40,6 +40,23 @@ describe DataMapper::Validate::FormatValidator do
     bol.should be_valid
 
     bol.doc_no = 'B123456X12'
+    bol.should be_valid
+  end
+  
+  it 'should fail on an empty string if allow_nil is false' do
+    bol = BillOfLading.new(valid_attributes.except(:url))
+    bol.should_not be_valid
+  end
+  
+  it 'should pass on an empty string if allow_nil is true' do
+    bol = BillOfLading.new(valid_attributes)
+    bol.username = ''
+    bol.should be_valid
+  end
+  
+  it 'should pass on an empty string if allow_nil is missing (i.e. default to true)' do
+    bol = BillOfLading.new(valid_attributes)
+    bol.email = ''
     bol.should be_valid
   end
 
