@@ -18,6 +18,35 @@ class Story
 end
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+  describe 'DataMapper' do
+    describe "#auto_migrate!" do
+      before do
+        # I *think* AutoMigrator breaks toplevel auto_migrate
+        # into two calls to reduce redundancy, so auto_migrate!
+        # never actually gets called on decendents after a
+        # DataMapper.auto_migrate! call.
+        Story::Version.should_receive(:auto_migrate_down!)
+        Story::Version.should_receive(:auto_migrate_up!)
+      end
+      it "should get called on a versioned inner class" do
+        DataMapper.auto_migrate!
+      end
+    end # #auto_migrate!
+
+    describe "#auto_upgrade!" do
+      before do
+        # AutoMigrator collects all descendents, triggering once
+        # but triggers a second time after Story gets upgraded.
+        # Since it's non-destructive, shouldn't matter that it
+        # gets called twice though.
+        Story::Version.should_receive(:auto_upgrade!).twice
+      end
+      it "should get called on a versioned inner class" do
+        DataMapper.auto_upgrade!
+      end
+    end # #auto_upgrade!
+  end
+  
   describe 'DataMapper::Is::Versioned' do
     describe "inner class" do
       it "should be present" do
