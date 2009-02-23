@@ -62,8 +62,10 @@ module DataMapper
 
     # Calls save with a context of nil, thus skipping validations.
     #
-    def save!
-      save(nil)
+    chainable do
+      def save!
+        save(nil)
+      end
     end
 
     # Return the ValidationErrors
