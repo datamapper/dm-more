@@ -36,18 +36,15 @@ module DataMapper
           end
         end
 
-
         resource = DataMapper.repository(repository_name) { target.model.first(opts) }
 
         return true if resource.nil?
-
-        # is target and found resource identic? same instance... but not ==
-        return true if !target.new? && resource.repository.name == repository_name && resource.model == target.model && resource.key == target.key
+        return true if target.saved? && resource == target
 
         error_message = @options[:message] || ValidationErrors.default_error_message(:taken, field_name)
         add_error(target, error_message, field_name)
 
-        return false
+        false
       end
     end # class UniquenessValidator
 
