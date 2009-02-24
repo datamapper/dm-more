@@ -5,10 +5,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
   class Person
     include DataMapper::Resource
-    property :id, Integer, :serial => true
-    property :name, String
+    property :id,     Serial
+    property :name,   String
     property :salary, Integer, :default => 20000
-    property :age, Integer
+    property :age,    Integer
   end
 
   describe 'Adjust' do
