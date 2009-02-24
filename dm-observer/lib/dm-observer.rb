@@ -55,7 +55,7 @@ end # DataMapper
 if $0 == __FILE__
   require 'rubygems'
 
-  gem 'dm-core', '>=0.10.0'
+  gem 'dm-core', '0.10.0'
   require 'dm-core'
 
   FileUtils.touch(File.join(Dir.pwd, "migration_test.db"))

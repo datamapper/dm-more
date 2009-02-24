@@ -1,10 +1,10 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'rspec', '~>1.1.11'
+gem 'rspec', '~>1.1.12'
 require 'spec'
 
-gem 'dm-core', '>=0.10.0'
+gem 'dm-core', '0.10.0'
 require 'dm-core'
 
 ADAPTERS = []

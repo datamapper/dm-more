@@ -12,7 +12,7 @@ AUTHOR = 'Dirkjan Bussink'
 EMAIL  = 'd.bussink [a] gmail [d] com'
 GEM_NAME = 'dm-constraints'
 GEM_VERSION = DataMapper::Constraints::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 

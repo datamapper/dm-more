@@ -57,7 +57,7 @@ module DataMapper
       MAX_TRIES = 10
 
       begin
-        gem 'ParseTree', '~>3.0.2'
+        gem 'ParseTree', '~>3.0.3'
         require 'parse_tree'
       rescue LoadError
         puts "DataMapper::Sweatshop::Unique - ParseTree could not be loaded, anonymous uniques will not be allowed"

@@ -1,7 +1,7 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'dm-core', '>=0.10.0'
+gem 'dm-core', '0.10.0'
 require 'dm-core'
 
 module DataMapper
