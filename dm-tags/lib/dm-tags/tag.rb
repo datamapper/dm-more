@@ -7,6 +7,6 @@ class Tag
   has n, :taggings
 
   def taggables
-    taggings.map{ |tagging| tagging.taggable }
+    taggings.map { |tagging| tagging.taggable }
   end
 end

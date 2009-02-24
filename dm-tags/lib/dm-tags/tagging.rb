@@ -4,7 +4,7 @@ class Tagging
   property :id,            Serial
   property :tag_id,        Integer, :nullable => false
   property :taggable_id,   Integer, :nullable => false
-  property :taggable_type, String,  :nullable => false
+  property :taggable_type, Class,   :nullable => false
   property :tag_context,   String,  :nullable => false
 
   belongs_to :tag
@@ -14,6 +14,6 @@ class Tagging
   end
 
   def taggable
-    Object.const_get(taggable_type).send(:get!, taggable_id)
+    taggable_type.get!(taggable_id)
   end
 end

@@ -38,18 +38,19 @@ module DataMapper
         associations.flatten!
         associations.uniq!
 
-        class_eval do
-          has n, :taggings, :class_name => "Tagging", :child_key => [:taggable_id],
-          :taggable_type => self.to_s
+        has n, :taggings, :model => 'Tagging', :child_key => [ :taggable_id ], :taggable_type => self
 
-          before :destroy, :destroy_taggings unless respond_to?(:destroy_taggings)
+        before :destroy, :destroy_taggings
 
-          def destroy_taggings
-            taggings.destroy!
-          end unless respond_to?(:destroy_taggings)
-
-          private :taggings, :taggings=, :destroy_taggings
+        unless instance_methods(false).include?('destroy_taggings')
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def destroy_taggings
+              taggings.destroy!
+            end
+          RUBY
         end
+
+        private :taggings, :taggings=, :destroy_taggings
 
         self.extend(DataMapper::Tags::SingletonMethods)
 
@@ -57,13 +58,12 @@ module DataMapper
           association = association.to_s
           singular    = association.singular
 
-          class_eval <<-RUBY
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
             property :frozen_#{singular}_list, Text
 
-            has n, :#{singular}_taggings, :class_name => "Tagging", :child_key => [:taggable_id], :taggable_type => self.to_s, :tag_context => "#{association}"
+            has n, :#{singular}_taggings, :model => 'Tagging', :child_key => [ :taggable_id ], :taggable_type => self, :tag_context => '#{association}'
 
-            before :create, :update_#{association}
-            before :update, :update_#{association}
+            before :save, :update_#{association}
 
             def #{association}
               #{singular}_taggings.map { |tagging| tagging.tag }.sort_by { |tag| tag.name }
@@ -80,19 +80,20 @@ module DataMapper
             def update_#{association}
               return if #{singular}_list.empty?
 
-              Tag.all(:name => frozen_#{singular}_list.to_s.split(',') - #{singular}_list).each do |tag|
-                if tagging = #{singular}_taggings.first(:tag_id => tag.id)
-                  tagging.destroy
-                end
+              remove_tags = frozen_#{singular}_list.to_s.split(',') - #{singular}_list
+
+              if saved? && remove_tags.any?
+                tag_ids = Tag.all(:fields => [ :id ], :name => remove_tags).map { |t| t.id }
+                #{singular}_taggings.all(:tag_id => tag_ids).destroy
+                #{singular}_taggings.reload
               end
 
-              #{singular}_taggings.reload
+              association = #{association}
 
               #{singular}_list.each do |name|
-                tag = Tag.first(:name => name)
-                next if tag && #{association}.include?(tag)
-                tag ||= Tag.create(:name => name)
-                #{singular}_taggings << Tagging.new(:tag => tag, :taggable_type => self.class.to_s, :tag_context => "#{association}")
+                tag = Tag.first_or_create(:name => name)
+                next if association.include?(tag)
+                #{singular}_taggings.new(:tag => tag)
               end
 
               self.frozen_#{singular}_list = #{association}.map { |tag| tag.name }.join(',')
@@ -119,7 +120,6 @@ module DataMapper
               tag_array = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
               @#{singular}_list = (tag_array + #{singular}_list)
             end
-
           RUBY
         end
       end

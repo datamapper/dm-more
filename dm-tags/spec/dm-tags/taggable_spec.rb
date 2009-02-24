@@ -11,12 +11,12 @@ describe "Taggable" do
   end
 
   it "should return an alphabetically sorted array of the tag names when sent #tag_list" do
-    tag1 = Tag.create!(:name => 'tag1')
-    tag2 = Tag.create!(:name => 'tag2')
-    tag3 = Tag.create!(:name => 'tag3')
-    @taggable.tag_taggings << Tagging.new(:tag => tag1, :taggable_type => DefaultTaggedModel.to_s)
-    @taggable.tag_taggings << Tagging.new(:tag => tag2, :taggable_type => DefaultTaggedModel.to_s)
-    @taggable.tag_taggings << Tagging.new(:tag => tag3, :taggable_type => DefaultTaggedModel.to_s)
+    tag1 = Tag.create(:name => 'tag1')
+    tag2 = Tag.create(:name => 'tag2')
+    tag3 = Tag.create(:name => 'tag3')
+    @taggable.tag_taggings << Tagging.new(:tag => tag1)
+    @taggable.tag_taggings << Tagging.new(:tag => tag2)
+    @taggable.tag_taggings << Tagging.new(:tag => tag3)
     @taggable.save.should be_true
     @taggable = DefaultTaggedModel.get!(@taggable.id)
     @taggable.tag_list.should == ['tag1', 'tag2', 'tag3']

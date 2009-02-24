@@ -11,7 +11,7 @@ describe "Tag", "when updating" do
     @tagged_model.skill_list = "Casablanca, Morocco"
     @tagged_model.save
 
-    @tagged_model.should_not be_new_record
+    @tagged_model.should be_saved
     @tagged_model.reload
     @tagged_model.tags.map { |t| t.name }.should == %w[ abc def ghi ]
     @tagged_model.skills.map { |t| t.name }.should == %w[ Casablanca Morocco ]
@@ -19,7 +19,7 @@ describe "Tag", "when updating" do
 
   it "should update itself" do
     @tagged_model.save
-    @tagged_model.should_not be_new_record
+    @tagged_model.should be_saved
     @tagged_model.reload
 
     @tagged_model.tags.should be_empty
