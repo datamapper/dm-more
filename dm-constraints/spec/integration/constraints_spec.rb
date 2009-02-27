@@ -155,7 +155,7 @@ ADAPTERS.each do |adapter|
         end
 
         describe "one-to-one associations" do
-          setup do
+          before do
             @f1 = Farmer.create(:first_name => "Mary", :last_name => "Smith")
             @p1 = Pig.create(:name => "Morton",:farmer => @f1)
           end
@@ -170,7 +170,7 @@ ADAPTERS.each do |adapter|
         end
 
         describe "one-to-many associations" do
-          setup do
+          before do
             @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
             @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
             @c1 = Cow.create(:name => "Bea", :farmer => @f2)
@@ -190,7 +190,7 @@ ADAPTERS.each do |adapter|
         end
 
         describe "many-to-many associations" do
-          setup do
+          before do
             @t1   = Tag.create(:phrase => "silly chicken")
             @t2   = Tag.create(:phrase => "serious chicken")
             @chk1 = Chicken.create(:name =>"Frank the Chicken", :tags => [@t2])
@@ -255,7 +255,7 @@ ADAPTERS.each do |adapter|
         end
 
         describe "many-to-many associations" do
-          setup do
+          before do
             @t1   = Tag.create(:phrase => "floozy")
             @t2   = Tag.create(:phrase => "dirty")
             @chk1 = Chicken.create(:name => "Nancy Chicken", :tags => [@t1, @t2])
