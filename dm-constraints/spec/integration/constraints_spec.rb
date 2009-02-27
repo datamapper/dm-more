@@ -188,12 +188,9 @@ ADAPTERS.each do |adapter|
           end
           
           it "the child should be destroyable" do
-            #M:M
-            @t1   = Tag.create(:phrase => "creepy chicken")
-            @chk1 = Chicken.create(:name => "Carl Groper", :tags => [@t1])
             @chk1.tags.clear
             @chk1.save.should == true
-            Chicken.first(:name => "Carl Groper").tags.empty?.should be(true)
+            @chk1.tags.should be_empty
           end
         end
 
