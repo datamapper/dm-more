@@ -146,7 +146,7 @@ ADAPTERS.each do |adapter|
           it "should not destroy the parent if there are children in the association" do
             @f1.destroy.should == false
           end
-          
+
           it "the child should be destroyable" do
             @p1.destroy.should == true
           end
@@ -166,7 +166,7 @@ ADAPTERS.each do |adapter|
           it "should not destroy the parent if there are children in the association" do
             @f2.destroy.should == false
           end
-          
+
           it "the child should be destroyable" do
             @c1.destroy.should == true
           end
@@ -186,7 +186,7 @@ ADAPTERS.each do |adapter|
           it "should not destroy the parent if there are children in the association" do
             @t2.destroy.should == false
           end
-          
+
           it "the child should be destroyable" do
             @chk1.tags.clear
             @chk1.save.should == true
@@ -195,8 +195,6 @@ ADAPTERS.each do |adapter|
         end
 
       end # when constraint protect is given
-
-      # Does not support 1:1 relationships, dm-core master does not support Resource#destroy!
 
       describe "when :constraint => :destroy! is given" do
         before do
@@ -216,45 +214,57 @@ ADAPTERS.each do |adapter|
           DataMapper.auto_migrate!
         end
 
-        it "should destroy! the parent and the children, too" do
-          #NOTE: the repository wrapper is needed in order for
-          # the identity map to work (otherwise @c1 in the below two calls
-          # would refer to different instances)
-          repository do
-            #1:M
+        describe "one-to-many associations" do
+          setup do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-            cows = @f.cows
-            @f.destroy.should == true
-            @f.should be_new_record
-            cows.first.should be_nil
-            cows.last.should be_nil
-
-            #M:M
-            @t1   = Tag.create :phrase => "floozy"
-            @t2   = Tag.create :phrase => "dirty"
-            @chk1 = Chicken.create :name => "Nancy Chicken", :tags => [@t1,@t2]
-            @chk1.destroy.should == true
-            @chk1.should be_new_record
-
-            #@t1 & @t2 should still exist, the chicken_tags should have been deleted
-            ChickenTag.all.should be_empty
-            @t1.should_not be_new_record
-            @t2.should_not be_new_record
           end
+
+          it "should destroy the parent and the children, too" do
+            #NOTE: the repository wrapper is needed in order for
+            # the identity map to work (otherwise @c1 in the below two calls
+            # would refer to different instances)
+            repository do
+              cows = @f.cows
+              @f.destroy.should == true
+              @f.should be_new_record
+              cows.first.should be_nil
+              cows.last.should be_nil
+            end
+          end
+
+          it "the child should be destroyable" do
+            @c1.destroy.should == true
+          end
+
         end
 
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
+        describe "many-to-many associations" do
+          setup do
+            @t1   = Tag.create(:phrase => "floozy")
+            @t2   = Tag.create(:phrase => "dirty")
+            @chk1 = Chicken.create(:name => "Nancy Chicken", :tags => [@t1, @t2])
+          end
 
-          #M:M
-          @t1   = Tag.create(:phrase => "horrible character")
-          @chk1 = Chicken.create(:name => "Rufio Chicken", :tags => [@t1])
+          it "should destroy! the parent and the children, too" do
+            #NOTE: the repository wrapper is needed in order for
+            # the identity map to work (otherwise @c1 in the below two calls
+            # would refer to different instances)
+            repository do
+              @chk1.destroy.should == true
+              @chk1.should be_new_record
 
-          ChickenTag.first(:chicken_id => @chk1.id).destroy.should == true
+              # @t1 & @t2 should still exist, the chicken_tags should have been deleted
+              ChickenTag.all.should be_empty
+              @t1.should_not be_new_record
+              @t2.should_not be_new_record
+            end
+          end
+
+          it "the child should be destroyable" do
+            @chk1.destroy.should == true
+          end
         end
 
       end # when :constraint => :destroy! is given
