@@ -137,58 +137,67 @@ ADAPTERS.each do |adapter|
           end
         end
 
-        it "should destroy the parent if there are no children in the association" do
-          @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+        describe "one-to-one associations" do
+          setup do
+            @f1 = Farmer.create(:first_name => "Mary", :last_name => "Smith")
+            @p1 = Pig.create(:name => "Morton",:farmer => @f1)
+          end
 
-          #1:M & 1:1
-          @f1.destroy.should == true
-
-          #M:M
-          @t1   = Tag.create(:phrase => "silly chicken")
-          @t2   = Tag.create(:phrase => "serious chicken")
-          @chk1 = Chicken.create(:name =>"Frank the Chicken", :tags => [@t2])
-          @t1.destroy.should == true
+          it "should not destroy the parent if there are children in the association" do
+            @f1.destroy.should == false
+          end
+          
+          it "the child should be destroyable" do
+            @p1.destroy.should == true
+          end
         end
 
-        it "should not destroy the parent if there are children in the association" do
-          #1:1
-          @f1 = Farmer.create(:first_name => "Mary", :last_name => "Smith")
-          @p1 = Pig.create(:name => "Morton",:farmer => @f1)
-          @f1.destroy.should == false
+        describe "one-to-many associations" do
+          setup do
+            @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
+            @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
+            @c1 = Cow.create(:name => "Bea", :farmer => @f2)
+          end
 
-          #1:M
-          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
-          @f2.destroy.should == false
+          it "should destroy the parent if there are no children in the association" do
+            @f1.destroy.should == true
+          end
 
-          #M:M
-          @t1   = Tag.create(:phrase => "big chicken")
-          @chk1 = Chicken.create(:name => "Fat Tony", :tags => [@t1])
-          @t1.destroy.should == false
+          it "should not destroy the parent if there are children in the association" do
+            @f2.destroy.should == false
+          end
+          
+          it "the child should be destroyable" do
+            @c1.destroy.should == true
+          end
         end
 
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
+        describe "many-to-many associations" do
+          setup do
+            @t1   = Tag.create(:phrase => "silly chicken")
+            @t2   = Tag.create(:phrase => "serious chicken")
+            @chk1 = Chicken.create(:name =>"Frank the Chicken", :tags => [@t2])
+          end
 
-          #1:1
-          @p = Pig.create(:name => "Wiggly", :farmer => @f)
-          @p.destroy.should == true
+          it "should destroy the parent if there are no children in the association" do
+            @t1.destroy.should == true
+          end
 
-          #1:M
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
+          it "should not destroy the parent if there are children in the association" do
+            @t2.destroy.should == false
+          end
+          
+          it "the child should be destroyable" do
+            #M:M
+            @t1   = Tag.create(:phrase => "creepy chicken")
+            @chk1 = Chicken.create(:name => "Carl Groper", :tags => [@t1])
+            @chk1.tags.clear
+            @chk1.save.should == true
+            Chicken.first(:name => "Carl Groper").tags.empty?.should be(true)
+          end
+        end
 
-          #M:M
-          @t1   = Tag.create(:phrase => "creepy chicken")
-          @chk1 = Chicken.create(:name => "Carl Groper", :tags => [@t1])
-          @chk1.tags.clear
-          @chk1.save.should == true
-          Chicken.first(:name => "Carl Groper").tags.empty?.should be(true)
-        end # when constraint protect is given
-
-      end
+      end # when constraint protect is given
 
       # Does not support 1:1 relationships, dm-core master does not support Resource#destroy!
 
