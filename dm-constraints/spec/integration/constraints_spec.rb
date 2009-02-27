@@ -298,11 +298,9 @@ ADAPTERS.each do |adapter|
           end
 
           it "should destroy the children" do
-            # repository do
-              pig = @f.pig
-              @f.destroy
-              pig.should be_new_record
-            # end
+            pig = @f.pig
+            @f.destroy
+            pig.should be_new_record
           end
 
           it "the child should be destroyable" do
@@ -360,8 +358,6 @@ ADAPTERS.each do |adapter|
 
       end # when :constraint => :destroy is given
 
-      # ?? M:M Relationships are not supported, see "when checking constraint types" tests at bottom
-
       describe "when :constraint => :set_nil is given" do
         before do
           class ::Farmer
@@ -371,11 +367,34 @@ ADAPTERS.each do |adapter|
           class ::Cow
             belongs_to :farmer
           end
-
+          # NOTE: M:M Relationships are not supported,
+          # see "when checking constraint types" tests at bottom
           DataMapper.auto_migrate!
         end
 
-        describe "on deletion of the parent" do
+        describe "one-to-one associations" do
+          before do
+            @f = Farmer.create(:first_name => "Mr", :last_name => "Hands")
+            @p = Pig.create(:name => "Greasy", :farmer => @f)
+          end
+
+          it "should let the parent to be destroyed" do
+            @f.destroy.should == true
+          end
+
+          it "should set the child's foreign_key id to nil" do
+            pig = @f.pig
+            @f.destroy.should == true
+            pig.farmer.should be_nil
+          end
+
+          it "the child should be destroyable" do
+            @p.destroy.should == true
+          end
+
+        end
+
+        describe "one-to-many associations" do
           before(:each) do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
@@ -391,37 +410,14 @@ ADAPTERS.each do |adapter|
             @f.destroy
             @f.cows.all? { |c| c.farmer.should be_nil }
           end
+
+          it "the children should be destroyable" do
+            @c1.destroy.should == true
+            @c2.destroy.should == true
+          end
+
         end
 
-        it "destroying the parent should set children foreign keys to nil" do
-          #1:1
-          @f1 = Farmer.create(:first_name => "Mr", :last_name => "Hands")
-          @p = Pig.create(:name => "Greasy", :farmer => @f1)
-          pig = @f1.pig
-
-          @f1.destroy.should == true
-          pig.farmer.should be_nil
-
-          #1:m
-          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
-          @c2 = Cow.create(:name => "Riksa", :farmer => @f2)
-          cows = @f2.cows
-          @f2.destroy.should == true
-          cows.all? { |cow| cow.farmer.should be_nil }
-        end
-
-        it "the child should be destroyable" do
-          #1:1
-          @f1 = Farmer.create(:first_name => "Hammertoe", :last_name =>"Nicklebacher")
-          @p = Pig.create(:name => "Prancy Pants", :farmer => @f1)
-          @p.destroy.should == true
-
-          #1:m
-          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f2)
-          @c.destroy.should == true
-        end
       end # describe "when :constraint => :set_nil is given" do
 
       describe "when :constraint => :skip is given" do
