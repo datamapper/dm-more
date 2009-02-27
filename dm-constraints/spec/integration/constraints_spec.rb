@@ -99,6 +99,22 @@ ADAPTERS.each do |adapter|
       lambda { @c1 = Cow.create(:name => "Bea", :stable_id => s.id + 1) }.should raise_error
     end
 
+    describe "belongs_to without matching has association" do
+      before do
+        @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
+        @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
+        @p = Pig.create(:name => "Bea", :farmer => @f2)
+      end
+      it "should destroy the parent if there are no children in the association" do
+        @f1.destroy.should == true
+      end
+
+      it "the child should be destroyable" do
+        @p.destroy.should == true
+      end
+
+    end
+
     describe "constraint options" do
 
       describe "when no constraint options are given" do
@@ -246,18 +262,13 @@ ADAPTERS.each do |adapter|
           end
 
           it "should destroy! the parent and the children, too" do
-            #NOTE: the repository wrapper is needed in order for
-            # the identity map to work (otherwise @c1 in the below two calls
-            # would refer to different instances)
-            repository do
-              @chk1.destroy.should == true
-              @chk1.should be_new_record
+            @chk1.destroy.should == true
+            @chk1.should be_new_record
 
-              # @t1 & @t2 should still exist, the chicken_tags should have been deleted
-              ChickenTag.all.should be_empty
-              @t1.should_not be_new_record
-              @t2.should_not be_new_record
-            end
+            # @t1 & @t2 should still exist, the chicken_tags should have been deleted
+            ChickenTag.all.should be_empty
+            @t1.should_not be_new_record
+            @t2.should_not be_new_record
           end
 
           it "the child should be destroyable" do
@@ -340,15 +351,13 @@ ADAPTERS.each do |adapter|
           end
 
           it "should destroy the parent and the children, too" do
-            repository do
-              @chk1.destroy.should == true
-              @chk1.should be_new_record
+            @chk1.destroy.should == true
+            @chk1.should be_new_record
 
-              #@t1 & @t2 should still exist, the chicken_tags should have been deleted
-              ChickenTag.all.should be_empty
-              @t1.should_not be_new_record
-              @t2.should_not be_new_record
-            end
+            #@t1 & @t2 should still exist, the chicken_tags should have been deleted
+            ChickenTag.all.should be_empty
+            @t1.should_not be_new_record
+            @t2.should_not be_new_record
           end
 
           it "the child should be destroyable" do
@@ -443,24 +452,24 @@ ADAPTERS.each do |adapter|
             @f = Farmer.create(:first_name => "William", :last_name => "Shepard")
             @p  = Pig.create(:name => "Jiggles The Pig", :farmer => @f)
           end
-          
+
           it "should let the parent be destroyed" do
             @f.destroy.should == true
             @f.should be_new_record
             # @p.farmer.should be_new_record
           end
-          
+
           it "should let the children become orphan records" do
             @f.destroy
             @p.farmer.should be_new_record
-          end          
-          
+          end
+
           it "the child should be destroyable" do
             @p.destroy.should == true
           end
-          
+
         end
-        
+
         describe "one-to-many associations" do
           before do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
@@ -477,34 +486,29 @@ ADAPTERS.each do |adapter|
             @f.destroy
             @c1.farmer.should be_new_record
             @c2.farmer.should be_new_record
-          end      
-          
+          end
+
           it "the children should be destroyable" do
             @c1.destroy.should == true
             @c2.destroy.should == true
           end
-              
+
         end
-        
+
         describe "many-to-many associations" do
           before do
             @t = Tag.create(:phrase => "Richard Pryor's Chicken")
-            @chk = Chicken.create(:name => "Delicious", :tags => [@t])            
+            @chk = Chicken.create(:name => "Delicious", :tags => [@t])
           end
-          
+
           it "the children should be destroyable" do
             @chk.destroy.should == true
           end
         end
-        
+
       end # describe "when :constraint => :skip is given"
 
       describe "when checking constraint types" do
-        before do
-        end
-
-        class ::Farmer
-        end
 
         #M:M relationships results in a join table composed of a two part primary key
         # setting a portion of the primary key is not possible for two reasons:
@@ -542,7 +546,7 @@ ADAPTERS.each do |adapter|
           }.should raise_error(ArgumentError)
         end
 
-        # Resource#destroy! is not suppored in dm-master
+        # Resource#destroy! is not suppored in dm-core
         it "should raise an error if :destroy! is given for a 1:1 relationship" do
           lambda do
             class ::Farmer
@@ -563,20 +567,5 @@ ADAPTERS.each do |adapter|
 
     end # describe 'constraint options'
 
-    describe "belongs_to without matching has association" do
-      it "should destroy the parent if there are no children in the association" do
-        @f1 = Farmer.create(:first_name => "John", :last_name => "Doe")
-        @f2 = Farmer.create(:first_name => "Some", :last_name => "Body")
-        @p1 = Pig.create(:name => "Bea", :farmer => @f2)
-        @f1.destroy.should == true
-      end
-
-      it "the child should be destroyable" do
-        @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-        @p = Pig.create(:name => "Bea", :farmer => @f)
-        @p.destroy.should == true
-      end
-
-    end # describe 'belongs_to without matching has association'
   end # DataMapper::Constraints
 end # ADAPTERS.each
