@@ -215,23 +215,20 @@ ADAPTERS.each do |adapter|
         end
 
         describe "one-to-many associations" do
-          setup do
+          before(:each) do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
           end
 
-          it "should destroy the parent and the children, too" do
-            #NOTE: the repository wrapper is needed in order for
-            # the identity map to work (otherwise @c1 in the below two calls
-            # would refer to different instances)
-            repository do
-              cows = @f.cows
-              @f.destroy.should == true
-              @f.should be_new_record
-              cows.first.should be_nil
-              cows.last.should be_nil
-            end
+          it "should let the parent to be destroyed" do
+            @f.destroy.should == true
+            @f.should be_new_record
+          end
+
+          it "should destroy the children" do
+            @f.destroy
+            @f.cows.all? { |c| c.should be_new_record }
           end
 
           it "the child should be destroyable" do
@@ -362,43 +359,6 @@ ADAPTERS.each do |adapter|
         end
 
       end # when :constraint => :destroy is given
-
-      describe "when :constraint => :destroy! is given" do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :destroy!
-          end
-          class ::Cow
-            belongs_to :farmer
-          end
-          DataMapper.auto_migrate!
-        end
-
-        describe "on deletion of the parent" do
-          before(:each) do
-            @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-            @c1 = Cow.create(:name => "Bea", :farmer => @f)
-            @c2 = Cow.create(:name => "Riksa", :farmer => @f)
-          end
-
-          it "should let the parent to be destroyed" do
-            @f.destroy.should == true
-            @f.should be_new_record
-          end
-
-          it "should destroy the children" do
-            @f.destroy
-            @f.cows.all? { |c| c.should be_new_record }
-          end
-        end
-
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
-        end
-
-      end
 
       # ?? M:M Relationships are not supported, see "when checking constraint types" tests at bottom
 
