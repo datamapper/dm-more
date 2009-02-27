@@ -438,8 +438,31 @@ ADAPTERS.each do |adapter|
           DataMapper.auto_migrate!
         end
 
-        describe "on deletion of the parent" do
-          before(:each) do
+        describe "one-to-one associations" do
+          before do
+            @f = Farmer.create(:first_name => "William", :last_name => "Shepard")
+            @p  = Pig.create(:name => "Jiggles The Pig", :farmer => @f)
+          end
+          
+          it "should let the parent be destroyed" do
+            @f.destroy.should == true
+            @f.should be_new_record
+            # @p.farmer.should be_new_record
+          end
+          
+          it "should let the children become orphan records" do
+            @f.destroy
+            @p.farmer.should be_new_record
+          end          
+          
+          it "the child should be destroyable" do
+            @p.destroy.should == true
+          end
+          
+        end
+        
+        describe "one-to-many associations" do
+          before do
             @f = Farmer.create(:first_name => "John", :last_name => "Doe")
             @c1 = Cow.create(:name => "Bea", :farmer => @f)
             @c2 = Cow.create(:name => "Riksa", :farmer => @f)
@@ -454,59 +477,26 @@ ADAPTERS.each do |adapter|
             @f.destroy
             @c1.farmer.should be_new_record
             @c2.farmer.should be_new_record
+          end      
+          
+          it "the children should be destroyable" do
+            @c1.destroy.should == true
+            @c2.destroy.should == true
+          end
+              
+        end
+        
+        describe "many-to-many associations" do
+          before do
+            @t = Tag.create(:phrase => "Richard Pryor's Chicken")
+            @chk = Chicken.create(:name => "Delicious", :tags => [@t])            
+          end
+          
+          it "the children should be destroyable" do
+            @chk.destroy.should == true
           end
         end
-
-        it "destroying the parent should be allowed, children should become orphan records" do
-          #1:1
-          @f1 = Farmer.create(:first_name => "William", :last_name => "Shepard")
-          @p  = Pig.create(:name => "Jiggles The Pig", :farmer => @f1)
-          @f1.destroy.should == true
-          @p.farmer.should be_new_record
-          @p.should_not be_new_record
-          Pig.first(:name => "Jiggles The Pig").farmer_first_name.should_not be_nil
-
-          #1:M
-          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c1 = Cow.create(:name => "Bea", :farmer => @f2)
-          @c2 = Cow.create(:name => "Riksa", :farmer => @f2)
-          @f2.destroy.should == true
-          @c1.farmer.should be_new_record
-          @c2.farmer.should be_new_record
-        end
-
-
-        it "the child should be destroyable" do
-          #1:1
-          @f1 = Farmer.create(:first_name => "John", :last_name => "Deere")
-          @p = Pig.create(:name => "Percival", :farmer => @f1)
-          @p.destroy.should == true
-
-          #1:m
-          @f2 = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f2)
-          @c.destroy.should == true
-
-          #M:M
-          @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
-          @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
-          @chk1.destroy.should == true
-          @t1.chicken_tags.should_not be_empty
-          @t1.chicken_tags.first.chicken_id.should == @chk1.id
-          @t1.should_not be_new_record
-        end
-
-        it "the child should be destroyable" do
-          @f = Farmer.create(:first_name => "John", :last_name => "Doe")
-          @c = Cow.create(:name => "Bea", :farmer => @f)
-          @c.destroy.should == true
-
-          #M:M
-          @t1   = Tag.create(:phrase => "Richard Pryor's Chicken")
-          @chk1 = Chicken.create(:name => "Delicious", :tags => [@t1])
-          ChickenTag.first.destroy.should be(true)
-        end
-
+        
       end # describe "when :constraint => :skip is given"
 
       describe "when checking constraint types" do
