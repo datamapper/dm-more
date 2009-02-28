@@ -12,7 +12,7 @@ module DataMapper
       def self.default_error_message(key, field, *values)
         extra = values.last.is_a?(::Hash) ? values.pop : {}
         if extra[:target] and i18n_present? then
-          klass = extra[:target].class.to_s.underscore.to_sym
+          klass = Extlib::Inflection.underscore(extra[:target].class.to_s).to_sym
           field = find_translation( field, [
                                     [:data_mapper, :models, klass, :properties],
                                     [:data_mapper, :models, :_default, :properties],
