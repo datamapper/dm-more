@@ -3,6 +3,8 @@ module DataMapper
     class ValidationErrors
       class << self
         alias_method :original_default_error_message, :default_error_message
+        
+        @@original_default_error_messages = @@default_error_messages
       end
 
       def self.i18n_present?
@@ -19,6 +21,12 @@ module DataMapper
                                     [:models, klass, :properties],
                                     [:models, :_default, :properties]
                                   ])
+          begin
+            @@default_error_messages = I18n.translate :messages, :scope => [:data_mapper, :errors], :raise => true
+          rescue I18n::MissingTranslationData
+            # If it fails will keep the original choices
+            @@default_error_messages = @@original_default_error_messages
+          end
         end
         original_default_error_message key, field, values
       end
