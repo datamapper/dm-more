@@ -25,6 +25,8 @@ require dir / 'uniqueness_validator'
 require dir / 'acceptance_validator'
 require dir / 'custom_validator'
 
+require dir / 'validation_errors_i18n'
+
 require dir / 'support' / 'object'
 
 module DataMapper
