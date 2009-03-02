@@ -3,8 +3,8 @@ module DataMapper
     class ValidationErrors
       class << self
         alias_method :original_default_error_message, :default_error_message
-        
-        @@original_default_error_messages = @@default_error_messages
+
+        @@translations_loaded_to_i18n = false
       end
 
       def self.i18n_present?
@@ -14,35 +14,44 @@ module DataMapper
       def self.default_error_message(key, field, *values)
         extra = values.last.is_a?(::Hash) ? values.pop : {}
         if extra[:target] and i18n_present? then
-          klass = Extlib::Inflection.underscore(extra[:target].class.to_s).to_sym
-          field = find_translation( field, [
-                                    [:data_mapper, :models, klass, :properties],
-                                    [:data_mapper, :models, :_default, :properties],
-                                    [:models, klass, :properties],
-                                    [:models, :_default, :properties]
+          load_default_translations
+          klass = Extlib::Inflection.underscore(extra[:target].class.to_s)
+          translated_field = find_translation( field, [
+                                    ["data_mapper.models.#{klass}.properties"],
+                                    ["data_mapper.models._default.properties"],
+                                    ["models.#{klass}.properties"],
+                                    ["models._default.properties"]
                                   ])
-          begin
-            @@default_error_messages = I18n.translate :messages, :scope => [:data_mapper, :errors], :raise => true
-          rescue I18n::MissingTranslationData
-            # If it fails will keep the original choices
-            @@default_error_messages = @@original_default_error_messages
-          end
+
+          return find_translation( key, [
+                                    ["data_mapper.errors.#{klass}.properties.#{field}"],
+                                    ["data_mapper.errors.#{klass}"],
+                                    ["data_mapper.errors.messages"]
+                                  ], {:field => translated_field}.merge(extra) )
+        else
+          original_default_error_message key, field, values
         end
-        original_default_error_message key, field, values
       end
 
       private
-        def self.find_translation(field, scopes)
+        def self.find_translation(field, scopes, options = {})
           result = nil
           scopes.each {|scope|
             begin
-              result = I18n.translate field, { :raise => true, :scope => scope }
+              result = I18n.translate field, options.merge({ :raise => true, :scope => scope })
               break
             rescue I18n::MissingTranslationData
               next
             end
           }
           result || field
+        end
+        
+        def self.load_default_translations
+          return if @@translations_loaded_to_i18n
+          I18n.load_path.insert(0, Dir[File.join(File.dirname(__FILE__), 'locale', '*.{rb,yml}')]).flatten!
+          I18n.reload! if I18n.backend.initialized?
+          @@translations_loaded_to_i18n = true
         end
     end
   end

@@ -1,0 +1,25 @@
+en:
+  data_mapper:
+    errors:
+      messages:
+        absent: '{{field}} must be absent'
+        inclusion: '{{field}} must be one of [{{value}}]'
+        invalid: '{{field}} has an invalid format'
+        confirmation: '{{field}} does not match the confirmation'
+        accepted: "{{field}} is not accepted"
+        nil: '{{field}} must not be nil'
+        blank: '{{field}} must not be blank'
+        length_between: '{{field}} must be between {{minimum}} and {{maximum}} characters long'
+        too_long: '{{field}} must be less than {{maximum}} characters long'
+        too_short: '{{field}} must be more than {{minimum}} characters long'
+        wrong_length: '{{field}} must be {{length}} characters long'
+        taken: '{{field}} is already taken'
+        not_a_number: '{{field}} must be a number'
+        not_an_integer: '{{field}} must be an integer'
+        greater_than: '{{field}} must be greater than {{value}}'
+        greater_than_or_equal_to: "{{field}} must be greater than or equal to {{value}}"
+        equal_to: "{{field}} must be equal to {{value}}"
+        less_than: '{{field}} must be less than {{value}}'
+        less_than_or_equal_to: "{{field}} must be less than or equal to {{value}}"
+        value_between: '{{field}} must be between {{minimum}} and {{maximum}}'
+        primitive: '{{field}} must be of type {{type}}'
