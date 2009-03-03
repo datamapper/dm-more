@@ -3,7 +3,7 @@ en:
     errors:
       messages:
         absent: '{{field}} must be absent'
-        inclusion: '{{field}} must be one of [{{value}}]'
+        inclusion: '{{field}} must be one of [{{values}}]'
         invalid: '{{field}} has an invalid format'
         confirmation: '{{field}} does not match the confirmation'
         accepted: "{{field}} is not accepted"

@@ -3,23 +3,23 @@ fr:
     errors:
       messages:
         absent: '{{field}} doit être vide'
-        inclusion: '{{field}} must be one of [{{value}}]'
-        invalid: '{{field}} has an invalid format'
-        confirmation: '{{field}} does not match the confirmation'
+        inclusion: '{{field}} doit être inclus(e) dans la liste [{{values}}]'
+        invalid: "{{field}} n'est pas valide"
+        confirmation: '{{field}} ne concorde pas avec la confirmation'
         accepted: "{{field}} n'est pas accepté"
-        nil: '{{field}} ne peux pas être nil'
+        nil: '{{field}} doit être remplié'
         blank: '{{field}} doit être remplié'
-        length_between: '{{field}} must be between {{minimum}} and {{maximum}} characters long'
-        too_long: '{{field}} must be less than {{maximum}} characters long'
-        too_short: '{{field}} must be more than {{minimum}} characters long'
-        wrong_length: '{{field}} must be {{length}} characters long'
-        taken: '{{field}} is already taken'
-        not_a_number: '{{field}} must be a number'
-        not_an_integer: '{{field}} must be an integer'
-        greater_than: '{{field}} must be greater than {{value}}'
-        greater_than_or_equal_to: "{{field}} must be greater than or equal to {{value}}"
-        equal_to: "{{field}} must be equal to {{value}}"
-        less_than: '{{field}} must be less than {{value}}'
-        less_than_or_equal_to: "{{field}} must be less than or equal to {{value}}"
-        value_between: '{{field}} must be between {{minimum}} and {{maximum}}'
-        primitive: '{{field}} must be of type {{type}}'
+        length_between: '{{field}} ne fait pas la bonne longueur (doit comporter entre {{minimum}} et {{maximum}} caractères)'
+        too_long: '{{field}} est trop long (pas plus de {{maximum}} caractères)'
+        too_short: '{{field}} est trop court (au moins {{minimum}} caractères)'
+        wrong_length: '{{field}} doit être égal à {{length}}'
+        taken: "{{field}} n'est pas disponible"
+        not_a_number: "{{field}} n'est pas un nombre"
+        not_an_integer: "{{field}} n'est pas un nombre entier"
+        greater_than: '{{field}} doit être supérieur à {{value}}'
+        greater_than_or_equal_to: "{{field}} doit être supérieur ou égal à {{value}}"
+        equal_to: "{{field}} doit être égal à {{value}}"
+        less_than: "{{field}} doit être inférieur à {{value}}"
+        less_than_or_equal_to: "{{field}} doit être inférieur ou égal à {{value}}"
+        value_between: '{{field}} doit être entre {{minimum}} et {{maximum}}'
+        primitive: '{{field}} doit être un {{type}}'

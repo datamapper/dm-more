@@ -7,13 +7,9 @@ module DataMapper
         @@translations_loaded_to_i18n = false
       end
 
-      def self.i18n_present?
-        return true if I18n rescue false
-      end
-
       def self.default_error_message(key, field, *values)
         extra = values.last.is_a?(::Hash) ? values.pop : {}
-        if extra[:target] and i18n_present? then
+        if extra[:target] and defined?(I18n) then
           load_default_translations
           klass = Extlib::Inflection.underscore(extra[:target].class.to_s)
           translated_field = find_translation( field, [

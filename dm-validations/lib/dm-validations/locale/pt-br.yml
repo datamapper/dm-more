@@ -1,0 +1,25 @@
+pt-br:
+  data_mapper:
+    errors:
+      messages:
+        absent: '{{field}} deve ficar vazio'
+        inclusion: '{{field}} não está incluso na lista [{{values}}]'
+        invalid: '{{field}} está num formato inválido'
+        confirmation: '{{field}} não bate com a confirmação'
+        accepted: "{{field}} não é aceito"
+        nil: '{{field}} não pode ser vazio'
+        blank: '{{field}} não pode ser vazio'
+        length_between: '{{field}} deve estar entre {{minimum}} e {{maximum}} carácteres'
+        too_long: '{{field}} deve ter menos de {{maximum}} carácteres'
+        too_short: '{{field}} deve ter mais de {{minimum}} carácteres'
+        wrong_length: '{{field}} deve ter exatamente {{length}} carácteres'
+        taken: '{{field}} já foi utilizado'
+        not_a_number: '{{field}} não é um número'
+        not_an_integer: '{{field}} deve ser um número inteiro'
+        greater_than: '{{field}} deve ser maior que {{value}}'
+        greater_than_or_equal_to: "{{field}} deve ser igual ou maior que {{value}}"
+        equal_to: "{{field}} deve ser igual a {{value}}"
+        less_than: '{{field}} deve ser menor que {{value}}'
+        less_than_or_equal_to: "{{field}} deve ser igual ou menor que {{value}}"
+        value_between: '{{field}} deve estar entre {{minimum}} e {{maximum}}'
+        primitive: '{{field}} deve ser do tipo {{type}}'

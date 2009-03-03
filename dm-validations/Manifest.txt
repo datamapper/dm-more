@@ -29,6 +29,7 @@ lib/dm-validations/within_validator.rb
 lib/dm-validations/validation_errors_i18n.rb
 lib/dm-validations/locale/en.yml
 lib/dm-validations/locale/fr.yml
+lib/dm-validations/locale/pt-br.yml
 spec/integration/absent_field_validator_spec.rb
 spec/integration/acceptance_validator_spec.rb
 spec/integration/auto_validate_spec.rb
