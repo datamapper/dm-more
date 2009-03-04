@@ -3,6 +3,11 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 ADAPTERS.each do |adapter|
   describe "Using Adapter #{adapter}," do
+    
+    def repository(*args)
+      DataMapper.repository(*args)
+    end
+    
     describe DataMapper::Migration, "#create_table helper" do
       before :all do
         case adapter

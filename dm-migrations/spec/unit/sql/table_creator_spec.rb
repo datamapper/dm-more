@@ -7,7 +7,7 @@ describe 'SQL module' do
   describe 'TableCreator' do
     before do
       @adapter = mock('adapter')
-      @adapter.stub!(:quote_table_name).and_return(%{'users'})
+      @adapter.stub!(:quote_name).and_return(%{'users'})
       @tc = SQL::TableCreator.new(@adapter, 'users') { }
     end
 
@@ -43,7 +43,7 @@ describe 'SQL module' do
     end
 
     it 'should use the adapter to quote the table name' do
-      @adapter.should_receive(:quote_table_name).with('users').and_return(%{'users'})
+      @adapter.should_receive(:quote_name).with('users').and_return(%{'users'})
       @tc.quoted_table_name.should == %{'users'}
     end
 

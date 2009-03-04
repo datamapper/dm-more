@@ -91,7 +91,7 @@ module DataMapper
     end
 
     def drop_table(table_name, opts = {})
-      execute "DROP TABLE #{@adapter.send(:quote_table_name, table_name.to_s)}"
+      execute "DROP TABLE #{@adapter.send(:quote_name, table_name.to_s)}"
     end
 
     def modify_table(table_name, opts = {}, &block)
@@ -206,12 +206,12 @@ module DataMapper
 
     def quote_table_name(table_name)
       # TODO: Fix this for 1.9 - can't use this hack to access a private method
-      @adapter.send(:quote_table_name, table_name.to_s)
+      @adapter.send(:quote_name, table_name.to_s)
     end
 
     def quote_column_name(column_name)
       # TODO: Fix this for 1.9 - can't use this hack to access a private method
-      @adapter.send(:quote_column_name, column_name.to_s)
+      @adapter.send(:quote_name, column_name.to_s)
     end
   end
 end

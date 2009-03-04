@@ -214,12 +214,12 @@ describe 'Migration' do
 
       describe '#drop_table' do
         it 'should quote the table name' do
-          @adapter.should_receive(:quote_table_name).with('users')
+          @adapter.should_receive(:quote_name).with('users')
           @m.drop_table :users
         end
 
         it 'should execute the DROP TABLE sql for the table' do
-          @adapter.stub!(:quote_table_name).and_return("'users'")
+          @adapter.stub!(:quote_name).and_return("'users'")
           @m.should_receive(:execute).with(%{DROP TABLE 'users'})
           @m.drop_table :users
         end
@@ -326,21 +326,21 @@ describe 'Migration' do
       describe 'working with the migration_info table' do
         before do
           @adapter.stub!(:storage_exists?).and_return(true)
-          @adapter.stub!(:quote_table_name).and_return(%{'users'})
-          @adapter.stub!(:quote_column_name).and_return(%{'migration_name'})
+          # --- Please remove stubs ---
+          @adapter.stub!(:quote_name).and_return { |name| "'#{name}'" }
         end
 
         describe '#update_migration_info' do
           it 'should add a record of the migration' do
             @m.should_receive(:execute).with(
-              %Q{INSERT INTO 'users' ('migration_name') VALUES ('do_nothing')}
+              %Q{INSERT INTO 'migration_info' ('migration_name') VALUES ('do_nothing')}
             )
             @m.update_migration_info(:up)
           end
 
           it 'should remove the record of the migration' do
             @m.should_receive(:execute).with(
-              %Q{DELETE FROM 'users' WHERE 'migration_name' = 'do_nothing'}
+              %Q{DELETE FROM 'migration_info' WHERE 'migration_name' = 'do_nothing'}
             )
             @m.update_migration_info(:down)
           end
@@ -355,7 +355,7 @@ describe 'Migration' do
           it 'should create the migration info table' do
             @m.should_receive(:migration_info_table_exists?).and_return(false)
             @m.should_receive(:execute).with(
-              %Q{CREATE TABLE 'users' ('migration_name' VARCHAR(255) UNIQUE)}
+              %Q{CREATE TABLE 'migration_info' ('migration_name' VARCHAR(255) UNIQUE)}
             )
             @m.create_migration_info_table_if_needed
           end
@@ -379,7 +379,7 @@ describe 'Migration' do
         describe '#migration_record' do
           it 'should query for the migration' do
             @adapter.should_receive(:query).with(
-              %Q{SELECT 'migration_name' FROM 'users' WHERE 'migration_name' = 'do_nothing'}
+              %Q{SELECT 'migration_name' FROM 'migration_info' WHERE 'migration_name' = 'do_nothing'}
             )
             @m.migration_record
           end
@@ -429,12 +429,12 @@ describe 'Migration' do
         end
 
         it 'should have the adapter quote the migration_info table' do
-          @adapter.should_receive(:quote_table_name).with('migration_info').and_return("'migration_info'")
+          @adapter.should_receive(:quote_name).with('migration_info').and_return("'migration_info'")
           @m.migration_info_table.should == "'migration_info'"
         end
 
         it 'should have a quoted migration_name_column' do
-          @adapter.should_receive(:quote_column_name).with('migration_name').and_return("'migration_name'")
+          @adapter.should_receive(:quote_name).with('migration_name').and_return("'migration_name'")
           @m.migration_name_column.should == "'migration_name'"
         end
 
