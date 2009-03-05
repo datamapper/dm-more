@@ -20,7 +20,7 @@ module DataMapper
     def to_csv(writer = '')
       CSV.generate(writer) do |csv|
         row = model.properties(repository.name).map do |property|
-          property.get(self).to_s
+          send(property.name).to_s
         end
         csv << row
       end
