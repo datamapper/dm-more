@@ -76,8 +76,7 @@ module DataMapper
       #       It is just shortcut if only one validation option is set
       #
       def auto_generate_validations(property)
-        property.options[:auto_validation] = true unless property.options.has_key?(:auto_validation)
-        return unless property.options[:auto_validation]
+        return if property.options.has_key?(:auto_validation) && !property.options[:auto_validation]
 
         # a serial property is allowed to be nil too, because the
         # value is set by the storage system
