@@ -7,12 +7,12 @@ A DataMapper adapter for REST Web Services
 DM Rest Adapter requires the use of a model which is the same name as the resource you are using. For example, if you have a resource named "posts" you will create a standard datamapper object called post.rb in app/models. The only difference in this model is you will need to define the rest adapter for the model. The following is an example of a post model, where the host settings point to the app you are running the resource on. In addition I have included a basic auth login which will be used if your resource requires auth:
 
 DataMapper.setup(:default, {
-	:adapter  => 'rest',
-	:format   => 'xml',
-	:host     => 'localhost',
-	:port     => 4000,
-	:login    => 'user',
-	:password => 'verys3crit'
+ :adapter  => 'rest',
+ :format   => 'xml',
+ :host     => 'localhost',
+ :port     => 4000,
+ :login    => 'user',
+ :password => 'verys3crit'
 })
 
 class Post
@@ -37,7 +37,7 @@ Post.get(1) => returns the object from the resource
 p = Post.new(:title => "My awesome blog post", :body => "I really have nothing to say...")
 p.save => saves the resource on the remote
 
-== Caveat 
+== Caveat
 
 Posts do not honor RESTful HTTP status codes. I might fix this...
 
@@ -45,5 +45,3 @@ Posts do not honor RESTful HTTP status codes. I might fix this...
 
 Nested resources
 Put verb actions
-
-

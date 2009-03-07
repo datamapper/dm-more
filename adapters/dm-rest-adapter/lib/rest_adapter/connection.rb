@@ -1,17 +1,17 @@
 require 'net/http'
 
-module DataMapperRest    
+module DataMapperRest
   # Somewhat stolen from ActiveResource
   # TODO: Support https?
   class Connection
     include Extlib
     attr_accessor :uri, :format
-    
+
     def initialize(uri, format)
       @uri = uri
       @format = Format.new(format)
     end
-    
+
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
     # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
@@ -20,16 +20,16 @@ module DataMapperRest
         run_verb(verb.to_s.split("_").last, args[1])
       end
     end
-    
+
     protected
-    
+
       def run_verb(verb, data = nil)
         request do |http|
           mod = Net::HTTP::module_eval(Inflection.camelize(verb))
           request = mod.new(@uri.to_s, @format.header)
           request.basic_auth(@uri.user, @uri.password) if @uri.user && @uri.password
           result = http.request(request, data)
-        
+
           handle_response(result)
         end
       end
@@ -41,7 +41,7 @@ module DataMapperRest
         end
         res
       end
-    
+
       # Handles response and error codes from remote service.
       def handle_response(response)
         case response.code.to_i
@@ -71,6 +71,6 @@ module DataMapperRest
             raise(ConnectionError.new(response, "Unknown response code: #{response.code}"))
         end
       end
-  
+
   end
 end

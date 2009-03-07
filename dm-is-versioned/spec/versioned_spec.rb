@@ -46,7 +46,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
     end # #auto_upgrade!
   end
-  
+
   describe 'DataMapper::Is::Versioned' do
     describe "inner class" do
       it "should be present" do

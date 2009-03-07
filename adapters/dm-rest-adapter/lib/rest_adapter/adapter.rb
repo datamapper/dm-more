@@ -5,7 +5,7 @@ module DataMapperRest
   # All http_"verb" (http_post) method calls use method missing in connection class which uses run_verb
   class Adapter < DataMapper::Adapters::AbstractAdapter
     include Extlib
-    
+
     def connection
       @connection ||= Connection.new(@uri, @format)
     end
@@ -17,10 +17,10 @@ module DataMapperRest
       resources.each do |resource|
         response = connection.http_post(resource_name(resource), resource.to_xml)
         populate_resource_from_xml(response.body, resource)
-        
-        created += 1  
+
+        created += 1
       end
-      
+
       created
     end
 
@@ -103,10 +103,10 @@ module DataMapperRest
     end
 
   protected
-  
+
     def normalize_uri(uri_or_options)
       @format = uri_or_options[:format].nil? ? "xml" : uri_or_options[:format]
-      
+
       if uri_or_options.kind_of?(String) || uri_or_options.kind_of?(Addressable::URI)
         uri_or_options = DataObjects::URI.parse(uri_or_options)
       end
@@ -127,7 +127,7 @@ module DataMapperRest
         :port         => uri_or_options[:port]
       ))
     end
-  
+
     def load_nested_resources_from(nested_resources, query)
       nested_resources.each do |resource_meta|
         # TODO: Houston, we have a problem.  Model#load expects a Query.  When we're nested, we don't have a query yet...
@@ -204,11 +204,11 @@ module DataMapperRest
         values_from_rexml(entity_element, dm_model_class)
       end
     end
-    
+
     def resource_name_from_model(model)
       Inflection.underscore(model.name)
     end
-    
+
     def resource_name(resource)
       Inflection.underscore(resource.class.name).pluralize
     end
@@ -216,13 +216,12 @@ module DataMapperRest
     def resource_name_from_query(query)
       resource_name_from_model(query.model)
     end
-    
+
     def populate_resource_from_xml(xml, resource)
-      puts xml
       doc = REXML::Document::new(xml)
       entity_element = REXML::XPath.first(doc, "/#{resource_name_from_model(resource.class)}")
       raise "No root element matching #{resource_name_from_model(resource.class)} in xml" unless entity_element
-      
+
       entity_element.elements.each do |field_element|
         attribute = resource.class.properties(repository.name).find { |property| property.name.to_s == field_element.name.to_s.tr('-', '_') }
         resource.send("#{attribute.name.to_s}=", field_element.text) if attribute && !field_element.text.nil?
@@ -230,7 +229,7 @@ module DataMapperRest
       end
       resource
     end
-    
+
     # TODO: this is a temporary hack to allow applications using models with dm-rest-adapter
     # together with models using other adapters
     module Migration

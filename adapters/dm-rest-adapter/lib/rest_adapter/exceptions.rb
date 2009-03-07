@@ -1,4 +1,4 @@
-module DataMapperRest  
+module DataMapperRest
   # Snagged from Active Resource, it is clean and does what needs to be done
   class ConnectionError < StandardError # :nodoc:
     attr_reader :response
@@ -23,8 +23,8 @@ module DataMapperRest
 
   # 3xx Redirection
   class Redirection < ConnectionError # :nodoc:
-    def to_s; response['Location'] ? "#{super} => #{response['Location']}" : super; end    
-  end 
+    def to_s; response['Location'] ? "#{super} => #{response['Location']}" : super; end
+  end
 
   # 4xx Client Error
   class ClientError < ConnectionError; end # :nodoc:
