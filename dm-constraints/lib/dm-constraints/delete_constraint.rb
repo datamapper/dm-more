@@ -8,12 +8,12 @@ module DataMapper
 
       module ClassMethods
         DELETE_CONSTRAINT_OPTIONS = [:protect, :destroy, :destroy!, :set_nil, :skip]
-        
+
         ##
         # Checks that the constraint type is appropriate to the relationship
         #
         # @param cardinality [Fixnum] cardinality of relationship
-        # 
+        #
         # @param name [Symbol] name of relationship to evaluate constraint of
         #
         # @param options [Hash] options hash
@@ -28,16 +28,16 @@ module DataMapper
           options[:constraint] ||= nil
           constraint_type = options[:constraint]
           return if constraint_type.nil?
-          
+
           delete_constraint_options = DELETE_CONSTRAINT_OPTIONS.map { |o| ":#{o}" }
           if !DELETE_CONSTRAINT_OPTIONS.include?(constraint_type)
             raise ArgumentError, ":constraint option must be one of #{delete_constraint_options * ', '}"
           end
-          
+
           if constraint_type == :set_nil && self.relationships[name].is_a?(DataMapper::Associations::RelationshipChain)
             raise ArgumentError, "Constraint type :set_nil is not valid for M:M relationships"
           end
-          
+
           if cardinality == 1 && constraint_type == :destroy!
             raise ArgumentError, "Constraint type :destroy! is not valid for 1:1 relationships"
           end
@@ -80,7 +80,7 @@ module DataMapper
       # @api semi-public
       def add_delete_constraint_option(*params)
         opts = params.last
-        
+
         if opts.is_a?(Hash)
           #if it is a chain, set the constraint on the 1:M near relationship(anonymous)
           if self.is_a?(DataMapper::Associations::RelationshipChain)
@@ -89,8 +89,8 @@ module DataMapper
             near_rel.options[:constraint] = opts[:constraint]
             near_rel.instance_variable_set "@delete_constraint", opts[:constraint]
           end
-          
-          @delete_constraint = params.last[:constraint]  
+
+          @delete_constraint = params.last[:constraint]
         end
       end
 
@@ -110,10 +110,10 @@ module DataMapper
         model.relationships.each do |rel_name, rel|
           #Only look at relationships where this model is the parent
           next if rel.parent_model != model
-          
+
           #Don't delete across M:M relationships, instead use their anonymous 1:M Relationships
           next if rel.is_a?(DataMapper::Associations::RelationshipChain)
-          
+
           children = self.send(rel_name)
           if children.kind_of?(DataMapper::Collection)
             check_collection_delete_constraints(rel,children)
@@ -152,7 +152,7 @@ module DataMapper
           end
         end
       end
-      
+
       ##
       # Performs the meat of check_delete_constraints method for a single resource
       #
@@ -173,7 +173,7 @@ module DataMapper
         when :destroy
           child.destroy
         when :destroy!
-          #not supported in dm-master, an exception should have been raised on class load 
+          #not supported in dm-master, an exception should have been raised on class load
         when :set_nil
           child.class.many_to_one_relationships.each do |mto_rel|
             child.send("#{mto_rel.name}=", nil) if child.send(mto_rel.name).eql?(self)

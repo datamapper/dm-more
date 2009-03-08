@@ -1,13 +1,8 @@
 require 'pathname'
-require 'ruby-debug'
 require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
 ADAPTERS.each do |adapter|
-
   describe 'DataMapper::Constraints' do
-
-    # load_models_for_metaphor :stable, :farmer, :cow
-
     before do
       DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[adapter]
 

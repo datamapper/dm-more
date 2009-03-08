@@ -2,26 +2,26 @@ module DataMapper
   module Constraints
     module DataObjectsAdapter
       module SQL
-        
+
         ##
         # generates all foreign key create constraint statements for valid relationships
         #   given repository and a model
-        #   
+        #
         # This wraps calls to create_constraints_statement
         #
         # @see #create_constraints_statement
         #
-        # @param repository_name [Symbol] Name of the repository to constrain 
+        # @param repository_name [Symbol] Name of the repository to constrain
         #
-        # @param model [DataMapper::Model] Model to constrain 
+        # @param model [DataMapper::Model] Model to constrain
         #
         # @return [Array[String]] List of statements to create constraints
-        #   
+        #
         #
         # @api public
         def create_constraints_statements(repository_name, model)
-          model.many_to_one_relationships.map do |relationship|    
-                    
+          model.many_to_one_relationships.map do |relationship|
+
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
             next if constraint_exists?(table_name, constraint_name)
@@ -39,7 +39,7 @@ module DataMapper
             one_to_many_relationship ||= parent.relationships.values.select { |rel|
               rel.child_model == model
             }.first
-            
+
             delete_constraint_type = case one_to_many_relationship.nil? ? :protect : one_to_many_relationship.delete_constraint
             when :protect, nil
               "NO ACTION"
@@ -58,17 +58,17 @@ module DataMapper
         ##
         # generates all foreign key destroy constraint statements for valid relationships
         #   given repository and a model
-        #   
+        #
         # This wraps calls to destroy_constraints_statement
         #
         # @see #destroy_constraints_statement
         #
-        # @param repository_name [Symbol] Name of the repository to constrain 
+        # @param repository_name [Symbol] Name of the repository to constrain
         #
-        # @param model [DataMapper::Model] Model to constrain 
+        # @param model [DataMapper::Model] Model to constrain
         #
         # @return [Array[String]] List of statements to destroy constraints
-        #   
+        #
         #
         # @api public
         def destroy_constraints_statements(repository_name, model)
@@ -76,9 +76,9 @@ module DataMapper
             table_name      = model.storage_name(repository_name)
             constraint_name = constraint_name(table_name, relationship.name)
             next unless constraint_exists?(table_name, constraint_name)
-                    
+
             destroy_constraints_statement(table_name, constraint_name)
-                    
+
           end.compact
         end
 
@@ -131,14 +131,14 @@ module DataMapper
         end
 
         ##
-        # generates a unique constraint name given a table and a relationships 
+        # generates a unique constraint name given a table and a relationships
         #
         # @param table_name [String] name of table to constrain
         #
         # @param relationships_name [String] name of the relationship to constrain
         #
         # @return [String] name of the constraint
-        # 
+        #
         # @api private
         def constraint_name(table_name, relationship_name)
           "#{table_name}_#{relationship_name}_fk"

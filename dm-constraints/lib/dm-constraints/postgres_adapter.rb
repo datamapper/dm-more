@@ -5,7 +5,7 @@ module DataMapper
         include DataMapper::Constraints::DataObjectsAdapter::SQL
 
         private
-        
+
         ##
         # Postgres specific query to determine if a constraint exists
         #

@@ -3,7 +3,7 @@ module DataMapper
     module MysqlAdapter
       module SQL
         include DataMapper::Constraints::DataObjectsAdapter::SQL
-        
+
         private
 
         ##
