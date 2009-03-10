@@ -56,7 +56,8 @@ module DataMapper
 
             if name == :Version
               properties.each do |property|
-                options = property.options
+                # duplication is necessary since Property#options are frozen since 0.10.0
+                options = property.options.dup
                 options[:key] = true if property.name == on || options[:serial] == true
                 options[:serial] = false
                 model.property property.name, property.type, options
