@@ -6,6 +6,7 @@ require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-validations'
 
+require dir / 'exceptions'
 require dir / 'validation_errors'
 require dir / 'contextual_validators'
 require dir / 'auto_validate'
