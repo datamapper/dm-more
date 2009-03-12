@@ -16,14 +16,18 @@ module DataMapper
 
       # Get a hash of named context validators for the resource
       #
-      # @return <Hash> a hash of validators <GenericValidator>
+      # @return [Hash<Symbol, DataMapper::Validate::GenericValidator>]
+      #   a hash of validators
       def contexts
         @contexts ||= {}
       end
 
       # Return an array of validators for a named context
-      #
-      # @return <Array> An array of validators
+      # 
+      # @param  [String]
+      #   Context name for which return validators
+      # @return [Array<DataMapper::Validate::GenericValidator>]
+      #   An array of validators
       def context(name)
         contexts[name] ||= []
       end
@@ -36,9 +40,12 @@ module DataMapper
 
       # Execute all validators in the named context against the target
       #
-      # @param <Symbol> named_context the context we are validating against
-      # @param <Object> target        the resource that we are validating
-      # @return <Boolean> true if all are valid, otherwise false
+      # @param [Symbol]
+      #   named_context the context we are validating against
+      # @param [Object]
+      #   target        the resource that we are validating
+      # @return [Boolean]
+      #   true if all are valid, otherwise false
       def execute(named_context, target)
         raise(ArgumentError, 'invalid context specified') if !named_context || (contexts.length > 0 && !contexts[named_context])
         target.errors.clear!
