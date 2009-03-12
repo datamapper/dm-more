@@ -10,17 +10,13 @@ module DataMapper
       def options_with_message(base_options, property, validator_name)
         options = base_options.clone
         opts = property.options
-        options[:message] = if opts[:messages]
-          if opts[:messages].is_a?(Hash) and msg = opts[:messages][validator_name]
-            msg
-          else
-            nil
-          end
-        elsif opts[:message]
-          opts[:message]
-        else
-          nil
-        end
+        options[:message] = if opts[:messages] && opts[:messages].respond_to?(:[])
+                              opts[:messages][validator_name]
+                            elsif opts[:message]
+                              opts[:message]
+                            else
+                              nil
+                            end
         options
       end
 
