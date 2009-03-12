@@ -17,7 +17,7 @@ module DataMapper
         property = target.validation_property(field_name)
         return true if present?(value, property)
 
-        error_message = @options[:message] || default_error(property)
+        error_message = @options[:message] || default_error(property, target)
         add_error(target, error_message, field_name)
 
         false
@@ -32,9 +32,9 @@ module DataMapper
         boolean_type?(property) ? !value.nil? : !value.blank?
       end
 
-      def default_error(property)
+      def default_error(property, target)
         actual = boolean_type?(property) ? :nil : :blank
-        ValidationErrors.default_error_message(actual, field_name)
+        ValidationErrors.default_error_message(actual, field_name, {:target => target} )
       end
 
       # Is +property+ a boolean property?

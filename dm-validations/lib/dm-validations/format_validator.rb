@@ -41,7 +41,7 @@ module DataMapper
 
         return true if valid
 
-        error_message = @options[:message] || ValidationErrors.default_error_message(:invalid, field_name)
+        error_message = @options[:message] || ValidationErrors.default_error_message(:invalid, field_name, { :target => self })
 
         field = Extlib::Inflection.humanize(field_name)
         error_message = error_message.call(field, value) if error_message.respond_to?(:call)
