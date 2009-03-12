@@ -12,12 +12,13 @@ module DataMapper
         assert_kind_of 'scope', options[:scope], Array, Symbol if options.has_key?(:scope)
         super
         @field_name, @options = field_name, options
+        @options[:allow_nil] = true unless @options.include?(:allow_nil)
       end
 
       def call(target)
         scope = Array(@options[:scope])
 
-        return true if @options[:allow_nil] && target.send(field_name).nil?
+        return true if @options[:allow_nil] && target.send(field_name).blank?
 
         repository_name = target.repository.name
 
