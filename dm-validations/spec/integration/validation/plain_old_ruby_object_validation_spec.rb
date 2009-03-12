@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
 
-Object.send(:remove_const, :Yacht) if defined?(Yacht)
+Object.send(:remove_const, :Country) if defined?(Country)
 # notice that it is a pure Ruby class, not a DataMapper resource
 class ::Country
   #
