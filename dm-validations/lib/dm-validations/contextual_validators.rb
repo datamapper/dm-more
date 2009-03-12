@@ -50,6 +50,9 @@ module DataMapper
         raise(ArgumentError, "validation context #{named_context} isn't seem to be defined. Known contexts are #{contexts.keys.inspect}") if !named_context || (contexts.length > 0 && !contexts[named_context])
         target.errors.clear!
         result = true
+        # note that all? and any? stop iteration on first negative or positive result,
+        # so we really have to use each here to make sure all validators are
+        # executed
         context(named_context).select { |validator| validator.execute?(target) }.each do |validator|
           result = false unless validator.call(target)
         end
