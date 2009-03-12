@@ -20,12 +20,12 @@ module DataMapper
       def initialize(field_name, options = {}, &b)
         super(field_name, options)
         @field_name, @options = field_name, options
-        @options[:allow_nil] = false unless @options.has_key?(:allow_nil)
+        @options[:allow_nil] = true unless @options.include?(:allow_nil)
       end
 
       def call(target)
         value = target.validation_property_value(field_name)
-        return true if @options[:allow_nil] && value.nil?
+        return true if @options[:allow_nil] && value.blank?
 
         validation = @options[:as] || @options[:with]
 

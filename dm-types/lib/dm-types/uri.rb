@@ -7,6 +7,7 @@ module DataMapper
   module Types
     class URI < DataMapper::Type
       primitive String
+      size 255
 
       def self.load(value, property)
         Addressable::URI.parse(value)
