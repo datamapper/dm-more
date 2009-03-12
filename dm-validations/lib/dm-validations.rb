@@ -33,22 +33,20 @@ module DataMapper
     extend Chainable
 
     def self.included(model)
-      model.class_eval <<-EOS, __FILE__, __LINE__
-        class << self
-          def create(attributes = {}, context = :default)
-            resource = new(attributes)
-            return resource unless resource.valid?(context)
-            resource.save!
-            resource
-          end
-
-          def create!(attributes = {})
-            resource = new(attributes)
-            resource.save!
-            resource
-          end
+      model.class_eval do
+        def self.create(attributes = {}, context = :default)
+          resource = new(attributes)
+          return resource unless resource.valid?(context)
+          resource.save!
+          resource
         end
-      EOS
+
+        def self.create!(attributes = {})
+          resource = new(attributes)
+          resource.save!
+          resource
+        end
+      end
     end
 
     # Ensures the object is valid for the context provided, and otherwise
