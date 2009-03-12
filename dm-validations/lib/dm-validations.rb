@@ -203,8 +203,18 @@ module DataMapper
 
       # Create a new validator of the given klazz and push it onto the
       # requested context for each of the attributes in the fields list
+      # @param [Hash]          opts
+      #    Options supplied to validation macro, example:
+      #    {:context=>:default, :maximum=>50, :allow_nil=>true, :message=>nil}
       #
+      # @param [Array<Symbol>] fields
+      #    Fields given to validation macro, example:
+      #    [:first_name, :last_name] in validates_present :first_name, :last_name
+      #
+      # @param [Class] klazz
+      #    Validator class, example: DataMapper::Validate::LengthValidator
       def add_validator_to_context(opts, fields, klazz)
+        p klazz
         fields.each do |field|
           validator = klazz.new(field, opts)
           if opts[:context].is_a?(Symbol)
