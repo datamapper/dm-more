@@ -47,6 +47,10 @@ module DataMapper
           resource
         end
       end
+
+      # models that are non DM resources must get .validators
+      # and other methods, too
+      model.extend Validate::ClassMethods
     end
 
     # Ensures the object is valid for the context provided, and otherwise
