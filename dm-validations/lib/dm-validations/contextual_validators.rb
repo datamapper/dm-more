@@ -12,6 +12,7 @@ module DataMapper
           puts "Key=#{key} Context: #{context}"
         end
       end
+      alias_method :inspect, :dump
 
       # Get a hash of named context validators for the resource
       #
