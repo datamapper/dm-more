@@ -47,7 +47,7 @@ module DataMapper
       # @return [Boolean]
       #   true if all are valid, otherwise false
       def execute(named_context, target)
-        raise(ArgumentError, 'invalid context specified') if !named_context || (contexts.length > 0 && !contexts[named_context])
+        raise(ArgumentError, "validation context #{named_context} isn't seem to be defined. Known contexts are #{contexts.keys.inspect}") if !named_context || (contexts.length > 0 && !contexts[named_context])
         target.errors.clear!
         result = true
         context(named_context).each do |validator|
