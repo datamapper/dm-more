@@ -17,6 +17,8 @@ class ::Country
   validates_present :name,       :when => [:default, :adding_to_encyclopedia]
   validates_present :population, :when => :adding_to_encyclopedia
 
+  validates_length  :name,       :in => (4..50)
+
   #
   # API
   #
@@ -87,4 +89,23 @@ describe Country do
       @model.should be_valid_for_adding_to_encyclopedia
     end
   end
+
+
+  describe "with a 2 characters long name" do
+    before :each do
+      @model.name = "It"
+      @model.valid?
+    end
+    
+    it_should_behave_like "object invalid in default context"
+
+    it "has errors on name" do
+      @model.errors.on(:name).should_not be_blank
+    end
+    
+    it "is valid in encyclopedia context" do
+      @model.should be_valid(:adding_to_encyclopedia)
+      @model.should be_valid_for_adding_to_encyclopedia
+    end
+  end  
 end
