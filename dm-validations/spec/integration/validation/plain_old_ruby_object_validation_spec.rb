@@ -33,70 +33,58 @@ end
 describe Country do
   before :each do
     # Powerset says so
-    @country = Country.new("Italy", 58_147_733)
+    @model = Country.new("Italy", 58_147_733)
   end
 
   describe "without name" do
     before :each do
-      @country.name = nil
+      @model.name = nil
     end
 
-    it "is not valid in default context" do
-      @country.should_not be_valid
-      @country.should_not be_valid(:default)
-    end
+    it_should_behave_like "object invalid in default context"
 
     it "is not valid in encyclopedia context" do
-      @country.should_not be_valid(:adding_to_encyclopedia)
-      @country.should_not be_valid_for_adding_to_encyclopedia
+      @model.should_not be_valid(:adding_to_encyclopedia)
+      @model.should_not be_valid_for_adding_to_encyclopedia
     end
   end
 
 
   describe "without name and without population information" do
     before :each do
-      @country.name       = nil
-      @country.population = nil
+      @model.name       = nil
+      @model.population = nil
     end
 
-    it "is not valid in default context" do
-      @country.should_not be_valid
-      @country.should_not be_valid(:default)
-    end
+    it_should_behave_like "object invalid in default context"
 
     it "is not valid in encyclopedia context" do
-      @country.should_not be_valid(:adding_to_encyclopedia)
-      @country.should_not be_valid_for_adding_to_encyclopedia
+      @model.should_not be_valid(:adding_to_encyclopedia)
+      @model.should_not be_valid_for_adding_to_encyclopedia
     end
-  end  
+  end
 
-  
+
   describe "with name and without population information" do
     before :each do
-      @country.population = nil
+      @model.population = nil
     end
 
-    it "is valid in default context" do
-      @country.should be_valid
-      @country.should be_valid(:default)
-    end
+    it_should_behave_like "object valid in default context"
 
     it "is not valid in encyclopedia context" do
-      @country.should_not be_valid(:adding_to_encyclopedia)
-      @country.should_not be_valid_for_adding_to_encyclopedia
+      @model.should_not be_valid(:adding_to_encyclopedia)
+      @model.should_not be_valid_for_adding_to_encyclopedia
     end
   end
 
 
   describe "with name and population information" do
-    it "is valid in default context" do
-      @country.should be_valid
-      @country.should be_valid(:default)
-    end
+    it_should_behave_like "object valid in default context"
 
     it "is valid in encyclopedia context" do
-      @country.should be_valid(:adding_to_encyclopedia)
-      @country.should be_valid_for_adding_to_encyclopedia
+      @model.should be_valid(:adding_to_encyclopedia)
+      @model.should be_valid_for_adding_to_encyclopedia
     end
-  end  
+  end
 end

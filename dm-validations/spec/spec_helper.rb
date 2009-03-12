@@ -24,3 +24,5 @@ ENV['ADAPTER'] ||= 'sqlite3'
 HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
+
+Dir[Pathname(__FILE__).dirname.to_s + "/integration/shared/*.rb"].each { |rb| require(rb) }
