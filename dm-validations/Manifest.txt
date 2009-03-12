@@ -12,6 +12,7 @@ lib/dm-validations/block_validator.rb
 lib/dm-validations/confirmation_validator.rb
 lib/dm-validations/contextual_validators.rb
 lib/dm-validations/custom_validator.rb
+lib/dm-validations/exceptions.rb
 lib/dm-validations/format_validator.rb
 lib/dm-validations/formats/email.rb
 lib/dm-validations/formats/url.rb
