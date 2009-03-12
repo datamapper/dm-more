@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 class BasketballPlayer
   #
   # Behaviors
@@ -25,7 +26,6 @@ end
 BasketballPlayer.auto_migrate!
 
 
-
 class City
   #
   # Behaviors
@@ -49,7 +49,6 @@ class City
   validates_is_number :founded_in, :message => "Foundation year must be an integer"
 end
 City.auto_migrate!
-
 
 
 class Country

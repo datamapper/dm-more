@@ -1,41 +1,41 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
 
-Object.send(:remove_const, :Country) if defined?(Country)
-# notice that it is a pure Ruby class, not a DataMapper resource
-class ::Country
-  #
-  # Behaviors
-  #
+module PureRubyObjects
+  # notice that it is a pure Ruby class, not a DataMapper resource
+  class Country
+    #
+    # Behaviors
+    #
 
-  include DataMapper::Validate
+    include DataMapper::Validate
 
-  #
-  # Validations
-  #
+    #
+    # Validations
+    #
 
-  validates_present :name,       :when => [:default, :adding_to_encyclopedia]
-  validates_present :population, :when => :adding_to_encyclopedia
+    validates_present :name,       :when => [:default, :adding_to_encyclopedia]
+    validates_present :population, :when => :adding_to_encyclopedia
 
-  validates_length  :name,       :in => (4..50)
+    validates_length  :name,       :in => (4..50)
 
-  #
-  # API
-  #
+    #
+    # API
+    #
 
-  attr_accessor :name, :population
+    attr_accessor :name, :population
 
-  def initialize(name, population = nil)
-    @name       = name
-    @population = population
+    def initialize(name, population = nil)
+      @name       = name
+      @population = population
+    end
   end
 end
 
-
-describe Country do
+describe PureRubyObjects::Country do
   before :each do
     # Powerset says so
-    @model = Country.new("Italy", 58_147_733)
+    @model = PureRubyObjects::Country.new("Italy", 58_147_733)
   end
 
   describe "without name" do
