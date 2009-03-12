@@ -171,11 +171,7 @@ module DataMapper
       #
       def opts_from_validator_args(args, defaults = nil)
         opts = args.last.kind_of?(Hash) ? args.pop : {}
-        context = :default
-        context = opts[:context] if opts.has_key?(:context)
-        context = opts.delete(:on) if opts.has_key?(:on)
-        context = opts.delete(:when) if opts.has_key?(:when)
-        context = opts.delete(:group) if opts.has_key?(:group)
+        context = opts.delete(:group) || opts.delete(:on) || opts.delete(:when) || opts.delete(:context) || :default
         opts[:context] = context
         opts.mergs!(defaults) unless defaults.nil?
         opts
