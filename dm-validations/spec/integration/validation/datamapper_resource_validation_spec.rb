@@ -1,7 +1,7 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
 
-describe DataMapper::Validate do
+describe "DataMapper resource with included", DataMapper::Validate do
   before do
     Object.send(:remove_const, :Yacht) if defined?(Yacht)
     class ::Yacht
