@@ -36,7 +36,7 @@ describe "DataMapper resource with included", DataMapper::Validate do
     end
 
     describe 'without context specified' do
-      it 'should validate using the default context' do
+      it 'triggers validation in default context' do
         @yacht.should_receive(:valid?).with(:default)
         @yacht.save
       end
