@@ -49,8 +49,8 @@ module DataMapper
       # Add a validation error. Use the field_name :general if the errors does
       # not apply to a specific field of the Resource.
       #
-      # @param <Symbol> field_name the name of the field that caused the error
-      # @param <String> message    the message to add
+      # @param [Symbol] field_name the name of the field that caused the error
+      # @param [String] message    the message to add
       def add(field_name, message)
         (errors[field_name] ||= []) << message
       end
@@ -64,7 +64,9 @@ module DataMapper
 
       # Return validation errors for a particular field_name.
       #
-      # @param <Symbol> field_name the name of the field you want an error for
+      # @param [Symbol] field_name the name of the field you want an error for
+      # @return [Array<DataMapper::Validate::Error>]
+      #   array of validation errors or empty array, if there are no errors on given field
       def on(field_name)
         errors_for_field = errors[field_name]
         errors_for_field.blank? ? nil : errors_for_field
