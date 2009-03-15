@@ -1,5 +1,6 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.parent.expand_path + 'shared/identity_function_group'
 
 
 describe DataMapper::Types::Yaml, ".load" do
@@ -61,19 +62,45 @@ end
 
 
 describe DataMapper::Types::Yaml, ".typecast" do
-  it 'leaves the value unchanged' do
-    @type = DataMapper::Types::Yaml
-    @type.typecast([1, 2, 3], :property).should == [1, 2, 3]
+  class SerializeMe
+    attr_accessor :name
+  end
 
-    class SerializeMe
-      attr_accessor :name
+  describe "given a number" do
+    before :all do
+      @input  = 15
+      @result = 15
     end
 
-    obj = SerializeMe.new
-    obj.name = 'Hello!'
+    it_should_behave_like "identity function"
+  end
 
-    casted = @type.typecast(obj, :property)
-    casted.should be_kind_of(SerializeMe)
-    casted.name.should == 'Hello!'
+  describe "given an Array instance" do
+    before :all do
+      @input  = ["dm-core", "dm-more"]
+      @result = ["dm-core", "dm-more"]
+    end
+
+    it_should_behave_like "identity function"
+  end
+
+  describe "given a Hash instance" do
+    before :all do
+      @input  = { :format => "yaml" }
+      @result = { :format => "yaml" }
+    end
+
+    it_should_behave_like "identity function"
+  end
+
+  describe "given a plain old Ruby object" do
+    before :all do
+      @input      = SerializeMe.new
+      @input.name = "yamly"
+
+      @result = @input
+    end
+
+    it_should_behave_like "identity function"
   end
 end

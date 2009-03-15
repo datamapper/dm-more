@@ -1,53 +1,122 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require Pathname(__FILE__).dirname.parent.expand_path + 'shared/identity_function_group'
 
 describe DataMapper::Types::Json, ".load" do
-  it 'should return nil if nil is provided' do
-    DataMapper::Types::Json.load(nil, :property).should be_nil
+  describe "when nil is provided" do
+    it 'returns nil' do
+      DataMapper::Types::Json.load(nil, :property).should be_nil
+    end
   end
 
-  it 'should parse the value if a string is provided' do
-    JSON.should_receive(:load).with('json_string').once
-    DataMapper::Types::Json.load('json_string', :property)
+  describe "when Json encoded primitive string is provided" do
+    it 'returns decoded value as Ruby string' do
+      DataMapper::Types::Json.load(JSON.dump(:value => "JSON encoded string"), :property).should == { "value" => "JSON encoded string" }
+    end
   end
 
-  it 'should raise an ArgumentError if something else is given' do
-    lambda {
-      DataMapper::Types::Json.load(:sym, :property)
-    }.should raise_error(ArgumentError, "+value+ of a property of JSON type must be nil or a String")
+  describe "when something else is provided" do
+    it 'raises ArgumentError with a meaningful message' do
+      lambda {
+        DataMapper::Types::Json.load(:sym, :property)
+      }.should raise_error(ArgumentError, "+value+ of a property of JSON type must be nil or a String")
+    end
   end
 end
+
+
 
 describe DataMapper::Types::Json, ".dump" do
-  it 'should return nil if the value is nil' do
-    DataMapper::Types::Json.dump(nil, :property).should be_nil
+  describe "when nil is provided" do
+    it 'returns nil' do
+      DataMapper::Types::Json.dump(nil, :property).should be_nil
+    end
   end
 
-  it 'should do nothing if the value is a string' do
-    JSON.should_not_receive(:dump)
-    DataMapper::Types::Json.dump('', :property).should be_kind_of(String)
+  describe "when Json encoded primitive string is provided" do
+    it 'does not do double encoding' do
+      DataMapper::Types::Json.dump("Json encoded string", :property).should == "Json encoded string"
+    end
   end
 
-  it 'should dump to a JSON string otherwise' do
-    JSON.should_receive(:dump).with([]).once
-    DataMapper::Types::Json.dump([], :property)
+  describe "when regular Ruby string is provided" do
+    it 'dumps argument to Json' do
+      DataMapper::Types::Json.dump("dump me (to JSON)", :property).should == "dump me (to JSON)"
+    end
+  end
+
+  describe "when Ruby array is provided" do
+    it 'dumps argument to Json' do
+      DataMapper::Types::Json.dump([1, 2, 3], :property).should == "[1,2,3]"
+    end
+  end
+
+  describe "when Ruby hash is provided" do
+    it 'dumps argument to Json' do
+      DataMapper::Types::Json.dump({ :datamapper => "Data access layer in Ruby" }, :property).
+        should == "{\"datamapper\":\"Data access layer in Ruby\"}"
+    end
   end
 end
 
+
+
 describe DataMapper::Types::Json, ".typecast" do
-  it 'should parse the value if a string is provided' do
-    JSON.should_receive(:load).with('json_string')
-
-    DataMapper::Types::Json.typecast('json_string', :property)
+  class SerializeMe
+    attr_accessor :name
   end
 
-  it 'should leave the value alone if an array is given' do
-    JSON.should_not_receive(:load)
-    DataMapper::Types::Json.typecast([], :property)
+  describe "when given instance of a Hash" do
+    before :all do
+      @input      = { :library => "DataMapper" }
+
+      @result = DataMapper::Types::Json.typecast(@input, :property)
+    end
+
+    it_should_behave_like "identity function"
   end
 
-  it 'should leave the value alone if a hash is given' do
-    JSON.should_not_receive(:load)
-    DataMapper::Types::Json.typecast({}, :property)
+  describe "when given instance of an Array" do
+    before :all do
+      @input      = ["dm-core", "dm-more"]
+
+      @result = DataMapper::Types::Json.typecast(@input, :property)
+    end
+
+    it_should_behave_like "identity function"
+  end
+
+  describe "when given nil" do
+    before :all do
+      @input      = nil
+
+      @result = DataMapper::Types::Json.typecast(@input, :property)
+    end
+
+    it_should_behave_like "identity function"
+  end
+
+  describe "when given JSON encoded value" do
+    before :all do
+      @input      = "{ \"value\": 11 }"
+
+      @result = DataMapper::Types::Json.typecast(@input, :property)
+    end
+
+    it "decodes value from JSON" do
+      @result.should == { "value" => 11 }
+    end
+  end
+
+  
+  describe "when given instance of a custom class" do
+    before :all do
+      @input      = SerializeMe.new
+      @input.name = 'Hello!'
+
+      # @result = DataMapper::Types::Json.typecast(@input, :property)
+    end
+
+    it "attempts to load value from JSON string"
   end
 end
