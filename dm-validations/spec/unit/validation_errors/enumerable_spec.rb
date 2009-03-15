@@ -16,7 +16,8 @@ describe DataMapper::Validate::ValidationErrors do
         seen << i
       end
 
-      seen.should == [["must have valid format"], ["can't be blank"]]
+      seen.should include(["must have valid format"])
+      seen.should include(["can't be blank"])
     end
   end
 
@@ -26,7 +27,10 @@ describe DataMapper::Validate::ValidationErrors do
       @model.add(:ip_address, "must belong to a local subnet")
     end
     it "maps error message arrays using provided block" do
-      @model.map { |ary| ary.size }.should == [2, 1]
+      projection = @model.map { |ary| ary.size }
+
+      projection.should include(2)
+      projection.should include(1)
     end
   end  
 end
