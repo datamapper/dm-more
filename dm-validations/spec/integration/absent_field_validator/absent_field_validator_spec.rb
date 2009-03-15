@@ -10,7 +10,7 @@ describe DataMapper::Validate::Fixtures::Kayak do
     @kayak.should be_valid_for_sale
   end
 
-  describe "with salesman not absent" do
+  describe "with salesman being non blank" do
     before :all do
       @kayak.salesman = 'Joe'
     end
