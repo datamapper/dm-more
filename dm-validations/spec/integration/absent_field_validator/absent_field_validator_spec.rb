@@ -23,6 +23,51 @@ describe DataMapper::Validate::Fixtures::Kayak do
       @kayak.errors.on(:salesman).should include('Salesman must be absent')
     end
   end
+
+
+  describe "with salesman being nil" do
+    before :all do
+      @kayak.salesman = nil
+    end
+
+    it "is valid" do
+      @kayak.should be_valid_for_sale
+    end
+
+    it "has no error messages" do
+      @kayak.errors.on(:salesman).should be_blank
+    end
+  end
+
+
+  describe "with salesman being an empty string" do
+    before :all do
+      @kayak.salesman = ''
+    end
+
+    it "is valid" do
+      @kayak.should be_valid_for_sale
+    end
+
+    it "has no error messages" do
+      @kayak.errors.on(:salesman).should be_blank
+    end
+  end
+
+
+  describe "with salesman being an empty array" do
+    before :all do
+      @kayak.salesman = []
+    end
+
+    it "is valid" do
+      @kayak.should be_valid_for_sale
+    end
+
+    it "has no error messages" do
+      @kayak.errors.on(:salesman).should be_blank
+    end
+  end
 end
 
 
