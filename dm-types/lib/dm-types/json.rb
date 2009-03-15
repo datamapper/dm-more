@@ -20,7 +20,7 @@ module DataMapper
         elsif value.is_a?(String)
           ::JSON.load(value)
         else
-          raise ArgumentError, '+value+ must be nil or a String'
+          raise ArgumentError.new("+value+ of a property of JSON type must be nil or a String")
         end
       end
 
