@@ -1,6 +1,15 @@
-=== 0.9.11 / not released
+=== 0.10.0 / not released
 
-  * No changes this version
+* 3 major enhancements:
+
+  * Major spec refactoring
+  * dm-validations now can be used with a pure Ruby classes, not just DM models
+  * i18n of error messages  
+
+* 1 minor enhancement:
+
+  * allow_nil option now uses #blank? instead of #nil? to comply common a use case
+
 
 === 0.9.10 / 2009-01-19
 
