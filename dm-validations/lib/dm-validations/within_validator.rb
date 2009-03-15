@@ -43,7 +43,7 @@ module DataMapper
 
     module ValidatesWithin
 
-      # Validate the absence of a field
+      # Validate that value of a field if within a range/set
       #
       def validates_within(*fields)
         opts = opts_from_validator_args(fields)
