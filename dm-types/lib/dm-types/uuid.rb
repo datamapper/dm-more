@@ -57,11 +57,6 @@ module DataMapper
       def self.typecast(value, property)
         value.kind_of?(::UUID) ? value : load(value, property)
       end
-
-      #::DataMapper::Property::TYPES << self
-      #if defined? DataMapper::Adapters::PostgresAdapter
-      #  DataMapper::Adapters::PostgresAdapter.type_map.map(self).to('UUID').with(:size => nil)
-      #end
     end
   end
 end
