@@ -9,10 +9,12 @@ module DataMapper
 
       def initialize(field_name, options = {})
         super
-        @options = options
+        @options    = options
         @field_name = field_name
-        @options[:allow_nil] = true unless @options.include?(:allow_nil)
-        @options[:accept] ||= ["1", 1, "true", true, "t"]
+
+        # ||= true makes value true if it used to be false
+        @options[:allow_nil] = true unless(options.include?(:allow_nil) && [false, nil, "false", "f"].include?(options[:allow_nil]))
+        @options[:accept]    ||= ["1", 1, "true", true, "t"]
         @options[:accept] = Array(@options[:accept])
       end
 
@@ -29,7 +31,7 @@ module DataMapper
       def valid?(target)
         field_value = target.validation_property_value(field_name)
         # Allow empty values
-        return @options[:allow_nil] if (field_value.nil? || (field_value.respond_to?(:empty?) && field_value.empty?))
+        return true if @options[:allow_nil] && field_value.blank?
 
         @options[:accept].include?(field_value)
       end
