@@ -55,6 +55,21 @@ describe DataMapper::Validate::Fixtures::Kayak do
   end
 
 
+  describe "with salesman being a string of white spaces" do
+    before :all do
+      @kayak.salesman = '    '
+    end
+
+    it "is valid" do
+      @kayak.should be_valid_for_sale
+    end
+
+    it "has no error messages" do
+      @kayak.errors.on(:salesman).should be_blank
+    end
+  end
+
+
   describe "with salesman being an empty array" do
     before :all do
       @kayak.salesman = []
