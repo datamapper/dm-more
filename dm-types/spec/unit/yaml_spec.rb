@@ -1,46 +1,67 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
+
 describe DataMapper::Types::Yaml, ".load" do
-  it 'should return nil if nil is provided' do
-    DataMapper::Types::Yaml.load(nil, :property).should be_nil
+  describe "when nil is provided" do
+    it 'returns nil' do
+      DataMapper::Types::Yaml.load(nil, :property).should be_nil
+    end
   end
 
-  it 'should parse the value if a string is provided' do
-    YAML.should_receive(:load).with('yaml_string').once
-    DataMapper::Types::Yaml.load('yaml_string', :property)
+  describe "when YAML encoded primitive string is provided" do
+    it 'returns decoded value as Ruby string' do
+      DataMapper::Types::Yaml.load("--- yaml string\n", :property).should == "yaml string"
+    end
   end
 
-  it 'should raise an ArgumentError if something else is given' do
-    lambda {
-      DataMapper::Types::Yaml.load(:sym, :property)
-    }.should raise_error(ArgumentError, "+value+ of a property of YAML type must be nil or a String")
+  describe "when something else is provided" do
+    it 'raises ArgumentError with a meaningful message' do
+      lambda {
+        DataMapper::Types::Yaml.load(:sym, :property)
+      }.should raise_error(ArgumentError, "+value+ of a property of YAML type must be nil or a String")
+    end
   end
 end
+
+
 
 describe DataMapper::Types::Yaml, ".dump" do
-  it 'should return nil if the value is nil' do
-    DataMapper::Types::Yaml.dump(nil, :property).should be_nil
+  describe "when nil is provided" do
+    it 'returns nil' do
+      DataMapper::Types::Yaml.dump(nil, :property).should be_nil
+    end
   end
 
-  it 'should do nothing if the value is a string which begins with ---' do
-    YAML.should_not_receive(:dump)
-    DataMapper::Types::Yaml.dump('--- str', :property).should be_kind_of(String)
+  describe "when YAML encoded primitive string is provided" do
+    it 'does not do double encoding' do
+      DataMapper::Types::Yaml.dump("--- yaml encoded string\n", :property).should == "--- yaml encoded string\n"
+    end
   end
 
-  it 'should dump to a YAML string if the value is a normal string' do
-    YAML.should_receive(:dump).with('string').once
-    DataMapper::Types::Yaml.dump('string', :property)
+  describe "when regular Ruby string is provided" do
+    it 'dumps argument to YAML' do
+      DataMapper::Types::Yaml.dump("dump me (to yaml)", :property).should == "--- dump me (to yaml)\n"
+    end
   end
 
-  it 'should dump to a YAML string otherwise' do
-    YAML.should_receive(:dump).with([]).once
-    DataMapper::Types::Yaml.dump([], :property)
+  describe "when Ruby array is provided" do
+    it 'dumps argument to YAML' do
+      DataMapper::Types::Yaml.dump([1, 2, 3], :property).should == "--- \n- 1\n- 2\n- 3\n"
+    end
+  end
+
+  describe "when Ruby hash is provided" do
+    it 'dumps argument to YAML' do
+      DataMapper::Types::Yaml.dump({ :datamapper => "Data access layer in Ruby" }, :property).should == "--- \n:datamapper: Data access layer in Ruby\n"
+    end
   end
 end
 
+
+
 describe DataMapper::Types::Yaml, ".typecast" do
-  it 'should leave the value alone' do
+  it 'leaves the value unchanged' do
     @type = DataMapper::Types::Yaml
     @type.typecast([1, 2, 3], :property).should == [1, 2, 3]
 
