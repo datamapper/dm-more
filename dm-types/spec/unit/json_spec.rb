@@ -14,7 +14,7 @@ describe DataMapper::Types::Json, ".load" do
   it 'should raise an ArgumentError if something else is given' do
     lambda {
       DataMapper::Types::Json.load(:sym, :property)
-    }.should raise_error(ArgumentError, '+value+ must be nil or a String')
+    }.should raise_error(ArgumentError, "+value+ of a property of JSON type must be nil or a String")
   end
 end
 
