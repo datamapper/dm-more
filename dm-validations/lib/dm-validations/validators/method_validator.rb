@@ -9,7 +9,6 @@ module DataMapper
 
       def initialize(field_name, options={})
         super
-        @field_name, @options = field_name, options.clone
         @options[:method] = @field_name unless @options.has_key?(:method)
       end
 

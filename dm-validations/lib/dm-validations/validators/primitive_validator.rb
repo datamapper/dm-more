@@ -6,15 +6,10 @@ module DataMapper
     # @author Dirkjan Bussink
     # @since  0.9
     class PrimitiveValidator < GenericValidator
-
-      def initialize(field_name, options={})
-        super
-        @field_name, @options = field_name, options
-      end
-
       def call(target)
-        value = target.validation_property_value(field_name)
+        value    = target.validation_property_value(field_name)
         property = target.validation_property(field_name)
+
         return true if value.nil? || value.kind_of?(property.primitive) || property.primitive == TrueClass && value.kind_of?(FalseClass)
 
         error_message = @options[:message] || default_error(property)

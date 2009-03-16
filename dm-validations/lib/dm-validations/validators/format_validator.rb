@@ -17,9 +17,9 @@ module DataMapper
       include DataMapper::Validate::Format::Email
       include DataMapper::Validate::Format::Url
 
-      def initialize(field_name, options = {}, &b)
-        super(field_name, options)
-        @field_name, @options = field_name, options
+      def initialize(field_name, options = {})
+        super
+
         @options[:allow_nil] = true unless @options.include?(:allow_nil)
       end
 

@@ -6,16 +6,10 @@ module DataMapper
     # @author Guy van den Berg
     # @since  0.9
     class AbsentFieldValidator < GenericValidator
-
-      def initialize(field_name, options={})
-        super
-        @field_name, @options = field_name, options
-      end
-
       def call(target)
-        return true if target.send(field_name).blank?
+        return true if target.send(self.field_name).blank?
 
-        error_message = @options[:message] || ValidationErrors.default_error_message(:absent, field_name)
+        error_message = self.options[:message] || ValidationErrors.default_error_message(:absent, field_name)
         add_error(target, error_message, field_name)
 
         return false

@@ -11,7 +11,7 @@ module DataMapper
       def initialize(field_name, options = {})
         assert_kind_of 'scope', options[:scope], Array, Symbol if options.has_key?(:scope)
         super
-        @field_name, @options = field_name, options
+
         @options[:allow_nil] = true unless @options.include?(:allow_nil)
       end
 

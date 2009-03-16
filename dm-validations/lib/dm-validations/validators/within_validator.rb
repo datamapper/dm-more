@@ -9,7 +9,7 @@ module DataMapper
 
       def initialize(field_name, options={})
         super
-        @field_name, @options = field_name, options
+
         @options[:set] = [] unless @options.has_key?(:set)
       end
 

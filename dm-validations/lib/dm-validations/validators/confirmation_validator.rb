@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module DataMapper
   module Validate
 
@@ -9,8 +10,7 @@ module DataMapper
 
       def initialize(field_name, options = {})
         super
-        @options = options
-        @field_name, @confirm_field_name = field_name, (options[:confirm] || "#{field_name}_confirmation").to_sym
+        @confirm_field_name  = (options[:confirm] || "#{field_name}_confirmation").to_sym
         @options[:allow_nil] = true unless @options.has_key?(:allow_nil)
       end
 

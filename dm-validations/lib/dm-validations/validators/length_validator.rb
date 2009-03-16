@@ -9,8 +9,6 @@ module DataMapper
 
       def initialize(field_name, options)
         super
-        @field_name = field_name
-        @options = options
 
         @min = options[:minimum] || options[:min]
         @max = options[:maximum] || options[:max]

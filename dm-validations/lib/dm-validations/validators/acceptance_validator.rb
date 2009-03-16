@@ -9,8 +9,6 @@ module DataMapper
 
       def initialize(field_name, options = {})
         super
-        @options    = options
-        @field_name = field_name
 
         # ||= true makes value true if it used to be false
         @options[:allow_nil] = true unless(options.include?(:allow_nil) && [false, nil, "false", "f"].include?(options[:allow_nil]))

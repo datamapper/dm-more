@@ -15,7 +15,7 @@ module DataMapper
     class GenericValidator
 
       attr_accessor :if_clause, :unless_clause
-      attr_reader :field_name
+      attr_reader   :field_name, :options
 
       # Construct a validator. Capture the :if and :unless clauses when present.
       #
@@ -28,9 +28,11 @@ module DataMapper
       # All additional key/value pairs are passed through to the validator
       # that is sub-classing this GenericValidator
       #
-      def initialize(field, opts = {})
-        @if_clause     = opts.delete(:if)
-        @unless_clause = opts.delete(:unless)
+      def initialize(field_name, options = {})
+        @if_clause     = options.delete(:if)
+        @unless_clause = options.delete(:unless)
+
+        @field_name, @options = field_name, options
       end
 
       # Add an error message to a target resource. If the error corresponds to a
