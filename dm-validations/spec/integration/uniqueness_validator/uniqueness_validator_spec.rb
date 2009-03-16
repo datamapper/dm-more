@@ -30,57 +30,77 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
 
 
-  describe DataMapper::Validate::UniquenessValidator do
-    before do
+  describe DataMapper::Validate::Fixtures::Organisation do
+    before :all do
        DataMapper.repository do
-         ::DataMapper::Validate::Fixtures::Organisation.new(:id => 1, :name=>'Org One', :domain=>'taken').save
-         ::DataMapper::Validate::Fixtures::Organisation.new(:id => 2, :name=>'Org Two', :domain=>'two').save
-
-         ::DataMapper::Validate::Fixtures::User.new(:organisation_id => 1, :user_name => 'guy').save
+         @model = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Apple', :domain => 'apple.com')
       end
     end
 
-    it 'should validate the uniqueness of a value on a resource' do
-       DataMapper.repository do
-        o = ::DataMapper::Validate::Fixtures::Organisation.get!(1)
-        o.should be_valid
-
-        o = ::DataMapper::Validate::Fixtures::Organisation.new(:id=>20, :name=>"Org Twenty", :domain=>nil)
-        o.should be_valid
-        o.save
-
-        o = ::DataMapper::Validate::Fixtures::Organisation.new(:id=>30, :name=>"Org Thirty", :domain=>nil)
-        o.should be_valid
+    describe "with missing domain" do
+      before :all do
+        @model.domain = nil
       end
+
+      it_should_behave_like "valid model"
     end
 
-    it "should not even check if :allow_nil is true" do
-       DataMapper.repository do
-        o = ::DataMapper::Validate::Fixtures::Organisation.get!(1)
-        o.should be_valid
-
-        o = ::DataMapper::Validate::Fixtures::Organisation.new(:id=>2, :name=>"Org Two", :domain=>"taken")
-        o.should_not be_valid
-        o.errors.on(:domain).should include('Domain is already taken')
-
-        o = ::DataMapper::Validate::Fixtures::Organisation.new(:id=>2, :name=>"Org Two", :domain=>"not_taken")
-        o.should be_valid
+    describe "with a duplicate domain" do
+      before :all do
+        @model.name   = "Fake Apple"
+        @model.domain = "apple.com"
       end
-    end
 
-    it 'should validate the uniqueness of a value with scope' do
-       DataMapper.repository do
-        u = ::DataMapper::Validate::Fixtures::User.new(:id => 2, :organisation_id=>1, :user_name => 'guy')
-        u.should_not be_valid_for_testing_property
-        u.errors.on(:user_name).should include('User name is already taken')
-        u.should_not be_valid_for_testing_association
-        u.errors.on(:user_name).should include('User name is already taken')
+      it_should_behave_like "invalid model"
 
-
-        u = ::DataMapper::Validate::Fixtures::User.new(:id => 2, :organisation_id => 2, :user_name  => 'guy')
-        u.should be_valid_for_testing_property
-        u.should be_valid_for_testing_association
+      it "has a meaningful error message" do
+        @model.valid?
+        @model.errors.on(:domain).should include("Domain is already taken")
       end
     end
   end
-end
+
+
+
+  describe DataMapper::Validate::Fixtures::User do
+    before :all do
+       DataMapper.repository do
+         @organization_one = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
+         @organization_two = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 102', :domain => '102')
+
+         @dept             = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'accounting')
+
+         ::DataMapper::Validate::Fixtures::User.create(:organisation => @organization_one, :user_name => 'guy', :department_id => @dept.id)
+      end
+    end
+
+    describe "with username not valid across the organization" do
+      before :all do
+        @model = ::DataMapper::Validate::Fixtures::User.new(:organisation => @organization_one, :user_name => 'guy')
+      end
+
+      it "is not valid for signing up" do
+        @model.should_not be_valid_for_signing_up_for_organization_account
+      end
+
+      it "has a meaningful error message" do
+        @model.errors.on(:user_name).should include('User name is already taken')
+      end
+    end
+
+
+    describe "with username not valid across the department" do
+      before :all do
+        @model = ::DataMapper::Validate::Fixtures::User.new(:department_id => @dept.id, :user_name => 'guy')
+      end
+
+      it "is not valid for setting up the account" do
+        @model.should_not be_valid_for_signing_up_for_department_account
+      end
+
+      it "has a meaningful error message" do
+        @model.errors.on(:user_name).should include('User name is already taken')
+      end
+    end
+  end # describe DataMapper::Validate::Fixtures::User
+end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES

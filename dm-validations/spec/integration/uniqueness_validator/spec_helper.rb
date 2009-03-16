@@ -30,12 +30,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :id, Serial
 
           property :organisation_id, Integer
-          property :user_name, String
+          property :department_id,   Integer
+          property :user_name,       String
 
-          belongs_to :organisation, :class_name => "::DataMapper::Validate::Fixtures::Organisation"
+          belongs_to :organisation, :model => ::DataMapper::Validate::Fixtures::Organisation
+          belongs_to :department,   :model => ::DataMapper::Validate::Fixtures::Department
 
-          validates_is_unique :user_name, :when => :testing_association, :scope => [:organisation]
-          validates_is_unique :user_name, :when => :testing_property, :scope => [:organisation_id]
+          validates_is_unique :user_name, :when => :signing_up_for_department_account,   :scope => [:department_id]
+          validates_is_unique :user_name, :when => :signing_up_for_organization_account, :scope => [:organisation]
         end
 
         Organisation.auto_migrate!
