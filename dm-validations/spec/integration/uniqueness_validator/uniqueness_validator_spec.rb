@@ -6,6 +6,30 @@ require __dir__ + 'spec_helper'
 
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+  describe DataMapper::Validate::Fixtures::Department do
+    before :all do
+      ::DataMapper::Validate::Fixtures::Department.create(:name => "HR")
+    end
+
+    describe "with unique name" do
+      before :all do
+        @model = ::DataMapper::Validate::Fixtures::Department.new(:name => "R & D")
+      end
+
+      it_should_behave_like "valid model"
+    end
+
+    describe "with a duplicate name" do
+      before :all do
+        @model = ::DataMapper::Validate::Fixtures::Department.new(:name => "HR")
+      end
+
+      it_should_behave_like "invalid model"
+    end
+  end
+
+
+
   describe DataMapper::Validate::UniquenessValidator do
     before do
        DataMapper.repository do
@@ -42,12 +66,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         o = ::DataMapper::Validate::Fixtures::Organisation.new(:id=>2, :name=>"Org Two", :domain=>"not_taken")
         o.should be_valid
       end
-    end
-
-    it 'should validate uniqueness on a string key' do
-      hr  = ::DataMapper::Validate::Fixtures::Department.create(:name => "HR")
-      hr2 = ::DataMapper::Validate::Fixtures::Department.new(:name => "HR")
-      hr2.valid?.should == false
     end
 
     it 'should validate the uniqueness of a value with scope' do
