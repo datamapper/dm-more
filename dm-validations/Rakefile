@@ -8,7 +8,7 @@ SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 require ROOT + 'lib/dm-validations/version'
 
-AUTHOR = 'Guy van den Berg'
+AUTHOR = 'Guy van den Berg, DataMapper development team'
 EMAIL  = 'vandenberg.guy [a] gmail [d] com'
 GEM_NAME = 'dm-validations'
 GEM_VERSION = DataMapper::Validations::VERSION
@@ -18,7 +18,7 @@ GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TO
 
 PROJECT_NAME = 'datamapper'
 PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin for performing validations on data models'
+PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'Library for performing validations on DM models and pure Ruby object'
 
 [ ROOT, ROOT.parent ].each do |dir|
   Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
