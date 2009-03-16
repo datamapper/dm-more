@@ -1,3 +1,5 @@
+require "forwardable"
+
 module DataMapper
   module Validate
 
@@ -6,6 +8,24 @@ module DataMapper
     # @author Guy van den Berg
     # @since  0.9
     class ContextualValidators
+      extend Forwardable
+
+      #
+      # Delegators
+      #
+
+      def_delegators :@contexts, :empty?, :each
+      include Enumerable
+
+      attr_reader :contexts
+
+      def initialize
+        @contexts = {}
+      end
+
+      #
+      # API
+      #
 
       def dump
         contexts.each_pair do |key, context|
@@ -14,16 +34,8 @@ module DataMapper
       end
       alias_method :inspect, :dump
 
-      # Get a hash of named context validators for the resource
-      #
-      # @return [Hash<Symbol, DataMapper::Validate::GenericValidator>]
-      #   a hash of validators
-      def contexts
-        @contexts ||= {}
-      end
-
       # Return an array of validators for a named context
-      # 
+      #
       # @param  [String]
       #   Context name for which return validators
       # @return [Array<DataMapper::Validate::GenericValidator>]
