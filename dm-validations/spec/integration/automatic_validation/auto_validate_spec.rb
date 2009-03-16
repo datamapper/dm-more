@@ -1,55 +1,8 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 
-module TypecastBypassSetter
-  # Bypass typecasting so we can set values for specs
-  def set(attributes)
-    attributes.each do |k, v|
-      instance_variable_set("@#{k}", v)
-    end
-  end
-end
-
-class SailBoat
-  include DataMapper::Resource
-  property :id,            Integer,    :key => true
-  property :name,          String,                                :nullable => false,     :validates       => :presence_test
-  property :description,   String,     :length => 10,                                     :validates       => :length_test_1
-  property :notes,         String,     :length => 2..10,                                  :validates       => :length_test_2
-  property :no_validation, String,                                                        :auto_validation => false
-  property :salesman,      String,                                :nullable => false,     :validates       => [:multi_context_1, :multi_context_2]
-  property :code,          String,     :format => Proc.new { |code| code =~ /A\d{4}\z/ }, :validates       => :format_test
-  property :allow_nil,     String,     :length => 5..10,          :nullable => true,      :validates       => :nil_test
-  property :build_date,    Date,                                                          :validates       => :primitive_test
-  property :float,         Float,      :precision => 2, :scale => 1
-  property :big_decimal,   BigDecimal, :precision => 2, :scale => 1
-
-  include TypecastBypassSetter
-end
-
-class HasNullableBoolean
-  include DataMapper::Resource
-  property :id,   Integer, :key => true
-  property :bool, Boolean # :nullable => true by default
-
-  include TypecastBypassSetter
-end
-
-class HasNotNullableBoolean
-  include DataMapper::Resource
-  property :id,   Integer, :key => true
-  property :bool, Boolean, :nullable => false
-
-  include TypecastBypassSetter
-end
-
-class HasNotNullableParanoidBoolean
-  include DataMapper::Resource
-  property :id,   Integer,         :key => true
-  property :bool, ParanoidBoolean, :nullable => false
-
-  include TypecastBypassSetter
-end
+__dir__ = Pathname(__FILE__).dirname.expand_path
+require __dir__.parent.parent + 'spec_helper'
+require __dir__ + 'spec_helper'
 
 describe "Automatic Validation from Property Definition" do
   it "should have a hook for adding auto validations called from
