@@ -34,27 +34,6 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_nil_test
   end
 
-  describe 'for nullable Boolean properties' do
-    before do
-      @boat = HasNullableBoolean.new(:id => 1)
-    end
-
-    it 'should allow true' do
-      @boat.set(:bool => true)
-      @boat.should be_valid
-    end
-
-    it 'should allow false' do
-      @boat.set(:bool => false)
-      @boat.should be_valid
-    end
-
-    it 'should allow nil' do
-      @boat.set(:bool => nil)
-      @boat.should be_valid
-    end
-  end
-
   describe 'for non-nullable Boolean properties' do
     before do
       @boat = HasNotNullableBoolean.new(:id => 1)

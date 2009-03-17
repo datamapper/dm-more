@@ -11,7 +11,11 @@ end
 
 class SailBoat
   include DataMapper::Resource
+
+  # this one is not Serial intentionally
+  # use Serial in real world apps  
   property :id,            Integer,    :key => true
+
   property :name,          String,                                :nullable => false,     :validates       => :presence_test
   property :description,   String,     :length => 10,                                     :validates       => :length_test_1
   property :notes,         String,     :length => 2..10,                                  :validates       => :length_test_2
@@ -28,6 +32,9 @@ end
 
 class HasNullableBoolean
   include DataMapper::Resource
+
+  # this one is not Serial intentionally
+  # use Serial in real world apps  
   property :id,   Integer, :key => true
   property :bool, Boolean # :nullable => true by default
 
@@ -36,6 +43,9 @@ end
 
 class HasNotNullableBoolean
   include DataMapper::Resource
+
+  # this one is not Serial intentionally
+  # use Serial in real world apps  
   property :id,   Integer, :key => true
   property :bool, Boolean, :nullable => false
 
@@ -44,6 +54,9 @@ end
 
 class HasNotNullableParanoidBoolean
   include DataMapper::Resource
+
+  # this one is not Serial intentionally
+  # use Serial in real world apps
   property :id,   Integer,         :key => true
   property :bool, ParanoidBoolean, :nullable => false
 
