@@ -17,18 +17,6 @@ describe "Automatic Validation from Property Definition" do
     boat.errors.on(:code).should include('Code has an invalid format')
   end
 
-
-
-  it "should not auto add any validators if the option :auto_validation => false was given" do
-    klass = Class.new do
-      include DataMapper::Resource
-      property :id,   DataMapper::Types::Serial,                     :auto_validation => false
-      property :name, String,                     :nullable => false, :auto_validation => false
-      property :bool, DataMapper::Types::Boolean, :nullable => false, :auto_validation => false
-    end
-    klass.new.valid?.should == true
-  end
-
   it "should auto add range checking the length of a string while still allowing null values" do
     boat = SailBoat.new
     boat.allow_nil = 'ABC'
