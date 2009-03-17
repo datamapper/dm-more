@@ -17,28 +17,7 @@ describe "Automatic Validation from Property Definition" do
     boat.errors.on(:code).should include('Code has an invalid format')
   end
 
-  it "should auto validate all strings for max length" do
-    klass = Class.new do
-      include DataMapper::Resource
-      property :id, DataMapper::Types::Serial
-      property :name, String
-    end
-    t = klass.new(:id => 1)
-    t.should be_valid
-    t.name = 'a' * 51
-    t.should_not be_valid
-    t.errors.on(:name).should include('Name must be less than 50 characters long')
-  end
 
-  it "should auto validate the primitive type" do
-    validator = SailBoat.validators.context(:primitive_test).first
-    validator.should be_kind_of(DataMapper::Validate::PrimitiveValidator)
-    boat = SailBoat.new
-    boat.should be_valid_for_primitive_test
-    boat.build_date = 'ABC'
-    boat.should_not be_valid_for_primitive_test
-    boat.errors.on(:build_date).should include('Build date must be of type Date')
-  end
 
   it "should not auto add any validators if the option :auto_validation => false was given" do
     klass = Class.new do

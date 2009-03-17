@@ -55,4 +55,17 @@ describe SailBoat do
     boat.notes = 'ABCDEFGHIJ' #10
     boat.should be_valid_for_length_test_2
   end
+
+  it "should auto validate all strings for max length" do
+    klass = Class.new do
+      include DataMapper::Resource
+      property :id, DataMapper::Types::Serial
+      property :name, String
+    end
+    t = klass.new(:id => 1)
+    t.should be_valid
+    t.name = 'a' * 51
+    t.should_not be_valid
+    t.errors.on(:name).should include('Name must be less than 50 characters long')
+  end
 end
