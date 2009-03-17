@@ -7,7 +7,7 @@ require __dir__ + 'spec_helper'
 
 describe SailBoat do
   before :all do
-    @model      = SailBoat.new
+    @model      = SailBoat.new(:id => 1)
     @model.name = 'Float'
     @model.should be_valid_for_presence_test
   end
@@ -26,9 +26,29 @@ describe SailBoat do
 end
 
 
+
 describe SailBoat do
   before :all do
-    @model      = SailBoat.new
+    @model      = SailBoat.new(:id => 1)
+    @model.name = 'Float'
+    @model.should be_valid_for_presence_test
+  end
+
+  describe "with a name" do
+    before :all do
+      # no op
+    end
+
+    # has validates_is_present for name thanks to :nullable => false
+    it_should_behave_like "valid model"
+  end
+end
+
+
+
+describe SailBoat do
+  before :all do
+    @model      = SailBoat.new(:id => 1)
     @model.should be_valid_for_length_test_1
   end
 
@@ -42,6 +62,24 @@ describe SailBoat do
       @model.should_not be_valid_for_length_test_1
       @model.errors.on(:description).should include('Description must be less than 10 characters long')
     end
+  end
+end
+
+
+
+describe SailBoat do
+  before :all do
+    @model      = SailBoat.new(:id => 1)
+    @model.should be_valid_for_length_test_1
+  end
+
+  describe "with 9 characters long description" do
+    before :all do
+      @model.description = 'ABCDEFGHI' # 9
+    end
+
+    # validates_length is inferred from property's :length option
+    it_should_behave_like "valid model"
   end
 end
 
