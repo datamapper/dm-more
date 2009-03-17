@@ -4,25 +4,29 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + 'spec_helper'
 require __dir__ + 'spec_helper'
 
+
+describe SailBoat do
+  before :all do
+    @model      = SailBoat.new
+    @model.name = 'Float'
+    @model.should be_valid_for_presence_test
+  end
+
+  describe "without name" do
+    before :all do
+      @model.name = nil
+    end
+
+    it "has validates_is_present for name thanks to :nullable => false" do
+      @model.should_not be_valid_for_presence_test
+      @model.errors.on(:name).should include('Name must not be blank')
+    end
+  end
+end
+
+
+
 describe "Automatic Validation from Property Definition" do
-  it "should have a hook for adding auto validations called from
-      DataMapper::Property#new" do
-    SailBoat.should respond_to(:auto_generate_validations)
-  end
-
-  it "should auto add a validates_is_present when property has option
-      :nullable => false" do
-    validator = SailBoat.validators.context(:presence_test).first
-    validator.should be_kind_of(DataMapper::Validate::RequiredFieldValidator)
-    validator.field_name.should == :name
-
-    boat = SailBoat.new
-    boat.valid_for_presence_test?.should == false
-    boat.errors.on(:name).should include('Name must not be blank')
-    boat.name = 'Float'
-    boat.valid_for_presence_test?.should == true
-  end
-
   it "should auto add a validates_length for maximum size on String properties" do
     # max length test max=10
     boat = SailBoat.new
