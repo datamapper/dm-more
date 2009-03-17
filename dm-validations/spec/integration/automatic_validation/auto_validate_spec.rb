@@ -17,7 +17,8 @@ describe SailBoat do
       @model.name = nil
     end
 
-    it "has validates_is_present for name thanks to :nullable => false" do
+    # has validates_is_present for name thanks to :nullable => false
+    it "is invalid" do
       @model.should_not be_valid_for_presence_test
       @model.errors.on(:name).should include('Name must not be blank')
     end
@@ -25,19 +26,27 @@ describe SailBoat do
 end
 
 
-
-describe "Automatic Validation from Property Definition" do
-  it "should auto add a validates_length for maximum size on String properties" do
-    # max length test max=10
-    boat = SailBoat.new
-    boat.valid_for_length_test_1?.should == true  #no minimum length
-    boat.description = 'ABCDEFGHIJK' #11
-    boat.valid_for_length_test_1?.should == false
-    boat.errors.on(:description).should include('Description must be less than 10 characters long')
-    boat.description = 'ABCDEFGHIJ' #10
-    boat.valid_for_length_test_1?.should == true
+describe SailBoat do
+  before :all do
+    @model      = SailBoat.new
+    @model.should be_valid_for_length_test_1
   end
 
+  describe "with 11 characters long description" do
+    before :all do
+      @model.description = 'ABCDEFGHIJK' #11
+    end
+
+    # validates_length is inferred from property's :length option
+    it "is invalid" do
+      @model.should_not be_valid_for_length_test_1
+      @model.errors.on(:description).should include('Description must be less than 10 characters long')
+    end
+  end
+end
+
+
+describe "Automatic Validation from Property Definition" do
   it "should auto add validates_length within a range when option :length
       or :size is a range" do
     # Range test notes = 2..10
