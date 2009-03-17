@@ -34,29 +34,6 @@ describe "Automatic Validation from Property Definition" do
     boat.should be_valid_for_nil_test
   end
 
-  describe 'for Integer properties' do
-    before do
-      @boat = SailBoat.new
-    end
-
-    it 'should allow integers' do
-      @boat.set(:id => 1)
-      @boat.should be_valid
-    end
-
-    it 'should not allow floats' do
-      @boat.set(:id => 1.0)
-      @boat.should_not be_valid
-      @boat.errors.on(:id).should include('Id must be an integer')
-    end
-
-    it 'should not allow decimals' do
-      @boat.set(:id => BigDecimal('1'))
-      @boat.should_not be_valid
-      @boat.errors.on(:id).should include('Id must be an integer')
-    end
-  end
-
   describe 'for nullable Boolean properties' do
     before do
       @boat = HasNullableBoolean.new(:id => 1)
