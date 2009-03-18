@@ -89,29 +89,4 @@ describe "Automatic Validation from Property Definition" do
       end
     end
   end
-
-  describe 'for within validator' do
-    before :all do
-      class ::LimitedBoat
-        include DataMapper::Resource
-        property :id,       DataMapper::Types::Serial
-        property :limited,  String,   :set => ['foo', 'bar', 'bang'], :default => 'foo'
-      end
-    end
-
-    before do
-      @boat = LimitedBoat.new
-    end
-
-    it 'should set default value' do
-      @boat.should be_valid
-    end
-
-    it 'should not accept value not in range' do
-      @boat.limited = "blah"
-      @boat.should_not be_valid
-      @boat.errors.on(:limited).should include('Limited must be one of [foo, bar, bang]')
-    end
-
-  end
 end
