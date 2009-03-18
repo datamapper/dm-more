@@ -6,17 +6,6 @@ require __dir__ + 'spec_helper'
 
 
 describe "Automatic Validation from Property Definition" do
-  it "should auto add a validates_format if the :format option is given" do
-    # format test - format = /A\d{4}\z/   on code
-    boat = SailBoat.new
-    boat.should be_valid_for_format_test
-    boat.code = 'A1234'
-    boat.should be_valid_for_format_test
-    boat.code = 'BAD CODE'
-    boat.should_not be_valid_for_format_test
-    boat.errors.on(:code).should include('Code has an invalid format')
-  end
-
   it "should auto add range checking the length of a string while still allowing null values" do
     boat = SailBoat.new
     boat.allow_nil = 'ABC'
