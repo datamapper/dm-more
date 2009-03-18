@@ -66,27 +66,4 @@ describe "Automatic Validation from Property Definition" do
       @boat.errors.on(:bool).should include('Bool must not be nil')
     end
   end
-
-  { :float => Float, :big_decimal => BigDecimal }.each do |column, type|
-    describe "for #{type} properties" do
-      before do
-        @boat = SailBoat.new(:id => 1)
-      end
-
-      it 'should allow integers' do
-        @boat.set(column => 1)
-        @boat.should be_valid
-      end
-
-      it 'should allow floats' do
-        @boat.set(column => '1.0')
-        @boat.should be_valid
-      end
-
-      it 'should allow decimals' do
-        @boat.set(column => BigDecimal('1'))
-        @boat.should be_valid
-      end
-    end
-  end
 end
