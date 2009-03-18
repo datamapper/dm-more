@@ -12,6 +12,18 @@ describe SailBoat do
     @model.should be_valid_for_length_test_1
   end
 
+
+  describe "with a nil value on property that allows nil" do
+    before :all do
+      @model.allow_nil = nil
+    end
+
+    it "is valid" do
+      @model.should be_valid_for_nil_test
+    end
+  end
+
+
   describe "with 11 characters long description" do
     before :all do
       @model.description = 'ABCDEFGHIJK' #11
@@ -23,15 +35,7 @@ describe SailBoat do
       @model.errors.on(:description).should include('Description must be less than 10 characters long')
     end
   end
-end
 
-
-
-describe SailBoat do
-  before :all do
-    @model      = SailBoat.new(:id => 1)
-    @model.should be_valid_for_length_test_1
-  end
 
   describe "with 9 characters long description" do
     before :all do
