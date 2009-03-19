@@ -42,7 +42,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'automatic positioning' do
       it 'should get the shadow variable of the last position' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(3).position=8
           Todo.get(3).dirty?.should == true
           Todo.get(3).attribute_dirty?(:position).should == true
@@ -52,14 +52,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should insert items into the list automatically' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(3).position.should == 3
           Todo.get(6).position.should == 3
         end
       end
 
       it 'should rearrange items when setting position yourself' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           todo = Todo.get(2)
           todo.position = 1
           todo.save
@@ -70,7 +70,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should rearrange items when setting the position yourself multiple times' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           todo = Todo.get(2)
           todo.position = 3
           todo.save
@@ -90,7 +90,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'movement' do
       it 'should rearrange items correctly when moving :higher' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(3).move :higher
           Todo.get(4).position.should == 1
           Todo.get(3).position.should == 2
@@ -99,7 +99,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should rearrange items correctly when moving :lower' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(2).position.should == 2
           Todo.get(3).position.should == 3
           Todo.get(2).move :lower
@@ -111,7 +111,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should rearrange items correctly when moving :highest or :lowest' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
 
           # list 1
           Todo.get(1).position.should == 1
@@ -127,7 +127,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should not rearrange when trying to move top-item up, or bottom item down' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(4).position.should == 1
           Todo.get(4).move(:higher).should == false
           Todo.get(4).position.should == 1
@@ -138,7 +138,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should rearrange items correctly when moving :above or :below' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Todo.get(4).position.should == 1
           Todo.get(6).position.should == 3
           Todo.get(4).move(:below => Todo.get(6))
@@ -150,7 +150,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'scoping' do
       it 'should detach from old list if scope changed' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           item = Todo.get(4)
           item.position.should == 1
           item.user_id = 1
@@ -172,7 +172,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should not allow you to move item into another scope' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           item = Todo.get(1)
           item.position.should == 1
           item.move(:below => Todo.get(5)).should == false
@@ -180,7 +180,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should detach from list when deleted' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           item = Todo.get(4)
           item.position.should == 1
           Todo.get(5).position.should == 2
@@ -194,7 +194,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'reparation' do
       it 'should fix them lists' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           # Need to do this with a batch update, as setting position = 20 wont
           # work (it will set it to bottom of list, not more)
           Todo.all(:position => 3).update!(:position => 20)
