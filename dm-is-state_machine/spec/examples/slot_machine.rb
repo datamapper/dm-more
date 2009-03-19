@@ -28,7 +28,7 @@ class SlotMachine
     end
   end
 
-  def initialize
+  def initialize(attributes = {})
     @log = []
     super
   end
