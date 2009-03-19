@@ -78,8 +78,11 @@ module DataMapper
 
       module SQL
         private
-        # FIXME Does not find the original method with dm-core 0.10.0 even though it seems to be there
-        alias original_property_to_column_name property_to_column_name
+        def included(host)
+          host.class_eval do
+            alias original_property_to_column_name property_to_column_name
+          end
+        end
 
         def property_to_column_name(property, qualify)
           case property
