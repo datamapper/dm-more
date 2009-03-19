@@ -59,7 +59,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       DataMapper.auto_migrate!
 
-      repository(:default) do
+      DataMapper.repository(:default) do
         @paul = User.create(:name => "paul")
         @john = User.create(:name => "john")
 
@@ -78,7 +78,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'Class#rebuild_tree_from_set' do
       it 'should reset all parent_ids correctly' do
-        repository(:default) do
+        DataMapper.repository(:default) do
           plasma = Category.get(5)
           plasma.parent_id.should == 2
           plasma.ancestor.id.should == 2
@@ -98,7 +98,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'Class#leaves and #leaves' do
       it 'should return all nodes without descendants' do
-        repository(:default) do
+        DataMapper.repository(:default) do
           Category.leaves.length.should == 6
 
           r = Category.root
@@ -110,7 +110,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe '#ancestor, #ancestors and #self_and_ancestors' do
       it 'should return ancestors in an array' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           c8 = Category.get(8)
           c8.ancestor.should == Category.get(7)
           c8.ancestor.should == c8.parent
@@ -123,7 +123,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe '#children' do
       it 'should return children of node' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           r = Category.root
           r.children.length.should == 2
 
@@ -137,7 +137,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe '#descendants and #self_and_descendants' do
       it 'should return all subnodes of node' do
-        repository(:default) do
+        DataMapper.repository(:default) do
           r = Category.get(1)
           r.self_and_descendants.length.should == 10
           r.descendants.length.should == 9
@@ -152,7 +152,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe '#siblings and #self_and_siblings' do
       it 'should return all siblings of node' do
-        repository(:default) do
+        DataMapper.repository(:default) do
           r = Category.root
           r.self_and_siblings.length.should == 1
           r.descendants.length.should == 9
@@ -181,7 +181,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       # 10 | 17 | 18 |     - 2 Way Radios
 
       it 'should move items correctly with :higher / :highest / :lower / :lowest' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
 
           Category.get(4).pos.should == [5,6]
 
@@ -212,7 +212,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it 'should move items correctly with :indent / :outdent' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
 
           mp3_players = Category.get(7)
 
@@ -240,7 +240,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'moving objects with #move_* #and place_node_at' do
       it 'should set left/right when choosing a parent' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           Category.auto_migrate!
 
           c1 = Category.create(:name => "New Electronics")
@@ -293,7 +293,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'scoping' do
       it 'should detach from list when changing scope' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           plasma = Category.get(5)
           plasma.pos.should == [7,8]
           plasma.user_id = 1
@@ -305,7 +305,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'integrity' do
       it 'should detach object from list when deleted' do
-        repository(:default) do |repos|
+        DataMapper.repository(:default) do |repos|
           lcd = Category.get(4)
           lcd.pos.should == [5,6]
           Category.get(3).destroy
