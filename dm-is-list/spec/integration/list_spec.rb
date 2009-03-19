@@ -44,7 +44,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it 'should get the shadow variable of the last position' do
         DataMapper.repository(:default) do |repos|
           Todo.get(3).position=8
-          Todo.get(3).dirty?.should == true
+          Todo.get(3).should be_dirty
           Todo.get(3).attribute_dirty?(:position).should == true
           Todo.get(3).original_values[:position].should == 3
           Todo.get(3).list_scope.should == Todo.get(3).original_list_scope
