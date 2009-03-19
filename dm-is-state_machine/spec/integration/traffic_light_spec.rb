@@ -55,7 +55,7 @@ describe TrafficLight do
       @t.forward!
       @t.color.should == "green"
       @t.log.should == %w(G Y R G)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
     it "should skip to :yellow then transition to :red, :green, :yellow" do
@@ -71,7 +71,7 @@ describe TrafficLight do
       @t.forward!
       @t.color.should == "yellow"
       @t.log.should == %w(G R G Y)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
     it "should skip to :red then transition to :green, :yellow, :red" do
@@ -87,7 +87,7 @@ describe TrafficLight do
       @t.forward!
       @t.color.should == "red"
       @t.log.should == %w(G G Y R)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
   end
@@ -110,7 +110,7 @@ describe TrafficLight do
       @t.backward!
       @t.color.should == "green"
       @t.log.should == %w(G R Y G)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
     it "should skip to :yellow then transition to :green, :red, :yellow" do
@@ -126,7 +126,7 @@ describe TrafficLight do
       @t.backward!
       @t.color.should == "yellow"
       @t.log.should == %w(G G R Y)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
     it "should skip to :red then transition to :yellow, :green, :red" do
@@ -142,7 +142,7 @@ describe TrafficLight do
       @t.backward!
       @t.color.should == "red"
       @t.log.should == %w(G Y G R)
-      @t.new_record?.should == true
+      @t.should be_new
     end
 
   end
