@@ -13,7 +13,7 @@ module My
 
         # properties
 
-        property :id, Integer, :key => true, :serial => true #Serial
+        property :id, Serial
         property :user_id, Integer, :nullable => false
         property :rating,  Integer, :nullable => false, :default => 0
 
