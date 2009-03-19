@@ -17,7 +17,7 @@ GEM_CLEAN = %w[ pkg ]
 GEM_EXTRAS = { :has_rdoc => false, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 
 PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/#{GEM_NAME}"
+PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'Rails Plugin for datamapper'
 
 [ ROOT, ROOT.parent ].each do |dir|

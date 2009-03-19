@@ -18,7 +18,7 @@ GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TO
                :executables => %w[ dm ], :bindir => 'bin' }
 
 PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/#{GEM_NAME}"
+PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin allowing interaction with models through a CLI'
 
 [ ROOT, ROOT.parent ].each do |dir|
