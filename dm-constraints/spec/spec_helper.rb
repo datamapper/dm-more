@@ -1,7 +1,7 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'rspec', '~>1.1.12'
+gem 'rspec', '>=1.1.12'
 require 'spec'
 
 gem 'dm-core', '0.10.0'
