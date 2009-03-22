@@ -8,6 +8,7 @@ begin
   require 'bcrypt'
 rescue LoadError
   skip_tests = true
+  puts "Skipping bcrypt tests, please do gem install bcrypt-ruby"
 end
 
 describe "DataMapper::Types::BCryptHash" do
