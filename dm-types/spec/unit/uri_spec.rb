@@ -9,41 +9,52 @@ describe DataMapper::Types::URI do
   end
 
   describe ".dump" do
-    it "should return the URI as a String" do
+    it "returns the URI as a String" do
       DataMapper::Types::URI.dump(@uri, :property).should == @uri_str
     end
 
-    it "should return nil if the String is nil" do
-      DataMapper::Types::URI.dump(nil, :property).should be_nil
+    describe "when given nil" do
+      it "returns nil" do
+        DataMapper::Types::URI.dump(nil, :property).should be_nil
+      end
     end
 
-    it "should return an empty URI if the String is empty" do
-      DataMapper::Types::URI.dump("", :property).should == ""
+    describe "when given an empty string" do
+      it "returns an empty URI" do
+        DataMapper::Types::URI.dump("", :property).should == ""
+      end
     end
   end
 
   describe ".load" do
-    it "should return the URI as Addressable" do
+    it "returns the URI as Addressable" do
       DataMapper::Types::URI.load(@uri_str, :property).should == @uri
     end
 
-    it "should return nil if given nil" do
-      DataMapper::Types::URI.load(nil, :property).should be_nil
+    describe "when given nil" do
+      it "returns nil" do
+        DataMapper::Types::URI.load(nil, :property).should be_nil
+      end
     end
 
-    it "should return an empty URI if given an empty String" do
-      DataMapper::Types::URI.load("", :property).should == Addressable::URI.parse("")
+    describe "if given an empty String" do
+      it "returns an empty URI" do
+        DataMapper::Types::URI.load("", :property).should == Addressable::URI.parse("")
+      end
     end
   end
 
   describe '.typecast' do
-    it 'should do nothing if an Addressable::URI is provided' do
-      DataMapper::Types::URI.typecast(@uri, :property).should == @uri
+    describe "given instance of Addressable::URI" do
+      it 'does nothing' do
+        DataMapper::Types::URI.typecast(@uri, :property).should == @uri
+      end
     end
 
-    it 'should defer to .load if a string is provided' do
-      DataMapper::Types::URI.should_receive(:load).with(@uri_str, :property)
-      DataMapper::Types::URI.typecast(@uri_str, :property)
+    describe "when given a string" do
+      it 'delegates to .load' do
+        DataMapper::Types::URI.typecast(@uri_str, :property).should == @uri
+      end
     end
   end
 end
