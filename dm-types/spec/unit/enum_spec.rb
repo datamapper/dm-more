@@ -4,6 +4,9 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 describe DataMapper::Types::Enum do
 
   describe ".new" do
+    before :all do
+
+    end
     it "should create a Class" do
       DataMapper::Types::Enum.new.should be_instance_of(Class)
     end
@@ -25,13 +28,6 @@ describe DataMapper::Types::Enum do
     end
   end
 
-  describe ".[]" do
-    it "should be an alias for the new method" do
-      DataMapper::Types::Enum.should_receive(:new).with(:uno, :dos, :tres)
-      DataMapper::Types::Enum[:uno, :dos, :tres]
-    end
-  end
-
   describe ".dump" do
     before(:each) do
       @enum = DataMapper::Types::Enum[:first, :second, :third]
@@ -43,8 +39,10 @@ describe DataMapper::Types::Enum do
       @enum.dump(:third, :property).should == 3
     end
 
-    it "should return nil if there is no match" do
-      @enum.dump(:zero, :property).should be_nil
+    describe "when there is no match" do
+      it "should return nil" do
+        @enum.dump(:zero, :property).should be_nil
+      end
     end
   end
 
@@ -59,38 +57,87 @@ describe DataMapper::Types::Enum do
       @enum.load(3, :property).should == :tres
     end
 
-    it "should return nil if there is no key" do
-      @enum.load(-1, :property).should be_nil
+    describe "when there is no key" do
+      it "should return nil" do
+        @enum.load(-1, :property).should be_nil
+      end
     end
   end
 
   describe ".typecast" do
-    it 'should attempt to use the Enum type' do
-      # Symbol.
-      @sym_enum = DataMapper::Types::Enum[:uno]
-      @sym_enum.typecast(:uno,  :property).should == :uno
-      @sym_enum.typecast("uno", :property).should == :uno
+    describe "of Enum created from a symbol" do
+      before :all do
+        @enum = DataMapper::Types::Enum[:uno]
+      end
 
-      # String
-      @str_enum = DataMapper::Types::Enum["uno"]
-      @str_enum.typecast(:uno,  :property).should == "uno"
-      @str_enum.typecast("uno", :property).should == "uno"
+      describe "when given a symbol" do
+        it "uses Enum type" do
+          @enum.typecast(:uno,  :property).should == :uno
+        end
+      end
 
-      # Integer
-      @int_enum = DataMapper::Types::Enum[1, 2, 3]
-      @int_enum.typecast(1,   :property).should == 1
-      @int_enum.typecast(1.1, :property).should == 1
+      describe "when given a string" do
+        it "uses Enum type" do
+          @enum.typecast("uno", :property).should == :uno
+        end
+      end
+
+      describe "when given nil" do
+        it "returns nil" do
+          @enum.typecast( nil, :property).should == nil
+        end
+      end
     end
 
-    it "should not throw an error when value is nil" do
-      @sym_enum = DataMapper::Types::Enum[:uno]
-      @sym_enum.typecast( nil, :property).should == nil
 
-      @str_enum = DataMapper::Types::Enum["uno"]
-      @str_enum.typecast( nil, :property).should == nil
+    describe "of Enum created from integer list" do
+      before :all do
+        @enum = DataMapper::Types::Enum[1, 2, 3]
+      end
 
-      @int_enum = DataMapper::Types::Enum[1, 2, 3]
-      @int_enum.typecast( nil, :property ).should == nil
+      describe "when given an integer" do
+        it "uses Enum type" do
+          @enum.typecast(1,   :property).should == 1
+        end
+      end
+
+      describe "when given a float" do
+        it "uses Enum type" do
+          @enum.typecast(1.1, :property).should == 1
+        end
+      end
+
+      describe "when given nil" do
+        it "returns nil" do
+          @enum.typecast( nil, :property).should == nil
+        end
+      end
+
+    end
+
+
+    describe "of Enum created from a string" do
+      before :all do
+        @enum = DataMapper::Types::Enum["uno"]
+      end
+
+      describe "when given a symbol" do
+        it "uses Enum type" do
+          @enum.typecast(:uno,  :property).should == "uno"
+        end
+      end
+
+      describe "when given a string" do
+        it "uses Enum type" do
+          @enum.typecast("uno", :property).should == "uno"
+        end
+      end
+
+      describe "when given nil" do
+        it "returns nil" do
+          @enum.typecast( nil, :property).should == nil
+        end
+      end
     end
   end
 end
