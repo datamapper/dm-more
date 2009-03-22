@@ -4,46 +4,67 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 describe DataMapper::Types::FilePath do
 
   before(:each) do
-    @path_str = "/usr/bin/ruby"
-    @path = Pathname.new(@path_str)
+    @input = "/usr/bin/ruby"
+    @path = Pathname.new(@input)
   end
 
   describe ".dump" do
-    it "should return the file path as a String" do
-      DataMapper::Types::FilePath.dump(@path_str, :property).should == @path_str
+    describe "when input is a string" do
+      it "does not modify input" do
+        DataMapper::Types::FilePath.dump(@input, :property).should == @input
+      end
     end
 
-    it "should return nil if the String is nil" do
-      DataMapper::Types::FilePath.dump(nil, :property).should be_nil
+    describe "when input is nil" do
+      it "returns nil" do
+        DataMapper::Types::FilePath.dump(nil, :property).should be_nil
+      end
     end
 
-    it "should return an empty file path if the String is empty" do
-      DataMapper::Types::FilePath.dump("", :property).should == ""
+    describe "when input is a blank string" do
+      it "does not modify input" do
+        DataMapper::Types::FilePath.dump("", :property).should == ""
+      end
     end
   end
 
   describe ".load" do
-    it "should return the file path as a Pathname" do
-      DataMapper::Types::FilePath.load(@uri_str, :property).should == @uri
+    describe "when value is a non-blank file path" do
+      it "returns Pathname for a path" do
+        DataMapper::Types::FilePath.load(@input, :property).should == @path
+      end
     end
 
-    it "should return nil if given nil" do
-      DataMapper::Types::FilePath.load(nil, :property).should be_nil
+    describe "when value is nil" do
+      it "return nil" do
+        DataMapper::Types::FilePath.load(nil, :property).should be_nil
+      end
     end
 
-    it "should return an empty Pathname if given an empty String" do
-      DataMapper::Types::FilePath.load("", :property).should == Pathname.new("")
+    describe "when value is a blank string" do
+      it "returns empty Pathname" do
+        DataMapper::Types::FilePath.load("", :property).should == Pathname.new("")
+      end
     end
   end
 
   describe '.typecast' do
-    it 'should do nothing if a Pathname is provided' do
-      DataMapper::Types::FilePath.typecast(@path, :property).should == @path
+    describe "when a Pathname is given" do
+      it 'does not modify input' do
+        DataMapper::Types::FilePath.typecast(@path, :property).should == @path
+      end
     end
 
-    it 'should defer to .load if a string is provided' do
-      DataMapper::Types::FilePath.should_receive(:load).with(@path_str, :property)
-      DataMapper::Types::FilePath.typecast(@path_str, :property)
+    describe "when a nil is given" do
+      it 'does not modify input' do
+        DataMapper::Types::FilePath.typecast(nil, :property).should == nil
+      end
+    end
+
+    describe "when a string is given" do
+      it 'returns Pathname for given path' do
+        DataMapper::Types::FilePath.typecast(@input, :property).should == @path
+      end
     end
   end
 end
