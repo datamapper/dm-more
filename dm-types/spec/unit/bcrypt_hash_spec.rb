@@ -35,8 +35,10 @@ describe "DataMapper::Types::BCryptHash" do
         BCryptHash.dump(@clear_password, :property).to_s.should have(60).characters
       end
 
-      it "should return nil if nil is passed" do
-        BCryptHash.dump(nil, :property).should be_nil
+      describe "when given nil" do
+        it "should return nil" do
+          BCryptHash.dump(nil, :property).should be_nil
+        end
       end
     end
 
@@ -49,8 +51,10 @@ describe "DataMapper::Types::BCryptHash" do
         BCryptHash.load(@crypted_password, :property).should == @clear_password
       end
 
-      it "should return nil if given nil" do
-        BCryptHash.load(nil, :property).should be_nil
+      describe "when given nil" do
+        it "should return nil" do
+          BCryptHash.load(nil, :property).should be_nil
+        end
       end
     end
 
@@ -95,11 +99,11 @@ describe "DataMapper::Types::BCryptHash" do
         BCryptHash.typecast(@nonstandard_type2, :property).should == @nonstandard_type2
       end
 
-      it "should return nil if given nil" do
-        BCryptHash.typecast(nil, :property).should be_nil
+      describe "when given nil" do
+        it "should return nil" do
+          BCryptHash.typecast(nil, :property).should be_nil
+        end
       end
     end
-  else
-    it "requires the bcrypt-ruby gem to test"
   end
 end
