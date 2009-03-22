@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe "DataMapper::Resource" do
     after do
-     repository(:default).adapter.execute('DELETE from green_smoothies');
+     DataMapper.repository(:default).adapter.execute('DELETE from green_smoothies');
     end
 
     before(:all) do
@@ -18,7 +18,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it "should find/create using find_or_create" do
-      repository(:default) do
+      DataMapper.repository(:default) do
         green_smoothie = GreenSmoothie.new(:name => 'Banana')
         green_smoothie.save
         GreenSmoothie.find_or_create({:name => 'Banana'}).id.should eql(green_smoothie.id)
@@ -27,14 +27,14 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     it "should use find_by and use the name attribute to find a record" do
-      repository(:default) do
+      DataMapper.repository(:default) do
         green_smoothie = GreenSmoothie.create({:name => 'Banana'})
         green_smoothie.should == GreenSmoothie.find_by_name('Banana')
       end
     end
 
     it "should use find_all_by to find records using an attribute" do
-      repository(:default) do
+      DataMapper.repository(:default) do
         green_smoothie = GreenSmoothie.create({:name => 'Banana'})
         green_smoothie2 = GreenSmoothie.create({:name => 'Banana'})
         found_records = GreenSmoothie.find_all_by_name('Banana')
