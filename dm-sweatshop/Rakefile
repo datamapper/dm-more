@@ -12,7 +12,7 @@ AUTHOR = 'Ben Burkert'
 EMAIL  = 'ben [a] benburkert [d] com'
 GEM_NAME = 'dm-sweatshop'
 GEM_VERSION = DataMapper::Sweatshop::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], ['randexp', '~>0.1.4']]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['randexp', '~>0.1.4']]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.textile LICENSE TODO History.txt ] }
 

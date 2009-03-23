@@ -3,7 +3,7 @@ require 'dm-validations'
 
 describe DataMapper::Model do
 
-  class Widget
+  class ::Widget
     include DataMapper::Resource
     property :id, Integer, :serial => true
     property :type, Discriminator
@@ -14,11 +14,11 @@ describe DataMapper::Model do
     validates_present :price
   end
 
-  class Wonket < Widget
+  class ::Wonket < Widget
     property :size, String
   end
 
-  class Order
+  class ::Order
     include DataMapper::Resource
 
     property :id, Integer, :serial => true

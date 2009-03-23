@@ -299,7 +299,7 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_many_to_many(cardinality, model, options)
           options[:other_model] = Object.full_const_get(Extlib::Inflection.classify(options[:other_model]))
-          
+
           #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
           # attach a validates_is_unique if the validator is included.
           puts " ~ options[:unique] is not yet supported" if options[:unique]

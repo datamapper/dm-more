@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'dm-core', '~>0.9.11'
+gem 'dm-core', '0.9.11'
 require 'dm-core'
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "lib", "dm-cli", "cli"))

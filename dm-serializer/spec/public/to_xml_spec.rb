@@ -62,7 +62,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
     it "should not include the XML prologue, so that the result can be embedded in other XML documents" do
       planet = Planet.new
       xml = planet.to_xml(:element_name => "aplanet")
-      xml.starts_with?("<?xml").should == false
+      xml.should_not =~ /\A<\?xml/
     end
 
     describe ':element_name option for Resource' do

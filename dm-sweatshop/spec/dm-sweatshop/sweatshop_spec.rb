@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe DataMapper::Sweatshop do
 
-  class Parent
+  class ::Parent
     include DataMapper::Resource
     property :id, Integer, :serial => true
     property :type, Discriminator
@@ -10,7 +10,7 @@ describe DataMapper::Sweatshop do
     property :last_name, String
   end
 
-  class Child < Parent
+  class ::Child < Parent
     property :age, Integer
   end
 

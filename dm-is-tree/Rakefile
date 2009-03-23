@@ -12,7 +12,7 @@ AUTHOR = 'Timothy Bennett'
 EMAIL  = 'leapord729 [a] comcast.net'
 GEM_NAME = 'dm-is-tree'
 GEM_VERSION = DataMapper::Is::Tree::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 

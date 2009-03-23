@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::List' do
 
-    class User
+    class ::User
       include DataMapper::Resource
 
       property :id, Serial
@@ -13,7 +13,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       has n, :todos
     end
 
-    class Todo
+    class ::Todo
       include DataMapper::Resource
 
       property :id, Serial

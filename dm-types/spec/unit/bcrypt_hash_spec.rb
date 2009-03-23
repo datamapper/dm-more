@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 include DataMapper::Types
 
 begin
-  gem 'bcrypt-ruby', '~>2.0.3'
+  gem 'bcrypt-ruby', '~>2.0.5'
   require 'bcrypt'
 rescue LoadError
   skip_tests = true

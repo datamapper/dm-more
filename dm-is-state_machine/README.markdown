@@ -45,7 +45,7 @@ Add this line to your init.rb:
           transition :from => :red,    :to => :green
         end
       end
-      
+
       def red_hook
         # Do something
       end
@@ -65,16 +65,16 @@ The above DSL (domain specific language) does these things "behind the scenes":
    appropriate transition based on the current state and comparing it against
    the various :from states.  It will raise an error if you attempt to call
    it with an invalid state (such as :broken, see above).  After the method
-   runs successfully, the state machine will be left in the :to state.  
-    
+   runs successfully, the state machine will be left in the :to state.
+
 ### Explained with some code examples ###
 
     # Somewhere in your controller, perhaps
     light = TrafficLight.new
-    
+
     # Move to the next state
     light.forward!
-    
+
     # Do something based on the current state
     case light.color
     when "green"
@@ -84,7 +84,7 @@ The above DSL (domain specific language) does these things "behind the scenes":
     when "red"
       # do something red-related
     end
-    
+
 ## Specific examples ##
 
 We would also like to hear how *you* are using state machines in your code.

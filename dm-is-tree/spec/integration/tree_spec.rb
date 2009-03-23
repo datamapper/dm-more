@@ -4,7 +4,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
   describe DataMapper::Is::Tree do
 
-    class Category
+    class ::Category
       include DataMapper::Resource
 
       property :id, Serial

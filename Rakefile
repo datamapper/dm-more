@@ -47,7 +47,7 @@ AUTHOR = 'Sam Smoot'
 EMAIL  = 'ssmoot [a] gmail [d] com'
 GEM_NAME = 'dm-more'
 GEM_VERSION = DataMapper::More::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], *gems.map { |g| [g, "~>#{GEM_VERSION}"] }]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], *gems.map { |g| [g, GEM_VERSION] }]
 GEM_CLEAN = %w[ **/.DS_Store} *.db doc/rdoc .config **/{coverage,log,pkg} cache lib/dm-more.rb ]
 GEM_EXTRAS = { :has_rdoc => false }
 

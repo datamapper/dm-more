@@ -12,7 +12,7 @@ AUTHOR = 'Bobby Calderwood'
 EMAIL  = 'bobby_calderwood [a] me [d] com'
 GEM_NAME = 'dm-tags'
 GEM_VERSION = DataMapper::Tags::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], ['dm-validations', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['dm-validations', GEM_VERSION]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 

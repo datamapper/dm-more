@@ -12,7 +12,7 @@ AUTHOR = 'Guy van den Berg'
 EMAIL  = 'vandenberg.guy [a] gmail [d] com'
 GEM_NAME = 'dm-serializer'
 GEM_VERSION = DataMapper::Serializer::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.textile LICENSE TODO History.txt ] }
 

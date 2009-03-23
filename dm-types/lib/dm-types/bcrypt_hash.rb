@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'bcrypt-ruby', '~>2.0.3'
+gem 'bcrypt-ruby', '~>2.0.5'
 require 'bcrypt'
 
 module DataMapper

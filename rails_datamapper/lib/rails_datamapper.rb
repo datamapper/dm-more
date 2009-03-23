@@ -1,4 +1,4 @@
-gem 'dm-core', '~>0.9.11'
+gem 'dm-core', '0.9.11'
 require 'pathname'
 require 'dm-core'
 require Pathname(__FILE__).dirname.expand_path / 'rails_datamapper/rails_datamapper'

@@ -2,7 +2,7 @@ require 'base64'
 require 'net/http'
 require 'rubygems'
 
-gem 'mime-types', '~>1.15'
+gem 'mime-types', '~>1.16'
 require 'mime/types'
 
 module DataMapper

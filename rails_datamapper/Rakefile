@@ -12,7 +12,7 @@ AUTHOR = 'Tom Malone'
 EMAIL  = 'tomjmalone [a] gmail [d] com'
 GEM_NAME = 'rails_datamapper'
 GEM_VERSION = DataMapper::RailsDatamapper::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"]]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ pkg ]
 GEM_EXTRAS = { :has_rdoc => false, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
 

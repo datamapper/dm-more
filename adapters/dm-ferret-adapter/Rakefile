@@ -12,7 +12,7 @@ AUTHOR = 'Bernerd Schaefer'
 EMAIL  = 'bernerd [a] wieck [d] com'
 GEM_NAME = 'dm-ferret-adapter'
 GEM_VERSION = DataMapper::FerretAdapter::VERSION
-GEM_DEPENDENCIES = [['dm-core', "~>#{GEM_VERSION}"], ['ferret', '~>0.11.6']]
+GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['ferret', '~>0.11.6']]
 GEM_CLEAN = %w[ log pkg coverage ]
 GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] } #,
 #               :executables => %w[ ferret ], :bindir => 'bin' }  # FIXME: should this be enabled?
