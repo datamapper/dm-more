@@ -6,6 +6,8 @@ module DataMapper
 
   module Validate
     module AutoValidate
+      @disable_auto_validations = false
+
       # adds message for validator
       def options_with_message(base_options, property, validator_name)
         options = base_options.clone
@@ -20,6 +22,15 @@ module DataMapper
         options
       end
 
+      attr_reader :disable_auto_validations
+
+      # disables generation of validations for
+      # duration of given block
+      def without_auto_validations(&block)
+        @disable_auto_validations = true
+        block.call
+        @disable_auto_validations = false
+      end
 
       ##
       # Auto-generate validations for a given property. This will only occur
@@ -72,7 +83,7 @@ module DataMapper
       #       It is just shortcut if only one validation option is set
       #
       def auto_generate_validations(property)
-        return if property.options.has_key?(:auto_validation) && !property.options[:auto_validation]
+        return if disabled_auto_validations? || skip_auto_validation_for?(property)
 
         # a serial property is allowed to be nil too, because the
         # value is set by the storage system
@@ -141,8 +152,30 @@ module DataMapper
             validates_is_primitive property.name, options_with_message(opts, property, :is_primitive)
           end
         end
-      end
+      end # auto_generate_validations
 
+      # Checks whether auto validations are currently
+      # disabled (see +disable_auto_validations+ method
+      # that takes a block)
+      #
+      # @return [TrueClass, FalseClass]
+      #   true if auto validation is currently
+      #   disabled
+      def disabled_auto_validations?
+        @disable_auto_validations
+      end
+      alias auto_validations_disabled? disabled_auto_validations?
+
+
+      # Checks whether or not property should be auto validated.
+      # It is the case for properties with :auto_validation option
+      # given and it's value evaluates to true
+      #
+      # @return [TrueClass, FalseClass]
+      #   true for properties with :auto_validation option that has positive value
+      def skip_auto_validation_for?(property)
+        property.options.has_key?(:auto_validation) && !property.options[:auto_validation]
+      end
     end # module AutoValidate
   end # module Validate
 end # module DataMapper
