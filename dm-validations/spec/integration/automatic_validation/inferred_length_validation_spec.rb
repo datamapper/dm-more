@@ -46,30 +46,37 @@ describe SailBoat do
     it_should_behave_like "valid model"
   end
 
-  it "should auto add validates_length within a range when option :length
-      or :size is a range" do
-    # Range test notes = 2..10
-    boat = SailBoat.new
-    boat.should be_valid_for_length_test_2
-    boat.notes = 'AB' #2
-    boat.should be_valid_for_length_test_2
-    boat.notes = 'ABCDEFGHIJK' #11
-    boat.should_not be_valid_for_length_test_2
-    boat.errors.on(:notes).should include('Notes must be between 2 and 10 characters long')
-    boat.notes = 'ABCDEFGHIJ' #10
-    boat.should be_valid_for_length_test_2
+  describe "with 2 character long note" do
+    before :all do
+      @model = SailBoat.new(:notes => "AB")
+    end
+
+    it "is valid" do
+      @model.should be_valid_for_length_test_2
+    end
   end
 
-  it "should auto validate all strings for max length" do
-    klass = Class.new do
-      include DataMapper::Resource
-      property :id, DataMapper::Types::Serial
-      property :name, String
+  describe "with 10 character long note" do
+    before :all do
+      @model = SailBoat.new(:notes => "ABCDEFGHIJ")
     end
-    t = klass.new(:id => 1)
-    t.should be_valid
-    t.name = 'a' * 51
-    t.should_not be_valid
-    t.errors.on(:name).should include('Name must be less than 50 characters long')
+
+    it "is valid" do
+      @model.should be_valid_for_length_test_2
+    end
+  end
+
+  describe "with 11 character long note" do
+    before :all do
+      @model = SailBoat.new(:notes => "ABCDEFGHIJK")
+    end
+
+    it "is invalid" do
+      @model.should_not be_valid_for_length_test_2
+    end
+
+    it "has a meaningful error message" do
+      @model.errors.on(:notes).should include('Notes must be between 2 and 10 characters long')
+    end
   end
 end
