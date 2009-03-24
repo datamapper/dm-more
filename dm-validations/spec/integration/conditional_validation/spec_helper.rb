@@ -41,8 +41,7 @@ module DataMapper
         # Validations
         #
 
-        validates_present :checksum, :if => Proc.new { |packet| packet.underlying_ip_version == 6 }, :message => "Checksum is mandatory when used with IPv6"
-        validates_present :checksum_algorithm, :if => Proc.new { |packet| packet.underlying_ip_version == 6 }, :message => "Checksum algorithm is mandatory when used with IPv6"
+        validates_present :checksum_algorithm, :checksum, :if => Proc.new { |packet| packet.underlying_ip_version == 6 }, :message => "Checksum is mandatory when used with IPv6"
       end
 
     end # Fixtures

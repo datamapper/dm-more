@@ -218,7 +218,7 @@ module DataMapper
       #    Validator class, example: DataMapper::Validate::LengthValidator
       def add_validator_to_context(opts, fields, klazz)
         fields.each do |field|
-          validator = klazz.new(field, opts)
+          validator = klazz.new(field, opts.dup)
           if opts[:context].is_a?(Symbol)
             unless validators.context(opts[:context]).include?(validator)
               validators.context(opts[:context]) << validator
