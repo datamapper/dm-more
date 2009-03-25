@@ -15,7 +15,7 @@ module DataMapper
 
       def call(target)
         value = target.send(field_name)
-        return true if @options[:allow_nil] && value.nil?
+        return true if @options[:allow_nil] && value.blank?
 
         value = value.kind_of?(BigDecimal) ? value.to_s('F') : value.to_s
 

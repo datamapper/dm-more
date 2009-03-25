@@ -26,8 +26,8 @@ module DataMapper
 
       def valid?(target)
         field_value = target.send(field_name)
-        return true if @options[:allow_nil] && field_value.nil?
-        return false if !@options[:allow_nil] && field_value.nil?
+        return true if @options[:allow_nil] && field_value.blank?
+        return false if !@options[:allow_nil] && field_value.blank?
 
         if target.class.properties.named?(field_name)
           return true unless target.attribute_dirty?(field_name)
