@@ -45,7 +45,7 @@ describe DataMapper::Validate::Fixtures::PhoneNumber do
     it_should_behave_like "invalid model"
 
     it "has meaningful error message on invalid property" do
-      @model.errors.on(:type_of_number).should include("Type of number must be one of [home, work, cell]")
+      @model.errors.on(:type_of_number).should include("Should be one of: home, cell or work")
     end
   end
 end

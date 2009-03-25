@@ -21,7 +21,7 @@ module DataMapper
         # Validations
         #
 
-        validates_within :type_of_number, :set => %w(home work cell)
+        validates_within :type_of_number, :set => %w(home work cell), :message => "Should be one of: home, cell or work"
       end # PhoneNumber
 
       class MathematicalFunction
