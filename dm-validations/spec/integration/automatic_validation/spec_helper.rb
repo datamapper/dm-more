@@ -13,7 +13,7 @@ class SailBoat
   include DataMapper::Resource
 
   # this one is not Serial intentionally
-  # use Serial in real world apps  
+  # use Serial in real world apps
   property :id,            Integer,    :key => true
 
   property :name,          String,                                :nullable => false,     :validates       => :presence_test
@@ -34,7 +34,7 @@ class HasNullableBoolean
   include DataMapper::Resource
 
   # this one is not Serial intentionally
-  # use Serial in real world apps  
+  # use Serial in real world apps
   property :id,   Integer, :key => true
   property :bool, Boolean # :nullable => true by default
 
@@ -45,7 +45,7 @@ class HasNotNullableBoolean
   include DataMapper::Resource
 
   # this one is not Serial intentionally
-  # use Serial in real world apps  
+  # use Serial in real world apps
   property :id,   Integer, :key => true
   property :bool, Boolean, :nullable => false
 
@@ -61,4 +61,28 @@ class HasNotNullableParanoidBoolean
   property :bool, ParanoidBoolean, :nullable => false
 
   include TypecastBypassSetter
+end
+
+
+module DataMapper
+  module Validate
+    module Fixtures
+
+      class SmsMessage
+        #
+        # Behaviors
+        #
+
+        include DataMapper::Resource
+
+        #
+        # Properties
+        #
+
+        property :id,   Serial
+        property :body, Text, :length => (1..500)
+      end
+
+    end
+  end
 end

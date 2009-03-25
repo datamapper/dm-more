@@ -97,7 +97,7 @@ module DataMapper
         end
 
         # length
-        if property.type == String
+        if [String, DataMapper::Types::Text].include?(property.type)
           #len = property.length  # XXX: maybe length should always return a Range, with the min defaulting to 1
           len = property.options.fetch(:length, property.options.fetch(:size, DataMapper::Property::DEFAULT_LENGTH))
           if len.is_a?(Range)

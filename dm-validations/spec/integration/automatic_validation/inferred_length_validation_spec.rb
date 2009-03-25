@@ -80,3 +80,47 @@ describe SailBoat do
     end
   end
 end
+
+
+
+describe DataMapper::Validate::Fixtures::SmsMessage do
+  before :all do
+    @model = DataMapper::Validate::Fixtures::SmsMessage.new(:id => 10)
+  end
+
+  describe "with 2 character long note" do
+    before :all do
+      @model.body = "ab"
+    end
+
+    it_should_behave_like "valid model"
+  end
+
+  describe "with 10 character long note" do
+    before :all do
+      @model.body = "ABCDEFGHIJ"
+    end
+
+    it_should_behave_like "valid model"
+  end
+
+  describe "with 499 character long note" do
+    before :all do
+      @model.body = "a" * 499
+    end
+
+    it_should_behave_like "valid model"
+  end
+
+  describe "with 503 character long note" do
+    before :all do
+      @model.body = "a" * 503
+    end
+
+    it_should_behave_like "invalid model"
+
+    it "has a meaningful error message" do
+      @model.errors.on(:body).should include('Body must be between 1 and 500 characters long')
+    end
+  end
+end
