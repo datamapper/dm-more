@@ -48,8 +48,8 @@ describe DataMapper::Validate::ValidationErrors do
       @model.should_not be_empty
     end
 
-    it "allows duplication" do
-      @model.on(:property).should == ["can't be valid, no way", "can't be valid, no way"]
+    it "DOES NOT allow duplication" do
+      @model.on(:property).should == ["can't be valid, no way"]
     end
   end  
 end

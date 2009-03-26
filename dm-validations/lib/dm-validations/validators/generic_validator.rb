@@ -85,10 +85,24 @@ module DataMapper
         true
       end
 
+      # Returns true if validators are equal
+      #
+      # Note that this intentionally do
+      # validate options equality
+      #
+      # even though it is hard to imagine a situation
+      # when multiple validations will be used
+      # on the same field with the same conditions
+      # but different options,
+      # it happens to be the case every once in a while
+      # with inferred validations for strings/text and
+      # explicitly given validations with different option
+      # (usually as Range vs. max limit for inferred validation)
+      #
+      # @semipublic
       def ==(other)
         self.class == other.class &&
         self.field_name == other.field_name &&
-        self.class == other.class &&
         self.if_clause == other.if_clause &&
         self.unless_clause == other.unless_clause &&
         self.instance_variable_get(:@options) == other.instance_variable_get(:@options)

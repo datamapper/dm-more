@@ -69,7 +69,7 @@ module DataMapper
       #   array of validation errors or empty array, if there are no errors on given field
       def on(field_name)
         errors_for_field = errors[field_name]
-        errors_for_field.blank? ? nil : errors_for_field
+        errors_for_field.blank? ? nil : errors_for_field.uniq
       end
 
       def each

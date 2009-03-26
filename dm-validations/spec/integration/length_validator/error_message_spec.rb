@@ -5,6 +5,7 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
+# FIXME: fixture class(es) need rearrangement
 describe DataMapper::Validate::LengthValidator do
   it "lets user specify custom error message" do
     class Jabberwock
