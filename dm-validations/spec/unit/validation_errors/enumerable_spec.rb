@@ -4,7 +4,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
 
 describe DataMapper::Validate::ValidationErrors do
   before :all do
-    @model = DataMapper::Validate::ValidationErrors.new
+    @model = DataMapper::Validate::ValidationErrors.new(Object.new)
     @model.add(:ip_address, "must have valid format")
     @model.add(:full_name, "can't be blank")
   end

@@ -12,7 +12,8 @@ end
 
 describe "reservation with mismatched seats number", :shared => true do
   it "has meaningful error message" do
-    @model.errors.on(:number_of_seats).should include("Number of seats does not match the confirmation")
+    # Proc gets expanded here
+    @model.errors.on(:number_of_seats).should include("Reservation requires confirmation for number_of_seats")
   end
 end
 

@@ -15,7 +15,9 @@ module PureRubyObjects
     #
 
     validates_present :name,       :when => [:default, :adding_to_encyclopedia]
-    validates_present :population, :when => :adding_to_encyclopedia
+    validates_present :population, :when => :adding_to_encyclopedia, :message => Proc.new { |record|
+      "population really needs to be specified when adding %s to encyclopedia" % [record.class.name]
+    }
 
     validates_length  :name,       :in => (4..50)
 
@@ -64,6 +66,12 @@ describe PureRubyObjects::Country do
       @model.should_not be_valid(:adding_to_encyclopedia)
       @model.should_not be_valid_for_adding_to_encyclopedia
     end
+
+    it "has a meaningful error message" do
+      # trigger validation => have errors on the object
+      @model.valid_for_adding_to_encyclopedia?
+      @model.errors.on(:population).should == ["population really needs to be specified when adding PureRubyObjects::Country to encyclopedia"]
+    end
   end
 
 
@@ -96,16 +104,16 @@ describe PureRubyObjects::Country do
       @model.name = "It"
       @model.valid?
     end
-    
+
     it_should_behave_like "object invalid in default context"
 
     it "has errors on name" do
       @model.errors.on(:name).should_not be_blank
     end
-    
+
     it "is valid in encyclopedia context" do
       @model.should be_valid(:adding_to_encyclopedia)
       @model.should be_valid_for_adding_to_encyclopedia
     end
-  end  
+  end
 end

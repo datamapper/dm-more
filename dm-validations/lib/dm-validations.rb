@@ -73,7 +73,7 @@ module DataMapper
     # Return the ValidationErrors
     #
     def errors
-      @errors ||= ValidationErrors.new
+      @errors ||= ValidationErrors.new(self)
     end
 
     # Mark this resource as validatable. When we validate associations of a

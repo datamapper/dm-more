@@ -41,6 +41,13 @@ module DataMapper
         @@default_error_messages[key] % [field, *values].flatten
       end
 
+      attr_reader :model
+
+      def initialize(model)
+        @model  = model
+        @errors = {}
+      end
+
       # Clear existing validation errors.
       def clear!
         errors.clear
@@ -52,6 +59,17 @@ module DataMapper
       # @param [Symbol] field_name the name of the field that caused the error
       # @param [String] message    the message to add
       def add(field_name, message)
+        # see 6abe8fff in extlib, but don't enforce
+        # it unless Edge version is installed
+        if message.respond_to?(:try_call)
+          # DM model
+          message = if model.class.respond_to?(:properties)
+                      message.try_call(model, model.class.properties[field_name])
+                    else
+                      # pure Ruby object
+                      message.try_call(model)
+                    end
+        end
         (errors[field_name] ||= []) << message
       end
 
@@ -80,7 +98,7 @@ module DataMapper
       end
 
       def empty?
-        entries.empty?
+        @errors.empty?
       end
 
       def method_missing(meth, *args, &block)
@@ -89,7 +107,7 @@ module DataMapper
 
       private
       def errors
-        @errors ||= {}
+        @errors
       end
 
     end # class ValidationErrors
