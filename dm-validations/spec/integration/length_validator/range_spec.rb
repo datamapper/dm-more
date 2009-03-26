@@ -5,15 +5,15 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
-class MotorLaunch
+class DataMapper::Validate::Fixtures::MotorLaunch
   validators.clear!
   validates_length :name, :in => (3..5)
 end
 
 
-describe MotorLaunch do
+describe DataMapper::Validate::Fixtures::MotorLaunch do
   before :each do
-    @launch = MotorLaunch.new
+    @launch = DataMapper::Validate::Fixtures::MotorLaunch.new
   end
 
   describe "with a value that is out of range bounds (too long)" do
@@ -83,12 +83,12 @@ describe MotorLaunch do
 
 
   it "aliases :within for :in" do
-    class ::MotorLaunch
+    class ::DataMapper::Validate::Fixtures::MotorLaunch
       validators.clear!
       validates_length :name, :within => (3..5)
     end
 
-    launch = MotorLaunch.new
+    launch = DataMapper::Validate::Fixtures::MotorLaunch.new
     launch.name = 'Ride'
     launch.valid?.should == true
   end

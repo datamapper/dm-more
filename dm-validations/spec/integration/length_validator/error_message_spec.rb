@@ -5,20 +5,20 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
-# FIXME: fixture class(es) need rearrangement
-describe DataMapper::Validate::LengthValidator do
-  it "lets user specify custom error message" do
-    class Jabberwock
-      include DataMapper::Resource
-      property :id, Integer, :key => true
-      property :snickersnack, String
-      validates_length :snickersnack, :within => 3..40, :message => "worble warble"
+describe DataMapper::Validate::Fixtures::Jabberwock do
+  before :all do
+    @model = DataMapper::Validate::Fixtures::Jabberwock.new
+  end
+
+  describe "without snickersnack" do
+    before :all do
+      @model.snickersnack = nil
     end
-    wock = Jabberwock.new
-    wock.should_not be_valid
-    wock.errors.on(:snickersnack).should include('worble warble')
-    wock.snickersnack = "hello"
-    wock.id = 1
-    wock.should be_valid
+
+    it_should_behave_like "invalid model"
+
+    it "has custom error message" do
+      @model.errors.on(:snickersnack).should include("worble warble")
+    end
   end
 end
