@@ -11,7 +11,7 @@ module DataMapper
 
       @@default_error_messages = {
         :absent => '%s must be absent',
-        :inclusion => '%s must be one of [%s]',
+        :inclusion => '%s must be one of %s',
         :invalid => '%s has an invalid format',
         :confirmation => '%s does not match the confirmation',
         :accepted  => "%s is not accepted",
