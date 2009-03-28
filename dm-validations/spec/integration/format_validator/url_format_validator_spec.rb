@@ -33,7 +33,10 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
   end # each
 
 
- [ 'http://example.com', 'http://www.example.com', "http://apple.com", "http://books.google.com", "http://db2.clouds.megacorp.net:8080" ].each do |uri|
+  [ 'http://apple.com', 'http://www.apple.com', "http://apple.com/", "http://apple.com/iphone",
+    "http://www.google.com/search?client=safari&rls=en-us&q=LED&ie=UTF-8&oe=UTF-8",
+    "http://books.google.com", "http://books.google.com/", "http://db2.clouds.megacorp.net:8080",
+  "http://db2.clouds.megacorp.net:8080/resources/10"].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
