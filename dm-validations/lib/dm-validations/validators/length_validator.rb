@@ -15,6 +15,10 @@ module DataMapper
         @equal = options[:is] || options[:equals]
         @range = options[:within] || options[:in]
 
+        if !@range && @min && @max
+          @range = Range.new(@min, @max)
+        end
+        
         @validation_method ||= :range if @range
         @validation_method ||= :min if @min && @max.nil?
         @validation_method ||= :max if @max && @min.nil?

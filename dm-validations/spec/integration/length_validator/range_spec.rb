@@ -5,43 +5,53 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
-class DataMapper::Validate::Fixtures::MotorLaunch
-  validators.clear!
-  validates_length :name, :in => (3..5)
-end
 
-
-describe DataMapper::Validate::Fixtures::MotorLaunch do
-  before :each do
-    @launch = DataMapper::Validate::Fixtures::MotorLaunch.new
+describe DataMapper::Validate::Fixtures::EthernetFrame do
+  before :all do    
+    @model = DataMapper::Validate::Fixtures::EthernetFrame.valid_instance
+    @model.link_support_fragmentation = false
   end
 
-  describe "with a value that is out of range bounds (too long)" do
-    before :each do
-      @launch.name = 'a'
-      @launch.valid?
+  it_should_behave_like "valid model"
+
+  describe "with payload that is 7 'bits' long (too short)" do
+    before :all do
+      @model.payload = "1234567"
+      @model.valid?
     end
 
-    it "is invalid" do
-      @launch.should_not be_valid
-    end
-    it "includes range bounds and field name in error message" do
-      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+    it_should_behave_like "invalid model"
+
+    it "has error message with range bounds" do
+      @model.errors.on(:payload).should include('Payload must be between 46 and 1500 characters long')
     end
   end
 
 
-  describe "with a value that is out of range bounds (too short)" do
-    before :each do
-      @launch.name = 'L'
-      @launch.valid?
+  describe "with a one character long payload (too short)" do
+    before :all do
+      @model.payload = 'a'
+      @model.valid?
     end
 
-    it "is invalid" do
-      @launch.should_not be_valid
+    it_should_behave_like "invalid model"
+
+    it "has error message with range bounds" do
+      @model.errors.on(:payload).should include('Payload must be between 46 and 1500 characters long')
     end
-    it "includes range bounds and field name in error message" do
-      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+  end
+
+
+  describe "with a 1600 'bits' long payload (needs fragmentation)" do
+    before :all do
+      @model.payload = 'a'
+      @model.valid?
+    end
+
+    it_should_behave_like "invalid model"
+
+    it "has error message with range bounds" do
+      @model.errors.on(:payload).should include('Payload must be between 46 and 1500 characters long')
     end
   end
 
@@ -50,46 +60,31 @@ describe DataMapper::Validate::Fixtures::MotorLaunch do
   # to treat nil as a 0 lengh value
   # reported in
   # http://datamapper.lighthouseapp.com/projects/20609/tickets/646
-  describe "with a nil value" do
-    before :each do
-      @launch.name = nil
-      @launch.valid?
+  describe "that has no payload" do
+    before :all do
+      @model.payload = nil
+      @model.valid?
     end
 
-    it "is invalid" do
-      @launch.should_not be_valid
-    end
-    it "includes range bounds and field name in error message" do
-      @launch.errors.on(:name).should include('Name must be between 3 and 5 characters long')
+    it_should_behave_like "invalid model"
+
+    it "has error message with range bounds" do
+      @model.errors.on(:payload).should include('Payload must be between 46 and 1500 characters long')
     end
   end
 
 
 
-  describe "with a value that is within range bounds" do
-    before :each do
-      @launch.name = 'Lisp'
-      @launch.valid?
+  describe "with a 50 characters long payload" do
+    before :all do
+      @model.payload = 'Imagine yourself a beautiful bag full of bits here'
+      @model.valid?
     end
 
-    it "is valid" do
-      @launch.should be_valid
-    end
+    it_should_behave_like "valid model"
+
     it "has blank error message" do
-      @launch.errors.on(:name).should be_blank
+      @model.errors.on(:payload).should be_blank
     end
-  end
-
-
-
-  it "aliases :within for :in" do
-    class ::DataMapper::Validate::Fixtures::MotorLaunch
-      validators.clear!
-      validates_length :name, :within => (3..5)
-    end
-
-    launch = DataMapper::Validate::Fixtures::MotorLaunch.new
-    launch.name = 'Ride'
-    launch.valid?.should == true
   end
 end
