@@ -1,6 +1,12 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
 
+# TODO: these examples need reworking, too
+# half of them no longer necessary since
+# we have a lot of integration examples anyway,
+# but those at the end with subclasses + validation,
+# and associations, are important
+
 describe "DataMapper resource with included", DataMapper::Validate do
   before do
     Object.send(:remove_const, :Yacht) if defined?(Yacht)
