@@ -30,6 +30,7 @@ spec/integration/slug_spec.rb
 spec/integration/uri_spec.rb
 spec/integration/uuid_spec.rb
 spec/integration/yaml_spec.rb
+spec/shared/identity_function_group.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/unit/bcrypt_hash_spec.rb
