@@ -22,9 +22,15 @@ module DataMapper
         error_message = @options[:message]
         precision     = @options[:precision]
         scale         = @options[:scale]
+        eq            = @options[:eq]
+        gt            = @options[:gt]
+        lt            = @options[:lt]
+        ne            = @options[:ne]
+        gte           = @options[:gte]
+        lte           = @options[:lte]
 
         if @options[:integer_only]
-          return true if value =~ /\A[+-]?\d+\z/
+          has_valid_number = true if value =~ /\A[+-]?\d+\z/
           error_message ||= ValidationErrors.default_error_message(:not_an_integer, field_name)
         else
           # FIXME: if precision and scale are not specified, can we assume that it is an integer?
@@ -39,11 +45,11 @@ module DataMapper
           if precision && scale
             #handles both Float when it has scale specified and BigDecimal
             if precision > scale && scale > 0
-              return true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
+              has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
             elsif precision > scale && scale == 0
-              return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+              has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
             elsif precision == scale
-              return true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
+              has_valid_number = true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
             else
               raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
             end
@@ -51,21 +57,22 @@ module DataMapper
             # for floats, if scale is not set
 
             #total number of digits is less or equal precision
-            return true if value.gsub(/[^\d]/, '').length <= precision
+            has_valid_number = true if value.gsub(/[^\d]/, '').length <= precision
 
             #number of digits before decimal == precision, and the number is x.0. same as scale = 0
-            return true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+            has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
           else
-            return true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
+            has_valid_number = true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
           end
           error_message ||= ValidationErrors.default_error_message(:not_a_number, field_name)
         end
 
-        add_error(target, error_message, field_name)
-
-        # TODO: check the gt, gte, lt, lte, and eq options
-
-        return false
+        if has_valid_number
+          true
+        else
+          add_error(target, error_message, field_name)
+          false
+        end
       end
     end # class NumericValidator
 
