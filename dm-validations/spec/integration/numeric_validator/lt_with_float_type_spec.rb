@@ -5,23 +5,22 @@ require __dir__.parent.parent + 'spec_helper'
 require __dir__ + 'spec_helper'
 
 
-describe DataMapper::Validate::Fixtures::Mittelschnauzer do
+describe DataMapper::Validate::Fixtures::BasketballCourt do
   before :all do
-    @model = DataMapper::Validate::Fixtures::Mittelschnauzer.valid_instance
+    @model = DataMapper::Validate::Fixtures::BasketballCourt.valid_instance
+    @model.valid?
   end
 
-  it_should_behave_like "valid model"
-
-  describe "with height of 56.1 (higher than allowed maximum)" do
+  describe "with length of 20.0" do
     before :all do
-      @model.height = 56.1
+      @model.length = 20.0
       @model.valid?
     end
 
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:height).should include("Height must be a number less than 55.2")
+      @model.errors.on(:length).should include("Length must be a number less than or equal to 15.24")
     end
   end
 end

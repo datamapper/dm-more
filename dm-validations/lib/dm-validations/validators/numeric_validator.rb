@@ -22,7 +22,7 @@ module DataMapper
         error_message = @options[:message]
         precision     = @options[:precision]
         scale         = @options[:scale]
-        eq            = @options[:eq]
+        eq            = @options[:eq] || @options[:equal] || @options[:equals] || @options[:exactly]
         gt            = @options[:gt]
         lt            = @options[:lt]
         ne            = @options[:ne]
@@ -67,29 +67,39 @@ module DataMapper
           error_message ||= ValidationErrors.default_error_message(:not_a_number, field_name)
         end
 
-        humanuzed_field_name = Extlib::Inflection.humanize(@field_name)
+        humanized_field_name = Extlib::Inflection.humanize(@field_name)
+
+        comparisons_pass = true
+        if gt
+          comparisons_pass = (value.to_f > gt.to_f)
+          error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt) unless comparisons_pass
+        end
+
+        if lt
+          comparisons_pass = (value.to_f < lt.to_f)
+          error_message = '%s must be a number less than %s'.t(humanized_field_name, lt) unless comparisons_pass
+        end
+
+        if gte
+          comparisons_pass = (value.to_f >= gte.to_f)
+          error_message = '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte) unless comparisons_pass
+        end
+
+        if lte
+          comparisons_pass = (value.to_f <= lte.to_f)
+          error_message = '%s must be a number less than or equal to %s'.t(humanized_field_name, lte) unless comparisons_pass
+        end
 
         if eq
           comparisons_pass = (value.to_f == eq.to_f)
-          error_message = '%s must be a number equal to %s'.t(humanuzed_field_name, eq) unless comparisons_pass
-        elsif gt
-          comparisons_pass = (value.to_f > gt.to_f)
-          error_message = '%s must be a number greater than %s'.t(humanuzed_field_name, gt) unless comparisons_pass
-        elsif lt
-          comparisons_pass = (value.to_f < lt.to_f)
-          error_message = '%s must be a number less than %s'.t(humanuzed_field_name, lt) unless comparisons_pass
-        elsif ne
-          comparisons_pass = (value.to_f != ne.to_f)
-          error_message = '%s must be a number not equal to %s'.t(humanuzed_field_name, ne) unless comparisons_pass
-        elsif gte
-          comparisons_pass = (value.to_f >= gte.to_f)
-          error_message = '%s must be a number greater than or equal to %s'.t(humanuzed_field_name, gte) unless comparisons_pass
-        elsif lte
-          comparisons_pass = (value.to_f <= lte.to_f)
-          error_message = '%s must be a number less than or equal to %s'.t(humanuzed_field_name, lte) unless comparisons_pass
-        else
-          comparisons_pass = true
+          error_message = '%s must be a number equal to %s'.t(humanized_field_name, eq) unless comparisons_pass
         end
+
+        if ne
+          comparisons_pass = (value.to_f != ne.to_f)
+          error_message = '%s must be a number not equal to %s'.t(humanized_field_name, ne) unless comparisons_pass
+        end
+
 
         if has_valid_number && comparisons_pass
           return true
