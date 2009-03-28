@@ -10,7 +10,15 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
     { :id => 1, :doc_no => 'A1234', :email => 'user@example.com', :url => 'http://example.com' }
   end
 
-  [ 'http:// example.com', 'ftp://example.com', 'http://.com', 'http://', 'test', '...' ].each do |uri|
+  [ 'http:// example.com', 'ftp://example.com', 'http://.com', 'http://', 'test', '...',
+    # these are valid URIs from RFC perspective,
+    # but too often not the case for web apps
+    #
+    # TODO: add another format that is strictly
+    # RFC compliant so it can be used, for instance,
+    # for internal apps that may refer to local domains
+    # like http://backend:8080
+    "http://localhost:4000", "http://localhost" ].each do |uri|
     describe "with URL of #{uri}" do
       before :all do
         @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
@@ -25,7 +33,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
   end # each
 
 
- [ 'http://example.com', 'http://www.example.com', "http://apple.com", "http://books.google.com"].each do |uri|
+ [ 'http://example.com', 'http://www.example.com', "http://apple.com", "http://books.google.com", "http://db2.clouds.megacorp.net:8080" ].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))

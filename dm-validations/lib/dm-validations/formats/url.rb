@@ -13,7 +13,7 @@ module DataMapper
 
         Url = begin
           # Regex from http://www.igvita.com/2006/09/07/validating-url-in-ruby-on-rails/
-          /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?$)/ix
+          /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(([0-9]{1,5})?\/.*)?(\:\d{2,4})?$)/ix
         end
 
       end # module Url
