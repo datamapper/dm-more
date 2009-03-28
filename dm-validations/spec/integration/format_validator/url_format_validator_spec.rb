@@ -36,6 +36,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
   [ 'http://apple.com', 'http://www.apple.com', "http://apple.com/", "http://apple.com/iphone",
     "http://www.google.com/search?client=safari&rls=en-us&q=LED&ie=UTF-8&oe=UTF-8",
     "http://books.google.com", "http://books.google.com/", "http://db2.clouds.megacorp.net:8080",
+    "https://github.com", "https://github.com/",
   "http://db2.clouds.megacorp.net:8080/resources/10"].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
