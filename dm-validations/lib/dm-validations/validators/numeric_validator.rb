@@ -71,33 +71,51 @@ module DataMapper
 
         comparisons_pass = true
         if gt
-          comparisons_pass = (value.to_f > gt.to_f)
-          error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt) unless comparisons_pass
+          unless value.to_f > gt.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt) 
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
         if lt
-          comparisons_pass = (value.to_f < lt.to_f)
-          error_message = '%s must be a number less than %s'.t(humanized_field_name, lt) unless comparisons_pass
+          unless value.to_f < lt.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number less than %s'.t(humanized_field_name, lt)
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
         if gte
-          comparisons_pass = (value.to_f >= gte.to_f)
-          error_message = '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte) unless comparisons_pass
+          unless value.to_f >= gte.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte)
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
         if lte
-          comparisons_pass = (value.to_f <= lte.to_f)
-          error_message = '%s must be a number less than or equal to %s'.t(humanized_field_name, lte) unless comparisons_pass
+          unless value.to_f <= lte.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number less than or equal to %s'.t(humanized_field_name, lte)
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
         if eq
-          comparisons_pass = (value.to_f == eq.to_f)
-          error_message = '%s must be a number equal to %s'.t(humanized_field_name, eq) unless comparisons_pass
+          unless value.to_f == eq.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number equal to %s'.t(humanized_field_name, eq)
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
         if ne
-          comparisons_pass = (value.to_f != ne.to_f)
-          error_message = '%s must be a number not equal to %s'.t(humanized_field_name, ne) unless comparisons_pass
+          unless value.to_f != ne.to_f
+            comparisons_pass         = false
+            comparison_error_message = '%s must be a number not equal to %s'.t(humanized_field_name, ne)
+            add_error(target, comparison_error_message, @field_name)
+          end
         end
 
 
