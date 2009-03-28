@@ -1,26 +1,36 @@
 # -*- coding: utf-8 -*-
 
-class BasketballPlayer
-  #
-  # Behaviors
-  #
+module DataMapper
+  module Validate
+    module Fixtures
+      class BasketballPlayer
+        #
+        # Behaviors
+        #
 
-  include DataMapper::Resource
+        include DataMapper::Resource
 
-  #
-  # Properties
-  #
+        #
+        # Properties
+        #
 
-  property :id,     Serial
-  property :name,   String
+        property :id,     Serial
 
-  property :height, Float, :auto_validation => false
-  property :weight, Float, :auto_validation => false
+        without_auto_validations do
+          property :name,   String
+          property :height, Float
+          property :weight, Float
+        end
 
-  #
-  # Validations
-  #
+        #
+        # Validations
+        #
 
-  validates_is_number :height, :weight
-end
-BasketballPlayer.auto_migrate!
+        validates_is_number :height, :weight
+      end
+      BasketballPlayer.auto_migrate!
+
+
+    end # Fixtures
+  end # Validate
+end # DataMapper

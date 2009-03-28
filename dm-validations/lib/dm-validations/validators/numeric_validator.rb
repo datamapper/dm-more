@@ -43,7 +43,7 @@ module DataMapper
           #        In MySQL somehow you can hard-define scale on floats. Not
           #        quite sure how that works...
           if precision && scale
-            #handles both Float when it has scale specified and BigDecimal
+            # handles both Float when it has scale specified and BigDecimal
             if precision > scale && scale > 0
               has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
             elsif precision > scale && scale == 0
@@ -56,10 +56,10 @@ module DataMapper
           elsif precision && scale.nil?
             # for floats, if scale is not set
 
-            #total number of digits is less or equal precision
+            # total number of digits is less or equal precision
             has_valid_number = true if value.gsub(/[^\d]/, '').length <= precision
 
-            #number of digits before decimal == precision, and the number is x.0. same as scale = 0
+            # number of digits before decimal == precision, and the number is x.0. same as scale = 0
             has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
           else
             has_valid_number = true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
@@ -67,11 +67,35 @@ module DataMapper
           error_message ||= ValidationErrors.default_error_message(:not_a_number, field_name)
         end
 
-        if has_valid_number
-          true
+        humanuzed_field_name = Extlib::Inflection.humanize(@field_name)
+
+        if eq
+          comparisons_pass = (value.to_f == eq.to_f)
+          error_message = '%s must be a number equal to %s'.t(humanuzed_field_name, eq) unless comparisons_pass
+        elsif gt
+          comparisons_pass = (value.to_f > gt.to_f)
+          error_message = '%s must be a number greater than %s'.t(humanuzed_field_name, gt) unless comparisons_pass
+        elsif lt
+          comparisons_pass = (value.to_f < lt.to_f)
+          error_message = '%s must be a number less than %s'.t(humanuzed_field_name, lt) unless comparisons_pass
+        elsif ne
+          comparisons_pass = (value.to_f != ne.to_f)
+          error_message = '%s must be a number not equal to %s'.t(humanuzed_field_name, ne) unless comparisons_pass
+        elsif gte
+          comparisons_pass = (value.to_f >= gte.to_f)
+          error_message = '%s must be a number greater than or equal to %s'.t(humanuzed_field_name, gte) unless comparisons_pass
+        elsif lte
+          comparisons_pass = (value.to_f <= lte.to_f)
+          error_message = '%s must be a number less than or equal to %s'.t(humanuzed_field_name, lte) unless comparisons_pass
         else
-          add_error(target, error_message, field_name)
-          false
+          comparisons_pass = true
+        end
+
+        if has_valid_number && comparisons_pass
+          return true
+        else
+          add_error(target, error_message, @field_name)
+          return false
         end
       end
     end # class NumericValidator

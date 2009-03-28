@@ -24,8 +24,10 @@ module DataMapper
 
         validates_length :name, :min => 2, :allow_nil => false
 
+        validates_is_number :height, :lt => 55.2
+
         def self.valid_instance
-          new(:name => "Roudolf Wilde")
+          new(:name => "Roudolf Wilde", :height => 50.4)
         end
       end # Mittelschnauzer
     end
