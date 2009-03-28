@@ -10,3 +10,5 @@ lib/dm-is-example/is/version.rb
 spec/integration/example_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
+tasks/install.rb
+tasks/spec.rb
