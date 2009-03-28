@@ -388,24 +388,4 @@ describe "DataMapper resource with included", DataMapper::Validate do
 
     Raft.new(10).validation_property_value("length").should == 10
   end
-
-  it "should duplicate validations to STI models" do
-    class ::Company
-      include DataMapper::Resource
-
-      validates_present :title, :message => "Company name is a required field"
-
-      property :id,       Serial
-      property :title,    String
-      property :type,     Discriminator
-    end
-
-    class ::ServiceCompany < Company
-    end
-
-    class ::ProductCompany < Company
-    end
-    company = ServiceCompany.new
-    company.should_not be_valid
-  end
 end
