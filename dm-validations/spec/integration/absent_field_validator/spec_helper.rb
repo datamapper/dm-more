@@ -1,49 +1,7 @@
-# -*- coding: utf-8 -*-
-
-module DataMapper
-  module Validate
-    module Fixtures
-      class Kayak
-        #
-        # Behaviors
-        #
-
-        include ::DataMapper::Resource
-
-        #
-        # Properties
-        #
-
-        property :id,       Serial
-        property :salesman, String, :auto_validation => false
-
-        #
-        # Validations
-        #
-
-        validates_absent :salesman, :on => :sale
-      end
-
-      class Pirogue
-        #
-        # Behaviors
-        #
-
-        include DataMapper::Resource
-
-        #
-        # Properties
-        #
-
-        property :id,       Serial
-        property :salesman, String, :default => 'Layfayette'
-
-        #
-        # Validations
-        #
-
-        validates_absent :salesman, :on => :sale
-      end
-    end
-  end
-end
+# put validator specific fixture models and helpers here
+#
+# make sure you check out spec/fixtures to see fixture models
+# already written
+#
+# DataMapper developers feels strongly against foobars in the spec
+# suite
