@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rake check_manifest > manifest.diff && cat manifest.diff | patch -p0 Manifest.txt
+git add Manifest.txt && git ci -m "[dm-validations] Updated Hoe's Manifest"
