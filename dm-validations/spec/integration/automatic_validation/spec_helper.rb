@@ -1,4 +1,14 @@
-# -*- coding: utf-8 -*-
+# put validator specific fixture models and helpers here
+#
+# make sure you check out spec/fixtures to see fixture models
+# already written
+#
+# DataMapper developers feels strongly against foobars in the spec
+# suite
+
+# TODO: one day we need to get rid of this remaining foobarness
+# and use a few more realistic models with ParanoidBoolean and all
+# that
 
 module TypecastBypassSetter
   # Bypass typecasting so we can set values for specs
@@ -61,28 +71,4 @@ class HasNotNullableParanoidBoolean
   property :bool, ParanoidBoolean, :nullable => false
 
   include TypecastBypassSetter
-end
-
-
-module DataMapper
-  module Validate
-    module Fixtures
-
-      class SmsMessage
-        #
-        # Behaviors
-        #
-
-        include DataMapper::Resource
-
-        #
-        # Properties
-        #
-
-        property :id,   Serial
-        property :body, Text, :length => (1..500)
-      end
-
-    end
-  end
 end
