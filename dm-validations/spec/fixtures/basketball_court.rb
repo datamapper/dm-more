@@ -32,7 +32,7 @@ module DataMapper
         #
 
         # obviously these are all metrics
-        validates_is_number :length, :gte => 15,    :lte => 15.24
+        validates_is_number :length, :gte => 15.0,  :lte => 15.24
         validates_is_number :width,  :gte => 25.28, :lte => 28.65
 
         validates_is_number :three_point_line_distance, :gte => 6.7, :lte => 7.24
