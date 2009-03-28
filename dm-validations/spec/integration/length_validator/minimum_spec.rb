@@ -5,40 +5,42 @@ __dir__ = Pathname(__FILE__).dirname.expand_path
 require __dir__.parent.parent + "spec_helper"
 require __dir__ + 'spec_helper'
 
-require 'pathname'
-__dir__ = Pathname(__FILE__).dirname.expand_path
+describe "entity with a name shorter than 2 characters", :shared => true do
+  it "has a meaninful error message with length restrictions mentioned" do
+    @model.errors.on(:name).should include("Name must be more than 2 characters long")
+  end
+end
 
-# global first, then local to length validators
-require __dir__.parent.parent + "spec_helper"
-require __dir__ + 'spec_helper'
-
-describe ::DataMapper::Validate::Fixtures::MotorLaunch, "with name length required to be 5 chars minimum" do
+describe ::DataMapper::Validate::Fixtures::Mittelschnauzer do
   before :all do
-    class ::DataMapper::Validate::Fixtures::MotorLaunch
-      validators.clear!
-      validates_length :name, :min => 5, :message => Proc.new { "Name must be longer than 5 characters long" }
-    end
-
-    @model = DataMapper::Validate::Fixtures::MotorLaunch.new
+    @model = DataMapper::Validate::Fixtures::Mittelschnauzer.valid_instance
   end
 
-  describe "and name that is longer than 5 characters" do
-    before :all do
-      @model.name = "DataMapper"
-    end
+  it_should_behave_like "valid model"
 
+  describe "with a 13 characters long name" do
     it_should_behave_like "valid model"
   end
 
-  describe "and name that is shorter than 5 characters" do
+  describe "with a single character name" do
     before :all do
-      @model.name = "Ruby"
+      @model.name = "R"
+      @model.valid?
     end
 
     it_should_behave_like "invalid model"
 
-    it "has a meaningful error message on invalid property" do
-      @model.errors.on(:name).should include("Name must be longer than 5 characters long")
+    it_should_behave_like "entity with a name shorter than 2 characters"
+  end
+
+  describe "with blank name" do
+    before :all do
+      @model.name = ""
+      @model.valid?
     end
+
+    it_should_behave_like "invalid model"
+
+    it_should_behave_like "entity with a name shorter than 2 characters"
   end
 end

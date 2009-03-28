@@ -2,7 +2,7 @@ module DataMapper
   module Validate
     module Fixtures
 
-      class Pet
+      class Mittelschnauzer
 
         #
         # Behaviors
@@ -14,14 +14,48 @@ module DataMapper
         # Properties
         #
 
-        property :name, String, :auto_validation => false, :key => true
+        without_auto_validations do
+          property :name,   String, :key => true
+          property :height, Float
+        end
 
         #
         # Validations
         #
 
-        validates_length :name, :in => (3..15)
-      end # Pet
+        validates_length :name, :min => 2, :allow_nil => false
+
+        def self.valid_instance
+          new(:name => "Roudolf Wilde")
+        end
+      end # Mittelschnauzer
+
+      class Barcode
+
+        #
+        # Behaviors
+        #
+
+        include DataMapper::Resource
+
+        #
+        # Properties
+        #
+
+        without_auto_validations do
+          property :code, String, :key => true
+        end
+
+        #
+        # Validations
+        #
+
+        validates_length :code, :max => 10
+
+        def self.valid_instance
+          new(:code => "3600029145")
+        end
+      end # Barcode
 
       # for pedants: we refer to DIX Ethernet here
       class EthernetFrame
