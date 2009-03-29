@@ -15,7 +15,7 @@ module DataMapper
     class GenericValidator
 
       attr_accessor :if_clause, :unless_clause
-      attr_reader   :field_name, :options
+      attr_reader   :field_name, :options, :humanized_field_name
 
       # Construct a validator. Capture the :if and :unless clauses when present.
       #
@@ -33,6 +33,7 @@ module DataMapper
         @unless_clause = options.delete(:unless)
 
         @field_name, @options = field_name, options
+        @humanized_field_name = Extlib::Inflection.humanize(@field_name)
       end
 
       # Add an error message to a target resource. If the error corresponds to a

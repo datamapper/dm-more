@@ -31,9 +31,6 @@ module DataMapper
 
         field_value = '' if field_value.nil?
 
-        # XXX: HACK seems hacky to do this on every validation, probably should
-        #      do this elsewhere?
-        field = Extlib::Inflection.humanize(field_name)
         min = @range ? @range.min : @min
         max = @range ? @range.max : @max
         equal = @equal
@@ -41,19 +38,19 @@ module DataMapper
         case @validation_method
         when :range then
           unless valid = @range.include?(field_value.size)
-            error_message = ValidationErrors.default_error_message(:length_between, field, min, max)
+            error_message = ValidationErrors.default_error_message(:length_between, humanized_field_name, min, max)
           end
         when :min then
           unless valid = field_value.size >= min
-            error_message = ValidationErrors.default_error_message(:too_short, field, min)
+            error_message = ValidationErrors.default_error_message(:too_short, humanized_field_name, min)
           end
         when :max then
           unless valid = field_value.size <= max
-            error_message = ValidationErrors.default_error_message(:too_long, field, max)
+            error_message = ValidationErrors.default_error_message(:too_long, humanized_field_name, max)
           end
         when :equals then
           unless valid = field_value.size == equal
-            error_message = ValidationErrors.default_error_message(:wrong_length, field, equal)
+            error_message = ValidationErrors.default_error_message(:wrong_length, humanized_field_name, equal)
           end
         end
 

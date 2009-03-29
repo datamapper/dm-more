@@ -42,18 +42,12 @@ module DataMapper
         return true if valid
 
         error_message = @options[:message] || ValidationErrors.default_error_message(:invalid, field_name)
-
-        field = Extlib::Inflection.humanize(field_name)
-        error_message = error_message.call(field, value) if error_message.respond_to?(:call)
-
-        add_error(target, error_message, field_name)
+        add_error(target, error_message.try_call(humanized_field_name, value), field_name)
 
         false
       end
-
-      #class UnknownValidationFormat < StandardError; end
-
     end # class FormatValidator
+
 
     module ValidatesFormat
 

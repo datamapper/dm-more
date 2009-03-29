@@ -67,8 +67,6 @@ module DataMapper
           error_message ||= ValidationErrors.default_error_message(:not_a_number, field_name)
         end
 
-        humanized_field_name = Extlib::Inflection.humanize(@field_name)
-
         comparisons_pass = true
         if gt
           unless value.to_f > gt.to_f
