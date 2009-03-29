@@ -51,7 +51,10 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
     "http://books.google.com/books?id=Ar3-TXCYXUkC&printsec=frontcover&rview=1",
     "http://books.google.com/books/vp6ae081e454d30f89b6bca94e0f96fc14.js",
     "http://www.google.com/images/cleardot.gif",
-    "http://books.google.com/books?id=Ar3-TXCYXUkC&printsec=frontcover&rview=1#PPA5,M1"
+    "http://books.google.com:80/books?id=Ar3-TXCYXUkC&printsec=frontcover&rview=1#PPA5,M1",
+    "http://www.hulu.com/watch/64923/terminator-the-sarah-connor-chronicles-to-the-lighthouse",
+    "http://hulu.com:80/browse/popular/tv",
+    "http://www.hulu.com/watch/62475/the-simpsons-gone-maggie-gone#s-p1-so-i0"
   ].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
