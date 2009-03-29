@@ -71,7 +71,7 @@ module DataMapper
         if gt
           unless value.to_f > gt.to_f
             comparisons_pass         = false
-            comparison_error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt) 
+            comparison_error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt)
             add_error(target, comparison_error_message, @field_name)
           end
         end
@@ -130,6 +130,37 @@ module DataMapper
 
       # Validate whether a field is numeric
       #
+      # @details
+      #
+      # Options are:
+      #
+      # :message => "Error message for %s"
+      #   Custom error message, also can be a callable object that takes
+      #   an object (for pure Ruby objects) or object and property (for DM resources)
+      #
+      # :precision => 2
+      #   Required precision of a value
+      #
+      # :scale => 2
+      #   Required scale of a value
+      #
+      # :gte => 5.75
+      #   'Greater than or greater' requirement
+      #
+      # :lte => 5.75
+      #   'Less than or greater' requirement
+      #
+      # :lt => 5.75
+      #   'Less than' requirement
+      #
+      # :gt => 5.75
+      #   'Greater than' requirement
+      #
+      # :eq => 5.75
+      #   'Equal' requirement
+      #
+      # :ne => 5.75
+      #   'Not equal' requirement
       def validates_is_number(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
