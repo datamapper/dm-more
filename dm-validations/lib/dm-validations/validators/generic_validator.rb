@@ -108,6 +108,11 @@ module DataMapper
         self.instance_variable_get(:@options) == other.instance_variable_get(:@options)
       end
 
+      def inspect
+        "<##{self.class.name} @field_name='#{@field_name}' @if_clause=#{@if_clause.inspect} @unless_clause=#{@unless_clause.inspect} @options=#{@options.inspect}>"
+      end
+
+      alias to_s inspect
     end # class GenericValidator
   end # module Validate
-end # module DataMapper
+end # module DataMapper
