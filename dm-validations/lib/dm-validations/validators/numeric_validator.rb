@@ -161,6 +161,9 @@ module DataMapper
       #
       # :ne => 5.75
       #   'Not equal' requirement
+      #
+      # :integer_only => true
+      #   Use to restrict allowed values to integers
       def validates_is_number(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
