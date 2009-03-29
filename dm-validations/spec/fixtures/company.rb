@@ -33,11 +33,16 @@ module DataMapper
         # Properties
         #
 
-        # rely on inferred validations here
-        property :area_of_expertise, String, :length => (1..60), :nullable => false
+        without_auto_validations do
+          property :area_of_expertise, String, :length => (1..60)
+        end
 
+        #
+        # Validations
+        #
+
+        validates_present :area_of_expertise
       end
-
 
       class ProductCompany < Company
 
@@ -45,7 +50,6 @@ module DataMapper
         # Properties
         #
 
-        # DO NOT rely on inferred validations here
         without_auto_validations do
           property :flagship_product, String, :length => (1..60)
         end
@@ -56,6 +60,35 @@ module DataMapper
 
         validates_present :title, :message => "Product company must have a name"
         validates_present :flagship_product
+      end
+      ProductCompany.auto_migrate!
+
+
+      class Product
+        #
+        # Behaviors
+        #
+
+        include DataMapper::Resource
+
+        #
+        # Properties
+        #
+
+        property :id,   Serial
+        property :name, String, :nullable => false
+
+        #
+        # Associations
+        #
+
+        belongs_to :company, :model => DataMapper::Validate::Fixtures::ProductCompany
+
+        #
+        # Validations
+        #
+
+        validates_present :company
       end
     end
   end
