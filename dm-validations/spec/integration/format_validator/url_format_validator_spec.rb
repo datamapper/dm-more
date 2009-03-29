@@ -33,11 +33,26 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
   end # each
 
 
-  [ 'http://apple.com', 'http://www.apple.com', "http://apple.com/", "http://apple.com/iphone",
+  [ 'http://apple.com',
+    'http://www.apple.com',
+    "http://apple.com/",
+    "http://apple.com/iphone",
     "http://www.google.com/search?client=safari&rls=en-us&q=LED&ie=UTF-8&oe=UTF-8",
-    "http://books.google.com", "http://books.google.com/", "http://db2.clouds.megacorp.net:8080",
-    "https://github.com", "https://github.com/",
-  "http://db2.clouds.megacorp.net:8080/resources/10"].each do |uri|
+    "http://books.google.com",
+    "http://books.google.com/",
+    "http://db2.clouds.megacorp.net:8080",
+    "https://github.com",
+    "https://github.com/",
+    "http://www.example.com:8088/never/ending/path/segments/",
+    "http://db2.clouds.megacorp.net:8080/resources/10",
+    "http://www.example.com:8088/never/ending/path/segments",
+    "http://books.google.com/books?id=uSUJ3VhH4BsC&printsec=frontcover&dq=subject:%22+Linguistics+%22&as_brr=3&ei=DAHPSbGQE5rEzATk1sShAQ&rview=1",
+    "http://books.google.com:80/books?uid=14472359158468915761&rview=1",
+    "http://books.google.com/books?id=Ar3-TXCYXUkC&printsec=frontcover&rview=1",
+    "http://books.google.com/books/vp6ae081e454d30f89b6bca94e0f96fc14.js",
+    "http://www.google.com/images/cleardot.gif",
+    "http://books.google.com/books?id=Ar3-TXCYXUkC&printsec=frontcover&rview=1#PPA5,M1"
+  ].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
