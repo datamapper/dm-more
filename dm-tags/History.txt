@@ -1,10 +1,20 @@
-=== 0.9.11 / not released
+=== 0.9.11 / 2009-03-29
 
-  * No changes this version
+Change frozen_tag_list property to Text
+
+* 3 minor enhancements:
+
+  * Added add_tag(string) for convenient adding of tags
+  * Added tag_collection method to allow easy adding/editing of tags
+  * Added callback to destroy orphaned taggings
+
+* 1 bug fix:
+
+  * Fix bug in add_tag where exisiting tags would be overwritten
 
 === 0.9.10 / 2009-01-19
 
-  * No changes this version
+* No changes this version
 
 === 0.9.9 / 2009-01-04
 

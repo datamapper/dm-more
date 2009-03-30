@@ -1,10 +1,10 @@
-=== 0.9.11 / not released
+=== 0.9.11 / 2009-03-29
 
-  * No changes this version
+* No changes this version
 
 === 0.9.10 / 2009-01-19
 
-  * No changes this version
+* No changes this version
 
 === 0.9.9 / 2009-01-04
 
