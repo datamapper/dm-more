@@ -12,7 +12,6 @@ GEM_PATHS = %w[
   dm-serializer
   dm-validations
   dm-types
-  adapters/dm-couchdb-adapter
   adapters/dm-ferret-adapter
   adapters/dm-rest-adapter
   dm-aggregates
@@ -34,7 +33,12 @@ GEM_PATHS = %w[
   dm-sweatshop
   dm-tags
   dm-timestamps
-].freeze
+]
+
+# ferret gem does not compile on 1.9
+if RUBY_VERSION >= '1.9.0'
+  GEM_PATHS.delete('adapters/dm-ferret-adapter')
+end
 
 gems = GEM_PATHS.map { |p| File.basename(p) }
 
@@ -137,7 +141,7 @@ end
 %w[ ci spec clean clobber check_manifest ].each do |command|
   task command do
     GEM_PATHS.each do |gem_name|
-      Dir.chdir(gem_name){ rake "#{command}; true" }
+      Dir.chdir(gem_name){ rake command }
     end
   end
 end
