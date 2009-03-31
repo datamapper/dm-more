@@ -211,3 +211,32 @@ describe "Haskell" do
     @model.errors.on(:ensure_appropriate_for_system_programming).should include("try something that is closer to the metal")
   end
 end
+
+
+describe DataMapper::Validate::Fixtures::Event do
+  before :all do
+    @model = DataMapper::Validate::Fixtures::Event.new(:name => "Fools day 2009")
+  end
+
+  describe "with start time before end time" do
+    before :all do
+      @model.starts_at = DateTime.new(2009, 4, 1, 00, 00, 01)
+      @model.ends_at   = DateTime.new(2009, 4, 1, 23, 59, 59)
+    end
+
+    it_should_behave_like "valid model"
+  end
+
+  describe "with start time after end time" do
+    before :all do
+      @model.starts_at = DateTime.new(2009, 4, 1, 23, 59, 59)
+      @model.ends_at   = DateTime.new(2009, 4, 1, 00, 00, 01)
+    end
+
+    it_should_behave_like "invalid model"
+
+    it "uses custom error message for property starts_at" do
+      @model.errors.on(:starts_at).should include("Start time cannot be after end time")
+    end
+  end
+end
