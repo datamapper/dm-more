@@ -26,8 +26,8 @@ module DataMapper
     module ValidatesWithMethod
 
       ##
-      # Validate using the given method. The method given needs to return:
-      # [result::<Boolean>, Error Message::<String>]
+      # Validate using the given method. The method must to return
+      # either true, or a pair of [false, error message string]
       #
       # @example [Usage]
       #   require 'dm-validations'
@@ -50,13 +50,6 @@ module DataMapper
       #     # A call to valid? will return false and
       #     # populate the object's errors with "You're in the
       #     # wrong zip code" unless zip_code == "94301"
-      #
-      #     # You can also specify field:
-      #
-      #     validates_with_method :zip_code, :in_the_right_location?
-      #
-      #     # it will add returned error message to :zip_code field
-      #
       def validates_with_method(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::MethodValidator)
