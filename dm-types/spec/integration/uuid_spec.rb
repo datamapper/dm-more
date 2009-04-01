@@ -6,6 +6,7 @@ begin
   require 'uuidtools'
 rescue LoadError
   skip_tests = true
+  puts "Skipping UUID tests, please do gem install uuidtools"
 end
 
 describe 'DataMapper::Types::UUID' do
