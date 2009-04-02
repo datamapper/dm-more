@@ -4,7 +4,7 @@ else
   begin
     gem 'fastercsv', '~>1.4.0'
     require 'fastercsv'
-    CSV = FasterCSV
+    CSV = FasterCSV unless defined?(CSV)
   rescue LoadError
     nil
   end
@@ -19,7 +19,7 @@ module DataMapper
       def self.load(value, property)
         case value
         when String then CSV.parse(value)
-        when Array then value
+        when Array  then value
         else nil
         end
       end
