@@ -1,23 +1,54 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe DataMapper::Types::Regexp, ".load" do
-  it 'should make a Regexp from the value if a string is provided' do
-    Regexp.should_receive(:new).with('regexp_string').once
-    DataMapper::Types::Regexp.load('regexp_string', :property)
-  end
+describe DataMapper::Types::Regexp  do
+  describe ".load" do
+    describe "when argument is a string" do
+      before :all do
+        @input  = '[a-z]\d+'
+        @result = DataMapper::Types::Regexp.load(@input, :property)
+      end
 
-  it 'should return nil otherwise' do
-    DataMapper::Types::Regexp.load(nil, :property).should == nil
+      it "create a regexp instance from argument" do
+        @result.should == Regexp.new(@input)
+      end
+    end
+
+    describe "when argument is nil" do
+      before :all do
+        @input  = nil
+        @result = DataMapper::Types::Regexp.load(@input, :property)
+      end
+
+      it "returns nil" do
+        @result.should be_nil
+      end
+    end
   end
 end
 
-describe DataMapper::Types::Regexp, ".dump" do
-  it 'should dump to a string' do
-    DataMapper::Types::Regexp.dump(/\d+/, :property).should == "\\d+"
-  end
+describe DataMapper::Types::Regexp do
+  describe ".dump" do
+    describe "when argument is a regular expression" do
+      before :all do
+        @input  = /\d+/
+        @result = DataMapper::Types::Regexp.dump(@input, :property)
+      end
 
-  it 'should return nil if the value is nil' do
-    DataMapper::Types::Regexp.dump(nil, :property).should == nil
+      it "escapes the argument" do
+        @result.should == "\\d+"
+      end
+    end
+
+    describe "when argument is nil" do
+      before :all do
+        @input = nil
+        @result = DataMapper::Types::Regexp.dump(@input, :property)
+      end
+
+      it "returs nil" do
+        @result.should be_nil
+      end
+    end
   end
 end
