@@ -20,7 +20,7 @@
 *** TODO uuid_spec.rb
 *** TODO yaml_spec.rb
 
-    these need a fixture set like what new dm-validations does
+    these need a fixture set like what new dm-validations gem has
     examples like it "should work" with foobar models won't be
     tolerated since they led to multiple bugs in 0.9.x that
     we discovered the hard way
