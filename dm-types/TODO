@@ -3,7 +3,7 @@
 * Spec suite improvement
 ** units
 *** TODO spec/unit/bcrypt_hash: regroup examples, improve titles
-*** TODO spec/unit/flag:        ditto
+*** DONE spec/unit/flag:        ditto
 *** DONE spec/unit/regexp:      ditto
 
     to help with these, see how examples for JSON, YAML and CSV are organized
