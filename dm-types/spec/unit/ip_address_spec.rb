@@ -3,54 +3,115 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 describe DataMapper::Types::IPAddress do
 
-  before(:each) do
-    @ip_str = "81.20.130.1"
-    @ip = IPAddr.new(@ip_str)
+  before :all do
+    @stored = "81.20.130.1"
+    @input  = IPAddr.new(@stored)
   end
+
+
 
   describe ".dump" do
-    it "should return the IP address as a string" do
-      DataMapper::Types::IPAddress.dump(@ip, :property).should == @ip_str
+    describe "when argument is an IP address given as Ruby object" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.dump(@input, :property)
+      end
+
+      it "dumps input into a string" do
+        @result.should == @stored
+      end
     end
 
-    it "should return nil if the string is nil" do
-      DataMapper::Types::IPAddress.dump(nil, :property).should be_nil
+
+    describe "when argument is nil" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.dump(nil, :property)
+      end
+
+      it "returns nil" do
+        @result.should be_nil
+      end
     end
 
-    it "should return an empty IP address if the string is empty" do
-      DataMapper::Types::IPAddress.dump("", :property).should == ""
+    describe "when input is a blank string" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.dump("", :property)
+      end
+
+      it "retuns a blank string" do
+        @result.should == ''
+      end
     end
   end
+
+
 
   describe ".load" do
-    it "should return the IP address string as IPAddr" do
-      DataMapper::Types::IPAddress.load(@ip_str, :property).should == @ip
+    before :all do
+
     end
 
-    it "should return nil if given nil" do
-      DataMapper::Types::IPAddress.load(nil, :property).should be_nil
+    describe "when argument is a valid IP address as a string" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.load(@stored, :property)
+      end
+
+      it "returns IPAddr instance from stored value" do
+        @result.should == @input
+      end
     end
 
-    it "should return an empty IP address if given an empty string" do
-      DataMapper::Types::IPAddress.load("", :property).should == IPAddr.new("0.0.0.0")
+    describe "when argument is nil" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.load(nil, :property)
+      end
+
+      it "returns nil" do
+        @result.should be_nil
+      end
     end
 
-    it 'should raise an ArgumentError if given something else' do
-      lambda {
-        DataMapper::Types::IPAddress.load([], :property)
-      }.should raise_error(ArgumentError, '+value+ must be nil or a String')
+    describe "when argument is a blank string" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.load('', :property)
+      end
+
+      it "returns IPAddr instance from stored value" do
+        @result.should == IPAddr.new("0.0.0.0")
+      end
+    end
+
+    describe "when argument is an Array instance" do
+      before :all do
+        @operation = lambda { DataMapper::Types::IPAddress.load([], :property) }
+      end
+
+      it "raises ArgumentError with a meaningful message" do
+        @operation.should raise_error(ArgumentError, '+value+ must be nil or a String')
+      end
     end
   end
+
+
 
   describe '.typecast' do
-    it 'should do nothing if an IpAddr is provided' do
-      DataMapper::Types::IPAddress.typecast(@ip, :property).should == @ip
+    describe "when argument is an IpAddr object" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.typecast(@input, :property)
+      end
+
+      it "does not change the value" do
+        @result.should == @input
+      end
     end
 
-    it 'should defer to .load if a string is provided' do
-      DataMapper::Types::IPAddress.should_receive(:load).with(@ip_str, :property)
-      DataMapper::Types::IPAddress.typecast(@ip_str, :property)
+    describe "when argument is a valid IP address as a string" do
+      before :all do
+        @result = DataMapper::Types::IPAddress.typecast(@stored, :property)
+      end
+
+      it "instantiates IPAddr instance" do
+        @result.should == @input
+      end
     end
   end
-
 end
