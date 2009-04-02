@@ -1,0 +1,84 @@
+### -*- mode:org -*-
+
+* Spec suite improvement
+** units
+*** TODO spec/unit/bcrypt_hash: regroup examples, improve titles
+*** TODO spec/unit/flag:        ditto
+*** TODO spec/unit/regexp:      ditto
+
+    to help with these, see how examples for JSON, YAML and CSV are organized
+
+** integration
+*** TODO bcrypt_hash_spec.rb
+*** TODO enum_spec.rb
+*** TODO file_path_spec.rb
+*** TODO flag_spec.rb
+*** TODO ip_address_spec.rb
+*** TODO json_spec.rb
+*** TODO slug_spec.rb
+*** TODO uri_spec.rb
+*** TODO uuid_spec.rb
+*** TODO yaml_spec.rb
+
+    these need a fixture set like what new dm-validations does
+    examples like it "should work" with foobar models won't be
+    tolerated since they led to multiple bugs in 0.9.x that
+    we discovered the hard way
+
+* Ideas/prototypes of New types
+** Flat comma separated list (needs a good name)
+
+   Case: interests or tag lists in pretty much any asocial
+   application out there. Input: comma separated lists of words
+   or sentences, output: list with trailing and leading WS stripped
+   off
+
+   Probably needs to be based on YAML, would be a good example
+   of how types subclassing can be useful in the wild
+
+** SHA1 hash
+
+   Case: when you want to compute SHA1 of another property
+   and store it. Useful for file stores, caching and other things.
+
+   Would be a good example of how types can interact with models
+   via property binding
+
+** LowercaseString
+
+   A string type subclass that downcases the input
+
+   Case: CASES WHERE YOU WOULD HATE TO SEE UPPERCASE!
+
+** EmbeddedValue
+
+   An experiment of type/model interaction: takes a class
+   and uses YAML/JSON for serialization
+
+   To complete the picture we would need to add validation
+   delegation (so embedded object can add errors to
+   the parent if it makes sense), but it would be helpful
+   to shape up Property/Type refactoring, and should take
+   as little time as one evening
+
+** ZIP
+
+   Input: a string, output: a ZIP object that is smart enough
+   to provide predicates
+
+   Need to find a library for zips that would fit
+
+** Address
+
+   Same as ZIP but for actuall address. Again, stored
+   in YAML I suppose
+
+** Coordinate
+
+   Input: two floats or two strings can be cast to floats,
+   output: object that knows how to render a map for itself
+
+** DNA
+
+   Mostly for fun, to see how far we can push current types API
+   with little help from BioRuby
