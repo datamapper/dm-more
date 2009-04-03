@@ -14,9 +14,10 @@ end
 describe "DataMapper::Types::BCryptHash" do
   unless skip_tests
 
-    before(:each) do
-      @clear_password = "DataMapper R0cks!"
+    before :all do
+      @clear_password   = "DataMapper R0cks!"
       @crypted_password = BCrypt::Password.create(@clear_password)
+
       @nonstandard_type = 1
 
       class TestType
@@ -27,81 +28,137 @@ describe "DataMapper::Types::BCryptHash" do
     end
 
     describe ".dump" do
-      it "should return a crypted hash as a BCrypt::Password" do
-        BCryptHash.dump(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
+      describe "when argument is a string" do
+        before :all do
+          @input  = "DataMapper"
+          @result = BCryptHash.dump(@input, :property)
+        end
+
+        it "returns instance of BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "returns a string that is 60 characters long" do
+          @result.should have(60).characters
+        end
       end
 
-      it "should return a string that is 60 characters long" do
-        BCryptHash.dump(@clear_password, :property).to_s.should have(60).characters
-      end
+      describe "when argument is nil" do
+        before :all do
+          @input  = nil
+          @result = BCryptHash.dump(@input, :property)
+        end
 
-      describe "when given nil" do
-        it "should return nil" do
-          BCryptHash.dump(nil, :property).should be_nil
+        it "returns nil" do
+          @result.should be_nil
         end
       end
     end
 
+
+
     describe ".load" do
-      it "should return the password as a BCrypt::Password" do
-        BCryptHash.load(@crypted_password, :property).should be_an_instance_of(BCrypt::Password)
+      describe "when argument is a string" do
+        before :all do
+          @input  = "DataMapper"
+          @result = BCryptHash.load(@crypted_password, :property)
+        end
+
+        it "returns instance of BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "returns a string that matches original" do
+          @result.should == @clear_password
+        end
       end
 
-      it "should return the password as a password which matches" do
-        BCryptHash.load(@crypted_password, :property).should == @clear_password
-      end
 
-      describe "when given nil" do
-        it "should return nil" do
-          BCryptHash.load(nil, :property).should be_nil
+      describe "when argument is nil" do
+        before :all do
+          @input  = nil
+          @result = BCryptHash.load(@input, :property)
+        end
+
+        it "returns nil" do
+          @result.should be_nil
         end
       end
     end
 
     describe ".typecast" do
-      it "should return the crypted_password as a BCrypt::Password" do
-        BCryptHash.typecast(@crypted_password, :property).should be_an_instance_of(BCrypt::Password)
+      describe "when argument is a string" do
+        before :all do
+          @input  = "bcrypt hash"
+          @result = BCryptHash.typecast(@input, :property)
+        end
+
+        it "casts argument to BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "casts argument to value that matches input" do
+          @result.should == @input
+        end
       end
 
-      it "should match the password as a BCrypt::Password" do
-        BCryptHash.typecast(@crypted_password, :property).should == @clear_password
+
+      describe "when argument is a blank string" do
+        before :all do
+          @input  = ''
+          @result = BCryptHash.typecast(@input, :property)
+        end
+
+        it "casts argument to BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "casts argument to value that matches input" do
+          @result.should == @input
+        end
       end
 
-      it "should return the string value of crypted_password as a BCrypt::Password" do
-        BCryptHash.typecast(@crypted_password.to_s, :property).should be_an_instance_of(BCrypt::Password)
+
+      describe "when argument is integer" do
+        before :all do
+          @input  = 2249
+          @result = BCryptHash.typecast(@input, :property)
+        end
+
+        it "casts argument to BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "casts argument to value that matches input" do
+          @result.should == @input
+        end
       end
 
-      it "should match the password as a string of the crypted_password" do
-        BCryptHash.typecast(@crypted_password.to_s, :property).should == @clear_password
+
+      describe "when argument is hash" do
+        before :all do
+          @input  = { :cryptic => "obscure" }
+          @result = BCryptHash.typecast(@input, :property)
+        end
+
+        it "casts argument to BCrypt::Password" do
+          @result.should be_an_instance_of(BCrypt::Password)
+        end
+
+        it "casts argument to value that matches input" do
+          @result.should == @input
+        end
       end
 
-      it "should return the password as a BCrypt::Password" do
-        BCryptHash.typecast(@clear_password, :property).should be_an_instance_of(BCrypt::Password)
-      end
 
-      it "should match the password as clear_password" do
-        BCryptHash.typecast(@clear_password, :property).should == @clear_password
-      end
+      describe "when argument is nil" do
+        before :all do
+          @input  = nil
+          @result = BCryptHash.typecast(@input, :property)
+        end
 
-      it "should encrypt any type that has to_s" do
-        BCryptHash.typecast(@nonstandard_type, :property).should be_an_instance_of(BCrypt::Password)
-      end
-
-      it "should match the non-standard type" do
-        BCryptHash.typecast(@nonstandard_type, :property).should == @nonstandard_type
-      end
-
-      it "should encrypt anything passed to it" do
-        BCryptHash.typecast(@nonstandard_type2, :property).should be_an_instance_of(BCrypt::Password)
-      end
-
-      it "should match user-defined types" do
-        BCryptHash.typecast(@nonstandard_type2, :property).should == @nonstandard_type2
-      end
-
-      describe "when given nil" do
-        it "should return nil" do
-          BCryptHash.typecast(nil, :property).should be_nil
+        it "returns nil" do
+          @result.should be_nil
         end
       end
     end
