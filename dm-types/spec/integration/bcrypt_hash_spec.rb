@@ -6,54 +6,42 @@ begin
   require 'bcrypt'
 rescue LoadError
   skip_tests = true
+  puts "Skipping bcrypt tests, please do gem install bcrypt-ruby"
 end
 
-describe 'DataMapper::Types::BCryptHash' do
+describe DataMapper::Types::Fixtures::Person do
   unless skip_tests
-    describe "with no options" do
-      before(:each) do
-        class User
-          include DataMapper::Resource
+    before :all  do
+      @model  = DataMapper::Types::Fixtures::Person.create(:password => "DataMapper R0cks!")
+      DataMapper::Types::Fixtures::Person.create(:password => "password1")
 
-          property :id, Serial
-          property :password, BCryptHash
-        end
-        User.auto_migrate!
-        User.create(:password => "DataMapper R0cks!")
-      end
-
-      it "should save a password to the DB on creation" do
-        DataMapper.repository(:default) do
-          User.create(:password => "password1")
-        end
-        user = User.all
-        user[0].password.should == "DataMapper R0cks!"
-        user[1].password.should == "password1"
-      end
-
-      it "should change the password on attribute update" do
-        @user = User.first
-        @user.attribute_set(:password, "D@t@Mapper R0cks!")
-        @user.save
-        @user.password.should_not == "DataMapper R0cks!"
-        @user.password.should == "D@t@Mapper R0cks!"
-      end
-
-      it "should not change the password on save and reload" do
-        @user = User.first
-        v1 = @user.password.to_s
-        @user.save
-        @user.reload
-        v2 = @user.password.to_s
-        v1.should == v2
-      end
-
-      it "should have a cost of BCrypt::Engine::DEFAULT_COST" do
-        @user = User.first
-        @user.password.cost.should == BCrypt::Engine::DEFAULT_COST
-      end
+      @people = DataMapper::Types::Fixtures::Person.all
+      @model.reload
     end
-  else
-    it "Needs the bcrypt-ruby gem installed"
+
+    it "persists the password on initial save" do
+      @model.password.should       == "DataMapper R0cks!"
+      @people.last.password.should == "password1"
+    end
+
+    it "recalculates password hash on attribute update" do
+      @model.attribute_set(:password, "bcryptic obscure")
+      @model.save
+
+      @model.reload
+      @model.password.should     == 'bcryptic obscure'
+      @model.password.should_not == 'DataMapper R0cks!'
+    end
+
+    it "does not change password value on reload" do
+      model    = @people.last
+      original = model.password.to_s
+      model.reload
+      model.password.to_s.should == original
+    end
+
+    it "uses cost of BCrypt::Engine::DEFAULT_COST" do
+      @model.password.cost.should == BCrypt::Engine::DEFAULT_COST
+    end
   end
 end

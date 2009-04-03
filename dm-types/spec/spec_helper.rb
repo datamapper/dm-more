@@ -33,3 +33,4 @@ end
 ENV['ADAPTER'] ||= 'sqlite3'
 
 setup_adapter(:default)
+Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
