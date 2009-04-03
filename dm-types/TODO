@@ -2,7 +2,7 @@
 
 * Spec suite improvement
 ** units
-*** TODO spec/unit/bcrypt_hash: regroup examples, improve titles
+*** DONE spec/unit/bcrypt_hash: regroup examples, improve titles
 *** DONE spec/unit/flag:        ditto
 *** DONE spec/unit/regexp:      ditto
 
