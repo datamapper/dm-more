@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module DataMapper
   module Types
     class Enum < Type
@@ -57,16 +58,20 @@ module DataMapper
   if defined?(Validate)
     module Validate
       module AutoValidate
+        # TODO: add hooks to dm-validations, aliasing does not
+        #       scale to dozens of plugins trying to add autovalidations
+        #       at the same time, and aliasing is way too often abused
+        #       in the Ruby world
         alias :orig_auto_generate_validations :auto_generate_validations
         def auto_generate_validations(property)
           orig_auto_generate_validations(property)
-          return unless property.options[:auto_validation]
+          return if skip_auto_validation_for?(property)
 
           if property.type.ancestors.include?(Types::Enum)
             validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
           end
         end
-      end
-    end
-  end
+      end # AutoValidate
+    end # Validate
+  end # if
 end # module DataMapper

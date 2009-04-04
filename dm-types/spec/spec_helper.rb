@@ -8,6 +8,13 @@ gem 'dm-core', '0.10.0'
 require 'dm-core'
 require 'dm-core/core_ext/symbol'
 
+# TODO: autovalidation hooks are needed badly,
+#       otherwise plugin devs will have to abuse
+#       alising and load order even further and it kinda makes
+#       me sad -- MK
+gem 'dm-validations', '0.10.0'
+require 'dm-validations'
+
 require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-types'
 
 ENV["SQLITE3_SPEC_URI"]   ||= 'sqlite3::memory:'
