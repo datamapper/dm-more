@@ -2,7 +2,7 @@
 
 * Spec suite improvement
 ** integration
-*** TODO bcrypt_hash_spec.rb
+*** DONE bcrypt_hash_spec.rb
 *** TODO enum_spec.rb
 *** TODO file_path_spec.rb
 *** TODO flag_spec.rb
