@@ -5,8 +5,8 @@
 *** DONE bcrypt_hash_spec.rb
 *** DONE enum_spec.rb
 *** DONE file_path_spec.rb
-*** TODO flag_spec.rb
-*** TODO ip_address_spec.rb
+*** DONE flag_spec.rb
+*** DONE ip_address_spec.rb
 *** TODO json_spec.rb
 *** TODO slug_spec.rb
 *** TODO uri_spec.rb
