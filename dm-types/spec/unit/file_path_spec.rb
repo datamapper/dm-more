@@ -22,8 +22,8 @@ describe DataMapper::Types::FilePath do
     end
 
     describe "when input is a blank string" do
-      it "does not modify input" do
-        DataMapper::Types::FilePath.dump("", :property).should == ""
+      it "returns nil" do
+        DataMapper::Types::FilePath.dump("", :property).should be_nil
       end
     end
   end
@@ -42,8 +42,8 @@ describe DataMapper::Types::FilePath do
     end
 
     describe "when value is a blank string" do
-      it "returns empty Pathname" do
-        DataMapper::Types::FilePath.load("", :property).should == Pathname.new("")
+      it "returns nil" do
+        DataMapper::Types::FilePath.load("", :property).should be_nil
       end
     end
   end
