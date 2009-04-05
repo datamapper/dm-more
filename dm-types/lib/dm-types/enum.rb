@@ -56,13 +56,13 @@ module DataMapper
       def self.bind(property)
         if defined?(::DataMapper::Validate)
           model = property.model
-          
+
           unless model.skip_auto_validation_for?(property)
             if property.type.ancestors.include?(Types::Enum)
               model.class_eval do
                 validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
               end
-            end            
+            end
           end
         end
       end
