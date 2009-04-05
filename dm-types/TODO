@@ -3,8 +3,8 @@
 * Spec suite improvement
 ** integration
 *** DONE bcrypt_hash_spec.rb
-*** TODO enum_spec.rb
-*** TODO file_path_spec.rb
+*** DONE enum_spec.rb
+*** DONE file_path_spec.rb
 *** TODO flag_spec.rb
 *** TODO ip_address_spec.rb
 *** TODO json_spec.rb

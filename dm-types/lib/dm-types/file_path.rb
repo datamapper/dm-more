@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'pathname'
 
 module DataMapper
@@ -7,7 +8,7 @@ module DataMapper
       size 255
 
       def self.load(value, property)
-        if value.nil?
+        if value.blank?
           nil
         else
           Pathname.new(value)
@@ -15,7 +16,7 @@ module DataMapper
       end
 
       def self.dump(value, property)
-        return nil if value.nil?
+        return nil if value.blank?
         value.to_s
       end
 
