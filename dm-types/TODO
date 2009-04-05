@@ -8,7 +8,7 @@
 *** DONE flag_spec.rb
 *** DONE ip_address_spec.rb
 *** DONE json_spec.rb
-*** TODO slug_spec.rb
+*** DONE slug_spec.rb
 *** TODO uri_spec.rb
 *** TODO uuid_spec.rb
 *** DONE yaml_spec.rb
