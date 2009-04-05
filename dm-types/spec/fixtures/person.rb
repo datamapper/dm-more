@@ -19,6 +19,8 @@ module DataMapper
         property :name,       String
         property :positions,  ::DataMapper::Types::Json
         property :inventions, ::DataMapper::Types::Yaml
+
+        property :interests, ::DataMapper::Types::CommaSeparatedList
       end
 
       Person.auto_migrate!
