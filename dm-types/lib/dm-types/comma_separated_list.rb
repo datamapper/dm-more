@@ -12,17 +12,20 @@ module DataMapper
       def self.dump(value, property)
         if value.nil?
           nil
-        elsif value.is_a?(String)
-          v = value.split(",").
+        elsif value.kind_of?(Array)
+          super(value, property)
+        elsif value.kind_of?(String)
+          v = (value || "").split(",").
             compact.
             map { |i| i.downcase.strip }.
             reject { |i| i.blank? }.
             uniq
           super(v, property)
         else
-          raise ArgumentError.new("+value+ of a property of CommaSeparatedList type must be nil or a String")
+          raise ArgumentError, "+value+ of CommaSeparatedList must be a string, an array or nil, but given #{value.inspect}"
         end
-      end
-    end
-  end
-end
+      end # self.dump
+    end # CommaSeparatedList
+    
+  end # Types
+end # DataMapper

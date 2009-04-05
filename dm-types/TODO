@@ -26,16 +26,6 @@
 *** TODO Investigate if sharing of models across DM plugins makes sense
 
 * Ideas/prototypes of New types
-** Flat comma separated list (needs a good name)
-
-   Case: interests or tag lists in pretty much any asocial
-   application out there. Input: comma separated lists of words
-   or sentences, output: list with trailing and leading WS stripped
-   off
-
-   Probably needs to be based on YAML, would be a good example
-   of how types subclassing can be useful in the wild
-
 ** SHA1 hash
 
    Case: when you want to compute SHA1 of another property

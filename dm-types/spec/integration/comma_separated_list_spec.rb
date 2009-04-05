@@ -17,11 +17,40 @@ describe DataMapper::Types::Fixtures::Person do
         @model.reload
       end
 
-      it "has nil interests list" do
-        @model.interests.should be_nil
+      it "has no interests" do
+        @model.interests.should == nil
       end
     end
   end
+
+
+  describe "with no interests information" do
+    before :all do
+      @model.interests = []
+    end
+
+    describe "when dumped and loaded again" do
+      before :all do
+        @model.save.should be_true
+        @model.reload
+      end
+
+      it "has empty interests list" do
+        @model.interests.should == []
+      end
+    end
+  end
+
+
+  describe "with interests information given as a Hash" do
+    it "raises ArgumentError" do
+      lambda do
+        @model.interests = { :hash => "value" }
+        @model.save
+      end.should raise_error(ArgumentError, /must be a string, an array or nil/)
+    end
+  end
+
 
 
   describe "with a few items on the interests list" do
@@ -55,16 +84,6 @@ describe DataMapper::Types::Fixtures::Person do
       it "has duplicates removed" do
         @model.interests.select { |i| i == 'fire' }.size.should == 1
       end
-    end
-  end
-
-
-  describe "with interests information given as empty list" do
-    it "raises ArgumentError" do
-      lambda do
-        @model.interests = []
-        @model.save
-      end.should raise_error(ArgumentError, /must be nil or a String/)
     end
   end
 end
