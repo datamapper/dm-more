@@ -14,7 +14,6 @@ module DataMapper
         if value.nil?
           nil
         elsif value.is_a?(String)
-          #Iconv.new('UTF-8//TRANSLIT//IGNORE', 'UTF-8').iconv(value.gsub(/[^\w\s\-\—]/,'').gsub(/[^\w]|[\_]/,' ').split.join('-').downcase).to_s
           escape(value)
         else
           raise ArgumentError.new("+value+ must be nil or a String")
@@ -29,6 +28,7 @@ module DataMapper
         result.gsub!(/[ \-]+/i,      '-')  # No more than one of the separator in a row.
         result.gsub!(/^\-|\-$/i,      '')  # Remove leading/trailing separator.
         result.downcase!
+
         result
       end
 
