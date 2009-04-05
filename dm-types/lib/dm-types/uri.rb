@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'rubygems'
 
 gem 'addressable', '~>2.0.2'
@@ -7,7 +8,7 @@ module DataMapper
   module Types
     class URI < DataMapper::Type
       primitive String
-      size 255
+      size      65536
 
       def self.load(value, property)
         Addressable::URI.parse(value)
