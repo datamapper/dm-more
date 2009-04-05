@@ -1,37 +1,64 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe DataMapper::Types::Enum do
-  before(:all) do
-    class ::YamlTest
-      include DataMapper::Resource
+describe DataMapper::Types::Fixtures::Person do
+  before :all do
+    @model = DataMapper::Types::Fixtures::Person.new(:name => "")
+  end
 
-      property :id, Serial
-      property :yaml, Yaml
+  describe "with no inventions information" do
+    before :all do
+      @model.inventions = nil
     end
-    YamlTest.auto_migrate!
 
-    class ::SerializeMe
-      attr_accessor :name
+    describe "when dumped and loaded again" do
+      before :all do
+        @model.save.should be_true
+        @model.reload
+      end
+
+      it "has nil inventions list" do
+        @model.inventions.should be_nil
+      end
     end
   end
 
-  it "should work" do
-    obj = SerializeMe.new
-    obj.name = 'Hello!'
 
-    DataMapper.repository(:default) do
-      YamlTest.create(:yaml => [1, 2, 3])
-      YamlTest.create(:yaml => obj)
+  describe "with a few items on the inventions list" do
+    before :all do
+      @input = ['carbon telephone transmitter', 'light bulb', 'electric grid'].map do |name|
+        DataMapper::Types::Fixtures::Invention.new(name)
+      end
+      @model.inventions = @input
     end
 
-    tests = YamlTest.all
-    tests.first.yaml.should == [1, 2, 3]
-    tests.last.yaml.should be_kind_of(SerializeMe)
-    tests.last.yaml.name.should == 'Hello!'
+    describe "when dumped and loaded again" do
+      before :all do
+        @model.save.should be_true
+        @model.reload
+      end
+
+      it "loads inventions list to the state when it was dumped/persisted with keys being strings" do
+        @model.inventions.should == @input
+      end
+    end
   end
 
-  it 'should immediately typecast supplied values' do
-    YamlTest.new(:yaml => [1, 2, 3]).yaml.should == [1, 2, 3]
+
+  describe "with inventions information given as empty list" do
+    before :all do
+      @model.inventions = []
+    end
+
+    describe "when dumped and loaded again" do
+      before :all do
+        @model.save.should be_true
+        @model.reload
+      end
+
+      it "has empty inventions list" do
+        @model.inventions.should == []
+      end
+    end
   end
 end

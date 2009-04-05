@@ -16,8 +16,9 @@ module DataMapper
         property :id,       Serial
         property :password, BCryptHash
 
-        property :name,      String
-        property :positions, ::DataMapper::Types::Json
+        property :name,       String
+        property :positions,  ::DataMapper::Types::Json
+        property :inventions, ::DataMapper::Types::Yaml
       end
 
       Person.auto_migrate!
