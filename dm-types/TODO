@@ -7,11 +7,11 @@
 *** DONE file_path_spec.rb
 *** DONE flag_spec.rb
 *** DONE ip_address_spec.rb
-*** TODO json_spec.rb
+*** DONE json_spec.rb
 *** TODO slug_spec.rb
 *** TODO uri_spec.rb
 *** TODO uuid_spec.rb
-*** TODO yaml_spec.rb
+*** DONE yaml_spec.rb
 
     these need a fixture set like what new dm-validations gem has
     examples like it "should work" with foobar models won't be
