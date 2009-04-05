@@ -14,13 +14,16 @@ module DataMapper
         #
 
         property :id,               Serial
-        property :node_uuid,        String, :index => true
+        property :node_uuid,        UUID
         property :ip_address,       IPAddress
         property :cidr_subnet_bits, Integer
 
         #
         # API
         #
+
+        alias uuid  node_uuid
+        alias uuid= node_uuid=
 
         def runs_ipv6?
           self.ip_address.ipv6?

@@ -9,39 +9,103 @@ rescue LoadError
   puts "Skipping UUID tests, please do gem install uuidtools"
 end
 
-describe 'DataMapper::Types::UUID' do
+describe DataMapper::Types::Fixtures::NetworkNode do
   unless skip_tests
-    before(:all) do
-      class UUIDTest
-        include DataMapper::Resource
+    describe "with UUID set as UUID object" do
+      before :all do
+        @uuid_string = 'b0fc632e-d744-4821-afe3-4ea0701859ee'
+        @uuid        = UUID.parse(@uuid_string)
+        @model       = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
 
-        property :id, Serial
-        property :uuid, ::DataMapper::Types::UUID
+        @model.save.should be_true
       end
 
-      UUIDTest.auto_migrate!
+      describe "when reloaded" do
+        before :all do
+          @model.reload
+        end
+
+        it "has the same UUID string" do
+          @model.uuid.to_s.should == @uuid_string
+        end
+
+        it "returns UUID as an object" do
+          @model.uuid.should be_an_instance_of(UUID)
+        end
+      end
     end
 
-    it "should be settable as a uuid" do
-      u = UUIDTest.create(:uuid => UUID.parse('b0fc632e-d744-4821-afe3-4ea0701859ee'))
 
-      u.uuid.should be_kind_of(UUID)
-      u.uuid.to_s.should == 'b0fc632e-d744-4821-afe3-4ea0701859ee'
+    describe "with UUID set as a valid UUID string" do
+      before :all do
+        @uuid  = 'b0fc632e-d744-4821-afe3-4ea0701859ee'
+        @model = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+      end
+
+      describe "when reloaded" do
+        before :all do
+          @model.reload
+        end
+
+        it "has the same UUID string" do
+          @model.uuid.to_s.should == @uuid
+        end
+
+        it "returns UUID as an object" do
+          @model.uuid.should be_an_instance_of(UUID)
+        end
+      end
     end
 
-    it "should be settable as a string" do
-      u = UUIDTest.create(:uuid => 'b0fc632e-d744-4821-afe3-4ea0701859ee')
 
-      u.uuid.should be_kind_of(UUID)
-      u.uuid.to_s.should == 'b0fc632e-d744-4821-afe3-4ea0701859ee'
+    describe "with UUID set as invalid UUID string" do
+      before :all do
+        @uuid  = 'meh'
+        @operation = lambda do
+          DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+        end
+      end
+
+      describe "when assigned UUID" do
+        it "raises ArgumentError" do
+          @operation.should raise_error(ArgumentError, /Invalid UUID format/)
+        end
+      end
     end
 
-    it "should be allowed to be null" do
-      u = UUIDTest.create()
 
-      u.uuid.should be_nil
+    describe "with UUID set as a blank string" do
+      before :all do
+        @uuid  = ''
+        @operation = lambda do
+          DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+        end
+      end
+
+      describe "when assigned UUID" do
+        it "raises ArgumentError" do
+          @operation.should raise_error(ArgumentError, /Invalid UUID format/)
+        end
+      end
     end
-  else
-    it 'requires the uuidtools gem to test'
+
+
+    describe "with missing UUID" do
+      before :all do
+        @uuid  = nil
+        @model = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+      end
+
+      describe "when reloaded" do
+        before :all do
+          @model.reload
+        end
+
+        it "has no UUID" do
+          @model.uuid.should be_nil
+        end
+      end
+    end
+
   end
 end

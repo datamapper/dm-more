@@ -10,13 +10,20 @@
 *** DONE json_spec.rb
 *** DONE slug_spec.rb
 *** DONE uri_spec.rb
-*** TODO uuid_spec.rb
+*** DONE uuid_spec.rb
 *** DONE yaml_spec.rb
 
-    these need a fixture set like what new dm-validations gem has
-    examples like it "should work" with foobar models won't be
-    tolerated since they led to multiple bugs in 0.9.x that
-    we discovered the hard way
+    MK reworked spec suite to the point we actually
+    can trust it
+
+** fixtures
+
+   It should be perfectly possible to combine fixture
+   models from dm-validations and dm-types, and publish
+   a little gem that all DM plugins developers can use
+   as a basis
+
+*** TODO Investigate if sharing of models across DM plugins makes sense
 
 * Ideas/prototypes of New types
 ** Flat comma separated list (needs a good name)
