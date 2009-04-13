@@ -21,7 +21,7 @@ module SQL
     end
 
     def to_sql
-      "#{@adapter.create_table_statement(quoted_table_name)} (#{@columns.map{ |c| c.to_sql }.join(', ')})"
+      "#{@adapter.create_table_statement_prefix(quoted_table_name)} (#{@columns.map{ |c| c.to_sql }.join(', ')})"
     end
 
     # A helper for using the native NOW() SQL function in a default

@@ -17,7 +17,7 @@ module SQL
       # do nothing, sqlite will automatically create the database file
     end
 
-    def create_table_statement(quoted_table_name)
+    def create_table_statement_prefix(quoted_table_name)
       "CREATE TABLE #{quoted_table_name}"
     end
 

@@ -32,7 +32,7 @@ module SQL
       statement
     end
 
-    def create_table_statement(quoted_table_name)
+    def create_table_statement_prefix(quoted_table_name)
       "CREATE TABLE #{quoted_table_name}"
     end
 

@@ -55,7 +55,7 @@ describe 'SQL module' do
     end
 
     it 'should output an SQL CREATE statement to build itself' do
-      @adapter.should_receive(:create_table_statement).with("'users'").and_return(%{CREATE TABLE 'users'})
+      @adapter.should_receive(:create_table_statement_prefix).with("'users'").and_return(%{CREATE TABLE 'users'})
       @tc.to_sql.should ==
         %{CREATE TABLE 'users' ()}
     end
