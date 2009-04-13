@@ -1,6 +1,6 @@
 require 'rubygems'
 
-gem 'dm-core', '0.9.11'
+gem 'dm-core', '0.9.12'
 require 'dm-core'
 
 gem 'randexp', '~>0.1.4'

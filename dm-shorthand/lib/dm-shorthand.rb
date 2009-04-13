@@ -1,4 +1,4 @@
-gem 'dm-core', '0.9.11'
+gem 'dm-core', '0.9.12'
 require 'dm-core'
 
 module DataMapper
