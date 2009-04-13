@@ -25,15 +25,6 @@ module SQL
       "CREATE TABLE #{quoted_table_name} ENGINE = InnoDB CHARACTER SET #{character_set} COLLATE #{collation}"
     end
 
-    # TODO: move to dm-more/dm-migrations
-    def property_schema_statement(schema)
-      if supports_serial? && schema[:serial]
-        statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
-      else
-        super
-      end
-    end
-
     class Table
       def initialize(adapter, table_name)
         @columns = []
