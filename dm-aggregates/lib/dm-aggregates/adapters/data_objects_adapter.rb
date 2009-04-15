@@ -3,30 +3,13 @@ module DataMapper
     class DataObjectsAdapter < AbstractAdapter
 
       def aggregate(query)
-        # with_reader(select_statement(query), query.bind_values) do |reader|
-        #   results = []
-        #
-        #   while(reader.next!) do
-        #     row = query.fields.zip(reader.values).map do |field,value|
-        #       if field.respond_to?(:operator)
-        #         send(field.operator, field.target, value)
-        #       else
-        #         field.typecast(value)
-        #       end
-        #     end
-        #
-        #     results << (query.fields.size > 1 ? row : row[0])
-        #   end
-        #
-        #   results
-        # end
-
         with_connection do |connection|
-          command = connection.create_command(select_statement(query))
+          statement, bind_values = select_statement(query)
+          command                = connection.create_command(statement)
           command.set_types(query.fields.map { |p| p.primitive })
 
           begin
-            reader = command.execute_reader(*query.bind_values)
+            reader = command.execute_reader(*bind_values)
 
             model   = query.model
             results = []
