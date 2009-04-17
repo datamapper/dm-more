@@ -2,17 +2,11 @@ namespace :db do
 
   desc "Perform automigration"
   task :automigrate => :environment do
-    FileList["app/models/**/*.rb"].each do |model|
-      load model
-    end
     ::DataMapper.auto_migrate!
   end
 
   desc "Perform non destructive automigration"
   task :autoupgrade => :environment do
-    FileList["app/models/**/*.rb"].each do |model|
-      load model
-    end
     ::DataMapper.auto_upgrade!
   end
 
