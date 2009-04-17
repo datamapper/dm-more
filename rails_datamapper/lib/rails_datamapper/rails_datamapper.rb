@@ -1,5 +1,5 @@
 def config_file()
-  Rails.root + "/config/database.yml"
+  RAILS_ROOT + "/config/database.yml"
 end
 
 def create_connection()

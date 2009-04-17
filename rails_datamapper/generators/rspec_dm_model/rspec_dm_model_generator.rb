@@ -1,4 +1,5 @@
 require 'rails_generator/generators/components/model/model_generator'
+require 'active_record'
 
 class RspecDmModelGenerator <ModelGenerator
 
