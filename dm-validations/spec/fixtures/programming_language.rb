@@ -21,7 +21,7 @@ module DataMapper
         # Attributes
         #
 
-        attr_accessor :name, :allows_system_calls, :allows_manual_memory_management, :allows_optional_parentheses, 
+        attr_accessor :name, :allows_system_calls, :allows_manual_memory_management, :allows_optional_parentheses,
           :allows_operator_overload, :approved_by_linus, :compiler_excels_at_utilizing_cpu_cache,
           :is_very_high_level, :does_not_require_explicit_return_keyword, :standard_library_support_parallel_programming_out_of_the_box
 
@@ -57,9 +57,9 @@ module DataMapper
             true
           else
             [false, "may not be so good for domain specific languages"]
-          end         
+          end
         end
-        
+
         def ensure_appropriate_for_cpu_intensive_tasks
           if compiler_excels_at_utilizing_cpu_cache && allows_manual_memory_management
             true
@@ -67,10 +67,10 @@ module DataMapper
             [false, "may not be so good for CPU intensive tasks"]
           end
         end
-        
+
         def ensure_approved_by_linus_himself
           if name.downcase == "c++"
-            [false, "Quite frankly, even if the choice of C were to do *nothing* 
+            [false, "Quite frankly, even if the choice of C were to do *nothing*
               but keep the C++ programmers out, that in itself would be
               a huge reason to use C."]
           else

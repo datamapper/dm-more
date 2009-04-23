@@ -9,7 +9,7 @@ module DataMapper
         #
 
         include ::DataMapper::Resource
-        
+
         #
         # Properties
         #

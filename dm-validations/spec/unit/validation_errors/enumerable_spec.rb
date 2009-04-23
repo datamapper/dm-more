@@ -32,5 +32,5 @@ describe DataMapper::Validate::ValidationErrors do
       projection.should include(2)
       projection.should include(1)
     end
-  end  
+  end
 end

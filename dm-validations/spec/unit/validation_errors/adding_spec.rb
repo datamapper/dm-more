@@ -51,5 +51,5 @@ describe DataMapper::Validate::ValidationErrors do
     it "DOES NOT allow duplication" do
       @model.on(:property).should == ["can't be valid, no way"]
     end
-  end  
+  end
 end

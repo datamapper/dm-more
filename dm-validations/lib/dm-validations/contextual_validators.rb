@@ -69,7 +69,7 @@ module DataMapper
           result = false unless validator.call(target)
         end
 
-        
+
         result
       end
 

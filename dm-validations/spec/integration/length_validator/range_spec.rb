@@ -7,7 +7,7 @@ require __dir__ + 'spec_helper'
 
 
 describe DataMapper::Validate::Fixtures::EthernetFrame do
-  before :all do    
+  before :all do
     @model = DataMapper::Validate::Fixtures::EthernetFrame.valid_instance
     @model.link_support_fragmentation = false
   end

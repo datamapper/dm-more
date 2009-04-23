@@ -108,7 +108,7 @@ describe DataMapper::Types::Json, ".typecast" do
     end
   end
 
-  
+
   describe "when given instance of a custom class" do
     before :all do
       @input      = SerializeMe.new

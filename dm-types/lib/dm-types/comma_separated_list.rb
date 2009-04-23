@@ -26,6 +26,6 @@ module DataMapper
         end
       end # self.dump
     end # CommaSeparatedList
-    
+
   end # Types
 end # DataMapper

@@ -27,7 +27,7 @@ describe "A model with an Integer property" do
     end
 
     it "has a meaningful default error message" do
-      @model.errors.on(:id).should include('Id must be an integer')      
+      @model.errors.on(:id).should include('Id must be an integer')
     end
   end
 
