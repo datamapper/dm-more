@@ -6,53 +6,30 @@ require 'pathname'
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-# Require plugin-files
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'data_objects_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'postgres_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'mysql_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'delete_constraint'
+dir = Pathname(__FILE__).dirname.expand_path
 
-module DataMapper
-  module Associations
-    class RelationshipChain
-      include Extlib::Hook
-      include DataMapper::Constraints::DeleteConstraint
-
-      attr_reader :delete_constraint
-      OPTIONS << :constraint
-
-      # initialize is a private method in Relationship
-      # and private methods can not be "advised" (hooked into)
-      # in extlib.
-      with_changed_method_visibility(:initialize, :private, :public) do
-        before :initialize, :add_delete_constraint_option
-      end
-    end
-  end
-end
+require dir / 'dm-constraints' / 'delete_constraint'
+require dir / 'dm-constraints' / 'migrations'
 
 module DataMapper
   module Associations
     class Relationship
       include Extlib::Hook
-      include DataMapper::Constraints::DeleteConstraint
+      include Constraints::DeleteConstraint
 
-      attr_reader :delete_constraint
+      attr_reader :constraint
       OPTIONS << :constraint
 
       # initialize is a private method in Relationship
       # and private methods can not be "advised" (hooked into)
       # in extlib.
       with_changed_method_visibility(:initialize, :private, :public) do
-        before :initialize, :add_delete_constraint_option
+        before :initialize, :add_constraint_option
       end
     end
   end
-end
 
-module DataMapper
   module Constraints
-
     include DeleteConstraint
 
     module ClassMethods
@@ -65,28 +42,27 @@ module DataMapper
     #
     def self.included(model)
       model.extend(ClassMethods)
-      model.class_eval do
+      model.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         before_class_method :has, :check_delete_constraint_type
-        if method_defined?(:destroy)
+
+        if instance_methods.any? { |m| m.to_sym == :destroy }
           before :destroy, :check_delete_constraints
         end
-      end
+      RUBY
     end
-
   end
 
-  class AutoMigrator
-    include Extlib::Hook
-    include DataMapper::Constraints::DataObjectsAdapter::Migration
-  end
-
-  module Adapters
-    if defined?(MysqlAdapter)
-      MysqlAdapter.send :include, DataMapper::Constraints::MysqlAdapter::SQL
+  module Migrations
+    module SingletonMethods
+      include Constraints::Migrations::SingletonMethods
     end
 
-    if defined?(PostgresAdapter)
-      PostgresAdapter.send :include, DataMapper::Constraints::PostgresAdapter::SQL
+    module DataObjectsAdapter
+      include Constraints::Migrations::DataObjectsAdapter
+    end
+
+    module MysqlAdapter
+      include Constraints::Migrations::MysqlAdapter
     end
   end
 end
