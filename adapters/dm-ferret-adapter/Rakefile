@@ -18,7 +18,7 @@ GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TO
 #               :executables => %w[ ferret ], :bindir => 'bin' }  # FIXME: should this be enabled?
 
 PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/adapters/#{GEM_NAME}"
+PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/adapters/#{GEM_NAME}"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'Ferret Adapter for DataMapper'
 
 [ ROOT, ROOT.parent.parent ].each do |dir|

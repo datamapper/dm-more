@@ -56,7 +56,7 @@ GEM_CLEAN = %w[ **/.DS_Store} *.db doc/rdoc .config **/{coverage,log,pkg} cache 
 GEM_EXTRAS = { :has_rdoc => false }
 
 PROJECT_NAME = 'datamapper'
-PROJECT_URL  = 'http://github.com/sam/dm-more/tree/master'
+PROJECT_URL  = 'http://github.com/datamapper/dm-more/tree/master'
 PROJECT_DESCRIPTION = 'Faster, Better, Simpler.'
 PROJECT_SUMMARY = 'An Object/Relational Mapper for Ruby'
 
