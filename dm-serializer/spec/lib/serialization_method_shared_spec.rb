@@ -33,16 +33,18 @@ share_examples_for 'A serialization method that also serializes core classes' do
   it 'serializes an array of collections' do
     query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
+    keys = %w[ id composite name breed ]
+
     resources = [
-      [  1,  2, 'Betsy', 'Jersey'   ],
-      [ 89, 34, 'Berta', 'Guernsey' ],
+      keys.zip([  1,  2, 'Betsy', 'Jersey'   ]).to_hash,
+      keys.zip([ 89, 34, 'Berta', 'Guernsey' ]).to_hash,
     ]
 
-    collection = DataMapper::Collection.new(query, resources.map { |r| query.model.load(r, query) })
+    collection = DataMapper::Collection.new(query, query.model.load(resources, query))
 
     result = @harness.test(collection)
-    result[0].values_at("id", "composite", "name", "breed").should == resources[0]
-    result[1].values_at("id", "composite", "name", "breed").should == resources[1]
+    result[0].values_at(*keys).should == resources[0].values_at(*keys)
+    result[1].values_at(*keys).should == resources[1].values_at(*keys)
   end
 end
 
@@ -167,16 +169,18 @@ share_examples_for 'A serialization method' do
     it 'should serialize a collection' do
       query = DataMapper::Query.new(DataMapper::repository(:default), Cow)
 
+      keys = %w[ id composite name breed ]
+
       resources = [
-        [  1,  2, 'Betsy', 'Jersey'   ],
-        [ 10, 20, 'Berta', 'Guernsey' ],
+        keys.zip([  1,  2, 'Betsy', 'Jersey'   ]).to_hash,
+        keys.zip([ 10, 20, 'Berta', 'Guernsey' ]).to_hash,
       ]
 
-      collection = DataMapper::Collection.new(query, resources.map { |r| query.model.load(r, query) })
+      collection = DataMapper::Collection.new(query, query.model.load(resources, query))
 
       result = @harness.test(collection)
-      result[0].values_at("id", "composite", "name", "breed").should == resources[0]
-      result[1].values_at("id", "composite", "name", "breed").should == resources[1]
+      result[0].values_at(*keys).should == resources[0].values_at(*keys)
+      result[1].values_at(*keys).should == resources[1].values_at(*keys)
     end
 
     it 'should serialize an empty collection' do

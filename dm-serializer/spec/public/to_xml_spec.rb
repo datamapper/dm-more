@@ -62,7 +62,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
     it "should not include the XML prologue, so that the result can be embedded in other XML documents" do
       planet = Planet.new
       xml = planet.to_xml(:element_name => "aplanet")
-      xml.starts_with?("<?xml").should == false
+      xml.should_not match(/\A<?xml/)
     end
 
     describe ':element_name option for Resource' do
@@ -92,14 +92,16 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
       end
 
       it 'should be used as the root node name by #to_xml' do
-        @collection = DataMapper::Collection.new(@query, [ @model.load([1], @query) ])
+        resources = @model.load([ { 'id' => 1 } ], @query)
+        @collection = DataMapper::Collection.new(@query, resources)
 
         xml = @collection.to_xml(:collection_element_name => "somanycats")
         REXML::Document.new(xml).elements[1].name.should == "somanycats"
       end
 
       it 'should respect :element_name for collection elements' do
-        @collection = DataMapper::Collection.new(@query, [ @model.load([1], @query) ])
+        resources = @model.load([ { 'id' => 1 } ], @query)
+        @collection = DataMapper::Collection.new(@query, resources)
 
         xml = @collection.to_xml(:collection_element_name => "somanycats", :element_name => 'cat')
         REXML::Document.new(xml).elements[1].elements[1].name.should == "cat"
