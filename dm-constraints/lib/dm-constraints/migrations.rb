@@ -20,10 +20,10 @@ module DataMapper
             next unless model.storage_exists?(repository_name)
 
             adapter = DataMapper.repository(repository_name).adapter
-            next unless adapter.respond_to?(:detroy_relationship_constraint)
+            next unless adapter.respond_to?(:destroy_relationship_constraint)
 
             model.relationships(repository_name).each_value do |relationship|
-              adapter.detroy_relationship_constraint(relationship)
+              adapter.destroy_relationship_constraint(relationship)
             end
           end
 
@@ -128,7 +128,7 @@ module DataMapper
         # @return [Boolean]
         #
         # @api semipublic
-        def detroy_relationship_constraint(relationship)
+        def destroy_relationship_constraint(relationship)
           return false unless valid_relationship_for_constraint?(relationship)
 
           source_model = relationship.source_model
