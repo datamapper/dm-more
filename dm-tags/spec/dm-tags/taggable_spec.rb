@@ -122,6 +122,14 @@ describe "Taggable" do
     TaggedModel.taggable?.should be_true
   end
 
+  it 'should return an empty list if tag is not present (should not continue on nil tag)' do
+    taggable = DefaultTaggedModel.new
+    taggable.tag_list = 'tag1, tag2, tag3'
+    taggable.save
+
+    DefaultTaggedModel.tagged_with('tag5').should == []
+  end
+
   it "should have an instance method #taggable? which returns the same as the instance's class would" do
     UntaggedModel.new.taggable?.should == UntaggedModel.taggable?
     UntaggedModel.new.taggable?.should be_false
