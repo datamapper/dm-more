@@ -94,7 +94,7 @@ module DataMapper
       #
       # @api semi-public
       def check_delete_constraints
-        relationships.each do |relationship_name, relationship|
+        relationships.each_value do |relationship|
           next if relationship.kind_of?(Associations::ManyToOne::Relationship)
           next unless constraint_type = relationship.constraint
           next unless association = relationship.get(self)
