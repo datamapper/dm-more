@@ -88,18 +88,7 @@ module DataMapper
           constraint_name = constraint_name(source_table, relationship.name)
           return false if constraint_exists?(source_table, constraint_name)
 
-          # TODO: add a method to dm-core Reltionship to identify the back reference
-          reverse_relationship = relationship.target_model.relationships(name).values.detect do |reverse|
-            reverse.target_repository_name == name         &&
-            reverse.target_model           == source_model &&
-            reverse.target_key             == source_key   &&
-            reverse.query.empty?
-
-            # TODO: handle case where @query is not empty, but scoped the same as the target model.
-            # that case should be treated the same as the Query being empty
-          end
-
-          constraint_type = case reverse_relationship && reverse_relationship.constraint || :protect
+          constraint_type = case relationship.inverse && relationship.inverse.constraint || :protect
             when :protect            then 'NO ACTION'
             when :destroy, :destroy! then 'CASCADE'
             when :set_nil            then 'SET NULL'
