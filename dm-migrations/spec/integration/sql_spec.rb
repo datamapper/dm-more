@@ -50,7 +50,7 @@ ADAPTERS.each do |adapter|
       end
 
       it "should quote the table name for the adapter" do
-        @creator.quoted_table_name.should == (adapter == :mysql ? '`people`' : '"people"')
+        @creator.quoted_table_name.should == '"people"'
       end
 
       it "should allow for custom options" do
@@ -67,7 +67,7 @@ ADAPTERS.each do |adapter|
       when :mysql
         it "should create an InnoDB database for MySQL" do
           #can't get an exact == comparison here because character set and collation may differ per connection
-          @creator.to_sql.should match(/^CREATE TABLE `people` ENGINE = InnoDB CHARACTER SET \w+ COLLATE \w+ \(`id` serial PRIMARY KEY, `name` varchar\(50\) NOT NULL, `long_string` VARCHAR\(200\)\)$/)
+          @creator.to_sql.should match(/^CREATE TABLE "people" ENGINE = InnoDB CHARACTER SET \w+ COLLATE \w+ \("id" serial PRIMARY KEY, "name" varchar\(50\) NOT NULL, "long_string" VARCHAR\(200\)\)\z/)
         end
       when :postgres
         it "should output a CREATE TABLE statement when sent #to_sql" do
