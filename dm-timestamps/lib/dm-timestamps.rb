@@ -23,7 +23,7 @@ module DataMapper
       return unless dirty?
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
         if property = properties[name]
-          property.set(self, proc.call(self, property)) unless attribute_dirty?(name)
+          property.set(self, proc.call(self, property))
         end
       end
     end
