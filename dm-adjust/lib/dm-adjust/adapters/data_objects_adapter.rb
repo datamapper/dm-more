@@ -26,11 +26,11 @@ module DataMapper
         private
 
         def adjust_statement(properties, query)
-          where_statement, bind_values = where_statement(query.conditions)
+          conditions_statement, bind_values = conditions_statement(query.conditions)
 
           statement = "UPDATE #{quote_name(query.model.storage_name(name))}"
           statement << " SET #{set_adjustment_statement(properties)}"
-          statement << " WHERE #{where_statement}" unless where_statement.blank?
+          statement << " WHERE #{conditions_statement}" unless conditions_statement.blank?
 
           return statement, bind_values
         end

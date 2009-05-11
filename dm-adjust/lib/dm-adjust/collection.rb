@@ -26,14 +26,18 @@ module DataMapper
       end
 
       if loaded?
-        each { |r| attributes.each_pair{|a,v| r.attribute_set(a,r.send(a) + v) }; r.save }
+        each { |r| attributes.each_pair { |a, v| r.attribute_set(a, r.send(a) + v) }; r.save }
         return true
       end
 
       # if none of the attributes that are adjusted is part of the collection-query
       # there is no need to load the collection (it will not change after adjustment)
       # if the query contains a raw sql-string, we cannot (truly) know, and must load.
-      altered = query.conditions.detect{|c| adjust_attributes.include?(c[1]) || c[0] == :raw }
+      unless altered = query.raw?
+        query.conditions.each do |comparison|
+          altered = true
+        end
+      end
 
       identity_map   = repository.identity_map(model)
       key_properties = model.key(repository.name)
@@ -47,20 +51,25 @@ module DataMapper
         end
       end
 
-      repository.adjust(adjust_attributes,scoped_query({}))
+      repository.adjust(adjust_attributes, scoped_query({}))
 
       # Reload affected objects in identity-map. if collection was affected, dont use the scope.
-      (altered ? model : self).all(reload_query).reload(:fields => attributes.keys) if reload_query && reload_query.any?
+      if reload_query && reload_query.any?
+        (altered ? model : self).all(reload_query).reload(:fields => attributes.keys)
+      end
+
       # if preload was set to false, and collection was affected by updates,
       # something is now officially borked. We'll try the best we can (still many cases this is borked for)
-      query.conditions.each do |c|
-        if adjustment = adjust_attributes[c[1]]
-          case c[2]
-            when Numeric then c[2] += adjustment
-            when Range   then c[2] = (c[2].first+adjustment)..(c[2].last+adjustment)
+      if altered
+        query.conditions.each do |comparison|
+          next unless adjustment = adjust_attributes[comparison.property]
+
+          case value = comparison.value
+            when Numeric then comparison.value += adjustment
+            when Range   then comparison.value = (value.first + adjustment)..(value.last + adjustment)
           end
         end
-      end if altered
+      end
 
       true
     end
