@@ -1,3 +1,4 @@
+\.*
 test_log
 pkg
 pkg/*
@@ -16,7 +17,6 @@ coverage
 lib/dm-more.rb
 *.db
 nbproject
-.DS_Store
 rspec_report.html
 *.swp
 _Yardoc
