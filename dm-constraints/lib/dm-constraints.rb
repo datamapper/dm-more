@@ -1,16 +1,15 @@
-# Needed to import datamapper and other gems
 require 'rubygems'
 require 'pathname'
 
-# Add all external dependencies for the plugin here
-gem 'dm-core', '0.9.12'
-require 'dm-core'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-constraints'
 
-# Require plugin-files
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'data_objects_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'postgres_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'mysql_adapter'
-require Pathname(__FILE__).dirname.expand_path / 'dm-constraints' / 'delete_constraint'
+require dir / 'data_objects_adapter'
+require dir / 'delete_constraint'
+require dir / 'postgres_adapter'
+require dir / 'mysql_adapter'
+require dir / 'version'
+
+gem 'dm-core', DataMapper::Constraints::VERSION
 
 module DataMapper
   module Associations

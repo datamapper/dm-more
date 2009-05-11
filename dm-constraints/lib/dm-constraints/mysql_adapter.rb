@@ -4,6 +4,8 @@ module DataMapper
       module SQL
         include DataMapper::Constraints::DataObjectsAdapter::SQL
 
+        IDENTIFIER_MAX_LENGTH = 64
+
         private
 
         ##

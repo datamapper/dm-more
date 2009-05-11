@@ -2,6 +2,7 @@ module DataMapper
   module Constraints
     module DataObjectsAdapter
       module SQL
+        IDENTIFIER_MAX_LENGTH = 128
 
         ##
         # generates all foreign key create constraint statements for valid relationships
@@ -141,7 +142,8 @@ module DataMapper
         #
         # @api private
         def constraint_name(table_name, relationship_name)
-          "#{table_name}_#{relationship_name}_fk"
+          identifier = "#{table_name}_#{relationship_name}"[0, self.class::IDENTIFIER_MAX_LENGTH - 3]
+          "#{identifier}_fk"
         end
 
         ##
