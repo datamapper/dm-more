@@ -6,20 +6,24 @@ require 'spec'
 
 gem 'dm-core', '0.10.0'
 require 'dm-core'
-require 'dm-core/core_ext/symbol'
+
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+# use local dm-validations if running from dm-more directly
+lib = ROOT.parent.join('dm-validations', 'lib').expand_path
+$LOAD_PATH.unshift(lib) if lib.directory?
 
 # TODO: autovalidation hooks are needed badly,
 #       otherwise plugin devs will have to abuse
 #       alising and load order even further and it kinda makes
 #       me sad -- MK
-gem 'dm-validations', '0.10.0'
 require 'dm-validations'
 
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-types'
+require ROOT + 'lib/dm-types'
 
-ENV["SQLITE3_SPEC_URI"]   ||= 'sqlite3::memory:'
-ENV["MYSQL_SPEC_URI"]     ||= 'mysql://localhost/dm_core_test'
-ENV["POSTGRES_SPEC_URI"]  ||= 'postgres://postgres@localhost/dm_more_test'
+ENV['SQLITE3_SPEC_URI']   ||= 'sqlite3::memory:'
+ENV['MYSQL_SPEC_URI']     ||= 'mysql://localhost/dm_core_test'
+ENV['POSTGRES_SPEC_URI']  ||= 'postgres://postgres@localhost/dm_more_test'
 
 # DataMapper::Logger.new(STDOUT, :debug)
 
@@ -40,4 +44,4 @@ end
 ENV['ADAPTER'] ||= 'sqlite3'
 
 setup_adapter(:default)
-Dir[Pathname(__FILE__).dirname.to_s + "/fixtures/**/*.rb"].each { |rb| require(rb) }
+Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require(rb) }
