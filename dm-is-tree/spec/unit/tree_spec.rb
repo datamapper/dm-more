@@ -61,34 +61,26 @@ describe DataMapper::Is::Tree do
 
     it "should set the model from the current class" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree
-        Category.relationships[:parent].options[:model].should == Category.name
-      end
+      Category.is :tree
+      Category.relationships[:parent].child_model.should == Category
     end
 
     it "should use the default child_key of :parent_id if none is supplied in the options" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree
-        Category.relationships[:parent].options[:child_key].should == Array(:parent_id)
-      end
+      Category.is :tree
+      Category.relationships[:parent].options[:child_key].should == [ :parent_id ]
     end
 
     it "should use the child_key from the options if it is supplied" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree, :child_key => :other_id
-        Category.relationships[:parent].options[:child_key].should == Array(:other_id)
-      end
+      Category.is :tree, :child_key => :other_id
+      Category.relationships[:parent].options[:child_key].should == [ :other_id ]
     end
 
     it "should not set any order" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree, :order => :name
-        Category.relationships[:parent].options.should_not have_key(:order)
-      end
+      Category.is :tree, :order => :name
+      Category.relationships[:parent].options.should_not have_key(:order)
     end
 
   end
@@ -97,42 +89,32 @@ describe DataMapper::Is::Tree do
 
     it "should set the model from the current class" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree
-        Category.relationships[:children].options[:model].should == Category.name
-      end
+      Category.is :tree
+      Category.relationships[:children].child_model.should == Category
     end
 
     it "should use the default child_key of :parent_id if none is supplied in the options" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree
-        Category.relationships[:children].options[:child_key].should == Array(:parent_id)
-      end
+      Category.is :tree
+      Category.relationships[:children].options[:child_key].should == [ :parent_id ]
     end
 
     it "should use the child_key from the options if it is supplied" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree, :child_key => :other_id
-        Category.relationships[:children].options[:child_key].should == Array(:other_id)
-      end
+      Category.is :tree, :child_key => :other_id
+      Category.relationships[:children].options[:child_key].should == [ :other_id ]
     end
 
     it "should not set any order if none is supplied in the options" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree
-        Category.relationships[:children].options.should_not have_key(:order)
-      end
+      Category.is :tree
+      Category.relationships[:children].options.should_not have_key(:order)
     end
 
     it "should use the order from the options if it is supplied" do
       # Internals of relationships has changed
-      pending do
-        Category.is :tree, :order => :name
-        Category.relationships[:children].options[:order].should == Array(:name)
-      end
+      Category.is :tree, :order => :name
+      Category.relationships[:children].options[:order].should == [ :name ]
     end
 
   end
