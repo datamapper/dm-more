@@ -88,16 +88,13 @@ module DataMapper
           constraint_name = constraint_name(source_table, relationship.name)
           return false if constraint_exists?(source_table, constraint_name)
 
-          constraint_type = case relationship.inverse && relationship.inverse.constraint || :protect
+          constraint_type = case relationship.inverse.constraint
             when :protect            then 'NO ACTION'
             when :destroy, :destroy! then 'CASCADE'
             when :set_nil            then 'SET NULL'
-            when :skip               then nil
           end
 
           return false if constraint_type.nil?
-
-          repository = DataMapper.repository(name)
 
           storage_name           = relationship.source_model.storage_name(name)
           reference_storage_name = relationship.target_model.storage_name(name)

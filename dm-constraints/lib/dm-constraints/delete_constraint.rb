@@ -25,19 +25,20 @@ module DataMapper
         def check_delete_constraint_type(cardinality, name, options = {})
           return unless options.key?(:constraint)
 
-          constraint_type = options[:constraint]
+          constraint = options[:constraint]
 
-          unless CONSTRAINT_OPTIONS.include?(constraint_type)
+          unless CONSTRAINT_OPTIONS.include?(constraint)
             raise ArgumentError, ":constraint option must be one of #{CONSTRAINT_OPTIONS.to_a.join(', ')}"
           end
 
-          if constraint_type == :set_nil && options.key?(:through)
+          # XXX: is any constraint valid with a :through relationship?
+          if constraint == :set_nil && options.key?(:through)
             raise ArgumentError, 'Constraint type :set_nil is not valid for relationships using :through'
           end
 
           min, max = extract_min_max(cardinality)
 
-          if max == 1 && constraint_type == :destroy!
+          if max == 1 && constraint == :destroy!
             raise ArgumentError, 'Constraint type :destroy! is not valid for one-to-one relationships'
           end
         end
@@ -71,14 +72,11 @@ module DataMapper
       #
       # @param params [*ARGS] Arguments passed to Relationship#initialize or RelationshipChain#initialize
       #
-      # @notes This takes *params because it runs before the initializer for Relationships and Many to Many Relationships
-      #   which have different method signatures
-      #
       # @return [nil]
       #
       # @api semi-public
       def add_constraint_option(name, child_model, parent_model, options = {})
-        @constraint = options.delete(:constraint) || :protect
+        @constraint = options.fetch(:constraint, :protect) || :skip
       end
 
       ##
@@ -96,18 +94,15 @@ module DataMapper
       def check_delete_constraints
         relationships.each_value do |relationship|
           next if relationship.kind_of?(Associations::ManyToOne::Relationship)
-          next unless constraint_type = relationship.constraint
           next unless association = relationship.get(self)
 
-          case constraint_type
+          case constraint = relationship.constraint
             when :protect
               throw(:halt, false) if Array(association).any?
             when :destroy, :destroy!
-              association.send(constraint_type)
+              association.send(constraint)
             when :set_nil
-              # TODO: expose a method called orphan in the relationships
-              # that orphans a resource from an association
-              Array(association).each { |r| relationship.target_key.set(r, []); r.save }
+              Array(association).each { |r| relationship.inverse.set(r, nil); r.save }
             when :skip
               # do nothing
           end

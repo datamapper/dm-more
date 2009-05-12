@@ -1,12 +1,13 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'dm-core', '0.10.0'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-constraints'
 
-dir = Pathname(__FILE__).dirname.expand_path
+require dir / 'delete_constraint'
+require dir / 'migrations'
+require dir / 'version'
 
-require dir / 'dm-constraints' / 'delete_constraint'
-require dir / 'dm-constraints' / 'migrations'
+gem 'dm-core', DataMapper::Constraints::VERSION
 
 module DataMapper
   module Associations
@@ -14,7 +15,6 @@ module DataMapper
       include Extlib::Hook
       include Constraints::DeleteConstraint
 
-      attr_reader :constraint
       OPTIONS << :constraint
 
       # initialize is a private method in Relationship
@@ -22,6 +22,18 @@ module DataMapper
       # in extlib.
       with_changed_method_visibility(:initialize, :private, :public) do
         before :initialize, :add_constraint_option
+      end
+    end
+
+    module OneToMany
+      class Relationship
+        attr_reader :constraint
+      end
+    end
+
+    module ManyToOne
+      class Relationship
+        attr_reader :constraint
       end
     end
   end
