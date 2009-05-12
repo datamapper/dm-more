@@ -214,7 +214,8 @@ module DataMapper
           #
           # @api private
           def constraint_name(storage_name, relationship_name)
-            "#{storage_name}_#{relationship_name}_fk"
+            identifier = "#{storage_name}_#{relationship_name}"[0, self.class::IDENTIFIER_MAX_LENGTH - 3]
+            "#{identifier}_fk"
           end
         end
 
