@@ -4,7 +4,7 @@ require 'rubygems'
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-gem 'rspec', '~>1.1.12'
+gem 'rspec', '>1.1.12'
 require 'spec'
 
 ROOT = Pathname(__FILE__).dirname.parent.expand_path
