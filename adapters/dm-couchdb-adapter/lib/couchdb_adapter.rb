@@ -2,9 +2,9 @@ require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'couchdb_adapter/version'
 
-gem 'dm-core', '0.10.0'
-require 'dm-core'
+gem 'dm-core', DataMapper::CouchDBAdapter::VERSION
 
+# FIXME: remove this dependency
 gem 'data_objects', '~>0.9.12'
 require 'data_objects'
 
@@ -54,7 +54,7 @@ module DataMapper
       #
       # Raises an exception if the CouchDB database name is invalid.
       def db_name
-        result = @uri.path.scan(/^\/?([-_+%()$a-z0-9]+?)\/?$/).flatten[0]
+        result = @options[:path].scan(/^\/?([-_+%()$a-z0-9]+?)\/?$/).flatten[0]
         if result != nil
           return Addressable::URI.unencode_component(result)
         else
@@ -375,7 +375,7 @@ module DataMapper
 
       def request(parse_result = true, &block)
         res = nil
-        Net::HTTP.start(@uri.host, @uri.port) do |http|
+        Net::HTTP.start(@options[:host], @options[:port]) do |http|
           res = yield(http)
         end
         JSON.parse(res.body) if parse_result

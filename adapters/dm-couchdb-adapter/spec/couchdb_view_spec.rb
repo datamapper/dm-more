@@ -1,15 +1,5 @@
 require File.join(File.dirname(__FILE__), 'spec_helper.rb')
 
-class Viewable
-  include DataMapper::CouchResource
-  def self.default_repository_name
-    :couch
-  end
-
-  property :name, String
-  property :open, Boolean
-end
-
 describe DataMapper::CouchResource::View do
   it "should have a view method" do
     Viewable.should respond_to(:view)
@@ -31,10 +21,6 @@ describe DataMapper::CouchResource::View do
   end
 
   describe "for inherited resources" do
-    before(:all) do
-      Person.auto_migrate!
-    end
-
     it "should set the correct couchdb types" do
       Person.couchdb_types.include?(Person).should be_true
       Person.couchdb_types.include?(Employee).should be_true

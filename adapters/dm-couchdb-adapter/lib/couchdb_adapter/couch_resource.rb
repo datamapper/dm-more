@@ -21,7 +21,7 @@ module DataMapper
         class << self
 
           def couchdb_types
-            [self.base_model] | self.descendants
+            [ self.base_model ] | self.descendants.to_a
           end
 
           def couchdb_types_condition

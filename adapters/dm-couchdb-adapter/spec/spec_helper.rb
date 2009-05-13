@@ -1,7 +1,14 @@
 require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/couchdb_adapter'
+require 'rubygems'
 
-COUCHDB_LOCATION = "couchdb://localhost:5984/test_cdb_adapter"
+gem 'dm-core', '0.10.0'
+require 'dm-core'
+
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+require ROOT + 'lib/couchdb_adapter'
+
+COUCHDB_LOCATION = 'couchdb://localhost:5984/test_cdb_adapter'
 
 DataMapper.setup(
   :couch,
@@ -13,7 +20,7 @@ DataMapper.setup(
 @adapter = DataMapper::Repository.adapters[:couch]
 begin
   @adapter.send(:http_delete, "/#{@adapter.escaped_db_name}")
-  @adapter.send(:http_put, "/#{@adapter.escaped_db_name}")
+  @adapter.send(:http_put,    "/#{@adapter.escaped_db_name}")
   COUCHDB_AVAILABLE = true
 rescue Errno::ECONNREFUSED
   warn "CouchDB could not be contacted at #{COUCHDB_LOCATION}, skipping online dm-couchdb-adapter specs"
@@ -28,20 +35,4 @@ rescue LoadError
   DMSERIAL_AVAILABLE = false
 end
 
-if COUCHDB_AVAILABLE
-  class Person
-    include DataMapper::CouchResource
-    def self.default_repository_name
-      :couch
-    end
-
-    property :type, Discriminator
-    property :name, String
-
-    view(:by_name) {{ "map" => "function(doc) { if (#{couchdb_types_condition}) { emit(doc.name, doc); } }" }}
-  end
-
-  class Employee < Person
-    property :rank, String
-  end
-end
+Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require rb }

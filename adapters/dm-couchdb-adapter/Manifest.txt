@@ -14,6 +14,12 @@ lib/couchdb_adapter/view.rb
 spec/couchdb_adapter_spec.rb
 spec/couchdb_attachments_spec.rb
 spec/couchdb_view_spec.rb
+spec/fixtures/broken.rb
+spec/fixtures/company.rb
+spec/fixtures/employee.rb
+spec/fixtures/person.rb
+spec/fixtures/user.rb
+spec/fixtures/viewable.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/testfile.txt
