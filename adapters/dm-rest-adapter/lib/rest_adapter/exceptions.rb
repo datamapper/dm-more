@@ -44,9 +44,9 @@ module DataMapperRest
   # 409 Conflict
   class ResourceConflict < ClientError; end # :nodoc:
 
-  # 422
+  # 422 Unprocessable Entity
   class ResourceInvalid < ClientError; # :nodoc:
-    # On this case, we could try to retrieve the validation_errors from message body:
+    # On this case, we could try to retrieve the validation_errors from message body:
     attr_reader :body
     def initialize(response, message = nil)
       super(response, message)

@@ -9,12 +9,12 @@ describe 'A REST adapter' do
 
   describe 'when deleting an existing resource' do
     before do
-      @book = Book.new(:title => 'Hello, World!', :author => 'Anonymous')
+      @book = Book.new(:id => 42, :title => 'Hello, World!', :author => 'Anonymous')
       @book.stub!(:saved?).and_return(true)
     end
 
     it 'should do an HTTP DELETE' do
-      @adapter.should_receive(:http_delete)
+      @adapter.send(:connection).should_receive(:http_delete).with('books/42')
       @book.destroy
     end
 

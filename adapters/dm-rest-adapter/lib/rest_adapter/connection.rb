@@ -15,12 +15,12 @@ module DataMapperRest
     # this is used to run the http verbs like http_post, http_put, http_delete etc.
     # TODO: handle nested resources, see prefix in ActiveResource
     def method_missing(method, *args)
-      if verb = method.to_s.match(/^http_(get|post|put|delete|head)$/)
+      if verb = method.to_s.match(/\Ahttp_(get|post|put|delete|head)\z/)
 
         orig_uri, @uri = @uri, @uri.dup
         begin
           @uri.path = "#{args[0]}.#{@format.extension}" # Should be the form of /resources
-          run_verb(verb.to_s.split("_").last, args[1])
+          run_verb(verb.to_s.split('_').last, args[1])
         ensure
           @uri = orig_uri
         end
@@ -31,8 +31,8 @@ module DataMapperRest
 
       def run_verb(verb, data = nil)
         request do |http|
-          mod = Net::HTTP::module_eval(Inflection.camelize(verb))
-          request = mod.new(@uri.to_s, @format.header)
+          klass = Net::HTTP.find_const(Inflection.camelize(verb))
+          request = klass.new(@uri.to_s, @format.header)
           request.basic_auth(@uri.user, @uri.password) if @uri.user && @uri.password
           result = http.request(request, data)
 

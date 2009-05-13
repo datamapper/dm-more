@@ -9,7 +9,7 @@ module DataMapperRest
     end
 
     def header
-      {'Content-Type' => @mime}
+      { 'Content-Type' => @mime }
     end
 
   end

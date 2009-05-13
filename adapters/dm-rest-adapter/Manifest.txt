@@ -5,7 +5,6 @@ README.markdown
 README.txt
 Rakefile
 TODO
-config/database.rb.example
 dm-rest-adapter.gemspec
 lib/rest_adapter.rb
 lib/rest_adapter/adapter.rb
@@ -15,8 +14,11 @@ lib/rest_adapter/formats.rb
 lib/rest_adapter/version.rb
 spec/connection_spec.rb
 spec/crud_spec.rb
+spec/delete_spec.rb
+spec/fixtures/book.rb
 spec/ruby_forker.rb
 spec/spec.opts
 spec/spec_helper.rb
+spec/update_spec.rb
 tasks/install.rb
 tasks/spec.rb

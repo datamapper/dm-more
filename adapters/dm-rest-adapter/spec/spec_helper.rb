@@ -15,12 +15,6 @@ $LOAD_PATH.unshift(lib) if lib.directory?
 
 require ROOT + 'lib/rest_adapter'
 
-load ROOT + 'config/database.rb.example'
+DataMapper.setup(:default, 'rest://admin:secret@localhost:4000/?format=xml')
 
-class Book
-  include DataMapper::Resource
-  property :author,     String
-  property :created_at, DateTime
-  property :id,         Serial
-  property :title,      String
-end
+Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require rb }
