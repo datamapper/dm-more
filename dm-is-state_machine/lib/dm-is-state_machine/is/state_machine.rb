@@ -86,7 +86,7 @@ module DataMapper
         def initialize(*args)
           super
           # ===== Run :enter hook if present =====
-          return unless is_sm = self.class.instance_variable_get(:@is_state_machine)
+          return unless is_sm = model.instance_variable_get(:@is_state_machine)
           return unless machine = is_sm[:machine]
           return unless initial = machine.initial
           return unless initial_state = machine.find_state(initial)
@@ -104,7 +104,7 @@ module DataMapper
         end
 
         def transition!(event_name)
-          machine = self.class.instance_variable_get(:@is_state_machine)[:machine]
+          machine = model.instance_variable_get(:@is_state_machine)[:machine]
           column = machine.column
           machine.current_state_name = attribute_get(:"#{column}")
           machine.fire_event(event_name, self)
