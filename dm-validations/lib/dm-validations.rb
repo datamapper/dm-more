@@ -1,9 +1,6 @@
 require 'rubygems'
 require 'pathname'
 
-gem 'dm-core', '0.10.0'
-require 'dm-core'
-
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-validations'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -37,8 +34,7 @@ module DataMapper
       model.class_eval do
         def self.create(attributes = {}, context = :default)
           resource = new(attributes)
-          return resource unless resource.valid?(context)
-          resource.save!
+          resource.save(context)
           resource
         end
 
