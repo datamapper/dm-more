@@ -2,7 +2,7 @@ class Location
   include DataMapper::Resource
   is :viewable
 
-  has n, :people, :class_name => 'Person'
+  has n, :people, :model => 'Person'
 
   property :id, Serial
   property :name, String
