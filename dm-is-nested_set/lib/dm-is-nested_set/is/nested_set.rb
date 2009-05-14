@@ -21,32 +21,32 @@ module DataMapper
         # be cut down to 1 instead of 2 queries. this would be the other way, but seems hackish:
         # options[:child_key].each{|pname| property(pname, Integer) unless properties.detect{|p| p.name == pname}}
 
-        belongs_to :parent,   :model => self.name, :child_key => options[:child_key], :order => [:lft.asc]
-        has n,     :children, :model => self.name, :child_key => options[:child_key], :order => [:lft.asc]
+        belongs_to :parent,   :model => name, :child_key => options[:child_key], :order => [:lft.asc]
+        has n,     :children, :model => name, :child_key => options[:child_key], :order => [:lft.asc]
 
         before :create do
-          if !self.parent
+          if !parent
             # TODO must change for nested sets
-            self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
-          elsif self.parent && !self.lft
-            self.move_without_saving(:into => self.parent)
+            root ? move_without_saving(:into => root) : move_without_saving(:to => 1)
+          elsif parent && !lft
+            move_without_saving(:into => parent)
           end
         end
 
         before :update do
-          if self.nested_set_scope != self.original_nested_set_scope
+          if nested_set_scope != original_nested_set_scope
             # TODO detach from old list first. many edge-cases here, need good testing
-            self.lft,self.rgt = nil,nil
-            #puts "#{self.root.inspect} - #{[self.nested_set_scope,self.original_nested_set_scope].inspect}"
-            self.root ? self.move_without_saving(:into => self.root) : self.move_without_saving(:to => 1)
-          elsif (self.parent && !self.lft) || (self.parent != self.ancestor)
+            self.lft, self.rgt = nil, nil
+            #puts "#{root.inspect} - #{[nested_set_scope,original_nested_set_scope].inspect}"
+            root ? move_without_saving(:into => root) : move_without_saving(:to => 1)
+          elsif (parent && !lft) || (parent != ancestor)
             # if the parent is set, we try to move this into that parent, otherwise move into root.
-            self.parent ? self.move_without_saving(:into => self.parent) : self.move_without_saving(:into => self.class.root)
+            parent ? move_without_saving(:into => parent) : move_without_saving(:into => model.root)
           end
         end
 
         before :destroy do
-          self.send(:detach)
+          send(:detach)
         end
 
         after_class_method :inherited do |retval,target|
@@ -115,7 +115,7 @@ module DataMapper
         #
         # @private
         def nested_set_scope
-          self.model.base_model.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
+          model.base_model.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
         end
 
         ##
@@ -123,7 +123,7 @@ module DataMapper
         # @private
         def original_nested_set_scope
           # TODO commit
-          self.model.base_model.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          model.base_model.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         ##
@@ -131,7 +131,7 @@ module DataMapper
         #
         def nested_set
           # TODO add option for serving it as a nested array
-          self.model.base_model.all(nested_set_scope.merge(:order => [:lft.asc]))
+          model.base_model.all(nested_set_scope.merge(:order => [:lft.asc]))
         end
 
         ##
@@ -194,43 +194,42 @@ module DataMapper
           # return false if you are trying to move this into another scope
           return false if [:into, :above,:below].include?(action) && nested_set_scope != object.nested_set_scope
           # if node is already in the requested position
-          if self.lft == position || self.rgt == position - 1
-            self.parent = self.ancestor # must set this again, because it might have been changed by the user before move.
+          if lft == position || rgt == position - 1
+            self.parent = ancestor # must set this again, because it might have been changed by the user before move.
             return false
           end
 
-
-          DataMapper::Transaction.new(self.repository) do |transaction|
+          DataMapper::Transaction.new(repository) do |transaction|
 
             ##
             # if this node is already positioned we need to move it, and close the gap it leaves behind etc
             # otherwise we only need to open a gap in the set, and smash that buggar in
             #
-            if self.lft && self.rgt
+            if lft && rgt
               # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
-              raise RecursiveNestingError if position > self.lft && position < self.rgt
+              raise RecursiveNestingError if position > lft && position < rgt
               # find out how wide this node is, as we need to make a gap large enough for it to fit in
-              gap = self.rgt - self.lft + 1
+              gap = rgt - lft + 1
 
               # make a gap at position, that is as wide as this node
-              self.model.base_model.adjust_gap!(nested_set,position-1,gap)
+              model.base_model.adjust_gap!(nested_set,position-1,gap)
 
               # offset this node (and all its descendants) to the right position
-              self.reload_attributes(:lft,:rgt)
-              old_position = self.lft
+              reload_attributes(:lft,:rgt)
+              old_position = lft
               offset = position - old_position
 
-              nested_set.all(:rgt => self.lft..self.rgt).adjust!({:lft => offset, :rgt => offset},true)
+              nested_set.all(:rgt => lft..rgt).adjust!({:lft => offset, :rgt => offset},true)
               # close the gap this movement left behind.
-              self.model.base_model.adjust_gap!(nested_set,old_position,-gap)
-              self.reload_attributes(:lft,:rgt)
+              model.base_model.adjust_gap!(nested_set,old_position,-gap)
+              reload_attributes(:lft,:rgt)
             else
               # make a gap where the new node can be inserted
-              self.model.base_model.adjust_gap!(nested_set,position-1,2)
+              model.base_model.adjust_gap!(nested_set,position-1,2)
               # set the position fields
               self.lft, self.rgt = position, position + 1
             end
-            self.parent = self.ancestor
+            self.parent = ancestor
           end
         end
 
@@ -258,7 +257,7 @@ module DataMapper
         # @see #self_and_ancestors
         def ancestors
           nested_set.all(:lft.lt => lft, :rgt.gt => rgt)
-          #self_and_ancestors.reject{|r| r.key == self.key } # because identitymap is not used in console
+          #self_and_ancestors.reject{|r| r.key == key } # because identitymap is not used in console
         end
 
         ##
@@ -339,7 +338,7 @@ module DataMapper
         def siblings
           # TODO find a way to return this as a collection?
           # TODO supply filtering-option?
-          self_and_siblings.reject{|r| r.key == self.key } # because identitymap is not used in console
+          self_and_siblings.reject{|r| r.key == key } # because identitymap is not used in console
         end
 
         ##
@@ -357,14 +356,14 @@ module DataMapper
         # @return <Resource, NilClass> the resource to the right, or nil if self is rightmost
         # @see #self_and_siblings
         def right_sibling
-          self_and_siblings.find{|v| v.lft == rgt+1}
+          self_and_siblings.find { |v| v.lft == rgt + 1 }
         end
 
        private
         def detach
-          offset = self.lft - self.rgt - 1
-          self.model.base_model.adjust_gap!(nested_set,self.rgt,offset)
-          self.lft,self.rgt = nil,nil
+          offset = lft - rgt - 1
+          model.base_model.adjust_gap!(nested_set, rgt, offset)
+          self.lft, self.rgt = nil, nil
         end
 
       end
