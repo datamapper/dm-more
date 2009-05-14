@@ -11,9 +11,9 @@ DataMapper.logger.debug( "Starting Migration" )
 migration 1, :create_people_table do
   up do
     create_table :people do
-      column :id,     Integer, :serial => true
-      column :name,   String, :size => 50
-      column :age,    Integer
+      column :id,   Integer, :serial => true
+      column :name, String, :size => 50
+      column :age,  Integer
     end
   end
   down do
@@ -41,7 +41,7 @@ end
 # class Person
 #   include DataMapper::Resource
 #
-#   property :id, Integer, :serial => true
+#   property :id, Serial
 #   property :name, String, :size => 50
 #   property :age, Integer
 #   property :dob, DateTime, :default => Time.now

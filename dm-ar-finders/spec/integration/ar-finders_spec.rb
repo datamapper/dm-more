@@ -10,7 +10,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     before(:all) do
       class ::GreenSmoothie
         include DataMapper::Resource
-        property :id, Integer, :serial => true
+        property :id, Serial
         property :name, String
 
         auto_migrate!(:default)

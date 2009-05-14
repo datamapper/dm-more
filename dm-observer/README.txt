@@ -8,7 +8,7 @@ Example:
 class Adam
   include DataMapper::Resource
 
-  property :id, Integer, :serial => true
+  property :id, Serial
   property :name, String
 end
 

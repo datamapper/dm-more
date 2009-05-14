@@ -64,7 +64,7 @@ if $0 == __FILE__
   class Foo
     include DataMapper::Resource
 
-    property :id, Integer, :serial => true
+    property :id, Serial
     property :bar, Text
   end
 

@@ -43,7 +43,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       class ::Category
         include DataMapper::Resource
 
-        property :id, Integer, :serial => true
+        property :id, Serial
         property :name, String
         property :class_name, Discriminator
 

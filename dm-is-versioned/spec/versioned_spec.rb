@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + "/spec_helper"
 class Story
   include DataMapper::Resource
 
-  property :id, Integer, :serial => true
+  property :id, Serial
   property :title, String
   property :updated_at, DateTime
 

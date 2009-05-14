@@ -6,7 +6,7 @@ describe DataMapper::Observer do
     class ::Adam
       include DataMapper::Resource
 
-      property :id, Integer, :serial => true
+      property :id, Serial
       property :name, String
       attr_accessor :done
 
@@ -37,7 +37,7 @@ describe DataMapper::Observer do
       class Beer
         include DataMapper::Resource
 
-        property :id, Integer, :serial => true
+        property :id, Serial
         property :name, String
 
         def drink
