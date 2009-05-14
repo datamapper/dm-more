@@ -91,7 +91,8 @@ module DataMapper
     # Check if a resource is valid in a given context
     #
     def valid?(context = :default)
-      self.class.validators.execute(context, self)
+      klass = respond_to?(:model) ? model : self.class
+      klass.validators.execute(context, self)
     end
 
     # Begin a recursive walk of the model checking validity
@@ -120,7 +121,7 @@ module DataMapper
     end
 
     def validation_property_value(name)
-      self.respond_to?(name, true) ? self.send(name) : nil
+      respond_to?(name, true) ? send(name) : nil
     end
 
     # Get the corresponding Resource property, if it exists.
@@ -128,7 +129,7 @@ module DataMapper
     # Note: DataMapper validations can be used on non-DataMapper resources.
     # In such cases, the return value will be nil.
     def validation_property(field_name)
-      if respond_to?(:model) && (properties = model.properties(self.repository.name)) && properties.named?(field_name)
+      if respond_to?(:model) && (properties = model.properties(repository.name)) && properties.named?(field_name)
         properties[field_name]
       end
     end
@@ -184,7 +185,7 @@ module DataMapper
       #
       def create_context_instance_methods(context)
         name = "valid_for_#{context.to_s}?"           # valid_for_signup?
-        if !self.instance_methods.include?(name)
+        if !instance_methods.include?(name)
           class_eval <<-EOS, __FILE__, __LINE__
             def #{name}                               # def valid_for_signup?
               valid?('#{context.to_s}'.to_sym)        #   valid?('signup'.to_sym)
@@ -193,7 +194,7 @@ module DataMapper
         end
 
         all = "all_valid_for_#{context.to_s}?"        # all_valid_for_signup?
-        if !self.instance_methods.include?(all)
+        if !instance_methods.include?(all)
           class_eval <<-EOS, __FILE__, __LINE__
             def #{all}                                # def all_valid_for_signup?
               all_valid?('#{context.to_s}'.to_sym)    #   all_valid?('signup'.to_sym)

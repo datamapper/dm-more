@@ -41,11 +41,11 @@ module DataMapper
         @@default_error_messages[key] % [field, *values].flatten
       end
 
-      attr_reader :model
+      attr_reader :resource
 
-      def initialize(model)
-        @model  = model
-        @errors = {}
+      def initialize(resource)
+        @resource = resource
+        @errors   = {}
       end
 
       # Clear existing validation errors.
@@ -62,13 +62,14 @@ module DataMapper
         # see 6abe8fff in extlib, but don't enforce
         # it unless Edge version is installed
         if message.respond_to?(:try_call)
-          # DM model
-          message = if model.class.respond_to?(:properties)
-                      message.try_call(model, model.class.properties[field_name])
-                    else
-                      # pure Ruby object
-                      message.try_call(model)
-                    end
+
+          # DM resource
+          message = if resource.respond_to?(:model) && resource.model.respond_to?(:properties)
+            message.try_call(resource, resource.model.properties[field_name])
+          else
+            # pure Ruby object
+            message.try_call(resource)
+          end
         end
         (errors[field_name] ||= []) << message
       end
