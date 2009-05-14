@@ -52,7 +52,7 @@ module DataMapper
 
         private :taggings, :taggings=, :destroy_taggings
 
-        self.extend(DataMapper::Tags::SingletonMethods)
+        extend(DataMapper::Tags::SingletonMethods)
 
         associations.each do |association|
           association = association.to_s
@@ -135,7 +135,7 @@ module DataMapper
 
     module InstanceMethods
       def taggable?
-        self.class.taggable?
+        model.taggable?
       end
     end
 
