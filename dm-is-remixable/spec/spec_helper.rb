@@ -16,8 +16,8 @@ def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
 
   begin
-    DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
-    DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
+    DataMapper.setup(:default, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
+    DataMapper::Repository.adapters[name] = DataMapper::Repository.adapters[name]
     true
   rescue LoadError => e
     warn "Could not load do_#{name}: #{e}"
