@@ -1,11 +1,10 @@
-require File.dirname(__FILE__) + '/../spec_helper'
-require 'dm-validations'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 describe DataMapper::Model do
 
   class Widget
     include DataMapper::Resource
-    property :id, Integer, :serial => true
+    property :id, Serial
     property :type, Discriminator
     property :name, String
     property :price, Integer
@@ -21,7 +20,7 @@ describe DataMapper::Model do
   class Order
     include DataMapper::Resource
 
-    property :id, Integer, :serial => true
+    property :id, Serial
 
     has n, :widgets
   end
@@ -55,7 +54,7 @@ describe DataMapper::Model do
       end
     end
 
-   it "should allow handle complex named fixtures" do
+    it "should allow handle complex named fixtures" do
       Wonket.fix {{
         :name => /\w+ Wonket/.gen.capitalize,
         :price => /\d{2,3}99/.gen.to_i,
@@ -88,7 +87,6 @@ describe DataMapper::Model do
     end
   end
 
-
   describe ".make" do
     before :each do
       Widget.fix(:red) {{
@@ -105,10 +103,9 @@ describe DataMapper::Model do
     end
 
     it "returns a new object" do
-      @widget.should be_new_record
+      @widget.should be_new
     end
   end
-
 
   describe ".generate" do
     before :each do
@@ -130,12 +127,12 @@ describe DataMapper::Model do
     end
 
     it "returns a saved object" do
-      @widget.should_not be_new_record
+      @widget.should be_saved
     end
 
     it "does not save invalid model" do
       blue_widget = Widget.gen(:blue)
-      blue_widget.should be_new_record
+      blue_widget.should be_new
     end
   end
 
@@ -146,11 +143,9 @@ describe DataMapper::Model do
       }}
 
       blue_widget = Widget.gen!(:blue)
-      blue_widget.should_not be_new_record
+      blue_widget.should be_saved
     end
   end
-
-
 
   describe ".pick" do
     before :each do
@@ -186,7 +181,6 @@ describe DataMapper::Model do
       @blue.name.should == "blu"
     end
   end
-
 
   describe ".generate_attributes" do
     before :each do

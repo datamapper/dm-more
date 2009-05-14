@@ -1,10 +1,10 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 
 describe DataMapper::Sweatshop do
 
   class Parent
     include DataMapper::Resource
-    property :id, Integer, :serial => true
+    property :id, Serial
     property :type, Discriminator
     property :first_name, String
     property :last_name, String
