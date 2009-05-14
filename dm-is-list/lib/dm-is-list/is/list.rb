@@ -31,17 +31,17 @@ module DataMapper
         before :create do
           # a position has been set before save => open up and make room for item
           # no position has been set => move to bottom of my scope-list (or keep detached?)
-          self.send(:move_without_saving, (self.position || :lowest))
+          send(:move_without_saving, (position || :lowest))
         end
 
         before :update do
           # if the scope has changed, we need to detach our item from the old list
-          if self.list_scope != self.original_list_scope
-            newpos = self.position
-            self.detach(self.original_list_scope) # removing from old list
-            self.send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
-          elsif self.attribute_dirty?(:position) && !self.moved
-            self.send(:move_without_saving, self.position)
+          if list_scope != original_list_scope
+            newpos = position
+            detach(original_list_scope) # removing from old list
+            send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
+          elsif attribute_dirty?(:position) && !moved
+            send(:move_without_saving, position)
           end
 
           # on update, clean moved to prepare for the next change
@@ -53,7 +53,7 @@ module DataMapper
         end
 
         before :destroy do
-          self.detach
+          detach
         end
 
         # we need to make sure that STI-models will inherit the list_scope.
@@ -85,11 +85,11 @@ module DataMapper
         attr_accessor :moved
 
         def list_scope
-          self.class.list_options[:scope].map{|p| [p,attribute_get(p)]}.to_hash
+          model.list_options[:scope].map{|p| [p,attribute_get(p)]}.to_hash
         end
 
         def original_list_scope
-          self.class.list_options[:scope].map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          model.list_options[:scope].map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
         end
 
         def list_query
@@ -97,21 +97,21 @@ module DataMapper
         end
 
         def list(scope=list_query)
-          self.class.all(scope)
+          model.all(scope)
         end
 
         ##
         # repair the list this item belongs to
         #
         def repair_list
-          self.class.repair_list(list_scope)
+          model.repair_list(list_scope)
         end
 
         ##
         # reorder the list this item belongs to
         #
         def reorder_list(order)
-          self.class.repair_list(list_scope.merge(:order => order))
+          model.repair_list(list_scope.merge(:order => order))
         end
 
         def detach(scope=list_scope)
@@ -162,8 +162,8 @@ module DataMapper
         def move_without_saving(vector)
           if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
 
-          minpos = self.class.list_options[:first]
-          prepos = self.original_values[:position] || self.position
+          minpos = model.list_options[:first]
+          prepos = original_values[:position] || position
           maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : minpos
 
           newpos = case action
