@@ -26,7 +26,7 @@ module SQL
     end
 
     # TODO: move to dm-more/dm-migrations
-    def property_schema_statement(schema)
+    def property_schema_statement(connection, schema)
       if supports_serial? && schema[:serial]
         statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
       else

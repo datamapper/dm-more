@@ -66,7 +66,9 @@ module SQL
         else
           schema = @adapter.class.type_map[type_class].merge(schema)
         end
-        @adapter.property_schema_statement(schema)
+        @adapter.send(:with_connection) do |connection|
+          @adapter.property_schema_statement(connection, schema)
+        end
       end
 
       def to_sql

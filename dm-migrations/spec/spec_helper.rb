@@ -1,11 +1,16 @@
 require 'pathname'
 require 'rubygems'
 
+gem 'dm-core', '0.10.0'
+require 'dm-core'
+
 gem 'rspec', '>1.1.12'
 require 'spec'
 
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-migrations'
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/migration_runner'
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+require ROOT / 'lib' / 'dm-migrations'
+require ROOT / 'lib' / 'migration_runner'
 
 ADAPTERS = []
 def load_driver(name, default_uri)
