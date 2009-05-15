@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/migration'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path + 'migration'
 
 module DataMapper
   module MigrationRunner

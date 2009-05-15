@@ -1,5 +1,9 @@
-require File.dirname(__FILE__) + '/sample_migration'
-require File.dirname(__FILE__) + '/../lib/spec/example/migration_example_group'
+require 'pathname'
+
+dir = Pathname(__FILE__).dirname.expand_path
+
+require dir + 'sample_migration'
+require dir + '../lib/spec/example/migration_example_group'
 
 describe :create_people_table, :type => :migration do
 

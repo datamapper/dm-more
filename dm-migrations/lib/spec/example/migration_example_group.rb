@@ -1,6 +1,7 @@
-require 'spec'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path + '../matchers/migration_matchers'
 
-require File.dirname(__FILE__) + '/../matchers/migration_matchers'
+require 'spec'
 
 module Spec
   module Example

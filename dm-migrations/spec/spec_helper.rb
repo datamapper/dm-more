@@ -7,10 +7,12 @@ require 'dm-core'
 gem 'rspec', '>1.1.12'
 require 'spec'
 
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
+ROOT = Pathname(__FILE__).dirname.expand_path.parent
 
-require ROOT / 'lib' / 'dm-migrations'
-require ROOT / 'lib' / 'migration_runner'
+require ROOT + 'lib/dm-migrations'
+require ROOT + 'lib/migration'
+require ROOT + 'lib/migration_runner'
+require ROOT + 'lib/sql'
 
 ADAPTERS = []
 def load_driver(name, default_uri)

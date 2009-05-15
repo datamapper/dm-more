@@ -1,7 +1,5 @@
 require 'pathname'
-require Pathname(__FILE__).dirname + '../../spec_helper'
-
-require Pathname(__FILE__).dirname + '../../../lib/sql/sqlite3'
+require Pathname(__FILE__).dirname.expand_path + '../../spec_helper'
 
 # a dummy class to include the module into
 class PostgresqlExtension

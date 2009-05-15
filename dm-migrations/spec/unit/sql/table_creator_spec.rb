@@ -1,7 +1,5 @@
 require 'pathname'
-require Pathname(__FILE__).dirname + '../../spec_helper'
-
-require Pathname(__FILE__).dirname + '../../../lib/sql/table_creator'
+require Pathname(__FILE__).dirname.expand_path + '../../spec_helper'
 
 describe 'SQL module' do
   describe 'TableCreator' do
@@ -62,9 +60,12 @@ describe 'SQL module' do
 
     describe 'Column' do
       before do
+        connection = mock('Connection')
+
         @adapter.stub!(:quote_column_name).and_return(%{'id'})
         @adapter.class.stub!(:type_map).and_return(Integer => {:type => 'int'})
         @adapter.stub!(:property_schema_statement).and_return("SOME SQL")
+        @adapter.stub!(:with_connection).and_yield(connection)
         @c = SQL::TableCreator::Column.new(@adapter, 'id', Integer, :serial => true)
       end
 

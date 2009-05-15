@@ -1,10 +1,9 @@
-require File.dirname(__FILE__) + '/sql/table_creator'
-require File.dirname(__FILE__) + '/sql/table_modifier'
+require 'pathname'
 
-require File.dirname(__FILE__) + '/sql/sqlite3'
-require File.dirname(__FILE__) + '/sql/mysql'
-require File.dirname(__FILE__) + '/sql/postgresql'
+dir = Pathname(__FILE__).dirname.expand_path + 'sql'
 
-module SQL
-
-end
+require dir + 'table_creator'
+require dir + 'table_modifier'
+require dir + 'sqlite3'
+require dir + 'mysql'
+require dir + 'postgresql'

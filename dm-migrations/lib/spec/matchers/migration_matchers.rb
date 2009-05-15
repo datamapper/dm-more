@@ -1,4 +1,3 @@
-
 module Spec
   module Matchers
     module Migration

@@ -1,6 +1,8 @@
+require 'pathname'
 require 'rubygems'
 require 'benchmark'
-require File.dirname(__FILE__) + '/sql'
+
+require Pathname(__FILE__).dirname.expand_path + 'sql'
 
 module DataMapper
   class DuplicateMigrationNameError < StandardError

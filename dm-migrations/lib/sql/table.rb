@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/column'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path + 'column'
 
 module SQL
 

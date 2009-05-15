@@ -1,4 +1,5 @@
-require File.dirname(__FILE__) + '/table'
+require 'pathname'
+require Pathname(__FILE__).dirname.expand_path + 'table'
 
 module SQL
   module Mysql
