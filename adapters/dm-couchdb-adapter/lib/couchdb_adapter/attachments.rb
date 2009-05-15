@@ -25,7 +25,7 @@ module DataMapper
             name = options[:name] || filename
             data = file.read
 
-            if new_record? || !model.properties.has_property?(:rev)
+            if new_record? || !model.properties.named?(:rev)
               self.attachments ||= {}
               self.attachments[name] = {
                 'content_type' => content_type,
