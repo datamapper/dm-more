@@ -2,67 +2,62 @@ require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'ferret_adapter/version'
 
-gem 'dm-core', '0.10.0'
-require 'dm-core'
-
 gem 'ferret', '~>0.11.6'
 require 'ferret'
 
 module DataMapper
   module Adapters
     class FerretAdapter < AbstractAdapter
-      def initialize(name, uri_or_options)
+      def initialize(name, options)
         super
-        unless File.extname(@uri.path) == ".sock"
-          @index = LocalIndex.new(@uri)
+        @index = unless File.extname(@options[:path]) == '.sock'
+          LocalIndex.new(@options)
         else
-          @index = RemoteIndex.new(@uri)
+          RemoteIndex.new(@options)
         end
       end
 
       def create(resources)
         resources.each do |resource|
-          attributes = repository(self.name) do
-            attrs = resource.attributes
-            attrs.delete_if { |name, value| !resource.class.properties(self.name).has_property?(name) }
-            resource.class.new(attrs).attributes
-          end
+          attributes = resource.attributes(:field).to_mash
 
           # Since we don't inspect the models before generating the indices,
           # we'll map the resource's key to the :id column.
-          key = resource.class.key.first
-          attributes[:id] = attributes.delete(key.name) unless key.name == :id
-          attributes[:_type] = resource.class.name
+          attributes[:id]    ||= resource.key.first
+          attributes[:_type]   = resource.model.name
 
           @index.add attributes
         end
-        1
-      end
-
-      def delete(query)
-        ferret_query = dm_query_to_ferret_query(query)
-        @index.delete ferret_query
-        1
       end
 
       # This returns an array of Ferret docs (glorified hashes) which can
       # be used to instantiate objects by doc[:_type] and doc[:_id]
-      def read_many(query, limit = query.limit)
+      def read(query)
+        fields = query.fields
+        key    = query.model.key(name).first
+
         ferret_query = dm_query_to_ferret_query(query)
-        @index.search(ferret_query, :limit => (limit || :all))
+
+        @index.search(ferret_query, :limit => query.limit).map do |lazy_doc|
+          fields.map { |p| [ p, p.typecast(lazy_doc[p.field]) ] }.to_hash.update(
+            key.field => key.typecast(lazy_doc[:id])
+          )
+        end
       end
 
-      def read_one(query)
-        read_many(query).first
+      def delete(collection)
+        @index.delete dm_query_to_ferret_query(collection.query)
+        1
       end
 
       # This returns a hash of the resource constant and the ids returned for it
       # from the search.
       #   { Story => ["1", "2"], Image => ["2"] }
-      def search(query, limit)
-        results = Hash.new { |h, k| h[k] = [] }
-        read_many(query, limit).each do |doc|
-          results[Object.const_get(doc[:_type])] << doc[:id]
+      def search(ferret_query, limit = :all)
+        results = {}
+        @index.search(ferret_query, :limit => limit).each do |doc|
+          resources = results[Object.const_get(doc[:_type])] ||= []
+          resources << doc[:id]
         end
         results
       end
@@ -70,38 +65,86 @@ module DataMapper
       private
 
       def dm_query_to_ferret_query(query)
-        # If we already have a ferret query, do nothing
-        return query if query.is_a?(String)
-
-        ferret = []
-
         # We scope the query by the _type field to the query's model.
-        ferret << "+_type:\"#{query.model.name}\""
+        statements = [ "+_type:#{quote_value(query.model.name)}" ]
 
-        if query.conditions.empty?
-          ferret << "*"
+        if query.conditions.operands.empty?
+          statements << '*'
         else
-          query.conditions.each do |operator, property, value|
-            # We use property.field here, so that you can declare composite
-            # fields:
-            #     property :content, String, :field => "title|description"
-            name = property.field
-
-            # Since DM's query syntax does not support OR's, we prefix
-            # each condition with ferret's operator of +.
-            ferret << case operator
-            when :eql, :like  then "+#{name}:\"#{value}\""
-            when :not         then "-#{name}:\"#{value}\""
-            when :lt          then "+#{name}: < #{value}"
-            when :gt          then "+#{name}: > #{value}"
-            when :lte         then "+#{name}: <= #{value}"
-            when :gte         then "+#{name}: >= #{value}"
-            end
-          end
+          # TODO: make this work with the new Query conditions system
+          statements << "#{conditions_statement(query.conditions)}"
         end
-        ferret.join(" ")
+
+        statements.join(' ')
       end
 
+      def conditions_statement(conditions)
+        case conditions
+          when Conditions::NotOperation       then negate_operation(conditions)
+          when Conditions::AbstractOperation  then operation_statement(conditions)
+          when Conditions::AbstractComparison then comparison_statement(conditions)
+        end
+      end
+
+      def negate_operation(operation)
+        "NOT (#{conditions_statement(operation.operands.first)})"
+      end
+
+      def operation_statement(operation)
+        statements  = []
+
+        operands = operation.operands
+
+        operands.each do |operand|
+          statement = conditions_statement(operand)
+
+          if operand.respond_to?(:operands) && operand.operands.size > 1
+            statement = "(#{statement})"
+          end
+
+          statements << statement
+        end
+
+        join_with = operation.kind_of?(Conditions::AndOperation) ? 'AND' : 'OR'
+        statements.join(" #{join_with} ")
+      end
+
+      def comparison_statement(comparison)
+        value = comparison.value
+
+        # TODO: move exclusive Range handling into another method, and
+        # update conditions_statement to use it
+
+        # break exclusive Range queries up into two comparisons ANDed together
+        if value.kind_of?(Range) && value.exclude_end?
+          operation = Conditions::BooleanOperation.new(:and,
+            Conditions::Comparison.new(:gte, comparison.property, value.first),
+            Conditions::Comparison.new(:lt,  comparison.property, value.last)
+          )
+
+          return "(#{operation_statement(operation)})"
+        end
+
+        operator = case comparison
+          when Conditions::EqualToComparison              then ''
+          when Conditions::InclusionComparison            then raise NotImplementedError, 'no support for inclusion match yet'
+          when Conditions::RegexpComparison               then raise NotImplementedError, 'no support for regexp match yet'
+          when Conditions::LikeComparison                 then raise NotImplementedError, 'no support for like match yet'
+          when Conditions::GreaterThanComparison          then '>'
+          when Conditions::LessThanComparison             then '<'
+          when Conditions::GreaterThanOrEqualToComparison then '>='
+          when Conditions::LessThanOrEqualToComparison    then '<='
+        end
+
+        # We use property.field here, so that you can declare composite
+        # fields:
+        #     property :content, String, :field => "title|description"
+        [ "+#{comparison.property.field}:", quote_value(value) ].join(operator)
+      end
+
+      def quote_value(value)
+        value.kind_of?(Numeric) ? value : "\"#{value}\""
+      end
     end
   end
 end

@@ -1,12 +1,9 @@
 module DataMapper
   module Adapters
     class FerretAdapter::LocalIndex
-
-      attr_accessor :uri
-
-      def initialize(uri)
-        @uri = uri
-        @options = { :path => @uri.path, :key => [:id, :_type] }
+      def initialize(options)
+        @options = options
+        @options = { :path => @options[:path], :key => [:id, :_type] }
         create_or_initialize_index
       end
 
@@ -29,7 +26,7 @@ module DataMapper
       private
 
       def create_or_initialize_index
-        unless File.exists?(@uri.path + "segments")
+        unless File.exists?(@options[:path] + "segments")
           field_infos = ::Ferret::Index::FieldInfos.new(:store => :no)
           field_infos.add_field(:id, :index => :untokenized, :term_vector => :no, :store => :yes)
           field_infos.add_field(:_type, :index => :untokenized, :term_vector => :no, :store => :yes)

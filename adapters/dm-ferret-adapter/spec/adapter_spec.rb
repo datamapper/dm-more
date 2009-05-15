@@ -1,35 +1,44 @@
 require 'pathname'
-require Pathname(__FILE__).dirname + "helper"
+require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
 
-class User
-  include DataMapper::Resource
-  property :id, Serial
-end
+INDEX_PATH = Pathname(__FILE__).dirname.expand_path + 'index'
 
-class Photo
-  include DataMapper::Resource
-  property :uuid, String, :default => lambda { `uuidgen`.chomp }, :key => true
-end
+describe DataMapper::Adapters::FerretAdapter do
+  before do
+    @adapter = DataMapper.setup(:default, "ferret://#{INDEX_PATH}")
 
-describe "FerretAdapter" do
-  before :each do
-    @index = Pathname(__FILE__).dirname.expand_path + "index"
-    DataMapper.setup :search, "ferret://#{@index}"
+    Object.send(:remove_const, :User) if defined?(User)
+    class User
+      include DataMapper::Resource
+
+      property :id, Serial
+    end
+
+    Object.send(:remove_const, :Photo) if defined?(Photo)
+    class Photo
+      include DataMapper::Resource
+
+      property :uuid, String, :default => lambda { UUID.random_create }, :key => true
+      property :happy, Boolean, :default => true
+    end
   end
 
-  after :each do
-    FileUtils.rm_r(@index)
+  after do
+    FileUtils.rm_r(INDEX_PATH)
   end
 
-  it "should work with a model using id" do
-    u = User.new(:id => 2)
-    repository(:search).create([u])
-    repository(:search).search("*").should == { User => ["2"] }
+  it 'should work with a model using id' do
+    u = User.create(:id => 2)
+    repository.search('*').should == { User => %w[ 2 ] }
   end
 
-  it "should work with a model using another key than id" do
-    p = Photo.new
-    repository(:search).create([p])
-    repository(:search).search("*").should == { Photo => [p.uuid] }
+  it 'should work with a model using another key than id' do
+    p = Photo.create
+    repository.search('*').should == { Photo => [p.uuid] }
+  end
+
+  it 'should allow lookups using Model#get' do
+    u = User.create(:id => 2)
+    User.get(2).should == u
   end
 end

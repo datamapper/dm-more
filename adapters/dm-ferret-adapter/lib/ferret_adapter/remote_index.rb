@@ -5,10 +5,8 @@ module DataMapper
       class IndexNotFound < Exception; end
       class SearchError < Exception; end
 
-      attr_accessor :uri
-
-      def initialize(uri)
-        @uri = uri
+      def initialize(options)
+        @options = options
 
         connect_to_remote_index
       end
@@ -39,7 +37,7 @@ module DataMapper
         require "rinda/tuplespace"
 
         DRb.start_service
-        tuple_space = DRb::DRbObject.new(nil, "drbunix://#{@uri.path}")
+        tuple_space = DRb::DRbObject.new(nil, "drbunix://#{@options[:path]}")
 
         # This will throw Errno::ENOENT if the socket does not exist.
         tuple_space.respond_to?(:write)
