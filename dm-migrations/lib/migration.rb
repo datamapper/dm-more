@@ -1,5 +1,4 @@
 require 'pathname'
-require 'rubygems'
 require 'benchmark'
 
 require Pathname(__FILE__).dirname.expand_path + 'sql'
