@@ -4,15 +4,22 @@ require 'rubygems'
 gem 'rspec', '>1.1.12'
 require 'spec'
 
-# run the specs with dm-validations, if available
+gem 'dm-core', '0.10.0'
+require 'dm-core'
+
+ROOT = Pathname(__FILE__).dirname.parent.expand_path
+
+# use local dm-types if running from dm-more directly
+lib = ROOT.parent.join('dm-validations', 'lib').expand_path
+$LOAD_PATH.unshift(lib) if lib.directory?
+
 begin
-  gem 'dm-validations', '0.10.0'
   require 'dm-validations'
 rescue LoadError
   # do nothing
 end
 
-require Pathname(__FILE__).dirname.parent.expand_path + 'lib/dm-timestamps'
+require ROOT + 'lib/dm-timestamps'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
