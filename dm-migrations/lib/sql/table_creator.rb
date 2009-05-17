@@ -64,7 +64,8 @@ module SQL
         if type_class.is_a?(String)
           schema[:primitive] = type_class
         else
-          schema = @adapter.class.type_map[type_class].merge(schema)
+          primitive = type_class.respond_to?(:primitive) ? type_class.primitive : type_class
+          schema = @adapter.class.type_map[primitive].merge(schema)
         end
         @adapter.send(:with_connection) do |connection|
           @adapter.property_schema_statement(connection, schema)

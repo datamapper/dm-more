@@ -41,11 +41,11 @@ module SQL
     end
 
     def quote_column_name(name)
-      @adapter.send(:quote_column_name, name.to_s)
+      @adapter.send(:quote_name, name.to_s)
     end
 
     def quoted_table_name
-      @adapter.send(:quote_table_name, table_name)
+      @adapter.send(:quote_name, table_name)
     end
 
   end
