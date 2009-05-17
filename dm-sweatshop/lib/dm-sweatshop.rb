@@ -1,6 +1,6 @@
-require 'rubygems'
+require 'pathname'
 
-gem 'randexp', '~>0.1.4'
+require 'extlib'
 require 'randexp'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-sweatshop'

@@ -2,6 +2,8 @@ require 'pathname'
 require 'rubygems'
 
 gem 'dm-core', '0.10.0'
+gem 'randexp', '~>0.1.4'
+
 require 'dm-core'
 
 ROOT = Pathname(__FILE__).dirname.parent.expand_path

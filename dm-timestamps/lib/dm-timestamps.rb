@@ -47,6 +47,7 @@ module DataMapper
 
     Model.append_inclusions self
   end # module Timestamp
+
   # include Timestamp or Timestamps, it still works
   Timestamp = Timestamps
 end # module DataMapper
