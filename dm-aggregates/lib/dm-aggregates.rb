@@ -6,6 +6,7 @@ require dir / 'aggregate_functions'
 require dir / 'model'
 require dir / 'repository'
 require dir / 'collection'
+
 require dir / 'adapters' / 'data_objects_adapter'
-require dir / 'support' / 'symbol'
+require dir / 'core_ext' / 'symbol'
 require dir / 'version'
