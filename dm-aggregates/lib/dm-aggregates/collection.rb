@@ -1,15 +1,17 @@
 module DataMapper
-  class Collection
-    include AggregateFunctions
+  module Aggregates
+    module Collection
+      include Functions
 
-#    def size
-#      loaded? ? super : count
-#    end
+#      def size
+#        loaded? ? super : count
+#      end
 
-    private
+      private
 
-    def property_by_name(property_name)
-      properties[property_name]
+      def property_by_name(property_name)
+        properties[property_name]
+      end
     end
   end
 end

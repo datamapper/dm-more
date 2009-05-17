@@ -1,21 +1,29 @@
 module DataMapper
-  module Adapters
-    class DataObjectsAdapter < AbstractAdapter
+  module Aggregates
+    module DataObjectsAdapter
+      def self.included(base)
+        base.send(:include, SQL)
+      end
 
       def aggregate(query)
+        fields = query.fields
+        types  = fields.map { |p| p.respond_to?(:operator) ? String : p.primitive }
+
+        field_size = fields.size
+
+        records = []
+
         with_connection do |connection|
           statement, bind_values = select_statement(query)
-          command                = connection.create_command(statement)
-          command.set_types(query.fields.map { |p| p.primitive })
+
+          command = connection.create_command(statement)
+          command.set_types(types)
+
+          reader = command.execute_reader(*bind_values)
 
           begin
-            reader = command.execute_reader(*bind_values)
-
-            model   = query.model
-            results = []
-
             while(reader.next!)
-              row = query.fields.zip(reader.values).map do |field,value|
+              row = fields.zip(reader.values).map do |field, value|
                 if field.respond_to?(:operator)
                   send(field.operator, field.target, value)
                 else
@@ -23,19 +31,15 @@ module DataMapper
                 end
               end
 
-              results << (query.fields.size > 1 ? row : row[0])
+              records << (field_size > 1 ? row : row[0])
             end
-
-            results
           ensure
-            reader.close if reader
+            reader.close
           end
         end
 
-
+        records
       end
-
-
 
       private
 
@@ -60,19 +64,22 @@ module DataMapper
       end
 
       module SQL
-        private
-        def included(host)
-          host.class_eval do
-            alias original_property_to_column_name property_to_column_name
-          end
+        def self.included(base)
+          base.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            # FIXME: figure out a cleaner approach than AMC
+            alias property_to_column_name_without_operator property_to_column_name
+            alias property_to_column_name property_to_column_name_with_operator
+          RUBY
         end
 
-        def property_to_column_name(property, qualify)
+        def property_to_column_name_with_operator(property, qualify)
           case property
-            when Query::Operator
+            when DataMapper::Query::Operator
               aggregate_field_statement(property.operator, property.target, qualify)
-            when Property, Query::Path
-              original_property_to_column_name(property, qualify)
+
+            when Property, DataMapper::Query::Path
+              property_to_column_name_without_operator(property, qualify)
+
             else
               raise ArgumentError, "+property+ must be a DataMapper::Query::Operator, a DataMapper::Property or a Query::Path, but was a #{property.class} (#{property.inspect})"
           end
@@ -97,8 +104,22 @@ module DataMapper
           "#{function_name}(#{column_name})"
         end
       end # module SQL
-
-      include SQL
     end # class DataObjectsAdapter
+  end # module Aggregates
+
+  module Adapters
+    extendable do
+
+      # TODO: document
+      # @api private
+      def const_added(const_name)
+        if DataMapper::Aggregates.const_defined?(const_name)
+          adapter = const_get(const_name)
+          adapter.send(:include, DataMapper::Aggregates.const_get(const_name))
+        end
+
+        super
+      end
+    end
   end # module Adapters
 end # module DataMapper
