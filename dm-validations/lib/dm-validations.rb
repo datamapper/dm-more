@@ -28,7 +28,7 @@ module DataMapper
     extend Chainable
 
     def self.included(model)
-      model.class_eval do
+      model.class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def self.create(attributes = {}, context = :default)
           resource = new(attributes)
           resource.save(context)
@@ -40,7 +40,7 @@ module DataMapper
           resource.save!
           resource
         end
-      end
+      RUBY
 
       # models that are non DM resources must get .validators
       # and other methods, too
