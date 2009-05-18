@@ -1,17 +1,18 @@
-$:.push File.expand_path(File.dirname(__FILE__))
-
 require 'pathname'
 require 'rexml/document'
-
 require 'rubygems'
+
+require 'cgi'  # for CGI.escape
 require 'extlib'
 require 'addressable/uri'
 require 'dm-serializer'
 
-require 'rest_adapter/version'
-require 'rest_adapter/adapter'
-require 'rest_adapter/connection'
-require 'rest_adapter/formats'
-require 'rest_adapter/exceptions'
+dir = Pathname(__FILE__).dirname.expand_path / 'rest_adapter'
+
+require dir / 'version'
+require dir / 'adapter'
+require dir / 'connection'
+require dir / 'formats'
+require dir / 'exceptions'
 
 DataMapper::Adapters::RestAdapter = DataMapperRest::Adapter

@@ -19,7 +19,8 @@ module DataMapperRest
 
         orig_uri, @uri = @uri, @uri.dup
         begin
-          @uri.path = "#{args[0]}.#{@format.extension}" # Should be the form of /resources
+          path, query = args[0].split('?', 2)
+          @uri.path = "#{path}.#{@format.extension}#{'?' << query if query}" # Should be the form of /resources
           run_verb(verb.to_s.split('_').last, args[1])
         ensure
           @uri = orig_uri

@@ -2,9 +2,9 @@ require 'pathname'
 require 'rubygems'
 
 gem 'dm-core', '0.10.0'
-require 'dm-core'
 
-gem 'rspec', '>1.1.12'
+require 'dm-core'
+require 'fakeweb'
 require 'spec'
 
 ROOT = Pathname(__FILE__).dirname.parent.expand_path
@@ -18,3 +18,5 @@ require ROOT + 'lib/rest_adapter'
 DataMapper.setup(:default, 'rest://admin:secret@localhost:4000/?format=xml')
 
 Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require rb }
+
+FakeWeb.allow_net_connect = false

@@ -4,45 +4,45 @@ module DataMapperRest
 
   # All http_"verb" (http_post) method calls use method missing in connection class which uses run_verb
   class Adapter < DataMapper::Adapters::AbstractAdapter
-    # Creates a new resource in the specified repository.
-    # TODO: map all remote resource attributes to this resource
     def create(resources)
       resources.each do |resource|
         model = resource.model
-        key   = model.key(name)
 
         response = connection.http_post("#{resource_name(model)}", resource.to_xml)
-        record   = parse_resource(response.body, model)
 
-        key.each { |p| p.set!(resource, record[p.field]) }
+        update_with_response(resource, response)
       end
     end
 
     def read(query)
-      model   = query.model
-      records = nil
+      model = query.model
 
-      if id = extract_id_from_query(query)
+      records = if id = extract_id_from_query(query)
         response = connection.http_get("#{resource_name(model)}/#{id}")
-        records  = [ parse_resource(response.body, model) ]
+        [ parse_resource(response.body, model) ]
       else
-        response = connection.http_get("#{resource_name(model)}")
-        records  = parse_resources(response.body, model)
+        query_string = if (params = extract_params_from_query(query)).any?
+          params.map { |k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
+        end
+
+        response = connection.http_get("#{resource_name(model)}#{'?' << query_string if query_string}")
+        parse_resources(response.body, model)
       end
 
       query.filter_records(records)
     end
 
-    def update(attributes, collection)
+    def update(dirty_attributes, collection)
       collection.select do |resource|
         model          = resource.model
         identity_field = model.identity_field
         id             = identity_field.get(resource)
 
-        attributes.each { |p, v| p.set!(resource, v) }
+        dirty_attributes.each { |p, v| p.set!(resource, v) }
 
         response = connection.http_put("#{resource_name(model)}/#{id}", resource.to_xml)
-        response.kind_of?(Net::HTTPSuccess)
+
+        update_with_response(resource, response)
       end.size
     end
 
@@ -99,6 +99,16 @@ module DataMapperRest
       key_condition.first.value
     end
 
+    def extract_params_from_query(query)
+      conditions = query.conditions
+      operands   = conditions.operands
+
+      return {} unless conditions.kind_of?(DataMapper::Conditions::AndOperation)
+      return {} if operands.any? { |o| o.property.key? }
+
+      query.options
+    end
+
     def record_from_rexml(entity_element, field_to_property)
       record = {}
 
@@ -142,6 +152,19 @@ module DataMapperRest
 
     def resource_name(model)
       Extlib::Inflection.underscore(model.name).pluralize
+    end
+
+    def update_with_response(resource, response)
+      return unless response.kind_of?(Net::HTTPSuccess) && !response.body.blank?
+
+      model      = resource.model
+      properties = model.properties(name)
+
+      parse_resource(response.body, model).each do |key, value|
+        if property = properties[key.to_sym]
+          property.set!(resource, value)
+        end
+      end
     end
   end
 end
