@@ -1,10 +1,10 @@
-require 'rubygems'
+require 'dm-core'
 require 'pathname'
 
-gem 'dm-core', '0.10.0'
-require 'dm-core'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-is-versioned' / 'is'
 
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-versioned' / 'is' / 'versioned.rb'
+require dir / 'versioned'
+require dir / 'version'
 
 # Include the plugin in Resource
 module DataMapper

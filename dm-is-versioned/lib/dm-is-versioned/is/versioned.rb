@@ -45,55 +45,57 @@ module DataMapper
     #
     # TODO: enable replacing a current version with an old version.
     module Versioned
-
       def is_versioned(options = {})
-        on = options[:on]
+        @on = on = options[:on]
 
-        class << self; self end.class_eval do
-          define_method :const_missing do |name|
-            storage_name = Extlib::Inflection.tableize(self.name + "Version")
-            model = DataMapper::Model.new(storage_name)
+        after_class_method :auto_migrate! do |retval|
+          self::Version.auto_migrate!
+        end
 
-            if name == :Version
-              properties.each do |property|
-                # duplication is necessary since Property#options are frozen since 0.10.0
-                options = property.options.dup
-                options[:key] = true if property.name == on || options[:serial] == true
-                options[:serial] = false
-                model.property property.name, property.type, options
-              end
+        after_class_method :auto_upgrade! do |retval|
+          self::Version.auto_upgrade!
+        end
 
-              self.const_set("Version", model)
-            else
-              super(name)
+        properties.each do |property|
+          before "#{property.name}=".to_sym do
+            if value = property.get(self)
+              pending_version_attributes[property.name] ||= value
             end
           end
         end
 
-        self.after_class_method :auto_migrate! do
-          self::Version.auto_migrate!
-        end
-
-        self.after_class_method :auto_upgrade! do
-          self::Version.auto_upgrade!
-        end
-
-        self.before :attribute_set do |property, value|
-          pending_version_attributes[property] ||= self.attribute_get(property)
-        end
-
-        self.after :update do |result|
-          if result && dirty_attributes.has_key?(properties[on])
-            self.class::Version.create(self.attributes.merge(pending_version_attributes))
-            self.pending_version_attributes.clear
+        after :update do |retval|
+          if retval && pending_version_attributes.has_key?(on)
+            model::Version.create(attributes.merge(pending_version_attributes))
+            pending_version_attributes.clear
           end
 
-          result
+          retval
         end
 
-        include DataMapper::Is::Versioned::InstanceMethods
+        extend ClassMethods
+        include InstanceMethods
       end
 
+      module ClassMethods
+        def const_missing(name)
+          if name == :Version
+            model = DataMapper::Model.new
+
+            properties.each do |property|
+              # duplication is necessary since Property#options are frozen since 0.10.0
+              options = property.options.dup
+              options[:key]    = true if property.name == @on || property.serial?
+              options[:serial] = false
+              model.property(property.name, property.type, options)
+            end
+
+            const_set(name, model)
+          else
+            super
+          end
+        end
+      end # ClassMethods
 
       module InstanceMethods
         ##
@@ -115,14 +117,12 @@ module DataMapper
         # --
         # @return <Collection>
         def versions
-          query = {}
-          version = self.class.const_get("Version")
-          self.class.key.zip(self.key) { |property, value| query[property.name] = value }
-          query.merge(:order => version.key.collect { |key| key.name.desc })
-          version.all(query)
+          version_model = model.const_get(:Version)
+          query = model.key.zip(key).map { |p, v| [ p.name, v ] }.to_hash
+          query.merge(:order => version_model.key.map { |k| k.name.desc })
+          version_model.all(query)
         end
-      end
-
+      end # InstanceMethods
     end # Versioned
   end # Is
 end # DataMapper
