@@ -4,6 +4,7 @@ Manifest.txt
 README.txt
 Rakefile
 TODO
+datamapper.rake
 generators/dm_install/dm_install_generator.rb
 generators/dm_install/templates/datamapper.rake
 generators/dm_migration/dm_migration_generator.rb
