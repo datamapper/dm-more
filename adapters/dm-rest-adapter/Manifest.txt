@@ -11,13 +11,10 @@ lib/rest_adapter/connection.rb
 lib/rest_adapter/exceptions.rb
 lib/rest_adapter/formats.rb
 lib/rest_adapter/version.rb
-spec/connection_spec.rb
-spec/crud_spec.rb
-spec/delete_spec.rb
 spec/fixtures/book.rb
-spec/ruby_forker.rb
+spec/semipublic/connection_spec.rb
+spec/semipublic/rest_adapter_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
-spec/update_spec.rb
 tasks/install.rb
 tasks/spec.rb
