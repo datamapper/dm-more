@@ -33,7 +33,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       class ::User
         include DataMapper::Resource
 
-        property :id, Serial
+        property :id,   Serial
         property :name, String
 
         has n, :categories
@@ -43,8 +43,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       class ::Category
         include DataMapper::Resource
 
-        property :id, Serial
-        property :name, String
+        property :id,         Serial
+        property :name,       String
         property :class_name, Discriminator
 
         belongs_to :user
@@ -313,6 +313,5 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
-
   end
 end
