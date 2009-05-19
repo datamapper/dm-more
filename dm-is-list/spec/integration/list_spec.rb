@@ -16,7 +16,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     class Todo
       include DataMapper::Resource
 
-      property :id, Serial
+      property :id,    Serial
       property :title, String
 
       belongs_to :user
@@ -25,28 +25,27 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     before :each do
-      User.auto_migrate!(:default)
-      Todo.auto_migrate!(:default)
+      User.auto_migrate!
+      Todo.auto_migrate!
 
-      u1 = User.create(:name => "Johnny")
-      Todo.create(:user => u1, :title => "Write down what is needed in a list-plugin")
-      Todo.create(:user => u1, :title => "Complete a temporary version of is-list")
-      Todo.create(:user => u1, :title => "Squash bugs in nested-set")
+      u1 = User.create(:name => 'Johnny')
+      Todo.create(:user => u1, :title => 'Write down what is needed in a list-plugin')
+      Todo.create(:user => u1, :title => 'Complete a temporary version of is-list')
+      Todo.create(:user => u1, :title => 'Squash bugs in nested-set')
 
-      u2 = User.create(:name => "Freddy")
-      Todo.create(:user => u2, :title => "Eat tasty cupcake")
-      Todo.create(:user => u2, :title => "Procrastinate on paid work")
-      Todo.create(:user => u2, :title => "Go to sleep")
-
+      u2 = User.create(:name => 'Freddy')
+      Todo.create(:user => u2, :title => 'Eat tasty cupcake')
+      Todo.create(:user => u2, :title => 'Procrastinate on paid work')
+      Todo.create(:user => u2, :title => 'Go to sleep')
     end
 
     describe 'automatic positioning' do
       it 'should get the shadow variable of the last position' do
-        DataMapper.repository(:default) do |repos|
-          Todo.get(3).position=8
+        DataMapper.repository do
+          Todo.get(3).position = 8
           Todo.get(3).should be_dirty
           Todo.get(3).attribute_dirty?(:position).should == true
-          Todo.get(3).original_values[:position].should == 3
+          Todo.get(3).original_values[Todo.properties[:position]].should == 3
           Todo.get(3).list_scope.should == Todo.get(3).original_list_scope
         end
       end
@@ -167,7 +166,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           item.position.should == 1
           Todo.get(5).position.should == 2
-
         end
       end
 

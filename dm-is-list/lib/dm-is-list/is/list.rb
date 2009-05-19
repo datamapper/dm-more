@@ -24,14 +24,16 @@ module DataMapper
         extend  DataMapper::Is::List::ClassMethods
         include DataMapper::Is::List::InstanceMethods
 
-        property :position, Integer unless properties.detect{|p| p.name == :position && p.type == Integer}
+        unless properties.any? { |p| p.name == :position && p.type == Integer }
+          property :position, Integer
+        end
 
         @list_options = options
 
         before :create do
           # a position has been set before save => open up and make room for item
           # no position has been set => move to bottom of my scope-list (or keep detached?)
-          send(:move_without_saving, (position || :lowest))
+          send(:move_without_saving, position || :lowest)
         end
 
         before :update do
@@ -60,7 +62,6 @@ module DataMapper
         after_class_method :inherited do |retval, target|
           target.instance_variable_set(:@list_options, @list_options.dup)
         end
-
       end
 
       module ClassMethods
@@ -75,9 +76,10 @@ module DataMapper
         #
         # @param scope [Hash]
         #
-        def repair_list(scope={})
-          return false unless scope.keys.all?{|s| list_options[:scope].include?(s) || s == :order }
-          all({:order => [:position.asc]}.merge(scope)).each_with_index{ |item,i| item.position = i+1; item.save }
+        def repair_list(scope = {})
+          return false unless scope.keys.all?{ |s| list_options[:scope].include?(s) || s == :order }
+          all({ :order => [ :position ] }.merge(scope)).each_with_index{ |item, i| item.update(:position => i + 1) }
+          true
         end
       end
 
@@ -85,18 +87,18 @@ module DataMapper
         attr_accessor :moved
 
         def list_scope
-          model.list_options[:scope].map{|p| [p,attribute_get(p)]}.to_hash
+          model.list_options[:scope].map{ |p| [ p, attribute_get(p) ] }.to_hash
         end
 
         def original_list_scope
-          model.list_options[:scope].map{|p| [p,original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          model.list_options[:scope].map{ |p| [ p, (property = properties[p]) && original_values.key?(property) ? original_values[property] : attribute_get(p) ] }.to_hash
         end
 
         def list_query
-          list_scope.merge(:order => [:position.asc])
+          list_scope.merge(:order => [ :position ])
         end
 
-        def list(scope=list_query)
+        def list(scope = list_query)
           model.all(scope)
         end
 
@@ -114,8 +116,8 @@ module DataMapper
           model.repair_list(list_scope.merge(:order => order))
         end
 
-        def detach(scope=list_scope)
-          list(scope).all(:position.gt => position).adjust!({:position => -1},true)
+        def detach(scope = list_scope)
+          list(scope).all(:position.gt => position).adjust!({ :position => -1 },true)
           self.position = nil
         end
 
@@ -160,34 +162,38 @@ module DataMapper
         # @see move
        private
         def move_without_saving(vector)
-          if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
+          if vector.kind_of?(Hash)
+            action, object = vector.keys[0], vector.values[0]
+          else
+            action = vector
+          end
 
           minpos = model.list_options[:first]
-          prepos = original_values[:position] || position
-          maxpos = list.last ? (list.last == self ? prepos : list.last.position + 1) : minpos
+          prepos = original_values[properties[:position]] || position
+          maxpos = (last = list.last) ? (last == self ? prepos : last.position + 1) : minpos
 
           newpos = case action
             when :highest     then minpos
             when :lowest      then maxpos
-            when :higher,:up  then [position-1,minpos].max
-            when :lower,:down then [position+1,maxpos].min
+            when :higher,:up  then [ position - 1, minpos ].max
+            when :lower,:down then [ position + 1, maxpos ].min
             when :above       then object.position
-            when :below       then object.position+1
-            when :to          then [minpos,[object.to_i,maxpos].min].max
-            else [action.to_i,maxpos].min
+            when :below       then object.position + 1
+            when :to          then [ minpos, [ object.to_i, maxpos ].min ].max
+            else [ action.to_i, maxpos ].min
           end
 
-          return false if [:lower, :higher].include?(action) && newpos == prepos
-          return false if !newpos || ([:above,:below].include?(action) && list_scope != object.list_scope)
-          return true if newpos == position && position == prepos || (newpos == maxpos && position == maxpos-1)
+          return false if [ :lower, :higher ].include?(action) && newpos == prepos
+          return false if !newpos || ([ :above, :below ].include?(action) && list_scope != object.list_scope)
+          return true  if newpos == position && position == prepos || (newpos == maxpos && position == maxpos - 1)
 
           if !position
-            list.all(:position.gte => newpos).adjust!({:position => +1},true) unless action == :lowest
+            list.all(:position.gte => newpos).adjust!({ :position => 1 }, true) unless action == :lowest
           elsif newpos > prepos
             newpos -= 1 if [:lowest,:above,:below,:to].include?(action)
-            list.all(:position => prepos..newpos).adjust!({:position => -1},true)
+            list.all(:position => prepos..newpos).adjust!({ :position => -1 }, true)
           elsif newpos < prepos
-            list.all(:position => newpos..prepos).adjust!({:position => +1},true)
+            list.all(:position => newpos..prepos).adjust!({ :position => 1  }, true)
           end
 
           self.position = newpos
