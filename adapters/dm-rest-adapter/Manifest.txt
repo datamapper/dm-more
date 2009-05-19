@@ -5,7 +5,6 @@ README.markdown
 README.txt
 Rakefile
 TODO
-dm-rest-adapter.gemspec
 lib/rest_adapter.rb
 lib/rest_adapter/adapter.rb
 lib/rest_adapter/connection.rb
