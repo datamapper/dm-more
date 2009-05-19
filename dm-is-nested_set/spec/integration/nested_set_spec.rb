@@ -59,20 +59,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       DataMapper.auto_migrate!
 
-      DataMapper.repository(:default) do
-        @paul = User.create(:name => "paul")
-        @john = User.create(:name => "john")
+      DataMapper.repository do
+        @paul = User.create(:name => 'paul')
+        @john = User.create(:name => 'john')
 
-        Category.create(:id => 1, :name => "Electronics")
-        Category.create(:id => 2, :parent_id => 1,  :name => "Televisions")
-        Category.create(:id => 3, :parent_id => 2,  :name => "Tube")
-        Category.create(:id => 4, :parent_id => 2,  :name => "LCD")
-        Category.create(:id => 5, :parent_id => 2,  :name => "Plasma")
-        Category.create(:id => 6, :parent_id => 1,  :name => "Portable Electronics")
-        Category.create(:id => 7, :parent_id => 6,  :name => "MP3 Players")
-        Category.create(:id => 8, :parent_id => 7,  :name => "Flash")
-        Category.create(:id => 9, :parent_id => 6,  :name => "CD Players")
-        Category.create(:id => 10,:parent_id => 6,  :name => "2 Way Radios")
+        electronics          = Category.create(                                 :name => 'Electronics')
+        televisions          = Category.create(:parent => electronics,          :name => 'Televisions')
+        tube                 = Category.create(:parent => televisions,          :name => 'Tube')
+        lcd                  = Category.create(:parent => televisions,          :name => 'LCD')
+        plasma               = Category.create(:parent => televisions,          :name => 'Plasma')
+        portable_electronics = Category.create(:parent => electronics,          :name => 'Portable Electronics')
+        mp3_players          = Category.create(:parent => portable_electronics, :name => 'MP3 Players')
+        flash                = Category.create(:parent => mp3_players,          :name => 'Flash')
+        cd_players           = Category.create(:parent => portable_electronics, :name => 'CD Players')
+        two_way_radios       = Category.create(:parent => portable_electronics, :name => '2 Way Radios')
       end
     end
 
@@ -92,7 +92,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe 'Class#root and #root' do
       it 'should return the toplevel node' do
-        Category.root.name.should == "Electronics"
+        Category.root.name.should == 'Electronics'
       end
     end
 
@@ -115,8 +115,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           c8.ancestor.should == Category.get(7)
           c8.ancestor.should == c8.parent
 
-          c8.ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players"]
-          c8.self_and_ancestors.map{|a|a.name}.should == ["Electronics","Portable Electronics","MP3 Players","Flash"]
+          c8.ancestors.map{|a|a.name}.should == ['Electronics','Portable Electronics','MP3 Players']
+          c8.self_and_ancestors.map{|a|a.name}.should == ['Electronics','Portable Electronics','MP3 Players','Flash']
         end
       end
     end
@@ -129,8 +129,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           t = r.children.first
           t.children.length.should == 3
-          t.children.first.name.should == "Tube"
-          t.children[2].name.should == "Plasma"
+          t.children.first.name.should == 'Tube'
+          t.children[2].name.should == 'Plasma'
         end
       end
     end
@@ -141,11 +141,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           r = Category.get(1)
           r.self_and_descendants.length.should == 10
           r.descendants.length.should == 9
-          r.name.should == "Electronics"
+          r.name.should == 'Electronics'
           t = r.children[1]
-          t.name.should == "Portable Electronics"
+          t.name.should == 'Portable Electronics'
           t.descendants.length.should == 4
-          t.descendants.map{|a|a.name}.should == ["MP3 Players","Flash","CD Players","2 Way Radios"]
+          t.descendants.map{|a|a.name}.should == ['MP3 Players','Flash','CD Players','2 Way Radios']
         end
       end
     end
@@ -159,7 +159,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           televisions = r.children[0]
           televisions.siblings.length.should == 1
-          televisions.siblings.map{|a|a.name}.should == ["Portable Electronics"]
+          televisions.siblings.map{|a|a.name}.should == ['Portable Electronics']
         end
       end
     end
@@ -243,15 +243,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         DataMapper.repository(:default) do |repos|
           Category.auto_migrate!
 
-          c1 = Category.create(:name => "New Electronics")
+          c1 = Category.create(:name => 'New Electronics')
 
-          c2 = Category.create(:name => "OLED TVs")
+          c2 = Category.create(:name => 'OLED TVs')
 
           c1.pos.should == [1,4]
           c1.root.should == c1
           c2.pos.should == [2,3]
 
-          c3 = Category.create(:name => "Portable Electronics")
+          c3 = Category.create(:name => 'Portable Electronics')
           c3.parent=c1
           c3.save
 
@@ -273,8 +273,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           c2.pos.should == [2,5]
           c3.pos.should == [3,4]
 
-          c4 = Category.create(:name => "Tube", :parent => c2)
-          c5 = Category.create(:name => "Flatpanel", :parent => c2)
+          c4 = Category.create(:name => 'Tube',      :parent => c2)
+          c5 = Category.create(:name => 'Flatpanel', :parent => c2)
 
           c1.pos.should == [1,10]
           c2.pos.should == [2,9]

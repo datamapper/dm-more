@@ -6,12 +6,12 @@ module DataMapper
       # docs in the works
       #
       def is_nested_set(options={})
-        options = { :child_key => [:parent_id], :scope => [] }.merge(options)
+        options = { :child_key => [ :parent_id ], :scope => [] }.merge(options)
 
         extend  DataMapper::Is::NestedSet::ClassMethods
         include DataMapper::Is::NestedSet::InstanceMethods
 
-        @nested_set_scope = options[:scope]
+        @nested_set_scope  = options[:scope]
         @nested_set_parent = options[:child_key]
 
         property :lft, Integer, :writer => :private
@@ -21,8 +21,8 @@ module DataMapper
         # be cut down to 1 instead of 2 queries. this would be the other way, but seems hackish:
         # options[:child_key].each{|pname| property(pname, Integer) unless properties.detect{|p| p.name == pname}}
 
-        belongs_to :parent,   :model => name, :child_key => options[:child_key], :order => [:lft.asc]
-        has n,     :children, :model => name, :child_key => options[:child_key], :order => [:lft.asc]
+        belongs_to :parent,   :model => self, :child_key => options[:child_key], :order => [ :lft ]
+        has n,     :children, :model => self, :child_key => options[:child_key], :order => [ :lft ]
 
         before :create do
           if !parent
@@ -49,8 +49,8 @@ module DataMapper
           send(:detach)
         end
 
-        after_class_method :inherited do |retval,target|
-          target.instance_variable_set(:@nested_set_scope, @nested_set_scope.dup)
+        after_class_method :inherited do |retval, target|
+          target.instance_variable_set(:@nested_set_scope,  @nested_set_scope.dup)
           target.instance_variable_set(:@nested_set_parent, @nested_set_parent.dup)
         end
 
@@ -60,8 +60,8 @@ module DataMapper
         attr_reader :nested_set_scope, :nested_set_parent
 
         def adjust_gap!(scoped_set,at,adjustment)
-          scoped_set.all(:rgt.gt => at).adjust!({:rgt => adjustment},true)
-          scoped_set.all(:lft.gt => at).adjust!({:lft => adjustment},true)
+          scoped_set.all(:rgt.gt => at).adjust!({ :rgt => adjustment }, true)
+          scoped_set.all(:lft.gt => at).adjust!({ :lft => adjustment }, true)
         end
 
         ##
@@ -88,7 +88,7 @@ module DataMapper
         def leaves
           # TODO scoping, how should it act?
           # TODO supply filtering-option?
-          all(:conditions => ["rgt=lft+1"], :order => [:lft.asc])
+          all(:conditions => [ 'rgt = lft + ?', 1 ], :order => [ :lft ])
         end
 
         ##
@@ -104,7 +104,7 @@ module DataMapper
         ##
         # rebuilds the nested set using parent/child relationships and a chosen order
         #
-        def rebuild_set_from_tree(order=nil)
+        def rebuild_set_from_tree(order = nil)
           # TODO pending
         end
       end
@@ -115,7 +115,7 @@ module DataMapper
         #
         # @private
         def nested_set_scope
-          model.base_model.nested_set_scope.map{|p| [p,attribute_get(p)]}.to_hash
+          model.base_model.nested_set_scope.map{ |p| [ p, attribute_get(p) ] }.to_hash
         end
 
         ##
@@ -123,7 +123,7 @@ module DataMapper
         # @private
         def original_nested_set_scope
           # TODO commit
-          model.base_model.nested_set_scope.map{|p| [p, original_values.key?(p) ? original_values[p] : attribute_get(p)]}.to_hash
+          model.base_model.nested_set_scope.map{ |p| [ p, (property = properties[p]) && original_values.key?(property) ? original_values[property] : attribute_get(p) ] }.to_hash
         end
 
         ##
@@ -131,7 +131,7 @@ module DataMapper
         #
         def nested_set
           # TODO add option for serving it as a nested array
-          model.base_model.all(nested_set_scope.merge(:order => [:lft.asc]))
+          model.base_model.all(nested_set_scope.merge(:order => [ :lft ]))
         end
 
         ##
@@ -167,21 +167,25 @@ module DataMapper
         ##
         # @see move
         def move_without_saving(vector)
-          if vector.is_a? Hash then action,object = vector.keys[0],vector.values[0] else action = vector end
+          if vector.kind_of?(Hash)
+            action, object = vector.keys[0], vector.values[0]
+          else
+            action = vector
+          end
 
           changed_scope = nested_set_scope != original_nested_set_scope
 
           position = case action
-            when :higher  then left_sibling  ? left_sibling.lft    : nil # : "already at the top"
-            when :highest then ancestor      ? ancestor.lft+1      : nil # : "is root, or has no parent"
-            when :lower   then right_sibling ? right_sibling.rgt+1 : nil # : "already at the bottom"
-            when :lowest  then ancestor      ? ancestor.rgt        : nil # : "is root, or has no parent"
-            when :indent  then left_sibling  ? left_sibling.rgt    : nil # : "cannot find a sibling to indent into"
-            when :outdent then ancestor      ? ancestor.rgt+1      : nil # : "is root, or has no parent"
-            when :into    then object        ? object.rgt          : nil # : "supply an object"
-            when :above   then object        ? object.lft          : nil # : "supply an object"
-            when :below   then object        ? object.rgt+1        : nil # : "supply an object"
-            when :to      then object        ? object.to_i         : nil # : "supply a number"
+            when :higher  then left_sibling  ? left_sibling.lft      : nil  # : "already at the top"
+            when :highest then ancestor      ? ancestor.lft + 1      : nil  # : "is root, or has no parent"
+            when :lower   then right_sibling ? right_sibling.rgt + 1 : nil  # : "already at the bottom"
+            when :lowest  then ancestor      ? ancestor.rgt          : nil  # : "is root, or has no parent"
+            when :indent  then left_sibling  ? left_sibling.rgt      : nil  # : "cannot find a sibling to indent into"
+            when :outdent then ancestor      ? ancestor.rgt + 1      : nil  # : "is root, or has no parent"
+            when :into    then object        ? object.rgt            : nil  # : "supply an object"
+            when :above   then object        ? object.lft            : nil  # : "supply an object"
+            when :below   then object        ? object.rgt + 1        : nil  # : "supply an object"
+            when :to      then object        ? object.to_i           : nil  # : "supply a number"
           end
 
           ##
@@ -192,7 +196,7 @@ module DataMapper
           # raise UnableToPositionError unless position.is_a?(Integer) && position > 0
           return false if !position || position < 1
           # return false if you are trying to move this into another scope
-          return false if [:into, :above,:below].include?(action) && nested_set_scope != object.nested_set_scope
+          return false if [ :into, :above, :below ].include?(action) && nested_set_scope != object.nested_set_scope
           # if node is already in the requested position
           if lft == position || rgt == position - 1
             self.parent = ancestor # must set this again, because it might have been changed by the user before move.
@@ -206,26 +210,27 @@ module DataMapper
             # otherwise we only need to open a gap in the set, and smash that buggar in
             #
             if lft && rgt
-              # raise exception if node is trying to move into one of its descendants (infinate loop, spacetime will warp)
+              # raise exception if node is trying to move into one of its descendants (infinite loop, spacetime will warp)
               raise RecursiveNestingError if position > lft && position < rgt
               # find out how wide this node is, as we need to make a gap large enough for it to fit in
               gap = rgt - lft + 1
 
               # make a gap at position, that is as wide as this node
-              model.base_model.adjust_gap!(nested_set,position-1,gap)
+              model.base_model.adjust_gap!(nested_set, position - 1, gap)
 
               # offset this node (and all its descendants) to the right position
-              reload_attributes(:lft,:rgt)
+              reload_attributes([ :lft, :rgt ])
               old_position = lft
               offset = position - old_position
 
-              nested_set.all(:rgt => lft..rgt).adjust!({:lft => offset, :rgt => offset},true)
+              nested_set.all(:rgt => lft..rgt).adjust!({ :lft => offset, :rgt => offset }, true)
+
               # close the gap this movement left behind.
-              model.base_model.adjust_gap!(nested_set,old_position,-gap)
-              reload_attributes(:lft,:rgt)
+              model.base_model.adjust_gap!(nested_set, old_position, -gap)
+              reload_attributes([ :lft, :rgt ])
             else
               # make a gap where the new node can be inserted
-              model.base_model.adjust_gap!(nested_set,position-1,2)
+              model.base_model.adjust_gap!(nested_set, position - 1, 2)
               # set the position fields
               self.lft, self.rgt = position, position + 1
             end
@@ -265,7 +270,7 @@ module DataMapper
         #
         # @return <Resource, NilClass> returns the parent-object, or nil if this is root/detached
         def ancestor
-          ancestors.reverse.first
+          ancestors.last
         end
 
         ##
@@ -301,7 +306,7 @@ module DataMapper
         def descendants
           # TODO add argument for returning as a nested array.
           # TODO supply filtering-option?
-          nested_set.all(:lft => (lft+1)..(rgt-1))
+          nested_set.all(:lft => (lft + 1)..(rgt - 1))
         end
 
         ##
@@ -310,7 +315,7 @@ module DataMapper
         # @return <Collection>
         def leaves
           # TODO supply filtering-option?
-          nested_set.all(:lft => (lft+1)..rgt, :conditions=>["rgt=lft+1"])
+          nested_set.all(:lft => (lft + 1)..rgt, :conditions => [ 'rgt = lft + ?',  1 ])
         end
 
         ##
@@ -319,7 +324,7 @@ module DataMapper
         #
         # @par
         def leaf?
-          rgt-lft == 1
+          rgt - lft == 1
         end
 
         ##
@@ -327,7 +332,7 @@ module DataMapper
         #
         # @return <Collection>
         def self_and_siblings
-          parent ? parent.children : [self]
+          parent ? parent.children : [ self ]
         end
 
         ##
@@ -338,7 +343,7 @@ module DataMapper
         def siblings
           # TODO find a way to return this as a collection?
           # TODO supply filtering-option?
-          self_and_siblings.reject{|r| r.key == key } # because identitymap is not used in console
+          self_and_siblings.reject { |r| r.key == key } # because identitymap is not used in console
         end
 
         ##
@@ -347,7 +352,7 @@ module DataMapper
         # @return <Resource, NilClass> the resource to the left, or nil if self is leftmost
         # @see #self_and_siblings
         def left_sibling
-          self_and_siblings.find{|v| v.rgt == lft-1}
+          self_and_siblings.detect { |v| v.rgt == lft - 1 }
         end
 
         ##
@@ -356,7 +361,7 @@ module DataMapper
         # @return <Resource, NilClass> the resource to the right, or nil if self is rightmost
         # @see #self_and_siblings
         def right_sibling
-          self_and_siblings.find { |v| v.lft == rgt + 1 }
+          self_and_siblings.detect { |v| v.lft == rgt + 1 }
         end
 
        private
