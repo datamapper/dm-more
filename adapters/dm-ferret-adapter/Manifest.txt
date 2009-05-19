@@ -12,7 +12,7 @@ lib/ferret_adapter/remote_index.rb
 lib/ferret_adapter/repository_ext.rb
 lib/ferret_adapter/version.rb
 spec/adapter_spec.rb
-spec/helper.rb
+spec/spec_helper.rb
 spec/spec.opts
 tasks/install.rb
 tasks/spec.rb
