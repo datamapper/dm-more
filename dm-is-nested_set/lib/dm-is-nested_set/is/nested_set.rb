@@ -123,7 +123,7 @@ module DataMapper
         # @private
         def original_nested_set_scope
           # TODO commit
-          model.base_model.nested_set_scope.map{ |p| [ p, (property = properties[p]) && original_values.key?(property) ? original_values[property] : attribute_get(p) ] }.to_hash
+          model.base_model.nested_set_scope.map{ |p| [ p, (property = properties[p]) && original_attributes.key?(property) ? original_attributes[property] : attribute_get(p) ] }.to_hash
         end
 
         ##

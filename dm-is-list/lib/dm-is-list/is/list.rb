@@ -91,7 +91,7 @@ module DataMapper
         end
 
         def original_list_scope
-          model.list_options[:scope].map{ |p| [ p, (property = properties[p]) && original_values.key?(property) ? original_values[property] : attribute_get(p) ] }.to_hash
+          model.list_options[:scope].map{ |p| [ p, (property = properties[p]) && original_attributes.key?(property) ? original_attributes[property] : attribute_get(p) ] }.to_hash
         end
 
         def list_query
@@ -169,7 +169,7 @@ module DataMapper
           end
 
           minpos = model.list_options[:first]
-          prepos = original_values[properties[:position]] || position
+          prepos = original_attributes[properties[:position]] || position
           maxpos = (last = list.last) ? (last == self ? prepos : last.position + 1) : minpos
 
           newpos = case action

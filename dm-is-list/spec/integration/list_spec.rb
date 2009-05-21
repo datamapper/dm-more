@@ -45,7 +45,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           Todo.get(3).position = 8
           Todo.get(3).should be_dirty
           Todo.get(3).attribute_dirty?(:position).should == true
-          Todo.get(3).original_values[Todo.properties[:position]].should == 3
+          Todo.get(3).original_attributes[Todo.properties[:position]].should == 3
           Todo.get(3).list_scope.should == Todo.get(3).original_list_scope
         end
       end
