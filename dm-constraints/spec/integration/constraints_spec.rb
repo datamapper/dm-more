@@ -208,11 +208,9 @@ ADAPTERS.each do |name, connection_uri|
           end
 
           it 'the child should be destroyable' do
-            pending do
-              @chk1.tags.clear
-              @chk1.save.should be_true
-              @chk1.tags.should be_empty
-            end
+            @chk1.tags.clear
+            @chk1.save.should be_true
+            @chk1.tags.should be_empty
           end
         end
       end
@@ -359,21 +357,20 @@ ADAPTERS.each do |name, connection_uri|
           end
 
           it 'should destroy! the parent and the children, too' do
-            pending do
-              @chk1.destroy.should be_true
-              @chk1.should be_new
+            @chk1.destroy.should be_true
+            @chk1.should be_new
 
-              # @t1 & @t2 should still exist, the chicken_tags should have been deleted
-              ChickenTag.all.should be_empty
+            # @t1 & @t2 should still exist, the chicken_tags should have been deleted
+            ChickenTag.all.should be_empty
+
+            pending do
               @t1.should_not be_new
               @t2.should_not be_new
             end
           end
 
           it 'the child should be destroyable' do
-            pending do
-              @chk1.destroy.should be_true
-            end
+            @chk1.destroy.should be_true
           end
         end
       end
