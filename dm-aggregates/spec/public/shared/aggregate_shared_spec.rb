@@ -19,7 +19,7 @@ shared_examples_for 'It Has Setup Resources' do
       property :birth_on,          Date
       property :birth_time,        Time
 
-      belongs_to :knight
+      belongs_to :knight, :nullable => true
     end
 
     # A more complex example, with BigDecimal and Float properties

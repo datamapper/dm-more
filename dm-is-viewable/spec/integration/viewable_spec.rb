@@ -16,7 +16,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       Location.all(:name  => 'Fort Myers').update!(:description => 'sucky')
 
-      10.times{|x| Person.create(:name => names.random, :favorite_color => colors.random, :favorite_number => rand(200))}
+      location = Location.first
+      10.times{|x| location.people.create(:name => names.random, :favorite_color => colors.random, :favorite_number => rand(200))}
     end
 
     after :all do

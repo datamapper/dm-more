@@ -220,24 +220,22 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     #   Articles are Commentable by many Users
     #
     it "should allow M:M relationships through the Remixable Module" do
-      user = User.new
+      user    = User.new
       article = Article.new
-
-      ac = ArticleComment.new
+      ac      = ArticleComment.new
 
       user.first_name = "Talker"
       user.last_name = "OnTheInternetz"
+      user.save
 
       article.url = "Http://example.com/"
       article.title = "Important internet thingz, lol"
+      article.save
 
       ac.comment = "This article sux!"
-
-      article.comments << ac
-      user.article_comments << ac
-
-      user.save
-      article.save
+      ac.user    = user
+      ac.article = article
+      ac.save
 
       article.comments.first.should == ac
       user.article_comments.first.should == ac

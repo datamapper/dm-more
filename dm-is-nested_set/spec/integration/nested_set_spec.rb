@@ -60,19 +60,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       DataMapper.auto_migrate!
 
       DataMapper.repository do
-        @paul = User.create(:name => 'paul')
-        @john = User.create(:name => 'john')
+        @user  = User.create(:name => 'paul')
+        @other = User.create(:name => 'john')
 
-        electronics          = Category.create(                                 :name => 'Electronics')
-        televisions          = Category.create(:parent => electronics,          :name => 'Televisions')
-        tube                 = Category.create(:parent => televisions,          :name => 'Tube')
-        lcd                  = Category.create(:parent => televisions,          :name => 'LCD')
-        plasma               = Category.create(:parent => televisions,          :name => 'Plasma')
-        portable_electronics = Category.create(:parent => electronics,          :name => 'Portable Electronics')
-        mp3_players          = Category.create(:parent => portable_electronics, :name => 'MP3 Players')
-        flash                = Category.create(:parent => mp3_players,          :name => 'Flash')
-        cd_players           = Category.create(:parent => portable_electronics, :name => 'CD Players')
-        two_way_radios       = Category.create(:parent => portable_electronics, :name => '2 Way Radios')
+        electronics          = @user.categories.create(                                 :name => 'Electronics')
+        televisions          = @user.categories.create(:parent => electronics,          :name => 'Televisions')
+        tube                 = @user.categories.create(:parent => televisions,          :name => 'Tube')
+        lcd                  = @user.categories.create(:parent => televisions,          :name => 'LCD')
+        plasma               = @user.categories.create(:parent => televisions,          :name => 'Plasma')
+        portable_electronics = @user.categories.create(:parent => electronics,          :name => 'Portable Electronics')
+        mp3_players          = @user.categories.create(:parent => portable_electronics, :name => 'MP3 Players')
+        flash                = @user.categories.create(:parent => mp3_players,          :name => 'Flash')
+        cd_players           = @user.categories.create(:parent => portable_electronics, :name => 'CD Players')
+        two_way_radios       = @user.categories.create(:parent => portable_electronics, :name => '2 Way Radios')
       end
     end
 
@@ -243,15 +243,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         DataMapper.repository(:default) do |repos|
           Category.auto_migrate!
 
-          c1 = Category.create(:name => 'New Electronics')
+          c1 = @user.categories.create(:name => 'New Electronics')
 
-          c2 = Category.create(:name => 'OLED TVs')
+          c2 = @user.categories.create(:name => 'OLED TVs')
 
           c1.pos.should == [1,4]
           c1.root.should == c1
           c2.pos.should == [2,3]
 
-          c3 = Category.create(:name => 'Portable Electronics')
+          c3 = @user.categories.create(:name => 'Portable Electronics')
           c3.parent=c1
           c3.save
 
@@ -273,8 +273,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           c2.pos.should == [2,5]
           c3.pos.should == [3,4]
 
-          c4 = Category.create(:name => 'Tube',      :parent => c2)
-          c5 = Category.create(:name => 'Flatpanel', :parent => c2)
+          c4 = @user.categories.create(:name => 'Tube',      :parent => c2)
+          c5 = @user.categories.create(:name => 'Flatpanel', :parent => c2)
 
           c1.pos.should == [1,10]
           c2.pos.should == [2,9]
@@ -296,8 +296,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         DataMapper.repository(:default) do |repos|
           plasma = Category.get(5)
           plasma.pos.should == [7,8]
-          plasma.user_id = 1
-          plasma.save
+          plasma.update(:user => @other)
           plasma.pos.should == [1,2]
         end
       end

@@ -38,8 +38,8 @@ ADAPTERS.each do |name, connection_uri|
         property :name,  String
         property :breed, String
 
-        belongs_to :stable
-        belongs_to :farmer
+        belongs_to :stable, :nullable => true
+        belongs_to :farmer, :nullable => true
       end
 
       #Used to test a belongs_to association with no has() association
@@ -51,7 +51,7 @@ ADAPTERS.each do |name, connection_uri|
         property :id,   Serial
         property :name, String
 
-        belongs_to :farmer
+        belongs_to :farmer, :nullable => true
       end
 
       #Used to test M:M :through => Resource relationships
