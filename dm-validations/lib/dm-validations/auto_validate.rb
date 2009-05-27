@@ -1,7 +1,7 @@
 module DataMapper
   class Property
     # for options_with_message
-    PROPERTY_OPTIONS << :message << :messages << :set
+    OPTIONS << :message << :messages << :set
   end
 
   module Validate
