@@ -12,7 +12,6 @@ GEM_PATHS = %w[
   dm-serializer
   dm-validations
   dm-types
-  adapters/dm-couchdb-adapter
   adapters/dm-ferret-adapter
   adapters/dm-rest-adapter
   dm-aggregates
