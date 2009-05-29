@@ -13,7 +13,7 @@ module DataMapper
         adjust_attributes[property] = attributes[property.name] if property
       end
 
-      repository.adapter.adjust(adjust_attributes, to_query)
+      repository.adapter.adjust(adjust_attributes, query)
 
       collection.reload(:fields => adjust_attributes.keys) if reload
 
