@@ -34,7 +34,7 @@ module DataMapper
       # there is no need to load the collection (it will not change after adjustment)
       # if the query contains a raw sql-string, we cannot (truly) know, and must load.
       unless altered = query.raw?
-        query.conditions.each do |comparison|
+        query.conditions.each_node do |comparison|
           altered = true
         end
       end
@@ -61,7 +61,7 @@ module DataMapper
       # if preload was set to false, and collection was affected by updates,
       # something is now officially borked. We'll try the best we can (still many cases this is borked for)
       if altered
-        query.conditions.each do |comparison|
+        query.conditions.each_node do |comparison|
           next unless adjustment = adjust_attributes[comparison.property]
 
           case value = comparison.value

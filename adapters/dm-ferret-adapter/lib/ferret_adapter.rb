@@ -80,9 +80,9 @@ module DataMapper
 
       def conditions_statement(conditions)
         case conditions
-          when Conditions::NotOperation       then negate_operation(conditions)
-          when Conditions::AbstractOperation  then operation_statement(conditions)
-          when Conditions::AbstractComparison then comparison_statement(conditions)
+          when Query::Conditions::NotOperation       then negate_operation(conditions)
+          when Query::Conditions::AbstractOperation  then operation_statement(conditions)
+          when Query::Conditions::AbstractComparison then comparison_statement(conditions)
         end
       end
 
@@ -103,7 +103,7 @@ module DataMapper
           statements << statement
         end
 
-        join_with = operation.kind_of?(Conditions::AndOperation) ? 'AND' : 'OR'
+        join_with = operation.kind_of?(Query::Conditions::AndOperation) ? 'AND' : 'OR'
         statements.join(" #{join_with} ")
       end
 
@@ -115,23 +115,23 @@ module DataMapper
 
         # break exclusive Range queries up into two comparisons ANDed together
         if value.kind_of?(Range) && value.exclude_end?
-          operation = Conditions::BooleanOperation.new(:and,
-            Conditions::Comparison.new(:gte, comparison.property, value.first),
-            Conditions::Comparison.new(:lt,  comparison.property, value.last)
+          operation = Query::Conditions::BooleanOperation.new(:and,
+            Query::Conditions::Comparison.new(:gte, comparison.property, value.first),
+            Query::Conditions::Comparison.new(:lt,  comparison.property, value.last)
           )
 
           return "(#{operation_statement(operation)})"
         end
 
         operator = case comparison
-          when Conditions::EqualToComparison              then ''
-          when Conditions::InclusionComparison            then raise NotImplementedError, 'no support for inclusion match yet'
-          when Conditions::RegexpComparison               then raise NotImplementedError, 'no support for regexp match yet'
-          when Conditions::LikeComparison                 then raise NotImplementedError, 'no support for like match yet'
-          when Conditions::GreaterThanComparison          then '>'
-          when Conditions::LessThanComparison             then '<'
-          when Conditions::GreaterThanOrEqualToComparison then '>='
-          when Conditions::LessThanOrEqualToComparison    then '<='
+          when Query::Conditions::EqualToComparison              then ''
+          when Query::Conditions::InclusionComparison            then raise NotImplementedError, 'no support for inclusion match yet'
+          when Query::Conditions::RegexpComparison               then raise NotImplementedError, 'no support for regexp match yet'
+          when Query::Conditions::LikeComparison                 then raise NotImplementedError, 'no support for like match yet'
+          when Query::Conditions::GreaterThanComparison          then '>'
+          when Query::Conditions::LessThanComparison             then '<'
+          when Query::Conditions::GreaterThanOrEqualToComparison then '>='
+          when Query::Conditions::LessThanOrEqualToComparison    then '<='
         end
 
         # We use property.field here, so that you can declare composite

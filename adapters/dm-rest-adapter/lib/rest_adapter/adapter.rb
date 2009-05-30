@@ -92,7 +92,7 @@ module DataMapperRest
 
       conditions = query.conditions
 
-      return nil unless conditions.kind_of?(DataMapper::Conditions::AndOperation)
+      return nil unless conditions.kind_of?(DataMapper::Query::Conditions::AndOperation)
       return nil unless (key_condition = conditions.select { |o| o.property.key? }).size == 1
 
       key_condition.first.value
@@ -101,7 +101,7 @@ module DataMapperRest
     def extract_params_from_query(query)
       conditions = query.conditions
 
-      return {} unless conditions.kind_of?(DataMapper::Conditions::AndOperation)
+      return {} unless conditions.kind_of?(DataMapper::Query::Conditions::AndOperation)
       return {} if conditions.any? { |o| o.property.key? }
 
       query.options
