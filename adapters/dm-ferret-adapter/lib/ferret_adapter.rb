@@ -93,9 +93,7 @@ module DataMapper
       def operation_statement(operation)
         statements  = []
 
-        operands = operation.operands
-
-        operands.each do |operand|
+        operation.each do |operand|
           statement = conditions_statement(operand)
 
           if operand.respond_to?(:operands) && operand.operands.size > 1
