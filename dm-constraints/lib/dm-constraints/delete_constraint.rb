@@ -35,12 +35,6 @@ module DataMapper
           if constraint == :set_nil && options.key?(:through)
             raise ArgumentError, 'Constraint type :set_nil is not valid for relationships using :through'
           end
-
-          min, max = extract_min_max(cardinality)
-
-          if max == 1 && constraint == :destroy!
-            raise ArgumentError, 'Constraint type :destroy! is not valid for one-to-one relationships'
-          end
         end
 
         ##
@@ -96,18 +90,22 @@ module DataMapper
           next if relationship.kind_of?(Associations::ManyToOne::Relationship)
           next unless association = relationship.get(self)
 
-          case constraint = relationship.constraint
+          delete_allowed = case constraint = relationship.constraint
             when :protect
-              throw(:halt, false) if Array(association).any?
+              Array(association).empty?
             when :destroy, :destroy!
               association.send(constraint)
             when :set_nil
-              Array(association).each { |r| relationship.inverse.set(r, nil); r.save }
+              Array(association).all? do |resource|
+                resource.update(relationship.inverse => nil)
+              end
             when :skip
-              # do nothing
+              true  # do nothing
           end
+
+          throw(:halt, false) unless delete_allowed
         end
-      end # check_delete_constraints
+      end
     end # DeleteConstraint
   end # Constraints
 end # DataMapper

@@ -6,569 +6,603 @@ ADAPTERS.each do |name, connection_uri|
     before :all do
       @adapter    = DataMapper.setup(:default, connection_uri)
       @repository = DataMapper.repository(@adapter.name)
-    end
 
-    before do
-      class ::Stable
+      class ::Article
         include DataMapper::Resource
         include DataMapper::Constraints
 
-        property :id,       Serial
-        property :location, String
-        property :size,     Integer
+        property :id,      Serial
+        property :title,   String, :nullable => false
+        property :content, Text
 
-        has n, :cows
+        has 1, :revision
+        has n, :comments
+        has n, :authors, :through => Resource
       end
 
-      class ::Farmer
+      class ::Author
         include DataMapper::Resource
         include DataMapper::Constraints
 
         property :first_name, String, :key => true
         property :last_name,  String, :key => true
 
-        has n, :cows
+        has n, :comments
+        has n, :articles, :through => Resource
       end
 
-      class ::Cow
-        include DataMapper::Resource
-        include DataMapper::Constraints
-
-        property :id,    Serial
-        property :name,  String
-        property :breed, String
-
-        belongs_to :stable, :nullable => true
-        belongs_to :farmer, :nullable => true
-      end
-
-      #Used to test a belongs_to association with no has() association
-      #on the other end
-      class ::Pig
+      class ::Comment
         include DataMapper::Resource
         include DataMapper::Constraints
 
         property :id,   Serial
-        property :name, String
+        property :body, Text
 
-        belongs_to :farmer, :nullable => true
+        belongs_to :article
+        belongs_to :author
       end
 
-      #Used to test M:M :through => Resource relationships
-      class ::Chicken
+      # Used to test a belongs_to association with no has() association
+      # on the other end
+      class ::Revision
         include DataMapper::Resource
         include DataMapper::Constraints
 
         property :id,   Serial
-        property :name, String
+        property :text, String
 
-        has n, :tags, :through => Resource
+        belongs_to :article
+      end
+    end
+
+    describe 'create related objects' do
+      before :all do
+        class ::Comment
+          belongs_to :article, :nullable => true
+          belongs_to :author,  :nullable => true
+        end
+
+        class ::Revision
+          belongs_to :article, :nullable => true
+        end
       end
 
-      class ::Tag
-        include DataMapper::Resource
-        include DataMapper::Constraints
-
-        property :id,     Serial
-        property :phrase, String
-
-        has n, :chickens, :through => Resource
+      it 'should be able to create related objects with a foreign key constraint' do
+        @article = Article.create(:title => 'Man on the Moon')
+        @comment = @article.comments.create(:body => 'So true!')
       end
 
-      DataMapper.auto_migrate!
-    end
+      it 'should be able to create related objects with a composite foreign key constraint' do
+        @author  = Author.create(:first_name => 'John', :last_name => 'Doe')
+        @comment = @author.comments.create(:body => 'So true!')
+      end
 
-    after do
-      DataMapper.send(:auto_migrate_down!, @repository.name)
-    end
-
-    it 'is included when DataMapper::Constraints is loaded' do
-      Cow.new.should be_kind_of(DataMapper::Constraints)
-    end
-
-    it 'should be able to create related objects with a foreign key constraint' do
-      @s  = Stable.create(:location => 'Hometown')
-      @c1 = Cow.create(:name => 'Bea', :stable => @s)
-    end
-
-    it 'should be able to create related objects with a composite foreign key constraint' do
-      @f  = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-      @c1 = Cow.create(:name => 'Bea', :farmer => @f)
-    end
-
-    it 'should not be able to create related objects with a failing foreign key constraint' do
-      s = Stable.create
-      lambda { @c1 = Cow.create(:name => 'Bea', :stable_id => s.id + 1) }.should raise_error
+      it 'should not be able to create related objects with a failing foreign key constraint' do
+        article = Article.create(:title => 'Man on the Moon')
+        lambda { Comment.create(:body => 'So true!', :article_id => article_id.id + 1) }.should raise_error
+      end
     end
 
     describe 'belongs_to without matching has association' do
       before do
-        @f1 = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-        @f2 = Farmer.create(:first_name => 'Some', :last_name => 'Body')
-        @p  = Pig.create(:name => 'Bea', :farmer => @f2)
+        @article       = Article.create(:title => 'Man on the Moon')
+        @other_article = Article.create(:title => 'Dolly cloned')
+        @revision      = Revision.create(:text => 'Riveting!', :article => @other_article)
       end
 
       it 'should destroy the parent if there are no children in the association' do
-        @f1.destroy.should be_true
+        @article.destroy.should be_true
+        @article.model.get(*@article.key).should be_nil
       end
 
       it 'the child should be destroyable' do
-        @p.destroy.should be_true
+        @revision.destroy.should be_true
+        @revision.model.get(*@revision.key).should be_nil
       end
     end
 
     describe 'constraint options' do
       describe 'when no constraint options are given' do
+        before do
+          @article      = Article.create(:title => 'Man on the Moon')
+          @author       = Author.create(:first_name => 'John', :last_name => 'Doe')
+          @other_author = Author.create(:first_name => 'Joe',  :last_name => 'Smith')
+          @comment      = @other_author.comments.create(:body => 'So true!', :article => @article)
+        end
+
         it 'should destroy the parent if there are no children in the association' do
-          @f1 = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-          @f2 = Farmer.create(:first_name => 'Some', :last_name => 'Body')
-          @c1 = Cow.create(:name => 'Bea', :farmer => @f2)
-          @f1.destroy.should be_true
+          @author.destroy.should be_true
+          @author.model.get(*@author.key).should be_nil
         end
 
         it 'should not destroy the parent if there are children in the association' do
-          @f = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-          @c1 = Cow.create(:name => 'Bea', :farmer => @f)
-          @f.destroy.should be_false
+          @other_author.destroy.should be_false
+          @other_author.model.get(*@other_author.key).should_not be_nil
         end
       end
 
       describe 'when :constraint => :protect is given' do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :protect
-            has 1, :pig,  :constraint => :protect
+        before :all do
+          class ::Article
+            has 1, :revision, :constraint => :protect
+            has n, :comments, :constraint => :protect
+            has n, :authors,  :constraint => :protect, :through => Resource
           end
 
-          class ::Cow
-            belongs_to :farmer, :constraint => :protect
+          class ::Author
+            has n, :comments, :constraint => :protect
+            has n, :articles, :constraint => :protect, :through => Resource
           end
 
-          class ::Pig
-            belongs_to :farmer, :constraint => :protect
+          class ::Comment
+            belongs_to :article
+            belongs_to :author
           end
 
-          class ::Chicken
-            has n, :tags, :through => Resource, :constraint => :protect
-          end
-
-          class ::Tag
-            has n, :chickens, :through => Resource, :constraint => :protect
+          class ::Revision
+            belongs_to :article
           end
         end
 
         describe 'one-to-one associations' do
           before do
-            @f1 = Farmer.create(:first_name => 'Mary', :last_name => 'Smith')
-            @p1 = Pig.create(:name => 'Morton', :farmer => @f1)
+            @article  = Article.create(:title => 'Man on the Moon')
+            @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
           it 'should not destroy the parent if there are children in the association' do
-            @f1.destroy.should be_false
+            @article.destroy.should be_false
+            @article.model.get(*@article.key).should_not be_nil
           end
 
           it 'the child should be destroyable' do
-            @p1.destroy.should be_true
+            @revision.destroy.should be_true
+            @revision.model.get(*@revision.key).should be_nil
           end
         end
 
         describe 'one-to-many associations' do
           before do
-            @f1 = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-            @f2 = Farmer.create(:first_name => 'Some', :last_name => 'Body')
-            @c1 = Cow.create(:name => 'Bea', :farmer => @f2)
+            @article        = Article.create(:title => 'Man on the Moon')
+            @author         = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @another_author = Author.create(:first_name => 'Joe',  :last_name => 'Smith')
+            @comment        = @another_author.comments.create(:body => 'So true!', :article => @article)
           end
 
           it 'should destroy the parent if there are no children in the association' do
-            @f1.destroy.should be_true
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
           end
 
           it 'should not destroy the parent if there are children in the association' do
-            @f2.destroy.should be_false
+            @another_author.destroy.should be_false
           end
 
           it 'the child should be destroyable' do
-            @c1.destroy.should be_true
+            @comment.destroy.should be_true
+            @comment.model.get(*@comment.key).should be_nil
           end
         end
 
         describe 'many-to-many associations' do
           before do
-            @t1   = Tag.create(:phrase => 'silly chicken')
-            @t2   = Tag.create(:phrase => 'serious chicken')
-            @chk1 = Chicken.create(:name => 'Frank the Chicken', :tags => [ @t2 ])
+            @author         = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @another_author = Author.create(:first_name => 'Joe',  :last_name => 'Smith')
+            @article        = Article.create(:title => 'Man on the Moon', :authors => [ @author ])
           end
 
           it 'should destroy the parent if there are no children in the association' do
-            @t1.destroy.should be_true
+            @another_author.destroy.should be_true
+            @another_author.model.get(*@another_author.key).should be_nil
           end
 
           it 'should not destroy the parent if there are children in the association' do
-            @t2.destroy.should be_false
+            @author.articles.should_not == []
+            @author.destroy.should be_false
           end
 
           it 'the child should be destroyable' do
-            @chk1.tags.clear
-            @chk1.save.should be_true
-            @chk1.tags.should be_empty
-          end
-        end
-      end
-
-      describe 'when :constraint => :destroy is given' do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :destroy
-            has 1, :pig,  :constraint => :destroy
-          end
-
-          class ::Chicken
-            has n, :tags, :through => Resource, :constraint => :destroy
-          end
-
-          class ::Tag
-            has n, :chickens, :through => Resource, :constraint => :destroy
-          end
-
-          DataMapper.auto_migrate!
-        end
-
-        describe 'one-to-one associations' do
-          before do
-            @f = Farmer.create(:first_name => 'Ted', :last_name => 'Cornhusker')
-            @p = Pig.create(:name => 'BaconBits', :farmer => @f)
-          end
-
-          it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
-          end
-
-          it 'should destroy the children' do
-            pig = @f.pig
-            @f.destroy.should be_true
-            pig.should be_new
-          end
-
-          it 'the child should be destroyable' do
-            @p.destroy.should be_true
-          end
-        end
-
-        describe 'one-to-many associations' do
-          before do
-            @f = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-            @c1 = Cow.create(:name => 'Bea',   :farmer => @f)
-            @c2 = Cow.create(:name => 'Riksa', :farmer => @f)
-          end
-
-          it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
-          end
-
-          it 'should destroy the children' do
-            @f.destroy.should be_true
-            @f.cows.all? { |c| c.should be_new }
-          end
-
-          it 'should destroy the children' do
-            @f.destroy.should be_true
-            @f.cows.all? { |c| c.should be_new }
-            @f.should be_new
-          end
-
-          it 'the child should be destroyable' do
-            @c1.destroy.should be_true
-          end
-        end
-
-        describe 'many-to-many associations' do
-          before do
-            @t1   = Tag.create(:phrase => 'floozy')
-            @t2   = Tag.create(:phrase => 'dirty')
-            @chk1 = Chicken.create(:name => 'Nancy Chicken', :tags => [ @t1, @t2 ])
-          end
-
-          it 'should destroy the parent and the children, too' do
-            pending do
-              @chk1.destroy.should be_true
-              @chk1.should be_new
-
-              #@t1 & @t2 should still exist, the chicken_tags should have been deleted
-              ChickenTag.all.should be_empty
-              @t1.should_not be_new
-              @t2.should_not be_new
-            end
-          end
-
-          it 'the child should be destroyable' do
-            pending do
-              @chk1.destroy.should be_true
-            end
+            @article.authors.clear
+            @article.save.should be_true
+            @article.authors.should be_empty
           end
         end
       end
 
       describe 'when :constraint => :destroy! is given' do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :destroy!
+        before :all do
+          class ::Article
+            has 1, :revision, :constraint => :destroy!
+            has n, :comments, :constraint => :destroy!
+            has n, :authors,  :constraint => :destroy!, :through => Resource
           end
 
-          class ::Chicken
-            has n, :tags, :through => Resource, :constraint => :destroy!
+          class ::Author
+            has n, :comments, :constraint => :destroy!
+            has n, :articles, :constraint => :destroy!, :through => Resource
           end
 
-          class ::Tag
-            has n, :chickens, :through => Resource, :constraint => :destroy!
+          class ::Comment
+            belongs_to :article
+            belongs_to :author
           end
 
-          DataMapper.auto_migrate!
+          class ::Revision
+            belongs_to :article
+          end
+        end
+
+        describe 'one-to-one associations' do
+          before do
+            @article  = Article.create(:title => 'Man on the Moon')
+            @revision = Revision.create(:text => 'Riveting!', :article => @article)
+          end
+
+          it 'should let the parent to be destroyed' do
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
+          end
+
+          it 'should destroy the children' do
+            revision = @article.revision
+            @article.destroy.should be_true
+            revision.model.get(*revision.key).should be_nil
+          end
+
+          it 'the child should be destroyable' do
+            @revision.destroy.should be_true
+            @revision.model.get(*@revision.key).should be_nil
+          end
         end
 
         describe 'one-to-many associations' do
           before do
-            @f  = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-            @c1 = Cow.create(:name => 'Bea',   :farmer => @f)
-            @c2 = Cow.create(:name => 'Riksa', :farmer => @f)
+            @article         = Article.create(:title => 'Man on the Moon')
+            @author          = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @comment         = @author.comments.create(:body => 'So true!',     :article => @article)
+            @another_comment = @author.comments.create(:body => 'Nice comment', :article => @article)
           end
 
           it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
           end
 
           it 'should destroy the children' do
-            @f.destroy.should be_true
-            @f.cows.all? { |c| c.should be_new }
+            @author.destroy.should be_true
+            @author.comments.all? { |comment| comment.should be_new }
           end
 
           it 'the child should be destroyable' do
-            @c1.destroy.should be_true
+            @comment.destroy.should be_true
+            @comment.model.get(*@comment.key).should be_nil
           end
         end
 
         describe 'many-to-many associations' do
           before do
-            @t1   = Tag.create(:phrase => 'floozy')
-            @t2   = Tag.create(:phrase => 'dirty')
-            @chk1 = Chicken.create(:name => 'Nancy Chicken', :tags => [ @t1, @t2 ])
+            @article       = Article.create(:title => 'Man on the Moon')
+            @other_article = Article.create(:title => 'Dolly cloned')
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
           end
 
-          it 'should destroy! the parent and the children, too' do
-            @chk1.destroy.should be_true
-            @chk1.should be_new
+          it 'should let the parent to be destroyed' do
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
+          end
 
-            # @t1 & @t2 should still exist, the chicken_tags should have been deleted
-            ChickenTag.all.should be_empty
+          it 'should destroy the children' do
+            @author.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
+            @other_article.model.get(*@other_article.key).should be_nil
+          end
 
+          it 'the child should be destroyable' do
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
+          end
+        end
+      end
+
+      describe 'when :constraint => :destroy is given' do
+        before :all do
+          class ::Article
+            has 1, :revision, :constraint => :destroy
+            has n, :comments, :constraint => :destroy
+            has n, :authors,  :constraint => :destroy, :through => Resource
+          end
+
+          class ::Author
+            has n, :comments, :constraint => :destroy
+            has n, :articles, :constraint => :destroy, :through => Resource
+          end
+
+          class ::Comment
+            belongs_to :article
+            belongs_to :author
+          end
+
+          class ::Revision
+            belongs_to :article
+          end
+        end
+
+        describe 'one-to-one associations' do
+          before do
+            @article  = Article.create(:title => 'Man on the Moon')
+            @revision = Revision.create(:text => 'Riveting!', :article => @article)
+          end
+
+          it 'should let the parent to be destroyed' do
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
+          end
+
+          it 'should destroy the children' do
+            revision = @article.revision
+            @article.destroy.should be_true
+            revision.model.get(*revision.key).should be_nil
+          end
+
+          it 'the child should be destroyable' do
+            @revision.destroy.should be_true
+            @revision.model.get(*@revision.key).should be_nil
+          end
+        end
+
+        describe 'one-to-many associations' do
+          before do
+            @article       = Article.create(:title => 'Man on the Moon')
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @comment       = @author.comments.create(:body => 'So true!',        :article => @article)
+            @other_comment = @author.comments.create(:body => "That's nonsense", :article => @article)
+          end
+
+          it 'should let the parent to be destroyed' do
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
+          end
+
+          it 'should destroy the children' do
+            @author.destroy.should be_true
+            @author.comments.all? { |comment| comment.should be_new }
+          end
+
+          it 'the child should be destroyable' do
+            @comment.destroy.should be_true
+            @comment.model.get(*@comment.key).should be_nil
+          end
+        end
+
+        describe 'many-to-many associations' do
+          before do
+            @article       = Article.create(:title => 'Man on the Moon')
+            @other_article = Article.create(:title => 'Dolly cloned')
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
+          end
+
+          it 'should destroy the parent and the children, too' do
             pending do
-              @t1.should_not be_new
-              @t2.should_not be_new
+              @author.destroy.should be_true
+              @author.model.get(*@author.key).should be_nil
+
+              @article.should_not be_new
+              @other_article.should_not be_new
             end
           end
 
           it 'the child should be destroyable' do
-            @chk1.destroy.should be_true
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
           end
         end
       end
 
       describe 'when :constraint => :set_nil is given' do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :set_nil
-            has 1, :pig,  :constraint => :set_nil
+        before :all do
+          # NOTE: M:M Relationships are not supported by :set_nil,
+          # see 'when checking constraint types' tests at bottom
+
+          class ::Article
+            has 1, :revision, :constraint => :set_nil
+            has n, :comments, :constraint => :set_nil
           end
 
-          # NOTE: M:M Relationships are not supported,
-          # see 'when checking constraint types' tests at bottom
-          DataMapper.auto_migrate!
+          class ::Author
+            has n, :comments, :constraint => :set_nil
+          end
+
+          class ::Comment
+            belongs_to :article, :nullable => true
+            belongs_to :author,  :nullable => true
+          end
+
+          class ::Revision
+            belongs_to :article, :nullable => true
+          end
         end
 
         describe 'one-to-one associations' do
           before do
-            @f = Farmer.create(:first_name => 'Mr', :last_name => 'Hands')
-            @p = Pig.create(:name => 'Greasy', :farmer => @f)
+            @article  = Article.create(:title => 'Man on the Moon')
+            @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
           it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
           end
 
           it "should set the child's foreign_key id to nil" do
-            pig = @f.pig
-            @f.destroy.should be_true
-            pig.farmer.should be_nil
+            revision = @article.revision
+            @article.destroy.should be_true
+            revision.article.should be_nil
+            revision.model.get(*revision.key).article.should be_nil
           end
 
           it 'the child should be destroyable' do
-            @p.destroy.should be_true
+            @revision.destroy.should be_true
+            @revision.model.get(*@revision.key).should be_nil
           end
         end
 
         describe 'one-to-many associations' do
           before do
-            @f = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-            @c1 = Cow.create(:name => 'Bea',   :farmer => @f)
-            @c2 = Cow.create(:name => 'Riksa', :farmer => @f)
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @comment       = @author.comments.create(:body => 'So true!')
+            @other_comment = @author.comments.create(:body => "That's nonsense")
           end
 
           it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
           end
 
           it 'should set the foreign_key ids of children to nil' do
-            @f.destroy.should be_true
-            @f.cows.all? { |c| c.farmer.should be_nil }
+            @author.destroy.should be_true
+            @author.comments.all? { |comment| comment.author.should be_nil }
           end
 
           it 'the children should be destroyable' do
-            @c1.destroy.should be_true
-            @c2.destroy.should be_true
+            @comment.destroy.should be_true
+            @comment.model.get(*@comment.key).should be_nil
+
+            @other_comment.destroy.should be_true
+            @other_comment.model.get(*@other_comment.key).should be_nil
           end
         end
       end
 
       describe 'when :constraint => :skip is given' do
-        before do
-          class ::Farmer
-            has n, :cows, :constraint => :skip
-            has 1, :pig,  :constraint => :skip
+        before :all do
+          class ::Article
+            has 1, :revision, :constraint => :skip
+            has n, :comments, :constraint => :skip
+            has n, :authors,  :constraint => :skip, :through => Resource
           end
 
-          class ::Cow
-            belongs_to :farmer, :constraint => :skip
+          class ::Author
+            has n, :comments, :constraint => :skip
+            has n, :articles, :constraint => :skip, :through => Resource
           end
 
-          class ::Pig
-            belongs_to :farmer, :constraint => :skip
+          class ::Comment
+            belongs_to :article
+            belongs_to :author
           end
 
-          class ::Chicken
-            has n, :tags, :through => Resource, :constraint => :skip
+          class ::Revision
+            belongs_to :article
           end
-
-          class ::Tag
-            has n, :chickens, :through => Resource, :constraint => :skip
-          end
-
-          DataMapper.auto_migrate!
         end
 
         describe 'one-to-one associations' do
           before do
-            @f = Farmer.create(:first_name => 'William', :last_name => 'Shepard')
-            @p = Pig.create(:name => 'Jiggles The Pig', :farmer => @f)
+            @article  = Article.create(:title => 'Man on the Moon')
+            @revision = Revision.create(:text => 'Riveting!', :article => @article)
           end
 
           it 'should let the parent be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
-            @p.farmer.should be_new
+            @article.destroy.should be_true
+            @article.model.get(*@article.key).should be_nil
           end
 
           it 'should let the children become orphan records' do
-            @f.destroy.should be_true
-            @p.farmer.should be_new
+            @article.destroy.should be_true
+            @revision.model.get(*@revision.key).article.should be_nil
           end
 
           it 'the child should be destroyable' do
-            @p.destroy.should be_true
+            @revision.destroy.should be_true
+            @revision.model.get(*@revision.key).should be_nil
           end
         end
 
         describe 'one-to-many associations' do
           before do
-            @f = Farmer.create(:first_name => 'John', :last_name => 'Doe')
-            @c1 = Cow.create(:name => 'Bea',   :farmer => @f)
-            @c2 = Cow.create(:name => 'Riksa', :farmer => @f)
+            @article       = Article.create(:title => 'Man on the Moon')
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe')
+            @comment       = @author.comments.create(:body => 'So true!',        :article => @article)
+            @other_comment = @author.comments.create(:body => "That's nonsense", :article => @article)
           end
 
           it 'should let the parent to be destroyed' do
-            @f.destroy.should be_true
-            @f.should be_new
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
           end
 
           it 'should let the children become orphan records' do
-            @f.destroy.should be_true
-            @c1.farmer.should be_new
-            @c2.farmer.should be_new
+            @author.destroy.should be_true
+            @comment.model.get(*@comment.key).author.should be_nil
+            @other_comment.model.get(*@other_comment.key).author.should be_nil
           end
 
           it 'the children should be destroyable' do
-            @c1.destroy.should be_true
-            @c2.destroy.should be_true
+            @comment.destroy.should be_true
+            @other_comment.destroy.should be_true
+            @other_comment.model.get(*@other_comment.key).should be_nil
           end
         end
 
         describe 'many-to-many associations' do
           before do
-            @t = Tag.create(:phrase => "Richard Pryor's Chicken")
-            @chk = Chicken.create(:name => 'Delicious', :tags => [ @t ])
+            @article       = Article.create(:title => 'Man on the Moon')
+            @other_article = Article.create(:title => 'Dolly cloned')
+            @author        = Author.create(:first_name => 'John', :last_name => 'Doe', :articles => [ @article, @other_article ])
           end
 
           it 'the children should be destroyable' do
             pending do
-              @chk.destroy.should be_true
+              @article.destroy.should be_true
+              @article.model.get(*@article.key).should be_nil
             end
           end
         end
       end
 
       describe 'when checking constraint types' do
-
-        #M:M relationships results in a join table composed of a two part primary key
-        # setting a portion of the primary key is not possible for two reasons:
+        # M:M relationships results in a join table composed of composite (composed of two parts)
+        # primary key.
+        # Setting a portion of this primary key is not possible for two reasons:
         # 1. the columns are defined as :nullable => false
         # 2. there could be duplicate rows if more than one of either of the types
         #   was deleted while being associated to the same type on the other side of the relationshp
         #   Given
-        #   Turkey(Name: Ted, ID: 1) =>
-        #       Tags[Tag(Phrase: awesome, ID: 1), Tag(Phrase: fat, ID: 2)]
-        #   Turkey(Name: Steve, ID: 2) =>
-        #       Tags[Tag(Phrase: awesome, ID: 1), Tag(Phrase: flamboyant, ID: 3)]
+        #   Author(name: John Doe, ID: 1) =>
+        #       Articles[Article(title: Man on the Moon, ID: 1), Article(title: Dolly cloned, ID: 2)]
+        #   Author(Name: James Duncan, ID: 2) =>
+        #       Articles[Article(title: Man on the Moon, ID: 1), Article(title: The end is nigh, ID: 3)]
         #
-        #   Table turkeys_tags would look like (turkey_id, tag_id)
+        #   Table authors_articles would look like (author_id, article_id)
         #     (1, 1)
         #     (1, 2)
         #     (2, 1)
         #     (2, 3)
         #
-        #   If both turkeys were deleted and pk was set null
+        #   If both articles were deleted and the primary key was set to null
         #     (null, 1)
         #     (null, 2)
-        #     (null, 1) #at this time there would be a duplicate row error
+        #     (null, 1) # duplicate error!
         #     (null, 3)
         #
         #   I would suggest setting :constraint to :skip in this scenario which will leave
         #     you with orphaned rows.
         it 'should raise an error if :set_nil is given for a M:M relationship' do
-          lambda{
-            class ::Chicken
-              has n, :tags, :through => Resource, :constraint => :set_nil
+          lambda {
+            class ::Article
+              has n, :authors, :through => Resource, :constraint => :set_nil
             end
-            class ::Tag
-              has n, :chickens, :through => Resource, :constraint => :set_nil
+
+            class ::Author
+              has n, :articles, :through => Resource, :constraint => :set_nil
             end
           }.should raise_error(ArgumentError)
         end
 
-        # Resource#destroy! is not suppored in dm-core
-        it 'should raise an error if :destroy! is given for a 1:1 relationship' do
-          lambda do
-            class ::Farmer
-              has 1, :pig, :constraint => :destroy!
-            end
-          end.should raise_error(ArgumentError)
-        end
-
         it 'should raise an error if an unknown type is given' do
           lambda do
-            class ::Farmer
-              has n, :cows, :constraint => :chocolate
+            class ::Author
+              has n, :articles, :constraint => :chocolate
             end
           end.should raise_error(ArgumentError)
         end

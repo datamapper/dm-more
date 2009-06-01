@@ -29,3 +29,29 @@ end
 
 load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
 load_driver(:mysql,    'mysql://localhost/dm_core_test')
+
+Spec::Runner.configure do |config|
+  config.after :all do
+    # global model cleanup
+    descendants = DataMapper::Model.descendants.dup.to_a
+    while model = descendants.shift
+      descendants.concat(model.descendants) if model.respond_to?(:descendants)
+
+      parts         = model.name.split('::')
+      constant_name = parts.pop.to_sym
+      base          = parts.empty? ? Object : Object.full_const_get(parts.join('::'))
+
+      base.send(:remove_const, constant_name)
+
+      DataMapper::Model.descendants.delete(model)
+    end
+  end
+
+  config.before do
+    DataMapper.auto_migrate!
+  end
+
+  config.after do
+    DataMapper.send(:auto_migrate_down!, @repository.name)
+  end
+end
