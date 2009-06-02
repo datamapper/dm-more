@@ -1,4 +1,4 @@
-# encoding: utf-8
+# encoding: binary
 
 module DataMapper
   module Validate
