@@ -8,14 +8,24 @@ module DataMapper
     }.freeze
 
     def self.included(model)
-      model.before :save, :set_timestamps
+      model.before :save, :set_timestamps_on_save
       model.extend ClassMethods
+    end
+
+    # Saves the record with the updated_at/on attributes set to the current time.
+    def touch
+      set_timestamps
+      save
     end
 
     private
 
-    def set_timestamps
+    def set_timestamps_on_save
       return unless dirty?
+      set_timestamps
+    end
+
+    def set_timestamps
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
         if property = properties[name]
           property.set(self, proc.call(self, property))

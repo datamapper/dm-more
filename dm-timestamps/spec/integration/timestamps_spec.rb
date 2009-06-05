@@ -78,6 +78,34 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         green_smoothie.updated_at.should eql(original_updated_at)
         green_smoothie.updated_on.should eql(original_updated_on)
       end
+
+      describe '#touch' do
+        it 'should update the updated_at/on fields' do
+          green_smoothie = GreenSmoothie.create(:name => 'Mango')
+
+          time_tomorrow = DateTime.now + 1
+          date_tomorrow = Date.today + 1
+          DateTime.stub!(:now).and_return { time_tomorrow }
+          Date.stub!(:today).and_return { date_tomorrow }
+
+          green_smoothie.touch
+
+          green_smoothie.updated_at.should eql(time_tomorrow)
+          green_smoothie.updated_on.should eql(date_tomorrow)
+        end
+
+        it 'should not update the created_at/on fields' do
+          green_smoothie = GreenSmoothie.create(:name => 'Mango')
+
+          original_created_at = green_smoothie.created_at
+          original_created_on = green_smoothie.created_on
+
+          green_smoothie.touch
+
+          green_smoothie.created_at.should equal(original_created_at)
+          green_smoothie.created_on.should equal(original_created_on)
+        end
+      end
     end
 
     describe "explicit property declaration" do
