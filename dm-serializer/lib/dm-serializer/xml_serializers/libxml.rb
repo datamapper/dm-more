@@ -24,6 +24,10 @@ module DataMapper
           parent << node
         end
 
+        def self.add_xml(parent, xml)
+          parent << xml.root.copy(true)
+        end
+
         def self.output(doc)
           doc.root.to_s
         end

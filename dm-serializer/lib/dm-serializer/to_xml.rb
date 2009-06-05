@@ -8,7 +8,8 @@ module DataMapper
     #
     # @return <REXML::Document> an XML representation of this Resource
     def to_xml(opts = {})
-      to_xml_document(opts).to_s
+      xml = XMLSerializers::SERIALIZER
+      xml.output(to_xml_document(opts)).to_s
     end
 
     protected
@@ -33,10 +34,16 @@ module DataMapper
         if self.respond_to?(meth)
           xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
           value = send(meth)
-          xml.add_node(root, xml_name, value.to_s) unless value.nil?
+          unless value.nil?
+            if value.respond_to?(:to_xml_document)
+              xml.add_xml(root, value.send(:to_xml_document))
+            else
+              xml.add_node(root, xml_name, value.to_s)
+            end
+          end
         end
       end
-      xml.output(doc)
+      doc
     end
   end
 
