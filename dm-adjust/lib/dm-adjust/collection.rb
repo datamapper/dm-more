@@ -62,7 +62,7 @@ module DataMapper
       # something is now officially borked. We'll try the best we can (still many cases this is borked for)
       if altered
         query.conditions.each_node do |comparison|
-          next unless adjustment = adjust_attributes[comparison.property]
+          next unless adjustment = adjust_attributes[comparison.subject]
 
           case value = comparison.value
             when Numeric then comparison.value += adjustment

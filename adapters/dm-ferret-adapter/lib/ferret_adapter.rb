@@ -116,8 +116,8 @@ module DataMapper
         # break exclusive Range queries up into two comparisons ANDed together
         if value.kind_of?(Range) && value.exclude_end?
           operation = Query::Conditions::BooleanOperation.new(:and,
-            Query::Conditions::Comparison.new(:gte, comparison.property, value.first),
-            Query::Conditions::Comparison.new(:lt,  comparison.property, value.last)
+            Query::Conditions::Comparison.new(:gte, comparison.subject, value.first),
+            Query::Conditions::Comparison.new(:lt,  comparison.subject, value.last)
           )
 
           return "(#{operation_statement(operation)})"
@@ -137,7 +137,7 @@ module DataMapper
         # We use property.field here, so that you can declare composite
         # fields:
         #     property :content, String, :field => "title|description"
-        [ "+#{comparison.property.field}:", quote_value(value) ].join(operator)
+        [ "+#{comparison.subject.field}:", quote_value(value) ].join(operator)
       end
 
       def quote_value(value)
