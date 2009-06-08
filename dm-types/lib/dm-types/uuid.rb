@@ -1,4 +1,4 @@
-require 'uuidtools'
+require 'uuidtools'  # must be ~>2.0
 
 module DataMapper
   module Types
@@ -43,7 +43,7 @@ module DataMapper
 
       def self.load(value, property)
         return nil if value.nil?
-        ::UUID.parse(value)
+        UUIDTools::UUID.parse(value)
       end
 
       def self.dump(value, property)
@@ -52,7 +52,7 @@ module DataMapper
       end
 
       def self.typecast(value, property)
-        value.kind_of?(::UUID) ? value : load(value, property)
+        value.kind_of?(UUIDTools::UUID) ? value : load(value, property)
       end
     end
   end

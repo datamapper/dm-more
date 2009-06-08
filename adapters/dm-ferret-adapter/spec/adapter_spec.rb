@@ -18,7 +18,7 @@ describe DataMapper::Adapters::FerretAdapter do
     class Photo
       include DataMapper::Resource
 
-      property :uuid, String, :default => lambda { UUID.random_create }, :key => true
+      property :uuid, String, :default => lambda { UUIDTools::UUID.random_create }, :key => true
       property :happy, Boolean, :default => true
     end
   end
