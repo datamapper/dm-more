@@ -33,6 +33,7 @@ GEM_PATHS = %w[
   dm-sweatshop
   dm-tags
   dm-timestamps
+  rails_datamapper
 ]
 
 # ferret gem does not compile on 1.9
