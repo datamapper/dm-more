@@ -1,5 +1,15 @@
-gem 'dm-core', '0.9.12'
 require 'pathname'
 require 'dm-core'
-require Pathname(__FILE__).dirname.expand_path / 'rails_datamapper/rails_datamapper'
+require 'dm-aggregates'
+require 'dm-migrations'
+require 'dm-serializer'
+require 'dm-timestamps'
+require 'dm-validations'
+require 'dm-types'
+
+dir = Pathname(__FILE__).dirname.expand_path / 'rails_datamapper'
+
+require dir / 'rails_datamapper'
+require dir / 'validations'
+
 create_connection()

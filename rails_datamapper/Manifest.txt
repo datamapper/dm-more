@@ -4,6 +4,7 @@ Manifest.txt
 README.txt
 Rakefile
 TODO
+datamapper.rake
 generators/dm_install/dm_install_generator.rb
 generators/dm_install/templates/datamapper.rake
 generators/dm_migration/dm_migration_generator.rb
@@ -15,7 +16,9 @@ generators/dm_model/templates/unit_test.rb
 generators/rspec_dm_model/rspec_dm_model_generator.rb
 generators/rspec_dm_model/templates/model.rb
 generators/rspec_dm_model/templates/model_spec.rb
+init.rb
 lib/rails_datamapper.rb
 lib/rails_datamapper/rails_datamapper.rb
+lib/rails_datamapper/validations.rb
 lib/rails_datamapper/version.rb
 tasks/install.rb
