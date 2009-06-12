@@ -22,7 +22,9 @@ module DataMapper
         # @return [nil]
         #
         # @api semi-public
-        def check_delete_constraint_type(cardinality, name, options = {})
+        def check_delete_constraint_type(cardinality, name, *args)
+          options = extract_options(args)
+
           return unless options.key?(:constraint)
 
           constraint = options[:constraint]
@@ -36,6 +38,8 @@ module DataMapper
             raise ArgumentError, 'Constraint type :set_nil is not valid for relationships using :through'
           end
         end
+
+        private
 
         ##
         # Temporarily changes the visibility of a method so a block can be evaluated against it
@@ -73,6 +77,8 @@ module DataMapper
         @constraint = options.fetch(:constraint, :protect) || :skip
       end
 
+      private
+
       ##
       # Checks delete constraints prior to destroying a dm resource or collection
       #
@@ -87,7 +93,7 @@ module DataMapper
       # @api semi-public
       def check_delete_constraints
         relationships.each_value do |relationship|
-          next if relationship.kind_of?(Associations::ManyToOne::Relationship)
+          next unless relationship.respond_to?(:constraint)
           next unless association = relationship.get(self)
 
           delete_allowed = case constraint = relationship.constraint

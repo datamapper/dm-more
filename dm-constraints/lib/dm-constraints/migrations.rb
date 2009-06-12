@@ -14,33 +14,13 @@ module DataMapper
         end
 
         def auto_migrate_down_with_constraints!(repository_name = nil)
-          original_repository_name = repository_name
-
-          with_each_model_and_repository(repository_name) do |model, repository_name|
-            next unless model.storage_exists?(repository_name)
-
-            adapter = DataMapper.repository(repository_name).adapter
-            next unless adapter.respond_to?(:destroy_relationship_constraint)
-
-            model.relationships(repository_name).each_value do |relationship|
-              adapter.destroy_relationship_constraint(relationship)
-            end
-          end
-
-          auto_migrate_down_without_constraints!(original_repository_name)
+          repository_execute(:auto_migrate_down_with_constraints!, repository_name)
+          auto_migrate_down_without_constraints!(repository_name)
         end
 
-        def auto_migrate_up_with_constraints!(repository_name)
+        def auto_migrate_up_with_constraints!(repository_name = nil)
           auto_migrate_up_without_constraints!(repository_name)
-
-          with_each_model_and_repository(repository_name) do |model, repository_name|
-            adapter = DataMapper.repository(repository_name).adapter
-            next unless adapter.respond_to?(:create_relationship_constraint)
-
-            model.relationships(repository_name).each_value do |relationship|
-              adapter.create_relationship_constraint(relationship)
-            end
-          end
+          repository_execute(:auto_migrate_up_with_constraints!, repository_name)
         end
       end
 
@@ -247,6 +227,28 @@ module DataMapper
         end
 
         include SQL
+      end
+
+      module Model
+        def auto_migrate_down_with_constraints!(repository_name = self.repository_name)
+          return unless storage_exists?(repository_name)
+          execute_each_relationship(:destroy_relationship_constraint, repository_name)
+        end
+
+        def auto_migrate_up_with_constraints!(repository_name = self.repository_name)
+          execute_each_relationship(:create_relationship_constraint, repository_name)
+        end
+
+        private
+
+        def execute_each_relationship(method, repository_name)
+          adapter = DataMapper.repository(repository_name).adapter
+          return unless adapter.respond_to?(method)
+
+          relationships(repository_name).each_value do |relationship|
+            adapter.send(method, relationship)
+          end
+        end
       end
     end
   end
