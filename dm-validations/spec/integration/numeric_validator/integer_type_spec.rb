@@ -53,28 +53,15 @@ describe City do
   end
 
 
-  describe "with foundation year as string containing random alphanumeric characters" do
+  describe "with foundation year as string that is not an integer or float" do
     before(:each) do
-      @city.founded_in = "founded-in=1603"
+      @string = "founded-in=1603"
+
+      @city.founded_in = @string
     end
 
-    it "is set to nil" do
-      @city.founded_in.should be(nil)
-    end
-
-    it "IS NOT valid" do
-      @city.should_not be_valid
-    end
-  end
-
-
-  describe "with foundation year as string containing random punctuation characters" do
-    before(:each) do
-      @city.founded_in = "$$ * $?"
-    end
-
-    it "is set to nil" do
-      @city.founded_in.should be(nil)
+    it "is not altered" do
+      @city.founded_in.should be(@string)
     end
 
     it "IS NOT valid" do
