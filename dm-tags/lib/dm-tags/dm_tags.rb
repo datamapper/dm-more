@@ -1,8 +1,3 @@
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
-require 'dm-core'
-
 module DataMapper
   module Resource
     class << self

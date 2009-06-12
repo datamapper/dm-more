@@ -2,17 +2,15 @@ require 'pathname'
 require 'rubygems'
 
 gem 'dm-core', '0.10.0'
-gem 'rspec',   '>1.1.12'
+require 'dm-core'
 
-require 'spec'
-
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
+ROOT = Pathname(__FILE__).dirname.parent
 
 # use local dm-adjust if running from dm-more directly
-lib = ROOT.parent.join('dm-adjust', 'lib').expand_path
+lib = ROOT.parent / 'dm-adjust' / 'lib'
 $LOAD_PATH.unshift(lib) if lib.directory?
 
-require ROOT + 'lib/dm-is-list'
+require ROOT / 'lib' / 'dm-is-list'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

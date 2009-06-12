@@ -1,15 +1,12 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'rspec', '>1.1.12'
-require 'spec'
-
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
+ROOT = Pathname(__FILE__).dirname.parent
 
-require ROOT + 'lib/dm-validations'
+require ROOT / 'lib' / 'dm-validations'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
@@ -30,5 +27,5 @@ HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
 
-Dir[ROOT + 'spec/integration/shared/**/*.rb'].each { |rb| require(rb) }
-Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require(rb) }
+Dir[ROOT / 'spec' / 'integration' / 'shared' / '**' / '*.rb'].each { |rb| require(rb) }
+Dir[ROOT / 'spec' / 'fixtures' / '**' / '*.rb'].each { |rb| require(rb) }

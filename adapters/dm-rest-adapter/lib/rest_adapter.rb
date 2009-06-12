@@ -1,6 +1,5 @@
 require 'pathname'
 require 'rexml/document'
-require 'rubygems'
 
 require 'cgi'  # for CGI.escape
 require 'extlib'

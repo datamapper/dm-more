@@ -6,14 +6,14 @@ require 'dm-core'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
+ROOT = Pathname(__FILE__).dirname.parent
 
 # use local dm-validations if running from dm-more directly
-lib = ROOT.parent.join('dm-validations', 'lib').expand_path
+lib = ROOT.parent / 'dm-validations' / 'lib'
 $LOAD_PATH.unshift(lib) if lib.directory?
 require 'dm-validations'
 
-require ROOT + 'lib/dm-tags'
+require ROOT / 'lib' / 'dm-tags'
 
 Spec::Runner.configure do |config|
   config.before do

@@ -1,25 +1,22 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
-gem 'rspec',   '>1.1.12'
-
-require 'dm-core'
-require 'spec'
-
-ROOT = Pathname(__FILE__).dirname.parent.expand_path
-
-# use local dm-validations if running from dm-more directly
-lib = ROOT.parent.join('dm-validations', 'lib').expand_path
-$LOAD_PATH.unshift(lib) if lib.directory?
-
 # TODO: autovalidation hooks are needed badly,
 #       otherwise plugin devs will have to abuse
 #       alising and load order even further and it kinda makes
 #       me sad -- MK
+
+require 'pathname'
+require 'rubygems'
+
+gem 'dm-core', '0.10.0'
+require 'dm-core'
+
+ROOT = Pathname(__FILE__).dirname.parent
+
+# use local dm-validations if running from dm-more directly
+lib = ROOT.parent / 'dm-validations' / 'lib'
+$LOAD_PATH.unshift(lib) if lib.directory?
 require 'dm-validations'
 
-require ROOT + 'lib/dm-types'
+require ROOT / 'lib' / 'dm-types'
 
 ENV['SQLITE3_SPEC_URI']   ||= 'sqlite3::memory:'
 ENV['MYSQL_SPEC_URI']     ||= 'mysql://localhost/dm_core_test'
@@ -44,4 +41,4 @@ end
 ENV['ADAPTER'] ||= 'sqlite3'
 
 setup_adapter(:default)
-Dir[ROOT + 'spec/fixtures/**/*.rb'].each { |rb| require(rb) }
+Dir[ROOT / 'spec' / 'fixtures' / '**' / '*.rb'].each { |rb| require(rb) }

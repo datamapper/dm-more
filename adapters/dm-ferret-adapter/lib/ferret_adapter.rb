@@ -1,8 +1,6 @@
-require 'rubygems'
 require 'pathname'
 require Pathname(__FILE__).dirname + 'ferret_adapter/version'
 
-gem 'ferret', '~>0.11.6'
 require 'ferret'
 
 module DataMapper

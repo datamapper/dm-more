@@ -1,5 +1,4 @@
 require 'pathname'
-require 'dm-core'
 
 module DataMapper
   module Types

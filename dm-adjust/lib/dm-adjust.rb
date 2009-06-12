@@ -1,5 +1,4 @@
 require 'pathname'
-require 'dm-core'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-adjust'
 

@@ -4,7 +4,7 @@ require 'rubygems'
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-adjust'
+require Pathname(__FILE__).dirname.parent / 'lib' / 'dm-adjust'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

@@ -1,13 +1,10 @@
 require 'pathname'
 require 'rubygems'
 
-gem 'rspec', '>1.1.12'
-require 'spec'
-
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-require Pathname(__FILE__).dirname.expand_path.parent + 'lib/dm-constraints'
+require Pathname(__FILE__).dirname.parent / 'lib' / 'dm-constraints'
 
 ADAPTERS = {}
 def load_driver(name, default_uri)

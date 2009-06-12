@@ -1,4 +1,3 @@
-require 'dm-core'
 require 'pathname'
 
 dir = Pathname(__FILE__).dirname.expand_path / 'dm-is-versioned' / 'is'

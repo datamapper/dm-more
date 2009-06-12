@@ -1,20 +1,14 @@
-# Needed to import datamapper and other gems
-require 'rubygems'
 require 'pathname'
 
-# Add all external dependencies for the plugin here
-gem 'dm-core', '0.10.0'
-require 'dm-core'
+dir = Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is'
 
-# Require plugin-files
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'state_machine'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'data' / 'event'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'data' / 'machine'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'data' / 'state'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'dsl' / 'event_dsl'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-state_machine' / 'is' / 'dsl' / 'state_dsl'
+require dir / 'state_machine'
+require dir / 'data' / 'event'
+require dir / 'data' / 'machine'
+require dir / 'data' / 'state'
+require dir / 'dsl' / 'event_dsl'
+require dir / 'dsl' / 'state_dsl'
 
-# Include the plugin in Resource
 module DataMapper
   module Model
     include DataMapper::Is::StateMachine

@@ -4,9 +4,9 @@ require 'rubygems'
 gem 'dm-core', '0.10.0'
 require 'dm-core'
 
-spec_dir_path = Pathname(__FILE__).dirname.expand_path
-$LOAD_PATH.unshift(spec_dir_path.parent + 'lib/')
-require 'dm-serializer'
+ROOT = Pathname(__FILE__).dirname.parent
+
+require ROOT / 'lib' / 'dm-serializer'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
@@ -34,9 +34,9 @@ class SerializerTestHarness
   end
 end
 
-require spec_dir_path + 'lib/serialization_method_shared_spec'
+require ROOT / 'spec' / 'lib' / 'serialization_method_shared_spec'
 
 # require fixture resources
-Dir[(spec_dir_path + "fixtures/*.rb").to_s].each do |fixture_file|
+Dir[(ROOT / 'spec' / 'fixtures' / '*.rb').to_s].each do |fixture_file|
   require fixture_file
 end
