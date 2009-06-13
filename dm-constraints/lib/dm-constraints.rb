@@ -26,6 +26,14 @@ module DataMapper
 
     class ManyToMany::Relationship
       OPTIONS << :constraint
+
+      private
+
+      # TODO: document
+      # @api semipublic
+      def one_to_many_options
+        { :constraint => @constraint }
+      end
     end
   end
 

@@ -382,13 +382,11 @@ ADAPTERS.each do |name, connection_uri|
           end
 
           it 'should destroy the parent and the children, too' do
-            pending do
-              @author.destroy.should be_true
-              @author.model.get(*@author.key).should be_nil
+            @author.destroy.should be_true
+            @author.model.get(*@author.key).should be_nil
 
-              @article.should_not be_new
-              @other_article.should_not be_new
-            end
+            @article.model.get(*@article.key).should be_nil
+            @other_article.model.get(*@other_article.key).should be_nil
           end
 
           it 'the child should be destroyable' do
@@ -552,10 +550,8 @@ ADAPTERS.each do |name, connection_uri|
           end
 
           it 'the children should be destroyable' do
-            pending do
-              @article.destroy.should be_true
+            @article.destroy.should be_true
               @article.model.get(*@article.key).should be_nil
-            end
           end
         end
       end
