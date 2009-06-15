@@ -58,6 +58,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @model.errors.on(:domain).should include("Domain is already taken")
       end
     end
+    
+    it "shouldn't fail on itself when checking for records with identical fields" do
+      @model.name = "Steve Job's Pony Express"
+      @model.should be_valid
+    end
   end
 
 
