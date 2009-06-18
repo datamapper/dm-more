@@ -6,7 +6,9 @@ require 'dm-core'
 
 ROOT = Pathname(__FILE__).dirname.parent
 
-require ROOT / 'lib' / 'dm-serializer'
+$LOAD_PATH.unshift(ROOT / 'lib')
+
+require 'dm-serializer'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
