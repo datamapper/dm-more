@@ -150,6 +150,14 @@ share_examples_for 'A serialization method' do
       result = @harness.test(planet, :only => [:name], :exclude => [:name])
       result.values_at("name", "aphelion").should == ["Mars", nil]
     end
+
+    it 'should support child associations included via the :methods parameter' do
+      solar_system = SolarSystem.create(:name => "one")
+      planet = Planet.new(:name => "earth")
+      planet.solar_system = solar_system
+      result = @harness.test(planet, :methods => [:solar_system])
+      result['solar_system'].values_at('name', 'id').should == ['one', 1]
+    end
   end
 
   describe "(collections and proxies)" do

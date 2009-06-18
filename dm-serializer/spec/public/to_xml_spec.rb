@@ -27,29 +27,35 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
         protected
 
         def deserialize(result)
+          f = lambda {|element|
+            a = {}
+            element.elements.each do |e|
+              value =
+                if e.elements.size == 0
+                  cast(e.text, e.attributes["type"])
+                else
+                  f[e]
+                end
+              a.update(e.name => value)
+            end
+            a
+          }
+
           doc = REXML::Document.new(result)
           root = doc.elements[1]
           if root.attributes["type"] == "array"
             root.elements.collect do |element|
-              a = {}
-              element.elements.each do |v|
-                a.update(v.name => cast(v.text, v.attributes["type"]))
-              end
-              a
+              f[element]
             end
           else
-            a = {}
-            root.elements.each do |v|
-              a.update(v.name => cast(v.text, v.attributes["type"]))
-            end
-            a
+            f[root]
           end
         end
 
         def cast(value, type)
           boolean_conversions = {"true" => true, "false" => false}
           value = boolean_conversions[value] if boolean_conversions.has_key?(value)
-          value = value.to_i if value && type == "integer"
+          value = value.to_i if value && ["integer", "datamapper::types::serial"].include?(type)
           value
         end
       end.new
@@ -58,34 +64,6 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
     end
 
     it_should_behave_like "A serialization method"
-
-    def deserialize(xml)
-      doc = REXML::Document.new(xml)
-      { doc.elements[1].name.to_sym => _deserialize(doc.elements[1])}
-    end
-
-
-    def _deserialize(element)
-      a = {}
-      element.elements.each do |e|
-        value =
-          if e.elements.size == 0
-            e.text
-          else
-            _deserialize(e)
-          end
-        a[e.name.to_sym] = value if value
-      end
-      a
-    end
-
-    it 'should' do
-      solar_system = SolarSystem.create(:name => "one")
-      planet = Planet.new(:name => "earth")
-      planet.solar_system = solar_system
-      xml = planet.to_xml(:methods => [:category, :solar_system])
-      deserialize(xml).should == {:planet=>{:solar_system_id=>"1", :category=>"terrestrial", :solar_system=>{:name=>"one", :id=>"1"}, :name=>"earth"}}
-    end
 
     it "should not include the XML prologue, so that the result can be embedded in other XML documents" do
       planet = Planet.new

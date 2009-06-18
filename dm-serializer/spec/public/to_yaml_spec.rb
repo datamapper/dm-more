@@ -14,17 +14,17 @@ describe DataMapper::Serialize, '#to_yaml' do
       end
 
       def deserialize(result)
-        stringify_keys = lambda {|hash| hash.inject({}) {|a, (key, value)| a.update(key.to_s => value) }}
         result = YAML.load(result)
-        (process = lambda {|object|
+        process = lambda {|object|
           if object.is_a?(Array)
             object.collect(&process)
           elsif object.is_a?(Hash)
-            stringify_keys[object]
+            object.inject({}) {|a, (key, value)| a.update(key.to_s => process[value]) }
           else
             object
           end
-        })[result]
+        }
+        process[result]
       end
     end.new
   end
