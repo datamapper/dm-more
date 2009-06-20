@@ -1,10 +1,8 @@
 require 'dm-serializer/common'
 
 begin
-  gem('json')
   require 'json/ext'
 rescue LoadError
-  gem('json_pure')
   require 'json/pure'
 end
 
