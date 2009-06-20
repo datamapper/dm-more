@@ -1,4 +1,11 @@
-=== 0.9.11 / not released
+=== 0.10.0 (unreleased)
+  
+  * Support serialization of dm-validation errors collection (#718)
+  * Don't require json gem on ruby 1.9 (#776)
+  * Allow YAML.dump(dm_object) (#792)
+  * Correctly serialize child objects (#829)
+
+=== 0.9.11 
 
   * No changes this version
 
