@@ -27,44 +27,29 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
         protected
 
         def deserialize(result)
-          f = lambda {|element|
-            a = {}
-            element.elements.each do |e|
-              value =
-                if e.elements.size == 0
-                  cast(e.text, e.attributes["type"])
-                else
-                  f[e]
+          f = lambda do |element|
+            case element.attributes["type"]
+            when "hash"
+              element.elements.to_a.inject({}) do |a, e|
+                a.update(e.name => f[e]) 
+              end
+            when "array"
+              element.elements.collect do |e|
+                f[e]
+              end
+            else
+              if element.elements.empty?
+                cast(element.text, element.attributes["type"])
+              else
+                element.elements.to_a.inject({}) do |a, e|
+                  a.update(e.name => f[e]) 
                 end
-              a.update(e.name => value)
-            end
-            a
-          }
-
-          doc = REXML::Document.new(result)
-          root = doc.elements[1]
-          if root.attributes["type"] == "array"
-            root.elements.collect do |element|
-              f[element]
-            end
-          elsif root.attributes["type"] == "hash"
-            a = {}
-            root.elements.each do |element|
-              if element.attributes["type"] == "array"
-                elements = element.elements.collect do |e|
-                  if e.elements.size == 0
-                    cast(e.text, e.attributes["type"])
-                  else
-                    f[e]
-                  end
-                end
-                a.update(element.name => elements)
               end
             end
-            a
-          else
-            f[root]
           end
+
+          doc = REXML::Document.new(result)
+          f[doc.elements[1]]
         end
 
         def cast(value, type)
