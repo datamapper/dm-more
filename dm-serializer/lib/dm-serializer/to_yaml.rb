@@ -6,7 +6,7 @@ module DataMapper
     #
     # @return <YAML> a YAML representation of this Resource
     def to_yaml(opts_or_emitter = {})
-      if opts_or_emitter.is_a?(YAML::Syck::Emitter)
+      if !opts_or_emitter.is_a?(Hash)
         emitter = opts_or_emitter
         opts = {}
       else
@@ -36,7 +36,7 @@ module DataMapper
 
   class Collection
     def to_yaml(opts_or_emitter = {})
-      if opts_or_emitter.is_a?(YAML::Syck::Emitter)
+      if !opts_or_emitter.is_a?(Hash)
         to_a.to_yaml(opts_or_emitter)
       else
         # FIXME: Don't double handle the YAML (remove the YAML.load)

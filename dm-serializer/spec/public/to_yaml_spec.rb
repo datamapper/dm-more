@@ -13,8 +13,6 @@ describe DataMapper::Serialize, '#to_yaml' do
         :to_yaml
       end
 
-      protected
-
       def deserialize(result)
         stringify_keys = lambda {|hash| hash.inject({}) {|a, (key, value)| a.update(key.to_s => value) }}
         result = YAML.load(result)
@@ -33,5 +31,27 @@ describe DataMapper::Serialize, '#to_yaml' do
 
   it_should_behave_like 'A serialization method'
   it_should_behave_like 'A serialization method that also serializes core classes'
+
+  it 'should allow static YAML dumping' do
+    object = Cow.create(
+      :id        => 89,
+      :composite => 34,
+      :name      => 'Berta',
+      :breed     => 'Guernsey'
+    )
+    result = @harness.deserialize(YAML.dump(object))
+    result['name'].should == 'Berta'
+  end
+
+  it 'should allow static YAML dumping of a collection' do
+    object = Cow.create(
+      :id        => 89,
+      :composite => 34,
+      :name      => 'Berta',
+      :breed     => 'Guernsey'
+    )
+    result = @harness.deserialize(YAML.dump(Cow.all))
+    result[0]['name'].should == 'Berta'
+  end
 
 end
