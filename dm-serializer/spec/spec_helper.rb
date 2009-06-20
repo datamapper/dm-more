@@ -3,6 +3,8 @@ require 'rubygems'
 
 gem 'dm-core', '0.10.0'
 require 'dm-core'
+gem 'dm-validations', '0.10.0'
+require 'dm-validations'
 
 ROOT = Pathname(__FILE__).dirname.parent
 

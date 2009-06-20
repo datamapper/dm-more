@@ -4,6 +4,8 @@ class Planet
   property :name,     String, :key => true
   property :aphelion, Float
 
+  validates_length :name, :min => 2
+
   # Sorry these associations don't make any sense
   # I just needed a many-to-many association to test against
   has n, :friended_planets

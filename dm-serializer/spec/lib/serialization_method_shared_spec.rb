@@ -252,4 +252,13 @@ share_examples_for 'A serialization method' do
       @harness.test(george)['is_dead'].should be(false)
     end
   end
+
+  it 'should integrate with dm-validations' do
+    planet = Planet.create(:name => 'a')
+    results = @harness.test(planet.errors)
+    results.should == {
+      "name"            => planet.errors[:name],
+      "solar_system_id" => planet.errors[:solar_system_id]
+    }
+  end
 end

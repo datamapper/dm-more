@@ -35,6 +35,15 @@ describe DataMapper::Serialize, '#to_csv' do
     result.split("\n")[1].split(',')[0..3].should == ['10','20','Berta','Guernsey']
   end
 
+  it 'should integration with dm-validations by providing one line per error' do
+    planet = Planet.create(:name => 'a')
+    result = planet.errors.to_csv.gsub(/[[:space:]]+\n/, "\n").split("\n")
+    result.should include("name,#{planet.errors[:name][0]}")
+    result.should include("solar_system_id,#{planet.errors[:solar_system_id][0]}")
+    result.should include("solar_system_id,#{planet.errors[:solar_system_id][1]}")
+    result.length.should == 3
+  end
+
   describe "multiple repositories" do
     before(:all) do
       QuanTum::Cat.auto_migrate!

@@ -36,4 +36,26 @@ module DataMapper
       result
     end
   end
+
+  if Serialize::Support.dm_validations_loaded?
+  
+    module Validate
+      class ValidationErrors
+        def to_csv(writer = '')
+          FasterCSV.generate(writer) do |csv|
+            errors.each do |key, value|
+              value.each do |error|
+                row = []
+                row << key.to_s
+                row << error.to_s
+                csv << row
+              end
+            end
+          end
+        end
+      end
+    end
+
+  end
+
 end

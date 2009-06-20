@@ -47,6 +47,21 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
             root.elements.collect do |element|
               f[element]
             end
+          elsif root.attributes["type"] == "hash"
+            a = {}
+            root.elements.each do |element|
+              if element.attributes["type"] == "array"
+                elements = element.elements.collect do |e|
+                  if e.elements.size == 0
+                    cast(e.text, e.attributes["type"])
+                  else
+                    f[e]
+                  end
+                end
+                a.update(element.name => elements)
+              end
+            end
+            a
           else
             f[root]
           end

@@ -18,5 +18,11 @@ module DataMapper
     end
 
     Model.append_inclusions self
+
+    class Support
+      def self.dm_validations_loaded?
+        DataMapper.const_defined?("Validate")
+      end
+    end
   end
 end

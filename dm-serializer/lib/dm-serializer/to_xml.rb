@@ -65,4 +65,34 @@ module DataMapper
       doc
     end
   end
+
+  if Serialize::Support.dm_validations_loaded?
+  
+    module Validate
+      class ValidationErrors
+        def to_xml(opts = {})
+          to_xml_document(opts).to_s
+        end
+
+        protected
+
+        def to_xml_document(opts = {})
+          xml = DataMapper::Serialize::XMLSerializers::SERIALIZER
+          doc = xml.new_document
+          root = xml.root_node(doc, "errors", {'type' => 'hash'})
+
+          errors.each do |key, value|
+            property = xml.add_node(root, key.to_s, nil, {'type' => 'array'})
+            property.attributes["type"] = 'array'
+            value.each do |error|
+              xml.add_node(property, "error", error)
+            end
+          end
+          
+          doc
+        end
+      end
+    end
+
+  end
 end
