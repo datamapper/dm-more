@@ -20,8 +20,7 @@ module DataMapper
 
       # Pushes given context on top of context stack and yields
       # given block, then pops the stack. During block execution
-      # contexts previously pushed onto the stack
-      # have no effect.
+      # contexts previously pushed onto the stack have no effect.
       #
       # @api private
       def validation_context(context)
@@ -42,7 +41,7 @@ module DataMapper
         context_stack_for[self] ||= []
       end
 
-      # TODO: document
+      # Returns the current validation context or nil if none has been pushed
       # @api private
       def current_validation_context
         validation_context_stack.last
