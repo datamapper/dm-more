@@ -22,6 +22,6 @@ module DataMapper
           Time.parse(value.to_s).to_i
         end
       end
-    end # class EpochTime
-  end # module Types
-end # module DataMapper
+    end # class EpochTime
+  end # module Types
+end # module DataMapper

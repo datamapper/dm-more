@@ -4,5 +4,5 @@ module DataMapper
       primitive Integer
       serial true
     end # class Serial
-  end # module Types
-end # module DataMapper
+  end # module Types
+end # module DataMapper

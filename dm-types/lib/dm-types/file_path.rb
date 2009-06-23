@@ -25,5 +25,5 @@ module DataMapper
         value.kind_of?(Pathname) ? value : load(value, property)
       end
     end # class FilePath
-  end # module Types
-end # module DataMapper
+  end # module Types
+end # module DataMapper

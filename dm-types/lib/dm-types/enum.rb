@@ -68,4 +68,4 @@ module DataMapper
       end
     end # class Enum
   end # module Types
-end # module DataMapper
+end # module DataMapper

@@ -44,8 +44,8 @@ module DataMapper
       ##
       # Validates that the given attribute is confirmed by another attribute.
       # A common use case scenario is when you require a user to confirm their
-      # password, for which you use both password and password_confirmation
-      # attributes.
+      # password, for which you use both password and password_confirmation
+      # attributes.
       #
       # @option :allow_nil<Boolean> true/false (default is true)
       # @option :confirm<Symbol>    the attribute that you want to validate
