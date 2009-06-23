@@ -54,7 +54,7 @@ module DataMapper
     chainable do
 
       def save(context = :default)
-        validation_context(context) { save! }
+        validation_context(context) { super() }
       end
 
       def save_self

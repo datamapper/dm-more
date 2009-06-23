@@ -45,7 +45,7 @@ module DataMapper
       # TODO: document
       # @api private
       def current_validation_context
-        validation_context_stack.last || default_validation_context
+        validation_context_stack.last
       end
       
     end
