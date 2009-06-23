@@ -10,6 +10,7 @@ lib/dm-validations/contextual_validators.rb
 lib/dm-validations/exceptions.rb
 lib/dm-validations/formats/email.rb
 lib/dm-validations/formats/url.rb
+lib/dm-validations/support/context.rb
 lib/dm-validations/support/object.rb
 lib/dm-validations/validation_errors.rb
 lib/dm-validations/validators/absent_field_validator.rb
