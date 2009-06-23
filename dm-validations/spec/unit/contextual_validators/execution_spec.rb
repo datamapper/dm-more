@@ -21,7 +21,7 @@ describe DataMapper::Validate::ContextualValidators do
     describe "when context was never referred to before" do
       it "raises ArgumentError" do
         lambda { @model.execute(:some_unknown_context, Object.new) }.
-          should raise_error(ArgumentError, /validation context some_unknown_context isn't seem to be defined/)
+          should raise_error(ArgumentError, /validation context some_unknown_context doesn't seem to be defined/)
       end
     end
 
