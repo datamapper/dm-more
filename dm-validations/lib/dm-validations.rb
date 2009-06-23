@@ -21,6 +21,7 @@ require dir / 'validators' / 'block_validator'
 require dir / 'validators' / 'uniqueness_validator'
 require dir / 'validators' / 'acceptance_validator'
 
+require dir / 'support' / 'context'
 require dir / 'support' / 'object'
 
 module DataMapper
@@ -51,10 +52,16 @@ module DataMapper
     # throws :halt and returns false.
     #
     chainable do
+
       def save(context = :default)
-        return false unless context.nil? || valid?(context)
+        validation_context(context) { save! }
+      end
+
+      def save_self
+        return false unless current_validation_context.nil? || valid?(current_validation_context)
         super()
       end
+      
     end
 
     # Return the ValidationErrors
