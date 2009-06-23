@@ -23,7 +23,7 @@ module DataMapper
       # contexts previously pushed onto the stack have no effect.
       #
       # @api private
-      def validation_context(context)
+      def validation_context(context = default_validation_context)
         validation_context_stack << context
         begin
           yield
