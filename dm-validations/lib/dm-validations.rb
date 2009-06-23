@@ -58,7 +58,7 @@ module DataMapper
       end
 
       def save_self
-        return false unless current_validation_context.nil? || valid?(current_validation_context)
+        return false unless validation_context_stack.empty? || valid?(current_validation_context)
         super()
       end
       
