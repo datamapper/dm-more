@@ -47,27 +47,29 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
 
   describe "with height as string containing random alphanumeric characters" do
     before :all do
+      @height = 'height=198.1'
       @model.height = "height=198.1"
     end
 
-    it "is set to 0.0" do
-      @model.height.should == 0.0
+    it "is should not change the value" do
+      @model.height.should == @height
     end
 
-    it_should_behave_like "valid model"
+    it_should_behave_like "invalid model"
   end
 
 
   describe "with height as string containing random punctuation characters" do
     before :all do
-      @model.height = "$$ * $?"
+      @height = '$$ * $?'
+      @model.height = @height
     end
 
-    it "is set to 0.0" do
-      @model.height.should == 0.0
+    it "is should not change the value" do
+      @model.height.should == @height
     end
 
-    it_should_behave_like "valid model"
+    it_should_behave_like "invalid model"
   end
 
 
