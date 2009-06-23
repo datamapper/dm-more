@@ -4,7 +4,7 @@ module DataMapper
   module Types
     class Slug < DataMapper::Type
       primitive String
-      size 65535
+      length    65535
 
       def self.load(value, property)
         value

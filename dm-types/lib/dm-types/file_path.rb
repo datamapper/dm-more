@@ -5,7 +5,7 @@ module DataMapper
   module Types
     class FilePath < DataMapper::Type
       primitive String
-      size 255
+      length    255
 
       def self.load(value, property)
         if value.blank?

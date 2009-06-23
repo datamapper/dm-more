@@ -4,7 +4,7 @@ module DataMapper
   module Types
     class BCryptHash < DataMapper::Type
       primitive String
-      size 60
+      length    60
 
       def self.load(value, property)
         typecast(value, property)

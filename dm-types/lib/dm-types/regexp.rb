@@ -8,12 +8,11 @@ module DataMapper
       end
 
       def self.dump(value, property)
-        return nil if value.nil?
-        value.source
+        value.source unless value.nil?
       end
 
       def self.typecast(value, property)
-        value.kind_of?(::Regexp) ? value : load(value, property)
+        load(value, property)
       end
     end
   end

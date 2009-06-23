@@ -4,8 +4,7 @@ module DataMapper
       primitive Integer
 
       def self.load(value, property)
-        case value
-        when Integer
+        if value.kind_of?(Integer)
           Time.at(value)
         else
           value
@@ -14,12 +13,8 @@ module DataMapper
 
       def self.dump(value, property)
         case value
-        when Integer
-          value
-        when Time
-          value.to_i
-        when DateTime
-          Time.parse(value.to_s).to_i
+          when Integer, Time then value.to_i
+          when DateTime      then value.to_time.to_i
         end
       end
     end # class EpochTime

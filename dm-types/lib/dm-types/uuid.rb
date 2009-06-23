@@ -39,20 +39,22 @@ module DataMapper
     #
     class UUID < DataMapper::Type
       primitive String
-      size 36
+      length    36
 
       def self.load(value, property)
-        return nil if value.nil?
-        UUIDTools::UUID.parse(value)
+        UUIDTools::UUID.parse(value) unless value.nil?
       end
 
       def self.dump(value, property)
-        return nil if value.nil?
-        value.to_s
+        value.to_s unless value.nil?
       end
 
       def self.typecast(value, property)
-        value.kind_of?(UUIDTools::UUID) ? value : load(value, property)
+        if value.kind_of?(UUIDTools::UUID)
+          value
+        else
+          load(value, property)
+        end
       end
     end
   end

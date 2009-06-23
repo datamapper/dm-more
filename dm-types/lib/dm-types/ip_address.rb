@@ -4,7 +4,7 @@ module DataMapper
   module Types
     class IPAddress < DataMapper::Type
       primitive String
-      size 16
+      length    16
 
       def self.load(value, property)
         if value.nil?

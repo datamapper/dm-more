@@ -15,7 +15,6 @@ lib/dm-types/flag.rb
 lib/dm-types/ip_address.rb
 lib/dm-types/json.rb
 lib/dm-types/regexp.rb
-lib/dm-types/serial.rb
 lib/dm-types/slug.rb
 lib/dm-types/uri.rb
 lib/dm-types/uuid.rb

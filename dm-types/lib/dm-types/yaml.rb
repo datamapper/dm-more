@@ -4,8 +4,8 @@ module DataMapper
   module Types
     class Yaml < DataMapper::Type
       primitive String
-      size 65535
-      lazy true
+      length    65535
+      lazy      true
 
       def self.load(value, property)
         if value.nil?
