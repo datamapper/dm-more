@@ -37,8 +37,7 @@ module DataMapper
       # Initializes (if necessary) and returns current scope stack
       # @api private
       def validation_context_stack
-        context_stack_for = Thread.current[:dm_validations_context_stack] ||= {}
-        context_stack_for[self] ||= []
+        Thread.current[:dm_validations_context_stack] ||= []
       end
 
       # Returns the current validation context or nil if none has been pushed
