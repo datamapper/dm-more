@@ -31,7 +31,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
             case element.attributes["type"]
             when "hash"
               element.elements.to_a.inject({}) do |a, e|
-                a.update(e.name => f[e]) 
+                a.update(e.name => f[e])
               end
             when "array"
               element.elements.collect do |e|
@@ -42,7 +42,7 @@ require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
                 cast(element.text, element.attributes["type"])
               else
                 element.elements.to_a.inject({}) do |a, e|
-                  a.update(e.name => f[e]) 
+                  a.update(e.name => f[e])
                 end
               end
             end

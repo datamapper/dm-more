@@ -46,7 +46,7 @@ module DataMapper
   end
 
   if Serialize::Support.dm_validations_loaded?
-  
+
     module Validate
       class ValidationErrors
         def to_yaml(*args)

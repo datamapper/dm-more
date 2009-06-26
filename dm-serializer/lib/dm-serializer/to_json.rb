@@ -70,22 +70,22 @@ module DataMapper
   end
 
   if Serialize::Support.dm_validations_loaded?
-  
+
     module Validate
       class ValidationErrors
         def to_json(*args)
           opts = args.first || {}
-          
+
           # This weird (invalid?) workaround seems to be necessary
           # Ideally: errors.to_json(opts)
           # However: wrong argument type Hash (expected Data) - (TypeError)
-          
+
           "{" << errors.map do |kv|
             "#{kv.first.to_json}: " + "[" + kv.last.map { |e| e.to_json(opts) }.join(',') + "]"
           end.join(',') << "}"
         end
       end
     end
-  
+
   end
 end

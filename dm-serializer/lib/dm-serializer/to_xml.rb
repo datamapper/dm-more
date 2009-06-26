@@ -67,7 +67,7 @@ module DataMapper
   end
 
   if Serialize::Support.dm_validations_loaded?
-  
+
     module Validate
       class ValidationErrors
         def to_xml(opts = {})
@@ -88,7 +88,7 @@ module DataMapper
               xml.add_node(property, "error", error)
             end
           end
-          
+
           doc
         end
       end
