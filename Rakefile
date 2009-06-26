@@ -33,6 +33,7 @@ GEM_PATHS = %w[
   dm-sweatshop
   dm-tags
   dm-timestamps
+  rails_datamapper
 ].freeze
 
 gems = GEM_PATHS.map { |p| File.basename(p) }
