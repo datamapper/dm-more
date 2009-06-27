@@ -11,7 +11,7 @@ require ROOT + 'lib/rails_datamapper/version'
 AUTHOR = 'Tom Malone'
 EMAIL  = 'tomjmalone [a] gmail [d] com'
 GEM_NAME = 'rails_datamapper'
-GEM_VERSION = DataMapper::RailsDatamapper::VERSION
+GEM_VERSION = Rails::DataMapper::VERSION
 GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ pkg ]
 GEM_EXTRAS = { :has_rdoc => false, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
@@ -21,5 +21,5 @@ PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
 PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'Rails Plugin for datamapper'
 
 [ ROOT, ROOT.parent ].each do |dir|
-  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+  Pathname.glob(dir.join('tasks/**/*.rb').to_s).sort.each { |filename| require filename }
 end
