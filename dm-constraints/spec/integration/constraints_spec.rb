@@ -551,7 +551,7 @@ ADAPTERS.each do |name, connection_uri|
 
           it 'the children should be destroyable' do
             @article.destroy.should be_true
-              @article.model.get(*@article.key).should be_nil
+            @article.model.get(*@article.key).should be_nil
           end
         end
       end
