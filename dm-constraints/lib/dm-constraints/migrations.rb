@@ -229,6 +229,20 @@ module DataMapper
         include SQL
       end
 
+      module Sqlite3Adapter
+        def constraint_exists?(*)
+          false
+        end
+
+        def create_relationship_constraint(*)
+          false
+        end
+
+        def destroy_relationship_constraint(*)
+          false
+        end
+      end
+
       module Model
         def auto_migrate_down_with_constraints!(repository_name = self.repository_name)
           return unless storage_exists?(repository_name)

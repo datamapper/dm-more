@@ -24,6 +24,7 @@ def load_driver(name, default_uri)
   end
 end
 
+load_driver(:sqlite3,  'sqlite3::memory:')
 load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
 load_driver(:mysql,    'mysql://localhost/dm_core_test')
 
