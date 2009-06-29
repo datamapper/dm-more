@@ -6,21 +6,24 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       module Fixtures
         class Organisation
           include DataMapper::Resource
-          property :id, Serial
 
+          property :id, Serial
           property :name, String
-          property :domain, String #, :unique => true
+          property :domain, String, :unique_index => true
 
           validates_is_unique :domain, :allow_nil => true
+
+          auto_migrate!
         end
 
         class Department
           include DataMapper::Resource
 
           property :id, Serial
-          property :name, String
+          property :name, String, :unique_index => true
 
           validates_is_unique :name
+
           auto_migrate!
         end
 
@@ -28,20 +31,16 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           include DataMapper::Resource
 
           property :id, Serial
+          property :user_name, String
 
-          property :organisation_id, Integer
-          property :department_id,   Integer
-          property :user_name,       String
+          belongs_to :organisation
+          belongs_to :department
 
-          belongs_to :organisation, :model => ::DataMapper::Validate::Fixtures::Organisation
-          belongs_to :department,   :model => ::DataMapper::Validate::Fixtures::Department
-
-          validates_is_unique :user_name, :when => :signing_up_for_department_account,   :scope => [:department_id]
+          validates_is_unique :user_name, :when => :signing_up_for_department_account,   :scope => [:department]
           validates_is_unique :user_name, :when => :signing_up_for_organization_account, :scope => [:organisation]
-        end
 
-        Organisation.auto_migrate!
-        User.auto_migrate!
+          auto_migrate!
+        end
       end
     end
   end

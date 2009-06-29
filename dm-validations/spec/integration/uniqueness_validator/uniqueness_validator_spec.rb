@@ -69,19 +69,25 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
   describe DataMapper::Validate::Fixtures::User do
     before :all do
-       DataMapper.repository do
-         @organization_one = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
-         @organization_two = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 102', :domain => '102')
+      # remove data from previous spec runs
+      ::DataMapper::Validate::Fixtures::Organisation.all.destroy!
+      ::DataMapper::Validate::Fixtures::Department.all.destroy!
+      ::DataMapper::Validate::Fixtures::User.all.destroy!
 
-         @dept             = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'accounting')
+      DataMapper.repository do
+        @organization = ::DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
+        @dept         = ::DataMapper::Validate::Fixtures::Department.create(:name => 'accounting')
+        @user         = ::DataMapper::Validate::Fixtures::User.create(:organisation => @organization, :user_name => 'guy', :department => @dept)
 
-         ::DataMapper::Validate::Fixtures::User.create(:organisation => @organization_one, :user_name => 'guy', :department_id => @dept.id)
+        @organization.should be_saved
+        @dept.should be_saved
+        @user.should be_saved
       end
     end
 
     describe "with username not valid across the organization" do
       before :all do
-        @model = ::DataMapper::Validate::Fixtures::User.new(:organisation => @organization_one, :user_name => 'guy')
+        @model = ::DataMapper::Validate::Fixtures::User.new(:organisation => @organization, :user_name => 'guy')
       end
 
       it "is not valid for signing up" do
@@ -96,7 +102,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     describe "with username not valid across the department" do
       before :all do
-        @model = ::DataMapper::Validate::Fixtures::User.new(:department_id => @dept.id, :user_name => 'guy')
+        @model = ::DataMapper::Validate::Fixtures::User.new(:user_name => 'guy', :department => @dept)
       end
 
       it "is not valid for setting up the account" do

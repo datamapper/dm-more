@@ -16,28 +16,18 @@ module DataMapper
       end
 
       def call(target)
-        scope = Array(@options[:scope])
+        value = target.send(field_name)
 
-        return true if @options[:allow_nil] && target.send(field_name).blank?
-
-        repository_name = target.repository.name
+        return true if @options[:allow_nil] && value.blank?
 
         opts = {
           :fields    => target.model.key,
-          field_name => target.validation_property_value(field_name),
+          field_name => value,
         }
 
-        scope.each do |item|
-          if target.model.properties(repository_name).named?(item)
-            opts[item] = target.validation_property_value(item)
-          elsif target.model.relationships(repository_name).has_key?(item)
-            target.validation_association_keys(item).each do |key|
-              opts[key] = target.validation_property_value(key)
-            end
-          end
-        end
+        Array(@options[:scope]).each { |subject| opts[subject] = target.send(subject) }
 
-        resource = DataMapper.repository(repository_name) { target.model.first(opts) }
+        resource = DataMapper.repository(target.repository.name) { target.model.first(opts) }
 
         return true if resource.nil?
         return true if target.saved? && resource.key == target.key
