@@ -61,20 +61,11 @@ module DataMapper
   end
 
   module Migrations
-    module SingletonMethods
-      include Constraints::Migrations::SingletonMethods
-    end
-
-    module DataObjectsAdapter
-      include Constraints::Migrations::DataObjectsAdapter
-    end
-
-    module MysqlAdapter
-      include Constraints::Migrations::MysqlAdapter
-    end
-
-    module Model
-      include Constraints::Migrations::Model
+    constants.each do |const_name|
+      if Constraints::Migrations.const_defined?(const_name)
+        mod = const_get(const_name)
+        mod.send(:include, Constraints::Migrations.const_get(const_name))
+      end
     end
   end
 end
