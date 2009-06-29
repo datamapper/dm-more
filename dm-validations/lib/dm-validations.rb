@@ -171,7 +171,7 @@ module DataMapper
         opts = args.last.kind_of?(Hash) ? args.pop : {}
         context = opts.delete(:group) || opts.delete(:on) || opts.delete(:when) || opts.delete(:context) || :default
         opts[:context] = context
-        opts.mergs!(defaults) unless defaults.nil?
+        opts.merge!(defaults) unless defaults.nil?
         opts
       end
 
