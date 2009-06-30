@@ -203,7 +203,7 @@ module DataMapper
             return false
           end
 
-          DataMapper::Transaction.new(repository) do |transaction|
+          model.transaction do
 
             ##
             # if this node is already positioned we need to move it, and close the gap it leaves behind etc
