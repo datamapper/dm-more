@@ -66,9 +66,9 @@ module DataMapper
       end
 
       ##
-      # Addes the delete constraint options to a relationship
+      # Adds the delete constraint options to a relationship
       #
-      # @param params [*ARGS] Arguments passed to Relationship#initialize or RelationshipChain#initialize
+      # @param params [*ARGS] Arguments passed to Relationship#initialize
       #
       # @return [nil]
       #
