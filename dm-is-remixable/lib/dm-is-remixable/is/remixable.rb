@@ -159,7 +159,8 @@ module DataMapper
             :for        => nil,
             :on         => nil,
             :unique     => false,
-            :via        => nil
+            :via        => nil,
+            :connect    => false
           }.merge(options)
 
           #Make sure the class hasn't been remixed already
@@ -314,6 +315,11 @@ module DataMapper
 
             model.belongs_to belongs_to_name(self.name)
             model.belongs_to belongs_to_name(options[:other_model].name)
+            if options[:connect]
+              remixed = options[:as] 
+              remixed ||= options[:other_model].to_s.snake_case
+              self.has cardinality, (options[:for] || options[:on]).snake_case.pluralize.to_sym, :through => remixed.to_sym
+            end
           else
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
 
