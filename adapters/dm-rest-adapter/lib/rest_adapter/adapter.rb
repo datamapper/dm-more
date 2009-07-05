@@ -34,9 +34,9 @@ module DataMapperRest
 
     def update(dirty_attributes, collection)
       collection.select do |resource|
-        model          = resource.model
-        identity_field = model.identity_field
-        id             = identity_field.get(resource)
+        model = resource.model
+        key   = model.key
+        id    = key.get(resource)
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
@@ -48,9 +48,9 @@ module DataMapperRest
 
     def delete(collection)
       collection.select do |resource|
-        model          = resource.model
-        identity_field = model.identity_field
-        id             = identity_field.get(resource)
+        model = resource.model
+        key   = model.key
+        id    = key.get(resource)
 
         response = connection.http_delete("#{resource_name(model)}/#{id}")
         response.kind_of?(Net::HTTPSuccess)
