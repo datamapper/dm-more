@@ -8,4 +8,6 @@ module Commentable
   property :comment,    String
   property :created_at, DateTime
 
+  validates_present :comment, :context => [ :publish ]
+
 end

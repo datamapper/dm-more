@@ -87,13 +87,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       BotTagging.new.should respond_to("tag")
     end
 
-    it "should through exception when enhancing an unknown class" do
+    it "should raise an exception when enhancing an unknown class" do
       lambda {
         Article.enhance :taggable, "NonExistentClass"
       }.should raise_error
     end
 
-    it "should provided a map of Remixable Modules to Remixed Models names" do
+    it "should provide a map of Remixable Modules to Remixed Models names" do
       User.remixables.should_not be(nil)
     end
 
@@ -143,6 +143,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       account.should respond_to("cc_num")
       account.should respond_to("cc_type")
       account.should respond_to("expiration")
+    end
+
+    it "should copy validation contexts from the Remixable Module to the Remixed Model" do
+      ArticleComment.validators.contexts.should have_key(:default)
+      ArticleComment.validators.contexts.should have_key(:publish)
     end
 
     it "should allow 1:M relationships with the Remixable Module" do

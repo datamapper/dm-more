@@ -343,18 +343,29 @@ module DataMapper
             include DataMapper::Resource
           end
 
-          #Give remixed model a name and create its constant
+          # Give remixed model a name and create its constant
           model = Object.full_const_set(options[:model], klass)
 
-          #Get instance methods & validators
+          # Get instance methods and the :default context validator
           model.send(:include,remixable)
 
-          #port the properties over...
+          if DataMapper.const_defined?('Validate')
+
+            # Port over any other validation contexts to this model.  Skip the
+            # default context since it has already been included above.
+            remixable.validators.contexts.each do |context, validators|
+              next if context == :default
+              model.validators.contexts[context] = validators
+            end
+
+          end
+
+          # Port the properties over
           remixable.properties.each do |prop|
             model.property(prop.name, prop.type, prop.options)
           end
 
-          # attach remixed model access to RemixeeClassMethods and RemixeeInstanceMethods if defined
+          # Attach remixed model access to RemixeeClassMethods and RemixeeInstanceMethods if defined
           if Object.full_const_defined? "#{remixable}::RemixeeClassMethods"
             model.send :extend, Object.full_const_get("#{remixable}::RemixeeClassMethods")
           end
