@@ -7,7 +7,7 @@ require __dir__ + 'spec_helper'
 
 describe "barcode with invalid code length", :shared => true do
   it "has a meaninful error message with length restrictions mentioned" do
-    @model.errors.on(:code).should include("Code must be less than 10 characters long")
+    @model.errors.on(:code).should include("Code must be at most 10 characters long")
   end
 end
 

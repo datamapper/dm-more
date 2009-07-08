@@ -7,7 +7,7 @@ require __dir__ + 'spec_helper'
 
 describe "entity with a name shorter than 2 characters", :shared => true do
   it "has a meaninful error message with length restrictions mentioned" do
-    @model.errors.on(:name).should include("Name must be more than 2 characters long")
+    @model.errors.on(:name).should include("Name must be at least 2 characters long")
   end
 end
 

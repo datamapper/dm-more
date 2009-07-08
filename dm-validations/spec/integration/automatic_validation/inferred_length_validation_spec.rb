@@ -32,7 +32,7 @@ describe SailBoat do
     # validates_length is inferred from property's :length option
     it "is invalid" do
       @model.should_not be_valid_for_length_test_1
-      @model.errors.on(:description).should include('Description must be less than 10 characters long')
+      @model.errors.on(:description).should include('Description must be at most 10 characters long')
     end
   end
 
