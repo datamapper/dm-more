@@ -249,10 +249,12 @@ module DataMapper
       module Model
         def auto_migrate_down_with_constraints!(repository_name = self.repository_name)
           return unless storage_exists?(repository_name)
+          return if self.respond_to?(:is_remixable?) && self.is_remixable?
           execute_each_relationship(:destroy_relationship_constraint, repository_name)
         end
 
         def auto_migrate_up_with_constraints!(repository_name = self.repository_name)
+          return if self.respond_to?(:is_remixable?) && self.is_remixable?
           execute_each_relationship(:create_relationship_constraint, repository_name)
         end
 
