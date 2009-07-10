@@ -103,10 +103,10 @@ module DataMapper
       # that takes a block)
       #
       # @return [TrueClass, FalseClass]
-      #   true if auto validation is currently
-      #   disabled
+      #   true if auto validation is currently disabled
+      #
       def disabled_auto_validations?
-        @disable_auto_validations
+        @disable_auto_validations || false
       end
       alias auto_validations_disabled? disabled_auto_validations?
 
