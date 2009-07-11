@@ -32,8 +32,8 @@ module SQL
       statement
     end
 
-    def create_table_statement(quoted_table_name)
-      "CREATE TABLE #{quoted_table_name}"
+    def table_options
+      ''
     end
 
     class Table < SQL::Table
