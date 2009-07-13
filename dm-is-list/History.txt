@@ -1,3 +1,32 @@
+=== 0.10 / not released
+
+* Major changes:
+
+  * Rewrote the README for better clarity and usage information.
+
+  * Made :move  accept more vectors (:top, :bottom)
+
+  * Aliased #left_sibling & :right_sibling methods to more obvious => :higher_item, :lower_item, :previous_item, :next_item
+
+  * Improved the Specs and made them more comprehensive. ( Too comprehensive? )
+
+  * Improved the documentation for each of the methods.
+
+* Issue fixes:
+
+  * [:735] Fixed. Incorporated patch from Brian Terlson. NB! see point below.
+
+  * [:737] Fixed. Incorporated specs from Brian Terlson [ http://github.com/bterlson/dm-more/commit/6eb521636e945f396723a53fa5a8cba1c9ef1350 ]
+
+  * [:738] Semi-fixed. Fixes item.move(-1) cases, but NOT item.position = -1 cases, due to a wish to reduce the number of SQL queries.
+
+  * [:739] Fixed. Fixes item.move(:to => 2) should retain correct list order.
+
+  * [:740] Fixed. Fixes item.reorder_list(\[:title.asc\]) with correct list positions and order.
+
+  * [:818] Addressed / Fixed. Same issue as [:738]. Use item.move(1) instead of item.position = 1.
+
+
 === 0.9.11 / not released
 
   * No changes this version
