@@ -1,0 +1,220 @@
+= dm-is-list
+
+DataMapper plugin for creating and organizing lists.
+
+== Installation
+
+=== Stable
+
+Install the +dm-more+ gem, which will by default install +dm-is-list+ and other required gems.
+
+  $ (sudo)? gem install dm-more
+
+=== Edge
+
+Download or clone +dm-more+ from Github[http://github.com/datamapper/dm-more/].
+
+  $ cd /path/to/dm-more
+
+  $ rake install            # will install all the dm-more gems (some of which are required by dm-is-list)
+
+  # enter your password at the prompt, if required
+  $ password ...
+
+
+== Getting started
+
+First of all, for a better understanding of this gem, make sure you study the '<tt>dm-is-list/spec/integration/list_spec.rb</tt>' file.
+
+----
+
+Require +dm-is-list+ in your app.
+
+  require 'dm-core'         # must be required first
+  require 'dm-is-list'
+
+
+Lets say we have a User class, and we want to give users the possibility of
+having their own todo-lists.
+
+
+  class User
+    include DataMapper::Resource
+
+    property :id, Serial
+    property :name, String
+
+    has n, :todos
+  end
+
+  class Todo
+    include DataMapper::Resource
+
+    property :id, Serial
+    property :title, String
+    property :done, DateTime
+
+    belongs_to :user
+
+    # here we define that this should be a list, scoped on :user_id
+    is :list, :scope => [:user_id]
+  end
+
+Once we have our Users and Lists, we might want to work with...
+
+== Movements of list items
+
+Any list item can be moved around <b>within the same list</b> easily through the <tt>\#move</tt> method.
+
+
+=== :move( vector )
+
+There are number of convenient vectors that help you move items around within the list.
+
+ item = Todo.get(1)
+ other = Todo.get(2)
+
+ item.move(:highest)          # moves to top of list.
+ item.move(:lowest)           # moves to bottom of list.
+ item.move(:top)              # moves to top of list.
+ item.move(:bottom)           # moves to bottom of list.
+ item.move(:up)               # moves one up (:higher and :up is the same) within the scope.
+ item.move(:down)             # moves one up (:lower and :down is the same) within the scope.
+ item.move(:to => position)   # moves item to a specific position.
+ item.move(:above => other)   # moves item above the other item.*
+ item.move(:below => other)   # moves item above the other item.*
+
+ # * won't move if the other item is in another scope. (should this be enabled?)
+
+The list will act as intelligently as possible and keep positions in a logical running order.
+
+
+=== :move( Integer )
+
+<b>NOTE! VERY IMPORTANT!</b>
+
+If you set the position manually, and then save, <b>the list will NOT reorganize itself</b>.
+
+ item.position = 3      # setting position manually
+ item.save              # the item will now have position 3, but the list may have two items with the same position.
+
+ # alternatively
+ item.update(:position => 3)    # sets the position manually, but does not reorganize the list positions.
+
+
+You should therefore <b>always use</b> the <tt>item.move(N)</tt> syntax instead.
+
+  item.move(3)          # does the same as above, but in one call AND *reorganizes* the list.
+
+<hr>
+
+<b>Hold On!</b>
+
+<tt>dm-is-list</tt> used to work with <tt>item.position = 1</tt> type syntax.  Why this change?
+
+The main reason behind this change was that the previous version of <tt>dm-is-list</tt> created a LOT of
+extra SQL queries in order to support the manual updating of position, and as a result had a quite a few bugs/issues,
+which have been fixed in this version.
+
+The other reason is that I couldn't work out how to keep the functionality without adding the extra queries. But perhaps you can ?
+
+<hr>
+
+See "<b>Batch Changing Positions</b>" below for information on how to change the positions on a whole list.
+
+== Movements between scopes
+
+When you move items between scopes, the list will try to work with your intentions.
+
+
+Move the item from list to new list and add the item to the bottom of that list.
+
+ item.user_id               # => 1
+ item.move_to_list(10)      # => the scope id ie User.get(10).id
+
+ # results in...
+ item.user_id                 # => 10
+ item.position                # => < bottom of the list >
+
+
+Move the item from list to new list and add at the position given.
+
+ item.user_id                 # => 1
+ item.move_to_list(10, 2)     # => the scope id ie User.get(10).id,  position => 2
+
+ # results in...
+ item.user_id                 # => 10
+ item.position                # => 2
+
+
+== Batch Changing Positions
+
+A common scenario when working with lists is the sorting of a whole list via something like JQuery's sortable() functionality.
+<br>
+(Think re-arranging the order of Todo's according to priority or something similar)
+
+
+=== Optimum scenario
+
+The most SQL query efficient way of changing the positions is:
+
+
+  sort_order = [5,4,3,2,1]              # list from AJAX request..
+
+  items = Todo.all(:user => @u1)        # loads all 5 items in the list
+
+  items.each{ |item| item.update(:position => sort_order.index(item.id) + 1) }   # remember the +1 since array's are indexed from 0
+
+  
+The above code will result in something like these queries.
+
+  # SELECT "id", "title", "position", "user_id" FROM "todos" WHERE "user_id" = 1 ORDER BY "position"
+  # UPDATE "todos" SET "position" = 5 WHERE "id" = 1
+  # UPDATE "todos" SET "position" = 4 WHERE "id" = 2
+  # UPDATE "todos" SET "position" = 2 WHERE "id" = 4
+  # UPDATE "todos" SET "position" = 1 WHERE "id" = 5
+
+<b>Remember!</b>  Your sort order list has to be the same length as the found items in the list, or your loop will fail.
+
+
+=== Wasteful scenario
+
+You can also use this version, but it will create upto <b>5 times as many SQL queries</b>. :(
+
+
+  sort_order = ['5','4','3','2','1']    # list from AJAX request..
+
+  items = Todo.all(:user => @u1)        # loads all 5 items in the list
+
+  items.each{ |item| item.move(sort_order.index(item.id).to_i + 1) }   # remember the +1 since array's are indexed from 0
+
+The above code will result in something like these queries:
+
+  #  SELECT "id", "title", "position", "user_id" FROM "todos" WHERE "user_id" = 1 ORDER BY "position"
+
+  #  SELECT "id", "title", "position", "user_id" FROM "todos" WHERE "user_id" = 1 ORDER BY "position" DESC LIMIT 1
+  #  SELECT "id" FROM "todos" WHERE "user_id" = 1 AND "id" IN (1, 2, 3, 4, 5) AND "position" BETWEEN 1 AND 5 ORDER BY "position"
+  #  UPDATE "todos" SET "position" = "position" + -1 WHERE "user_id" = 1 AND "position" BETWEEN 1 AND 5
+  #  SELECT "id", "position" FROM "todos" WHERE "id" IN (1, 2, 3, 4, 5) ORDER BY "id"
+  #  UPDATE "todos" SET "position" = 5 WHERE "id" = 1
+
+  #  SELECT "id", "title", "position", "user_id" FROM "todos" WHERE "user_id" = 1 ORDER BY "position" DESC LIMIT 1
+  #  SELECT "id" FROM "todos" WHERE "user_id" = 1 AND "id" IN (1, 2, 3, 4, 5) AND "position" BETWEEN 1 AND 4 ORDER BY "position"
+  #  UPDATE "todos" SET "position" = "position" + -1 WHERE "user_id" = 1 AND "position" BETWEEN 1 AND 4
+  #  SELECT "id", "position" FROM "todos" WHERE "id" IN (2, 3, 4, 5) ORDER BY "id"
+  #  UPDATE "todos" SET "position" = 4 WHERE "id" = 2
+
+  #  ...
+
+As you can see it will also do the job, but will be more expensive.
+
+
+== RTFM
+
+As I said above, for a better understanding of this gem/plugin, make sure you study the '<tt>dm-is-list/spec/integration/list_spec.rb</tt>' tests.
+
+
+== Errors / Bugs
+
+If something is not behaving intuitively, it is a bug, and should be reported.
+Report it here: http://datamapper.lighthouseapp.com/
