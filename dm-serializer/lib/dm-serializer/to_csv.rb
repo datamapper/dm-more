@@ -4,11 +4,11 @@ if RUBY_VERSION >= '1.9.0'
  require 'csv'
 else
   begin
-    gem 'fastercsv', '~>1.4.0'
+    gem 'fastercsv', '~>1.5.0'
     require 'fastercsv'
     CSV = FasterCSV
   rescue LoadError
-    nil
+    # do nothing
   end
 end
 
@@ -42,7 +42,7 @@ module DataMapper
     module Validate
       class ValidationErrors
         def to_csv(writer = '')
-          FasterCSV.generate(writer) do |csv|
+          CSV.generate(writer) do |csv|
             errors.each do |key, value|
               value.each do |error|
                 row = []
