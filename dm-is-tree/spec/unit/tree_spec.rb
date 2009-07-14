@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper'))
 describe DataMapper::Is::Tree do
 
   before do
-    class Category
+    class ::Category
       include DataMapper::Resource
 
       property :id, Serial
