@@ -64,10 +64,16 @@ module DataMapper
         query.conditions.each_node do |comparison|
           next unless adjustment = adjust_attributes[comparison.subject]
 
-          case value = comparison.value
-            when Numeric then comparison.value += adjustment
-            when Range   then comparison.value = (value.first + adjustment)..(value.last + adjustment)
+          next unless key = [ comparison.subject, comparison.subject.name ].detect do |key|
+            query.options.key?(key)
           end
+
+          value = case value = comparison.value
+            when Numeric then comparison.value + adjustment
+            when Range   then (value.first + adjustment)..(value.last + adjustment)
+          end
+
+          query.update(key => value)
         end
       end
 
