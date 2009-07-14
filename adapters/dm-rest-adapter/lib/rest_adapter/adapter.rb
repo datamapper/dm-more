@@ -36,7 +36,7 @@ module DataMapperRest
       collection.select do |resource|
         model = resource.model
         key   = model.key
-        id    = key.get(resource)
+        id    = key.get(resource).join
 
         dirty_attributes.each { |p, v| p.set!(resource, v) }
 
@@ -50,7 +50,7 @@ module DataMapperRest
       collection.select do |resource|
         model = resource.model
         key   = model.key
-        id    = key.get(resource)
+        id    = key.get(resource).join
 
         response = connection.http_delete("#{resource_name(model)}/#{id}")
         response.kind_of?(Net::HTTPSuccess)
