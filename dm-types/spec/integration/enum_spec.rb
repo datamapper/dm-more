@@ -71,7 +71,7 @@ describe DataMapper::Types::Fixtures::Ticket do
     end
 
     it "has a meaningful error message on invalid property" do
-      @model.errors.on(:status).should include("Status must be one of not_applicable, unconfirmed, confirmed, assigned, resolved")
+      @model.errors.on(:status).should include('Status must be one of unconfirmed, confirmed, assigned, resolved, not_applicable')
     end
   end
 end

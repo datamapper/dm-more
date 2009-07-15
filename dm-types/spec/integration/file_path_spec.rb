@@ -156,7 +156,7 @@ describe DataMapper::Types::Fixtures::SoftwarePackage do
       it "raises an exception" do
         lambda do
           DataMapper::Types::Fixtures::SoftwarePackage.new(:source_path => @source_path)
-        end.should raise_error(TypeError, "can't convert Hash into String")
+        end.should raise_error(TypeError)
       end
     end
   end

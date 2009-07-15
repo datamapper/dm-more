@@ -1,11 +1,9 @@
 begin
-  gem "json"
-  require "json/ext"
+  gem 'json' if RUBY_VERSION < '1.9.0'
+  require 'json'
 rescue LoadError
-  gem "json_pure"
-  require "json/pure"
+  # do nothing
 end
-
 
 module DataMapper
   module Types

@@ -60,7 +60,10 @@ module DataMapper
           unless model.skip_auto_validation_for?(property)
             if property.type.ancestors.include?(Types::Enum)
               model.class_eval do
-                validates_within property.name, options_with_message({:set => property.type.flag_map.values}, property, :within)
+                flag_map = property.type.flag_map
+                allowed  = flag_map.values_at(*flag_map.keys.sort)
+
+                validates_within property.name, options_with_message({ :set => allowed }, property, :within)
               end
             end
           end
