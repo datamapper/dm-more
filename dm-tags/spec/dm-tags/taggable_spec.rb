@@ -11,15 +11,18 @@ describe "Taggable" do
   end
 
   it "should return an alphabetically sorted array of the tag names when sent #tag_list" do
-    tag1 = Tag.create(:name => 'tag1')
-    tag2 = Tag.create(:name => 'tag2')
-    tag3 = Tag.create(:name => 'tag3')
-    @taggable.tag_taggings << Tagging.new(:tag => tag1)
-    @taggable.tag_taggings << Tagging.new(:tag => tag2)
-    @taggable.tag_taggings << Tagging.new(:tag => tag3)
+    tag_names = %w[ tag1 tag2 tag3 ]
+
+    # @taggable.tags = tag_names.map { |name| { :name => name } }
+
+    tag_names.each do |name|
+      @taggable.tag_taggings.new(:tag => Tag.create(:name => name))
+    end
+
     @taggable.save.should be_true
-    @taggable = DefaultTaggedModel.get!(@taggable.id)
-    @taggable.tag_list.should == ['tag1', 'tag2', 'tag3']
+
+    @taggable = @taggable.model.get!(@taggable.key)
+    @taggable.tag_list.should == tag_names
   end
 
   it "should set the tag list to a sanitized, stripped, alphabetized, unique array of tag names" do
@@ -34,9 +37,9 @@ describe "Taggable" do
 
   it "should set the associated collection of tags to those whose names
       are in the tag list upon saving, creating and deleting as necessary" do
-    tag1 = Tag.create!(:name => 'tag1')
-    tag2 = Tag.create!(:name => 'tag2')
-    tag3 = Tag.create!(:name => 'tag3')
+    tag1 = Tag.create(:name => 'tag1')
+    tag2 = Tag.create(:name => 'tag2')
+    tag3 = Tag.create(:name => 'tag3')
     @taggable = TaggedModel.new
     @taggable.tag_list = 'tag1, tag2, tag3'
     @taggable.save.should be_true

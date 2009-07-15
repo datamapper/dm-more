@@ -2,7 +2,6 @@ class Tagging
   include DataMapper::Resource
 
   property :id,            Serial
-  property :tag_id,        Integer, :nullable => false
   property :taggable_id,   Integer, :nullable => false
   property :taggable_type, Class,   :nullable => false
   property :tag_context,   String,  :nullable => false

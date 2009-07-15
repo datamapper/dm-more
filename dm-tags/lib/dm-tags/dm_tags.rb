@@ -33,7 +33,7 @@ module DataMapper
         associations.flatten!
         associations.uniq!
 
-        has n, :taggings, :model => 'Tagging', :child_key => [ :taggable_id ], :taggable_type => self
+        has n, :taggings, Tagging, :child_key => [ :taggable_id ], :taggable_type => self
 
         before :destroy, :destroy_taggings
 
@@ -56,64 +56,53 @@ module DataMapper
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             property :frozen_#{singular}_list, Text
 
-            has n, :#{singular}_taggings, :model => 'Tagging', :child_key => [ :taggable_id ], :taggable_type => self, :tag_context => '#{association}'
+            has n, :#{singular}_taggings, Tagging, :child_key => [ :taggable_id ], :taggable_type => self, :tag_context => '#{association}'
+            has n, :#{association},       Tag,     :through => :#{singular}_taggings, :via => :tag, :order => [ :name ]
 
             before :save, :update_#{association}
 
-            def #{association}
-              #{singular}_taggings.map { |tagging| tagging.tag }.sort_by { |tag| tag.name }
-            end
-
             def #{singular}_list
-              @#{singular}_list ||= #{association}.map { |tag| tag.name }
+              @#{singular}_list ||= self.#{association}.map { |tag| tag.name }
             end
 
             def #{singular}_list=(string)
               @#{singular}_list = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
             end
 
+            alias #{singular}_collection= #{singular}_list=
+
             def update_#{association}
-              return if #{singular}_list.empty?
+              return if self.#{singular}_list.empty?
 
-              remove_tags = frozen_#{singular}_list.to_s.split(',') - #{singular}_list
+              remove_tags = self.frozen_#{singular}_list.to_s.split(',') - self.#{singular}_list
+              tags        = self.#{association}
 
-              if saved? && remove_tags.any?
-                tag_ids = Tag.all(:fields => [ :id ], :name => remove_tags).map { |t| t.id }
-                #{singular}_taggings.all(:tag_id => tag_ids).destroy
-                #{singular}_taggings.reload
+              tags.all(:name => remove_tags).each do |tag|
+                tags.delete(tag)
               end
 
-              association = #{association}
-
-              #{singular}_list.each do |name|
-                tag = Tag.first_or_create(:name => name)
-                next if association.include?(tag)
-                #{singular}_taggings.new(:tag => tag)
+              self.#{singular}_list.each do |name|
+                tag = Tag.first_or_new(:name => name)
+                tags << tag unless tags.include?(tag)
               end
 
-              self.frozen_#{singular}_list = #{association}.map { |tag| tag.name }.join(',')
-            end
-
-            ##
-            # Helper methods to make setting tags easier
-            # FIXME: figure out why calling #{singular}_list=(string) won't work
-            def #{singular}_collection=(string)
-              @#{singular}_list = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
+              self.frozen_#{singular}_list = tags.map { |tag| tag.name }.join(',')
             end
 
             ##
             # Helper methods to make setting tags easier
             #
             def #{singular}_collection
-              #{association}.map { |tag| tag.name }.join(', ')
+              self.#{association}.map { |tag| tag.name }.join(', ')
             end
 
             ##
             # Like tag_collection= except it only add's tags
             #
             def add_#{singular}(string)
-              tag_array = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }.uniq.sort
-              @#{singular}_list = (tag_array + #{singular}_list)
+              tag_names = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }
+              tag_names.concat(self.#{singular}_list)
+              @#{singular}_list = tag_names.uniq.sort
             end
           RUBY
         end
