@@ -23,7 +23,7 @@ describe DataMapper::Adapters::RestAdapter do
 
         headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-        FakeWeb.register_uri(:post, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :string => body)
+        FakeWeb.register_uri(:post, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :body => body)
       end
 
       before :all do
@@ -59,7 +59,7 @@ describe DataMapper::Adapters::RestAdapter do
 
         headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :string => body)
+        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :body => body)
       end
 
       before :all do
@@ -93,7 +93,7 @@ describe DataMapper::Adapters::RestAdapter do
 
         headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books/1.xml', :status => 200, :headers => headers, :string => body)
+        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books/1.xml', :status => 200, :headers => headers, :body => body)
 
         @response = @adapter.read(@query)
       end
@@ -126,7 +126,7 @@ describe DataMapper::Adapters::RestAdapter do
 
         headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml?author=Dan+Kubb', :status => 200, :headers => headers, :string => body)
+        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml?author=Dan+Kubb', :status => 200, :headers => headers, :body => body)
       end
 
       before :all do
@@ -156,7 +156,7 @@ describe DataMapper::Adapters::RestAdapter do
 
       headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-      FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :string => body)
+      FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :body => body)
     end
 
     before :all do
@@ -171,7 +171,7 @@ describe DataMapper::Adapters::RestAdapter do
 
       headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-      FakeWeb.register_uri(:put, 'http://admin:secret@localhost:4000/books/1.xml', :status => 200, :headers => headers, :string => body)
+      FakeWeb.register_uri(:put, 'http://admin:secret@localhost:4000/books/1.xml', :status => 200, :headers => headers, :body => body)
     end
 
     before :all do
@@ -204,7 +204,7 @@ describe DataMapper::Adapters::RestAdapter do
 
       headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
 
-      FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :string => body)
+      FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :body => body)
     end
 
     before :all do
