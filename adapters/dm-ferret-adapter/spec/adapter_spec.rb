@@ -8,17 +8,17 @@ describe DataMapper::Adapters::FerretAdapter do
     @adapter = DataMapper.setup(:default, "ferret://#{INDEX_PATH}")
 
     Object.send(:remove_const, :User) if defined?(User)
-    class User
+    class ::User
       include DataMapper::Resource
 
       property :id, Serial
     end
 
     Object.send(:remove_const, :Photo) if defined?(Photo)
-    class Photo
+    class ::Photo
       include DataMapper::Resource
 
-      property :uuid, String, :default => lambda { UUIDTools::UUID.random_create }, :key => true
+      property :uuid, String, :default => proc { UUIDTools::UUID.random_create }, :key => true
       property :happy, Boolean, :default => true
     end
   end
