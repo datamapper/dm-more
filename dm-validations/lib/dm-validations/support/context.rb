@@ -1,6 +1,6 @@
 module DataMapper
   module Validate
-    
+
     # Module with validation context functionality.
     #
     # Contexts are implemented using a simple array based
@@ -9,7 +9,7 @@ module DataMapper
     # will default to :default
     #
     module Context
-      
+
       # TODO: document
       # @api private
       def default_validation_context
@@ -45,10 +45,10 @@ module DataMapper
       def current_validation_context
         validation_context_stack.last
       end
-      
+
     end
 
     include Context
-    
+
   end
 end

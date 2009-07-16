@@ -316,7 +316,7 @@ module DataMapper
             model.belongs_to belongs_to_name(self.name)
             model.belongs_to belongs_to_name(options[:other_model].name)
             if options[:connect]
-              remixed = options[:as] 
+              remixed = options[:as]
               remixed ||= options[:other_model].to_s.snake_case
               self.has cardinality, (options[:for] || options[:on]).snake_case.pluralize.to_sym, :through => remixed.to_sym
             end

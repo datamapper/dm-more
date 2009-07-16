@@ -61,7 +61,7 @@ module DataMapper
         return false unless validation_context_stack.empty? || valid?(current_validation_context)
         super
       end
-      
+
     end
 
     # Return the ValidationErrors
