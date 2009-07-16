@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-require 'addressable/uri'
+begin
+  require 'addressable/uri'
+rescue LoadError
+  # do nothing
+end
 
 module DataMapper
   module Types

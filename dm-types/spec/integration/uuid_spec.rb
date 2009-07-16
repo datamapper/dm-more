@@ -1,12 +1,9 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-begin
-  gem 'uuidtools', '~>2.0'
-  require 'uuidtools'
-rescue LoadError
+unless defined?(::UUIDTools)
   skip_tests = true
-  puts 'Skipping UUID tests, please do gem install uuidtools'
+  puts '[WARNING] Skipping UUID tests, please do gem install uuidtools'
 end
 
 unless skip_tests

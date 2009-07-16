@@ -1,17 +1,9 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-if RUBY_VERSION >= '1.9.0'
- require 'csv'
-else
-  begin
-    gem 'fastercsv', '~>1.5.0'
-    require 'fastercsv'
-    CSV = FasterCSV unless defined?(CSV)
-  rescue LoadError
-    skip_tests = true
-    puts "Skipping CSV tests, please do gem install csv"
-  end
+unless defined?(::CSV)
+  skip_tests = true
+  puts '[WARNING] Skipping CSV tests, please do gem install fastercsv'
 end
 
 unless skip_tests

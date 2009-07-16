@@ -2,11 +2,10 @@ if RUBY_VERSION >= '1.9.0'
  require 'csv'
 else
   begin
-    gem 'fastercsv', '~>1.5.0'
-    require 'fastercsv'
+    require 'fastercsv'  # must be ~>1.5
     CSV = FasterCSV unless defined?(CSV)
   rescue LoadError
-    nil
+    # do nothing
   end
 end
 

@@ -3,12 +3,9 @@ require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
 include DataMapper::Types
 
-begin
-  gem 'bcrypt-ruby', '~>2.0.3'
-  require 'bcrypt'
-rescue LoadError
+unless defined?(::BCrypt)
   skip_tests = true
-  puts "Skipping bcrypt tests, please do gem install bcrypt-ruby"
+  puts '[WARNING] Skipping BcryptHash tests, please do gem install bcrypt-ruby'
 end
 
 describe "DataMapper::Types::BCryptHash" do
