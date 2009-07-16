@@ -3,10 +3,13 @@ require 'rubygems'
 
 gem 'dm-core', '0.10.0'
 require 'dm-core'
-gem 'dm-validations', '0.10.0'
-require 'dm-validations'
 
 ROOT = Pathname(__FILE__).dirname.parent
+
+# use local dm-validations if running from dm-more directly
+lib = ROOT.parent / 'dm-validations' / 'lib'
+$LOAD_PATH.unshift(lib) if lib.directory?
+require 'dm-validations'
 
 $LOAD_PATH.unshift(ROOT / 'lib')
 

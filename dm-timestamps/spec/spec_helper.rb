@@ -6,15 +6,10 @@ require 'dm-core'
 
 ROOT = Pathname(__FILE__).dirname.parent
 
-# use local dm-types if running from dm-more directly
+# use local dm-validations if running from dm-more directly
 lib = ROOT.parent / 'dm-validations' / 'lib'
 $LOAD_PATH.unshift(lib) if lib.directory?
-
-begin
-  require 'dm-validations'
-rescue LoadError
-  # do nothing
-end
+require 'dm-validations'
 
 require ROOT / 'lib' / 'dm-timestamps'
 

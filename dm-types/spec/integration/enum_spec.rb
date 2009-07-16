@@ -1,6 +1,5 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
-require 'dm-validations'
 
 describe DataMapper::Types::Fixtures::Ticket do
   before :all do
