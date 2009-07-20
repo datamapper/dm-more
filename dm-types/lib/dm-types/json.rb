@@ -1,8 +1,4 @@
-begin
-  require 'json'
-rescue LoadError
-  # do nothing
-end
+require 'json'
 
 module DataMapper
   module Types

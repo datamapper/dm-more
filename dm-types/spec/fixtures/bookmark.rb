@@ -16,12 +16,12 @@ module DataMapper
         property :id, Serial
 
         property :title,  String, :length => 255
+        property :shared, Boolean
         property :uri,    URI
         property :tags,   Yaml
-        property :shared, Boolean
-      end # Bookmark
 
-      Bookmark.auto_migrate!
+        auto_migrate!
+      end # Bookmark
     end
   end
 end

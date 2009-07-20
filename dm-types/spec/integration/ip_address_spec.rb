@@ -1,11 +1,6 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-unless defined?(::UUIDTools)
-  skip_tests = true
-  puts '[WARNING] Skipping UUID tests, please do gem install uuidtools'
-end
-
 module IPAddressMatchers
   def run_ipv6
     simple_matcher('run IPv6') { |model| model.runs_ipv6? }
@@ -16,135 +11,139 @@ module IPAddressMatchers
   end
 end
 
-unless skip_tests
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'network_node.rb'
+
   describe DataMapper::Types::Fixtures::NetworkNode do
     before :all do
-      @model = DataMapper::Types::Fixtures::NetworkNode.new(:node_uuid        => '25a44800-21c9-11de-8c30-0800200c9a66',
-                                                            :ip_address       => nil,
-                                                            :cidr_subnet_bits => nil)
+      @resource = DataMapper::Types::Fixtures::NetworkNode.new(
+        :node_uuid        => '25a44800-21c9-11de-8c30-0800200c9a66',
+        :ip_address       => nil,
+        :cidr_subnet_bits => nil
+      )
     end
 
     include IPAddressMatchers
 
     describe 'with IP address fe80::ab8:e8ff:fed7:f8c9' do
       before :all do
-        @model.ip_address = 'fe80::ab8:e8ff:fed7:f8c9'
+        @resource.ip_address = 'fe80::ab8:e8ff:fed7:f8c9'
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'is an IPv6 node' do
-          @model.should run_ipv6
+          @resource.should run_ipv6
         end
       end
     end
 
     describe 'with IP address 127.0.0.1' do
       before :all do
-        @model.ip_address = '127.0.0.1'
+        @resource.ip_address = '127.0.0.1'
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'is an IPv4 node' do
-          @model.should run_ipv4
+          @resource.should run_ipv4
         end
       end
     end
 
     describe 'with IP address 218.43.243.136' do
       before :all do
-        @model.ip_address = '218.43.243.136'
+        @resource.ip_address = '218.43.243.136'
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'is an IPv4 node' do
-          @model.should run_ipv4
+          @resource.should run_ipv4
         end
       end
     end
 
     describe 'with IP address 221.186.184.68' do
       before :all do
-        @model.ip_address = '221.186.184.68'
+        @resource.ip_address = '221.186.184.68'
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'is an IPv4 node' do
-          @model.should run_ipv4
+          @resource.should run_ipv4
         end
       end
     end
 
     describe 'with IP address given as CIDR' do
       before :all do
-        @model.ip_address = '218.43.243.0/24'
+        @resource.ip_address = '218.43.243.0/24'
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'is an IPv4 node' do
-          @model.should run_ipv4
+          @resource.should run_ipv4
         end
 
         it 'includes IP address 218.43.243.2 in subnet hosts' do
-          @model.ip_address.include?('218.43.243.2')
+          @resource.ip_address.include?('218.43.243.2')
         end
       end
     end
 
     describe 'with a blank string used as IP address' do
       before :all do
-        @model.ip_address = ''
+        @resource.ip_address = ''
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'has NO IP address' do
-          @model.ip_address.should be_nil
+          @resource.ip_address.should be_nil
         end
       end
     end
 
     describe 'with NO IP address' do
       before :all do
-        @model.ip_address = nil
+        @resource.ip_address = nil
       end
 
       describe 'when dumped and loaded' do
         before :all do
-          @model.save.should be_true
-          @model.reload
+          @resource.save.should be_true
+          @resource.reload
         end
 
         it 'has no IP address assigned' do
-          @model.ip_address.should be_nil
+          @resource.ip_address.should be_nil
         end
       end
     end

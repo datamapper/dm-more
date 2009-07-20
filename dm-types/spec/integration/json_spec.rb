@@ -1,66 +1,68 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe DataMapper::Types::Fixtures::Person do
-  before :all do
-    @model = DataMapper::Types::Fixtures::Person.new(:name => "Thomas Edison")
-  end
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'person.rb'
 
-  describe "with no positions information" do
+  describe DataMapper::Types::Fixtures::Person do
     before :all do
-      @model.positions = nil
+      @resource = DataMapper::Types::Fixtures::Person.new(:name => 'Thomas Edison')
     end
 
-    describe "when dumped and loaded again" do
+    describe 'with no positions information' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @resource.positions = nil
       end
 
-      it "has nil positions list" do
-        @model.positions.should be_nil
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
+
+        it 'has nil positions list' do
+          @resource.positions.should be_nil
+        end
       end
     end
-  end
 
-
-  describe "with a few items on the positions list" do
-    before :all do
-      @model.positions = [
-                         { :company => "The Death Star, Inc", :title => "Light sabre engineer" },
-                         { :company => "Sane Little Company", :title => "Chief Curiosity Officer" }
-                        ]
-    end
-
-    describe "when dumped and loaded again" do
+    describe 'with a few items on the positions list' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @resource.positions = [
+          { :company => 'The Death Star, Inc', :title => 'Light sabre engineer'    },
+          { :company => 'Sane Little Company', :title => 'Chief Curiosity Officer' },
+        ]
       end
 
-      it "loads positions list to the state when it was dumped/persisted with keys being strings" do
-        @model.positions.should == [
-                                    { "company" => "The Death Star, Inc",  "title" => "Light sabre engineer"    },
-                                    { "company"  => "Sane Little Company", "title" => "Chief Curiosity Officer" }
-                                   ]
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
+
+        it 'loads positions list to the state when it was dumped/persisted with keys being strings' do
+          @resource.positions.should == [
+            { 'company' => 'The Death Star, Inc',  'title' => 'Light sabre engineer'    },
+            { 'company'  => 'Sane Little Company', 'title' => 'Chief Curiosity Officer' },
+          ]
+        end
       end
     end
-  end
 
-
-  describe "with positions information given as empty list" do
-    before :all do
-      @model.positions = []
-    end
-
-    describe "when dumped and loaded again" do
+    describe 'with positions information given as empty list' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @resource.positions = []
       end
 
-      it "has empty positions list" do
-        @model.positions.should == []
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
+
+        it 'has empty positions list' do
+          @resource.positions.should == []
+        end
       end
     end
   end

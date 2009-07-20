@@ -17,9 +17,9 @@ module DataMapper
         property :title,  String, :length => 255
         property :body,   Text
         property :status, Enum[:unconfirmed, :confirmed, :assigned, :resolved, :not_applicable]
-      end # Ticket
 
-      Ticket.auto_migrate!
+        auto_migrate!
+      end # Ticket
     end
   end
 end

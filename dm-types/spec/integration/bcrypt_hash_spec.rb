@@ -1,44 +1,41 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-unless defined?(::BCrypt)
-  skip_tests = true
-  puts '[WARNING] Skipping BcryptHash tests, please do gem install bcrypt-ruby'
-end
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'person.rb'
 
-describe DataMapper::Types::Fixtures::Person do
-  unless skip_tests
+  describe DataMapper::Types::Fixtures::Person do
     before :all  do
-      @model  = DataMapper::Types::Fixtures::Person.create(:password => "DataMapper R0cks!")
-      DataMapper::Types::Fixtures::Person.create(:password => "password1")
+      @resource  = DataMapper::Types::Fixtures::Person.create(:password => 'DataMapper R0cks!')
+      DataMapper::Types::Fixtures::Person.create(:password => 'password1')
 
       @people = DataMapper::Types::Fixtures::Person.all
-      @model.reload
+      @resource.reload
     end
 
-    it "persists the password on initial save" do
-      @model.password.should       == "DataMapper R0cks!"
-      @people.last.password.should == "password1"
+    it 'persists the password on initial save' do
+      @resource.password.should       == 'DataMapper R0cks!'
+      @people.last.password.should == 'password1'
     end
 
-    it "recalculates password hash on attribute update" do
-      @model.attribute_set(:password, "bcryptic obscure")
-      @model.save
+    it 'recalculates password hash on attribute update' do
+      @resource.attribute_set(:password, 'bcryptic obscure')
+      @resource.save
 
-      @model.reload
-      @model.password.should     == 'bcryptic obscure'
-      @model.password.should_not == 'DataMapper R0cks!'
+      @resource.reload
+      @resource.password.should     == 'bcryptic obscure'
+      @resource.password.should_not == 'DataMapper R0cks!'
     end
 
-    it "does not change password value on reload" do
-      model    = @people.last
-      original = model.password.to_s
-      model.reload
-      model.password.to_s.should == original
+    it 'does not change password value on reload' do
+      resource = @people.last
+      original = resource.password.to_s
+      resource.reload
+      resource.password.to_s.should == original
     end
 
-    it "uses cost of BCrypt::Engine::DEFAULT_COST" do
-      @model.password.cost.should == BCrypt::Engine::DEFAULT_COST
+    it 'uses cost of BCrypt::Engine::DEFAULT_COST' do
+      @resource.password.cost.should == BCrypt::Engine::DEFAULT_COST
     end
   end
 end

@@ -16,12 +16,13 @@ module DataMapper
         property :id,         Serial
 
         property :title,      String, :length => 255
-        property :slug,       Slug
         property :body,       Text
 
         property :created_at,   DateTime
         property :updated_at,   DateTime
         property :published_at, DateTime
+
+        property :slug, Slug
 
         #
         # Hooks
@@ -30,9 +31,9 @@ module DataMapper
         before :valid? do
           self.slug = self.title
         end
-      end # Article
 
-      Article.auto_migrate!
+        auto_migrate!
+      end # Article
     end
   end
 end

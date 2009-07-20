@@ -13,9 +13,9 @@ module DataMapper
         # Properties
         #
 
-        property :id,               Serial
+        property :id, Serial
         without_auto_validations do
-          property :node_number,      Integer, :index => true
+          property :node_number, Integer, :index => true
 
           property :source_path,      FilePath
           property :destination_path, FilePath
@@ -29,9 +29,9 @@ module DataMapper
           property :installed_at,     DateTime
           property :installed_by,     String
         end
-      end # SoftwarePackage
 
-      SoftwarePackage.auto_migrate!
+        auto_migrate!
+      end # SoftwarePackage
     end # Fixtures
   end # Types
 end # DataMapper

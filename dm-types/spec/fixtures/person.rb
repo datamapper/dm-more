@@ -13,17 +13,17 @@ module DataMapper
         # Properties
         #
 
-        property :id,       Serial
+        property :id,         Serial
+        property :name,       String
+        property :positions,  Json
+        property :inventions, Yaml
+
+        property :interests, CommaSeparatedList
+
         property :password, BCryptHash
 
-        property :name,       String
-        property :positions,  ::DataMapper::Types::Json
-        property :inventions, ::DataMapper::Types::Yaml
-
-        property :interests, ::DataMapper::Types::CommaSeparatedList
+        auto_migrate!
       end
-
-      Person.auto_migrate!
     end
   end
 end

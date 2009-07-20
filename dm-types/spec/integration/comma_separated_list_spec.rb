@@ -1,88 +1,88 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe DataMapper::Types::Fixtures::Person do
-  before :all do
-    @model = DataMapper::Types::Fixtures::Person.new(:name => "")
-  end
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'person.rb'
 
-  describe "with no interests information" do
+  describe DataMapper::Types::Fixtures::Person do
     before :all do
-      @model.interests = nil
+      @resource = DataMapper::Types::Fixtures::Person.new(:name => '')
     end
 
-    describe "when dumped and loaded again" do
+    describe 'with no interests information' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @resource.interests = nil
       end
 
-      it "has no interests" do
-        @model.interests.should == nil
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
+
+        it 'has no interests' do
+          @resource.interests.should == nil
+        end
       end
     end
-  end
 
-
-  describe "with no interests information" do
-    before :all do
-      @model.interests = []
-    end
-
-    describe "when dumped and loaded again" do
+    describe 'with no interests information' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @resource.interests = []
       end
 
-      it "has empty interests list" do
-        @model.interests.should == []
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
+
+        it 'has empty interests list' do
+          @resource.interests.should == []
+        end
       end
     end
-  end
 
-
-  describe "with interests information given as a Hash" do
-    it "raises ArgumentError" do
-      lambda do
-        @model.interests = { :hash => "value" }
-        @model.save
-      end.should raise_error(ArgumentError, /must be a string, an array or nil/)
-    end
-  end
-
-
-
-  describe "with a few items on the interests list" do
-    before :all do
-      @input = 'fire, water, fire, a whole lot of other interesting things, ,,,'
-      @model.interests = @input
+    describe 'with interests information given as a Hash' do
+      it 'raises ArgumentError' do
+        lambda do
+          @resource.interests = { :hash => 'value' }
+          @resource.save
+        end.should raise_error(ArgumentError, /must be a string, an array or nil/)
+      end
     end
 
-    describe "when dumped and loaded again" do
+    describe 'with a few items on the interests list' do
       before :all do
-        @model.save.should be_true
-        @model.reload
+        @input = 'fire, water, fire, a whole lot of other interesting things, ,,,'
+        @resource.interests = @input
       end
 
-      it "includes 'fire' in interests" do
-        @model.interests.should include("fire")
-      end
+      describe 'when dumped and loaded again' do
+        before :all do
+          @resource.save.should be_true
+          @resource.reload
+        end
 
-      it "includes 'water' in interests" do
-        @model.interests.should include("water")
-      end
+        it 'includes "fire" in interests' do
+          @resource.interests.should include('fire')
+        end
 
-      it "includes 'a whole lot of other interesting things' in interests" do
-        @model.interests.should include("a whole lot of other interesting things")
-      end
+        it 'includes "water" in interests' do
+          @resource.interests.should include('water')
+        end
 
-      it "has blank entries removed" do
-        @model.interests.any? { |i| i.blank? }.should be_false
-      end
+        it 'includes "a whole lot of other interesting things" in interests' do
+          @resource.interests.should include('a whole lot of other interesting things')
+        end
 
-      it "has duplicates removed" do
-        @model.interests.select { |i| i == 'fire' }.size.should == 1
+        it 'has blank entries removed' do
+          @resource.interests.any? { |i| i.blank? }.should be_false
+        end
+
+        it 'has duplicates removed' do
+          @resource.interests.select { |i| i == 'fire' }.size.should == 1
+        end
       end
     end
   end

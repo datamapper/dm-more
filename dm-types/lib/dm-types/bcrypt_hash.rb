@@ -1,8 +1,4 @@
-begin
-  require 'bcrypt'
-rescue LoadError
-  # do nothing
-end
+require 'bcrypt'
 
 module DataMapper
   module Types

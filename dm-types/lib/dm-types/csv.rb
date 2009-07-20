@@ -1,12 +1,8 @@
 if RUBY_VERSION >= '1.9.0'
- require 'csv'
+  require 'csv'
 else
-  begin
-    require 'fastercsv'  # must be ~>1.5
-    CSV = FasterCSV unless defined?(CSV)
-  rescue LoadError
-    # do nothing
-  end
+  require 'fastercsv'  # must be ~>1.5
+  CSV = FasterCSV unless defined?(CSV)
 end
 
 module DataMapper

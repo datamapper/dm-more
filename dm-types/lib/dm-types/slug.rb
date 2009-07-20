@@ -1,4 +1,5 @@
-require 'iconv'
+# gem install rsl-stringex --source http://gems.github.com/
+require 'stringex'
 
 module DataMapper
   module Types
@@ -11,27 +12,18 @@ module DataMapper
       end
 
       def self.dump(value, property)
-        if value.nil?
-          nil
-        elsif value.is_a?(String)
-          escape(value)
+        return if value.nil?
+
+        if value.respond_to?(:to_str)
+          escape(value.to_str)
         else
-          raise ArgumentError.new("+value+ must be nil or a String")
+          raise ArgumentError, '+value+ must be nil or respond to #to_str'
         end
       end
 
-      # Hugs and kisses to Rick Olsons permalink_fu for the escape method
       def self.escape(string)
-        result = Iconv.iconv('ascii//translit//IGNORE', 'utf-8', string).to_s
-        result.gsub!(/[^\x00-\x7F]+/, '')  # Remove anything non-ASCII entirely (e.g. diacritics).
-        result.gsub!(/[^\w_ \-]+/i,   '')  # Remove unwanted chars.
-        result.gsub!(/[ \-]+/i,      '-')  # No more than one of the separator in a row.
-        result.gsub!(/^\-|\-$/i,      '')  # Remove leading/trailing separator.
-        result.downcase!
-
-        result
+        string.to_url
       end
-
     end # class Slug
   end # module Types
 end # module DataMapper

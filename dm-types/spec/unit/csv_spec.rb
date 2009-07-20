@@ -1,129 +1,117 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-unless defined?(::CSV)
-  skip_tests = true
-  puts '[WARNING] Skipping CSV tests, please do gem install fastercsv'
-end
-
-unless skip_tests
-  describe DataMapper::Types::Csv, ".load" do
-    describe ".load" do
-      describe "when argument is a comma separated string" do
+try_spec do
+  describe DataMapper::Types::Csv do
+    describe '.load' do
+      describe 'when argument is a comma separated string' do
         before :all do
-          @input  = "uno,due,tre"
+          @input  = 'uno,due,tre'
           @result = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "parses the argument using CVS parser" do
-          @result.should == [["uno", "due", "tre"]]
+        it 'parses the argument using CVS parser' do
+          @result.should == [ %w[ uno due tre ] ]
         end
       end
 
-      describe "when argument is an empty array" do
+      describe 'when argument is an empty array' do
         before :all do
           @input    = []
           @result   = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "does not change the input" do
+        it 'does not change the input' do
           @result.should == @input
         end
       end
 
-      describe "when argument is an empty hash" do
+      describe 'when argument is an empty hash' do
         before :all do
           @input    = {}
           @result   = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end
 
-      describe "when argument is nil" do
+      describe 'when argument is nil' do
         before :all do
           @input    = nil
           @result   = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end
 
-      describe "when argument is an integer" do
+      describe 'when argument is an integer' do
         before :all do
           @input    = 7
           @result   = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end
 
-      describe "when argument is a float" do
+      describe 'when argument is a float' do
         before :all do
           @input    = 7.0
           @result   = DataMapper::Types::Csv.load(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end
     end
-  end
 
-
-
-  describe DataMapper::Types::Csv do
-    describe ".dump" do
-      describe "when value is a list of lists" do
+    describe '.dump' do
+      describe 'when value is a list of lists' do
         before :all do
-          @input  = [["uno", "due", "tre"], ["uno", "dos", "tres"]]
+          @input  = [ %w[ uno due tre ], %w[ uno dos tres ] ]
           @result = DataMapper::Types::Csv.dump(@input, :property)
         end
 
-        it "dumps value to comma separated string" do
+        it 'dumps value to comma separated string' do
           @result.should == "uno,due,tre\nuno,dos,tres\n"
         end
       end
 
-
-      describe "when value is a string" do
+      describe 'when value is a string' do
         before :all do
-          @input  = "beauty hides in the deep"
+          @input  = 'beauty hides in the deep'
           @result = DataMapper::Types::Csv.dump(@input, :property)
         end
 
+        it 'returns input as is' do
           @result.should == @input
-        it "returns input as is" do
         end
       end
 
-
-      describe "when value is nil" do
+      describe 'when value is nil' do
         before :all do
           @input  = nil
           @result = DataMapper::Types::Csv.dump(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end
 
-
-      describe "when value is a hash" do
+      describe 'when value is a hash' do
         before :all do
-          @input  = { :library => "DataMapper", :language => "Ruby" }
+          @input  = { :library => 'DataMapper', :language => 'Ruby' }
           @result = DataMapper::Types::Csv.dump(@input, :property)
         end
 
-        it "returns nil" do
+        it 'returns nil' do
           @result.should be_nil
         end
       end

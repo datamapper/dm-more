@@ -1,8 +1,4 @@
-begin
-  require 'uuidtools'  # must be ~>2.0
-rescue LoadError
-  # do nothing
-end
+require 'uuidtools'  # must be ~>2.0
 
 module DataMapper
   module Types

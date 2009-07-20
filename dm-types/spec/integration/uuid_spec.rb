@@ -1,33 +1,30 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-unless defined?(::UUIDTools)
-  skip_tests = true
-  puts '[WARNING] Skipping UUID tests, please do gem install uuidtools'
-end
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'network_node.rb'
 
-unless skip_tests
   describe DataMapper::Types::Fixtures::NetworkNode do
     describe 'with UUID set as UUID object' do
       before :all do
         @uuid_string = 'b0fc632e-d744-4821-afe3-4ea0701859ee'
         @uuid        = UUIDTools::UUID.parse(@uuid_string)
-        @model       = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+        @resource       = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
 
-        @model.save.should be_true
+        @resource.save.should be_true
       end
 
       describe 'when reloaded' do
         before :all do
-          @model.reload
+          @resource.reload
         end
 
         it 'has the same UUID string' do
-          @model.uuid.to_s.should == @uuid_string
+          @resource.uuid.to_s.should == @uuid_string
         end
 
         it 'returns UUID as an object' do
-          @model.uuid.should be_an_instance_of(UUIDTools::UUID)
+          @resource.uuid.should be_an_instance_of(UUIDTools::UUID)
         end
       end
     end
@@ -35,20 +32,20 @@ unless skip_tests
     describe 'with UUID set as a valid UUID string' do
       before :all do
         @uuid  = 'b0fc632e-d744-4821-afe3-4ea0701859ee'
-        @model = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+        @resource = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
       end
 
       describe 'when reloaded' do
         before :all do
-          @model.reload
+          @resource.reload
         end
 
         it 'has the same UUID string' do
-          @model.uuid.to_s.should == @uuid
+          @resource.uuid.to_s.should == @uuid
         end
 
         it 'returns UUID as an object' do
-          @model.uuid.should be_an_instance_of(UUIDTools::UUID)
+          @resource.uuid.should be_an_instance_of(UUIDTools::UUID)
         end
       end
     end
@@ -86,16 +83,16 @@ unless skip_tests
     describe 'with missing UUID' do
       before :all do
         @uuid  = nil
-        @model = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
+        @resource = DataMapper::Types::Fixtures::NetworkNode.new(:uuid => @uuid)
       end
 
       describe 'when reloaded' do
         before :all do
-          @model.reload
+          @resource.reload
         end
 
         it 'has no UUID' do
-          @model.uuid.should be_nil
+          @resource.uuid.should be_nil
         end
       end
     end

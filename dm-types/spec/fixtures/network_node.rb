@@ -14,9 +14,9 @@ module DataMapper
         #
 
         property :id,               Serial
-        property :node_uuid,        UUID
         property :ip_address,       IPAddress
         property :cidr_subnet_bits, Integer
+        property :node_uuid,        UUID
 
         #
         # API
@@ -32,9 +32,9 @@ module DataMapper
         def runs_ipv4?
           self.ip_address.ipv4?
         end
-      end # NetworkNode
 
-      NetworkNode.auto_migrate!
+        auto_migrate!
+      end # NetworkNode
     end # Fixtures
   end # Types
 end # DataMapper

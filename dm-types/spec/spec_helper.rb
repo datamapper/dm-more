@@ -22,8 +22,6 @@ ENV['SQLITE3_SPEC_URI']   ||= 'sqlite3::memory:'
 ENV['MYSQL_SPEC_URI']     ||= 'mysql://localhost/dm_core_test'
 ENV['POSTGRES_SPEC_URI']  ||= 'postgres://postgres@localhost/dm_more_test'
 
-# DataMapper::Logger.new(STDOUT, :debug)
-
 def setup_adapter(name, default_uri = nil)
   begin
     DataMapper.setup(name, ENV["#{ENV['ADAPTER'].to_s.upcase}_SPEC_URI"] || default_uri)
@@ -41,4 +39,25 @@ end
 ENV['ADAPTER'] ||= 'sqlite3'
 
 setup_adapter(:default)
-Dir[ROOT / 'spec' / 'fixtures' / '**' / '*.rb'].each { |rb| require(rb) }
+
+DEPENDENCIES = {
+  'bcrypt'    => 'bcrypt-ruby',
+  'fastercsv' => 'fastercsv',
+  'json'      => 'json',
+  'stringex'  => 'rsl-stringex --source http://gems.github.com/',
+  'uuidtools' => 'uuidtools',
+}
+
+def try_spec
+  begin
+    yield
+  rescue NameError
+    # do nothing
+  rescue LoadError => error
+    raise error unless lib = error.message.match(/\Ano such file to load -- (.+)\z/)[1]
+
+    gem_location = DEPENDENCIES[lib] || raise("Unknown lib #{lib}")
+
+    warn "[WARNING] Skipping specs using #{lib}, please do: gem install #{gem_location}"
+  end
+end

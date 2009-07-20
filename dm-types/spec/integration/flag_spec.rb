@@ -1,61 +1,64 @@
 require 'pathname'
 require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
 
-describe DataMapper::Types::Fixtures::TShirt do
-  before :each do
-    @model = DataMapper::Types::Fixtures::TShirt.new(:writing     => "Fork you",
-                                                     :has_picture => true,
-                                                     :picture     => :octocat,
-                                                     :color       => :white,
-                                                     :size        => [:xs, :medium])
-  end
+try_spec do
+  load ROOT / 'spec' / 'fixtures' / 'tshirt.rb'
 
-  describe "with multiple sizes" do
-    describe "dumped and loaded" do
-      before :each do
-        @model.save.should be_true
-        @model.reload
-      end
-
-      it "returns size as array" do
-        @model.size.should == [:xs, :medium]
-      end
-    end
-  end
-
-
-  describe "with a single size" do
-    before :each do
-      @model.size = :large
+  describe DataMapper::Types::Fixtures::TShirt do
+    before do
+      @resource = DataMapper::Types::Fixtures::TShirt.new(
+        :writing     => 'Fork you',
+        :has_picture => true,
+        :picture     => :octocat,
+        :color       => :white,
+        :size        => [ :xs, :medium ]
+      )
     end
 
-    describe "dumped and loaded" do
-      before :each do
-        @model.save.should be_true
-        @model.reload
-      end
+    describe 'with multiple sizes' do
+      describe 'dumped and loaded' do
+        before do
+          @resource.save.should be_true
+          @resource.reload
+        end
 
-      it "returns size as array with a single value" do
-        @model.size.should == [:large]
+        it 'returns size as array' do
+          @resource.size.should == [ :xs, :medium ]
+        end
       end
     end
-  end
 
+    describe 'with a single size' do
+      before do
+        @resource.size = :large
+      end
 
+      describe 'dumped and loaded' do
+        before do
+          @resource.save.should be_true
+          @resource.reload
+        end
 
-  # Flag does not add any auto validations
-  describe "without size" do
-    before :each do
-      @model.should be_valid
-      @model.size = nil
+        it 'returns size as array with a single value' do
+          @resource.size.should == [:large]
+        end
+      end
     end
 
-    it "is valid" do
-      @model.should be_valid
-    end
+    # Flag does not add any auto validations
+    describe 'without size' do
+      before do
+        @resource.should be_valid
+        @resource.size = nil
+      end
 
-    it "has no errors" do
-      @model.errors.should be_blank
+      it 'is valid' do
+        @resource.should be_valid
+      end
+
+      it 'has no errors' do
+        @resource.errors.should be_blank
+      end
     end
   end
 end
