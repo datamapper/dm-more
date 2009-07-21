@@ -12,7 +12,7 @@ module DataMapper
       include Extlib::Hook
       include Constraints::DeleteConstraint
 
-      OPTIONS = (OPTIONS + [ :constraint ]).freeze
+      OPTIONS << :constraint
 
       attr_reader :constraint
 
@@ -25,7 +25,8 @@ module DataMapper
     end
 
     class ManyToMany::Relationship
-      OPTIONS = (OPTIONS + [ :constraint ]).freeze
+
+      OPTIONS << :constraint
 
       private
 
