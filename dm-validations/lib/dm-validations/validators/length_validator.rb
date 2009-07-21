@@ -35,21 +35,23 @@ module DataMapper
         max = @range ? @range.max : @max
         equal = @equal
 
+        field_value_length = field_value_length(field_value)
+
         case @validation_method
         when :range then
-          unless valid = @range.include?(field_value.size)
+          unless valid = @range.include?(field_value_length)
             error_message = ValidationErrors.default_error_message(:length_between, humanized_field_name, min, max)
           end
         when :min then
-          unless valid = field_value.size >= min
+          unless valid = field_value_length >= min
             error_message = ValidationErrors.default_error_message(:too_short, humanized_field_name, min)
           end
         when :max then
-          unless valid = field_value.size <= max
+          unless valid = field_value_length <= max
             error_message = ValidationErrors.default_error_message(:too_long, humanized_field_name, max)
           end
         when :equals then
-          unless valid = field_value.size == equal
+          unless valid = field_value_length == equal
             error_message = ValidationErrors.default_error_message(:wrong_length, humanized_field_name, equal)
           end
         end
@@ -59,6 +61,21 @@ module DataMapper
         add_error(target, error_message, field_name) unless valid
 
         return valid
+      end
+
+      private
+
+      # Return the length in characters
+      #
+      # @param [#to_str] field_value
+      #   the string to get the number of characters for
+      #
+      # @return [Integer]
+      #   the number of characters in the string
+      #
+      # @api private
+      def field_value_length(field_value)
+        field_value.to_str.split(//).size
       end
 
     end # class LengthValidator

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'pathname'
 __dir__ = Pathname(__FILE__).dirname.expand_path
 
@@ -42,7 +44,6 @@ describe DataMapper::Validate::Fixtures::EthernetFrame do
     it_should_behave_like "entity with wrong destination MAC address length"
   end
 
-
   # arguable but reasonable for 80% of cases
   # to treat nil as a 0 lengh value
   # reported in
@@ -58,11 +59,22 @@ describe DataMapper::Validate::Fixtures::EthernetFrame do
     it_should_behave_like "entity with wrong destination MAC address length"
   end
 
-
-
   describe "with a 6 'bits' destination MAC address" do
     before :all do
       @model.destination_mac = "a1b2c3"
+      @model.valid?
+    end
+
+    it_should_behave_like "valid model"
+  end
+
+  describe "with multibyte characters" do
+    before :all do
+      @model = DataMapper::Validate::Fixtures::Currency.valid_instance(
+        :name   => 'Euro',
+        :code   => 'EUR',
+        :symbol => '€'
+      )
       @model.valid?
     end
 
