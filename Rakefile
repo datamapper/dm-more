@@ -7,7 +7,7 @@ include FileUtils
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
-GEM_PATHS = %w[
+gem_paths = %w[
   dm-adjust
   dm-serializer
   dm-validations
@@ -34,7 +34,14 @@ GEM_PATHS = %w[
   dm-tags
   dm-timestamps
   rails_datamapper
-].freeze
+]
+
+# skip installing ferret on Ruby 1.9 until the gem is fixed
+if RUBY_VERSION >= '1.9.0'
+  gem_paths -= %w[ adapters/dm-ferret-adapter ]
+end
+
+GEM_PATHS = gem_paths.freeze
 
 gems = GEM_PATHS.map { |p| File.basename(p) }
 
