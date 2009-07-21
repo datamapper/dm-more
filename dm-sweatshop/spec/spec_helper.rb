@@ -14,3 +14,10 @@ require 'dm-validations'
 require ROOT / 'lib' / 'dm-sweatshop'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
+
+begin
+  Randexp::Dictionary.load_dictionary
+rescue RuntimeError
+  warn '[WARNING] Neither /usr/share/dict/words or /usr/dict/words found, skipping dm-sweatshop specs'
+  exit
+end
