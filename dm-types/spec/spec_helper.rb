@@ -44,7 +44,7 @@ DEPENDENCIES = {
   'bcrypt'    => 'bcrypt-ruby',
   'fastercsv' => 'fastercsv',
   'json'      => 'json',
-  'stringex'  => 'rsl-stringex --source http://gems.github.com/',
+  'stringex'  => 'stringex',
   'uuidtools' => 'uuidtools',
 }
 

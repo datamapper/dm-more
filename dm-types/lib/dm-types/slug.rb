@@ -1,4 +1,3 @@
-# gem install rsl-stringex --source http://gems.github.com/
 require 'stringex'
 
 module DataMapper
