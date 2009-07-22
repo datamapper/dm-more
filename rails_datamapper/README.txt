@@ -26,5 +26,17 @@ To avoid any dependency on active record add this to your projects environment.r
 
 config.frameworks -= [ :active_record ]
 
+== Session Store
+
+Change config/initializers/session_store.rb to something like the following:
+
+ActionController::Base.session_store = :data_mapper_store
+ActionController::Base.session = {
+    :expires_after => 7.days,
+    :key           => '_session_id',
+}
+
+Then create the sessions table with: rake db:sessions:create
+
 == Future
 I really should sort out migrations but with rails3 round the corner don't hold your breath

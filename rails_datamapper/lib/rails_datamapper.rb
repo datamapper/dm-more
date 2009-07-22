@@ -11,5 +11,6 @@ dir = Pathname(__FILE__).dirname.expand_path / 'rails_datamapper'
 
 require dir / 'rails_datamapper'
 require dir / 'validations'
+require dir / 'session_store'
 
 create_connection()
