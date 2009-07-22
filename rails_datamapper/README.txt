@@ -26,3 +26,15 @@ script/generate rspec_dm_model --skip-migration
 To avoid any dependency on active record add this to your projects environment.rb
 
 config.frameworks -= [ :active_record ]
+
+== Session Store
+
+Change config/initializers/session_store.rb to something like the following:
+
+ActionController::Base.session_store = :data_mapper_store
+ActionController::Base.session = {
+    :expires_in => 7.days,
+    :key         => '_session_id',
+}
+
+Then create the sessions table with: rake db:sessions:create

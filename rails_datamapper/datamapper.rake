@@ -33,4 +33,17 @@ namespace :db do
 
   desc 'Migrate the database to the latest version'
   task :migrate => 'db:migrate:up'
+
+  namespace :session do
+    desc "Creates sessions table (for DataMapperStore::Session)"
+    task :create => :environment do
+      DataMapperStore::Session.auto_upgrade!
+    end
+
+    desc "Clears the sessions table (for DataMapperStore::Session)"
+    task :clear => :environment do
+      DataMapperStore::Session.destroy!
+    end
+  end
+
 end
