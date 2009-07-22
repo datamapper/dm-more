@@ -203,22 +203,24 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     #   Users are Commentable by many Users
     #
     it "should allow M:M unary relationships through the Remixable Module" do
-      user = User.new
-      user.first_name = "Tester"
-      user2 = User.new
-      user2.first_name = "Testy"
+      pending 'self referential m:m is currently not supported by dm-core' do
+        user = User.new
+        user.first_name = "Tester"
+        user2 = User.new
+        user2.first_name = "Testy"
 
-      comment = UserComment.new
-      comment.comment = "YOU SUCK!"
-      comment.commentor = user2
+        comment = UserComment.new
+        comment.comment = "YOU SUCK!"
+        comment.commentor = user2
 
-      user.comments << comment
+        user.comments << comment
 
-      user2.comments.length.should be(0)
+        user2.comments.length.should be(0)
 
-      comment.commentor.first_name.should == "Testy"
+        comment.commentor.first_name.should == "Testy"
 
-      user.comments.length.should be(1)
+        user.comments.length.should be(1)
+      end
     end
 
     # Example:
