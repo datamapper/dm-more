@@ -1,7 +1,6 @@
 require 'dm-core'
 
-# Implements DataMapper-specific session store.  Some code/ideas
-# ganked from both Rails and datamapper4rails.
+# Implements DataMapper-specific session store.
 
 module ActionController
   module Session
@@ -12,7 +11,7 @@ module ActionController
 
       def initialize(app, options = {})
         options.symbolize_keys!
-        options[:expire_after] = options[:expires_in] || nil
+        options[:expire_after] = options[:expires] || nil
 
         super
 
