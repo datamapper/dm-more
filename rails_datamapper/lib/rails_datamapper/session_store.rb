@@ -16,12 +16,6 @@ module ActionController
 
         super
 
-        if options.delete(:cache)
-          @@cache = {}
-        else
-          @@cache = nil unless self.class.class_variable_defined? :@@cache
-        end
-
         unless (self.class.class_variable_defined? :@@session_class and @@session_class)
           @@session_class = options.delete(:session_class) || ::DataMapperStore::Session
         end
@@ -30,16 +24,14 @@ module ActionController
       private
       def get_session(env, sid)
         sid     ||= generate_sid
-        session   = @@cache && @@cache[sid] || @@session_class.get(sid)
+        session   = @@session_class.get(sid)
         [sid, session.nil? ? {} : session.data]
       end
 
       def set_session(env, sid, session_data)
-        session            = @@cache && @@cache[sid] || @@session_class.get(sid) || @@session_class.new(:session_id => sid)
+        session            = @@session_class.get(sid) || @@session_class.new(:session_id => sid)
         session.data       = session_data || {}
         session.updated_at = Time.now if session.dirty?
-
-        @@cache[sid] = session if @@cache
 
         session.save
       end
