@@ -48,7 +48,7 @@ module DataMapperStore
     end
 
     property :id,         Serial
-    property :session_id, String,   :unique_key => true
+    property :session_id, String,   :unique_index => true
     property :data,       Text,     :nullable => false, :default => ::Base64.encode64(Marshal.dump({}))
     property :updated_at, DateTime, :nullable => true, :index => true
 
