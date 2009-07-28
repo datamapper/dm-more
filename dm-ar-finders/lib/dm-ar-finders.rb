@@ -1,68 +1,90 @@
 module DataMapper
   module Model
+    # Find resources by providing your own SQL query or DataMapper::Query
+    # instance.
     #
-    # Find instances by manually providing SQL
+    # @param [Array] sql_or_query
+    #   An array whose first element is an SQL query, and the other
+    #   elements are bind values for the query.
+    # @param [Hash] options
+    #   A hash containing extra options.
     #
-    # @param sql<String>   an SQL query to execute
-    # @param <Array>    an Array containing a String (being the SQL query to
-    #   execute) and the parameters to the query.
-    #   example: ["SELECT name FROM users WHERE id = ?", id]
-    # @param query<Query>  a prepared Query to execute.
-    # @param opts<Hash>     an options hash.
-    #     :repository<Symbol> the name of the repository to execute the query
-    #       in. Defaults to self.default_repository_name.
-    #     :reload<Boolean>   whether to reload any instances found that already
-    #      exist in the identity map. Defaults to false.
-    #     :properties<Array>  the Properties of the instance that the query
-    #       loads. Must contain Property objects.
-    #       Defaults to self.properties.
+    # @overload find_by_sql(string_query, options = {})
+    #   @param [String] sql_or_query
+    #     A string containing an SQL query to execute.
+    #   @param [Hash] options
+    #     A hash containing extra options.
     #
-    # @return <Collection> the instance matched by the query.
+    # @overload find_by_sql(dm_query, options = {})
+    #   @param [DataMapper::Query] sql_or_query
+    #     A DataMapper::Query instance to be used to generate an SQL query.
+    #   @param [Hash] options
+    #     A hash containing extra options.
     #
-    # @example
+    # @option options [true, false] :reload (false)
+    #   Whether to reload any matching resources which are already loaded.
+    # @option options [Symbol, Array, DataMapper::Property, DataMapper::PropertySet] :properties
+    #   Specific properties to be loaded. May be a single symbol, a Property
+    #   instance, an array of Properties, or a PropertySet.
+    # @option options [Symbol] :repository
+    #   The repository to query. Uses the model default if none is specified.
+    #
+    # @return [DataMapper::Collection]
+    #   A collection containing any records which matched your query.
+    #
+    # @raise [ArgumentError]
+    #
+    # @example Query with bind values
     #   MyClass.find_by_sql(["SELECT id FROM my_classes WHERE county = ?",
-    #     selected_county], :properties => MyClass.property[:id],
+    #     selected_county])
+    #
+    # @example String query
+    #   MyClass.find_by_sql("SELECT id FROM my_classes LIMIT 1")
+    #
+    # @example Query with properties option
+    #   MyClass.find_by_sql("SELECT id FROM my_classes LIMIT 1",
+    #     :properties => [:id, :name])
+    #
+    # @example Query with repository
+    #   MyClass.find_by_sql(["SELECT id FROM my_classes WHERE county = ?",
+    #     selected_county], :properties => MyClass.property[:name],
     #     :repository => :county_repo)
     #
     # @api public
-    def find_by_sql(*args)
-      sql             = nil
-      query           = nil
-      bind_values     = []
-      properties      = self.properties(repository.name)
-      reload          = false
-      repository_name = default_repository_name
-
-      args.each do |arg|
-        case arg
-          when String
-            sql = arg
-          when Array
-            sql, *bind_values = args
-          when Query
-            query = arg
-          when Hash
-            repository_name = arg.delete(:repository)
-            properties      = Array(arg.delete(:properties))
-            reload          = arg.delete(:reload)
-            raise "unknown options to #find_by_sql: #{arg.inspect}" unless arg.empty?
-          else
-            raise ArgumentError, "Unknown argument type: #{arg.class} (#{arg.inspect})"
-        end
+    def find_by_sql(sql_or_query, options = {})
+      # Figure out what the user passed in.
+      case sql_or_query
+      when Array
+        sql, *bind_values = sql_or_query
+      when String
+        sql, bind_values = sql_or_query, []
+      when DataMapper::Query
+        sql, bind_values = repository.adapter.send(:select_statement, query)
+      else
+        raise ArgumentError, '#find_by_sql requires a query of some kind to work'
       end
 
-      repository = repository(repository_name)
+      # Sort out the options.
+      repository = repository(options.fetch(:repository, default_repository_name))
+
+      if options.key?(:properties)
+        if options[:properties].kind_of?(DataMapper::PropertySet)
+          properties = Array(options[:properties])
+        else
+          # Normalize properties into PropertySet[Property].
+          properties = Array(options[:properties]).map! do |prop|
+            prop.kind_of?(Symbol) ? self.properties[prop] : prop
+          end
+
+          properties = DataMapper::PropertySet.new(properties)
+        end
+      else
+        properties = self.properties(repository.name)
+      end
 
       unless repository.adapter.kind_of?(Adapters::DataObjectsAdapter)
         raise '#find_by_sql only available for Repositories served by a DataObjectsAdapter'
       end
-
-      if query
-        sql         = repository.adapter.send(:select_statement, query)
-        bind_values = query.bind_values
-      end
-
-      raise '#find_by_sql requires a query of some kind to work' unless sql
 
       records = []
 
@@ -79,7 +101,8 @@ module DataMapper
         end
       end
 
-      query = Query.new(repository, self, :fields => properties, :reload => reload)
+      query = Query.new(repository, self,
+        :fields => properties, :reload => options.fetch(:reload, false))
 
       Collection.new(query, query.model.load(records, query))
     end
