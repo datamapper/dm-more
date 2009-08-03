@@ -44,6 +44,13 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
     it_should_behave_like "valid model"
   end
 
+  describe "with height as string containing a float that will be represented in scientific notation" do
+    before :all do
+      @model.height = '0.00004'
+    end
+
+    it_should_behave_like "valid model"
+  end
 
   describe "with height as string containing random alphanumeric characters" do
     before :all do

@@ -17,7 +17,11 @@ module DataMapper
         value = target.send(field_name)
         return true if @options[:allow_nil] && value.blank?
 
-        value = value.kind_of?(BigDecimal) ? value.to_s('F') : value.to_s
+        value = case value
+          when Float      then BigDecimal.new(value.to_s).to_s('F') # Avoid Scientific Notation in Float to_s
+          when BigDecimal then value.to_s('F')
+          else value.to_s
+        end
 
         error_message = @options[:message]
         precision     = @options[:precision]
