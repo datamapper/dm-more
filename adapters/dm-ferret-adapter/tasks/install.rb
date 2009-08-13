@@ -4,7 +4,7 @@ end
 
 desc "Install #{GEM_NAME} #{GEM_VERSION}"
 task :install => [ :package ] do
-  sudo_gem "install --local pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources"
+  sudo_gem "install pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources"
 end
 
 desc "Uninstall #{GEM_NAME} #{GEM_VERSION}"
