@@ -42,7 +42,5 @@ module SQL
         @not_null = col_struct.notnull == 0
       end
     end
-
-
   end
 end

@@ -26,10 +26,9 @@ module SQL
       " ENGINE = InnoDB CHARACTER SET #{character_set} COLLATE #{collation}"
     end
 
-    # TODO: move to dm-more/dm-migrations
     def property_schema_statement(connection, schema)
       if supports_serial? && schema[:serial]
-        statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
+        statement = "#{schema[:quote_column_name]} SERIAL PRIMARY KEY"
       else
         super
       end
@@ -51,7 +50,5 @@ module SQL
         @not_null = col_struct.notnull == 0
       end
     end
-
-
   end
 end

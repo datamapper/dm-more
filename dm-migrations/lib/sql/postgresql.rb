@@ -10,9 +10,9 @@ module SQL
     end
 
     def recreate_database
-      execute "DROP SCHEMA IF EXISTS test CASCADE"
-      execute "CREATE SCHEMA test"
-      execute "SET search_path TO test"
+      execute 'DROP SCHEMA IF EXISTS test CASCADE'
+      execute 'CREATE SCHEMA test'
+      execute 'SET search_path TO test'
     end
 
     def supports_serial?
@@ -21,7 +21,7 @@ module SQL
 
     def property_schema_statement(connection, schema)
       if supports_serial? && schema[:serial]
-        statement = "#{schema[:quote_column_name]} serial PRIMARY KEY"
+        statement = "#{schema[:quote_column_name]} SERIAL PRIMARY KEY"
       else
         statement = super
         if schema.has_key?(:sequence_name)
@@ -64,9 +64,7 @@ module SQL
             end
           end
         end
-
       end
-
     end
 
     class Column < SQL::Column
@@ -75,8 +73,6 @@ module SQL
 
         @not_null = col_struct.is_nullable != "YES"
       end
-
     end
-
   end
 end

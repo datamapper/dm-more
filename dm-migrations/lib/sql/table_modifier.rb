@@ -47,7 +47,5 @@ module SQL
     def quoted_table_name
       @adapter.send(:quote_name, table_name)
     end
-
   end
-
 end

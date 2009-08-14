@@ -55,32 +55,42 @@ module SQL
         @type = build_type(type)
       end
 
+      def to_sql
+        type
+      end
+
+      private
+
       def build_type(type_class)
-        schema = {:name => @name, :quote_column_name => quoted_name}.merge(@opts)
-        schema[:serial?] ||= schema[:serial]
-        unless schema.has_key?(:nullable?)
-          schema[:nullable?] = schema.has_key?(:nullable) ? schema[:nullable] : !schema[:not_null]
+        schema = { :name => @name, :quote_column_name => quoted_name }.merge(@opts)
+
+        unless schema.key?(:nullable)
+          schema[:nullable] = !schema[:not_null]
         end
-        if type_class.is_a?(String)
+
+        schema[:length] ||= schema.delete(:size) if schema.key?(:size)
+
+        if type_class.kind_of?(String)
           schema[:primitive] = type_class
         else
           primitive = type_class.respond_to?(:primitive) ? type_class.primitive : type_class
-          schema = @adapter.class.type_map[primitive].merge(schema)
+          options   = @adapter.class.type_map[primitive].dup
+
+          if type_class.respond_to?(:options)
+            options.update(type_class.options)
+          end
+
+          schema = options.update(schema)
         end
+
         @adapter.send(:with_connection) do |connection|
           @adapter.property_schema_statement(connection, schema)
         end
-      end
-
-      def to_sql
-        type
       end
 
       def quoted_name
         @adapter.send(:quote_name, name)
       end
     end
-
   end
-
 end
