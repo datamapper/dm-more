@@ -57,15 +57,16 @@ module DataMapper
         end
 
         properties.each do |property|
-          before "#{property.name}=".to_sym do
-            if value = property.get(self)
-              pending_version_attributes[property.name] ||= value
+          name = property.name
+          before "#{name}=".to_sym do
+            unless (value = property.get(self)).nil? || pending_version_attributes.key?(name)
+              pending_version_attributes[name] = value
             end
           end
         end
 
         after :update do |retval|
-          if retval && pending_version_attributes.has_key?(on)
+          if retval && pending_version_attributes.key?(on)
             model::Version.create(attributes.merge(pending_version_attributes))
             pending_version_attributes.clear
           end
@@ -83,11 +84,15 @@ module DataMapper
             model = DataMapper::Model.new
 
             properties.each do |property|
-              # duplication is necessary since Property#options are frozen since 0.10.0
-              options = property.options.dup
-              options[:key]    = true if property.name == @on || property.serial?
-              options[:serial] = false
-              model.property(property.name, property.type, options)
+              type = property.type
+              type = Class if type == DataMapper::Types::Discriminator
+
+              options = property.options.merge(
+                :key    => property.name == @on,
+                :serial => false
+              )
+
+              model.property(property.name, type, options)
             end
 
             const_set(name, model)

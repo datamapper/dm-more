@@ -5,7 +5,8 @@ class Story
 
   property :id,         Serial
   property :title,      String
-  property :updated_at, DateTime, :nullable => false
+  property :updated_at, DateTime
+  property :type,       Discriminator
 
   before :save do
     # For the sake of testing, make sure the updated_at is always unique
@@ -37,7 +38,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     describe '#create' do
-      before do
+      before :all do
         Story.auto_migrate!
         Story.create(:title => 'A Very Interesting Article')
       end
@@ -48,12 +49,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     describe '#save' do
-      before do
+      before :all do
         Story.auto_migrate!
       end
 
       describe '(with new resource)' do
-        before do
+        before :all do
           @story = Story.new(:title => 'A Story')
           @story.save
         end
@@ -64,7 +65,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       describe '(with a clean existing resource)' do
-        before do
+        before :all do
           @story = Story.create(:title => 'A Story')
           @story.save
         end
@@ -75,7 +76,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       describe '(with a dirty existing resource)' do
-        before do
+        before :all do
           @story = Story.create(:title => 'A Story')
           @story.title = 'An Inner Update'
           @story.title = 'An Updated Story'
@@ -98,7 +99,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     describe '#versions' do
-      before do
+      before :all do
         Story.auto_migrate!
         @story = Story.create(:title => 'A Story')
       end
