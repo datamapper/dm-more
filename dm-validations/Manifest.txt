@@ -37,6 +37,7 @@ spec/fixtures/city.rb
 spec/fixtures/company.rb
 spec/fixtures/corporate_world.rb
 spec/fixtures/country.rb
+spec/fixtures/currency.rb
 spec/fixtures/ethernet_frame.rb
 spec/fixtures/event.rb
 spec/fixtures/g3_concert.rb
@@ -124,6 +125,7 @@ spec/integration/uniqueness_validator/spec_helper.rb
 spec/integration/uniqueness_validator/uniqueness_validator_spec.rb
 spec/integration/within_validator/spec_helper.rb
 spec/integration/within_validator/within_validator_spec.rb
+spec/public/resource_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
 spec/unit/contextual_validators/emptiness_spec.rb

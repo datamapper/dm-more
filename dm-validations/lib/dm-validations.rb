@@ -26,42 +26,37 @@ require dir / 'support' / 'object'
 
 module DataMapper
   module Validate
+    Model.append_inclusions self
+
     extend Chainable
 
     def self.included(model)
       model.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-        def self.create(attributes = {}, context = :default)
+        def self.create(attributes = {}, *args)
           resource = new(attributes)
-          resource.save(context)
-          resource
-        end
-
-        def self.create!(attributes = {})
-          resource = new(attributes)
-          resource.save!
+          resource.save(*args)
           resource
         end
       RUBY
 
       # models that are non DM resources must get .validators
       # and other methods, too
-      model.extend Validate::ClassMethods
+      model.extend ClassMethods
     end
 
     # Ensures the object is valid for the context provided, and otherwise
     # throws :halt and returns false.
     #
     chainable do
-
       def save(context = default_validation_context)
         validation_context(context) { super() }
       end
+    end
 
-      def save_self(*)
-        return false unless validation_context_stack.empty? || valid?(current_validation_context)
-        super
+    chainable do
+      def update(attributes = {}, context = default_validation_context)
+        validation_context(context) { super(attributes) }
       end
-
     end
 
     # Return the ValidationErrors
@@ -140,6 +135,15 @@ module DataMapper
         return result
       end
       nil
+    end
+
+    private
+
+    chainable do
+      def save_self(*)
+        return false unless validation_context_stack.empty? || valid?(current_validation_context)
+        super
+      end
     end
 
     module ClassMethods
@@ -231,7 +235,4 @@ module DataMapper
       end
     end # module ClassMethods
   end # module Validate
-
-  Model.append_inclusions Validate
-  Model.append_extensions Validate::ClassMethods
 end # module DataMapper

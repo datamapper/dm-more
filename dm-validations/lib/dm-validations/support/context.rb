@@ -13,7 +13,7 @@ module DataMapper
       # TODO: document
       # @api private
       def default_validation_context
-        :default
+        current_validation_context || :default
       end
 
       protected
