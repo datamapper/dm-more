@@ -182,20 +182,20 @@ module DataMapper
       def create_context_instance_methods(context)
         name = "valid_for_#{context.to_s}?"           # valid_for_signup?
         if !instance_methods.include?(name)
-          class_eval <<-EOS, __FILE__, __LINE__
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def #{name}                               # def valid_for_signup?
-              valid?('#{context.to_s}'.to_sym)        #   valid?('signup'.to_sym)
+              valid?(#{context.to_sym.inspect})       #   valid?(:signup)
             end                                       # end
-          EOS
+          RUBY
         end
 
         all = "all_valid_for_#{context.to_s}?"        # all_valid_for_signup?
         if !instance_methods.include?(all)
-          class_eval <<-EOS, __FILE__, __LINE__
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def #{all}                                # def all_valid_for_signup?
-              all_valid?('#{context.to_s}'.to_sym)    #   all_valid?('signup'.to_sym)
+              all_valid?(#{context.to_sym.inspect})   #   all_valid?(:signup)
             end                                       # end
-          EOS
+          RUBY
         end
       end
 
