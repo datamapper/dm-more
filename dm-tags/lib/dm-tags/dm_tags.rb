@@ -72,7 +72,6 @@ module DataMapper
             alias #{singular}_collection= #{singular}_list=
 
             def update_#{association}
-              return if self.#{singular}_list.empty?
 
               remove_tags = self.frozen_#{singular}_list.to_s.split(',') - self.#{singular}_list
               tags        = self.#{association}

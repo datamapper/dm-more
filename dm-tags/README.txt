@@ -49,6 +49,7 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
   #=> [#<Tag id=3 name="test">, #<Tag id=4 name="again">] # Checks for existing tags
   Tag.all
   #=> [#<Tag id=1 name="me out">, #<Tag id=2 name="please">, #<Tag id=3 name="test">, #<Tag id=4 name="again">]
+
   another = MyModel.new
   another.skill_list = 'test, all, you, like'
   another.save #=> true
@@ -60,13 +61,25 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
   MyModel.tagged_with('test', :on => 'tags') #=> [#<MyModel id=1>]
   MyModel.tagged_with('test', :on => 'skills') #=> [#<MyModel id=2>]
 
+  # Deleting tags
+  model.tag_list = ''
+  model.save #=> true
+  model.tags
+  #=> []
+  another.skill_list = ''
+  another.save #=> true
+  another.skills
+  #= []
 
   #Helper methods for text fields
   model.tag_collection = "tag1, tag2, tag3"
   model.save
-  model.tag_collection => "tag1, tag2, tag3"
+  model.tag_collection #=> "tag1, tag2, tag3"
   model.tags
   #=> [#<Tag id=1 name="tag1">, #<Tag id=2 name="tag2">, #<Tag id=3 name="tag3">]
+  model.tag_collection = ''
+  model.save
+  model.tag_collection = '' #=> ""
 
   # Traditional 'tags only' tagging
 
@@ -86,6 +99,9 @@ This package brings tagging to DataMapper.  It is inspired by Acts As Taggable O
   tags_only.tag_list #=> ['only', 'tags']
   tags_only.save #=> true
   tags_only.tags #=> [#<Tag id=8 name="only">, #<Tag id=9 name="tags">]
+  tags_only.tag_list = ''
+  tags_only.save #= true
+  tags_only.tags #=> []
 
 == Requirements
 

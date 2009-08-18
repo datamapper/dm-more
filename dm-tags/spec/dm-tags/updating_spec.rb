@@ -32,5 +32,12 @@ describe "Tag", "when updating" do
     @tagged_model.reload
     @tagged_model.tags.map { |t| t.name }.should == %w[ abc def jkl xyz ]
     @tagged_model.skills.map { |t| t.name }.should == %w[ Morocco Sahara ]
+
+    @tagged_model.tag_list = ""
+    @tagged_model.skill_list = ""
+    @tagged_model.save
+
+    @tagged_model.tags.should == []
+    @tagged_model.skills.should == []
   end
 end
