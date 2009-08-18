@@ -14,8 +14,8 @@ describe 'factory method for Flag type', :shared => true do
     DataMapper::Types::Flag.new(:first, :second, :third).flag_map.values.should == [ :first, :second, :third ]
   end
 
-  it 'creates series of flag values as 2 power, staring at 1' do
-    DataMapper::Types::Flag.new(:one, :two, :three, :four, :five).flag_map.keys.should include(1, 2, 4, 8, 16)
+  it 'should create keys that is +1 for every increment for the @flag_map hash, staring at 0' do
+    DataMapper::Types::Flag.new(:one, :two, :three, :four, :five).flag_map.keys.should include(0, 1, 2, 3, 4)
   end
 end
 

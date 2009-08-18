@@ -4,7 +4,7 @@ module DataMapper
       primitive Integer
 
       def self.inherited(target)
-        target.instance_variable_set("@primitive", self.primitive)
+        target.instance_variable_set('@primitive', self.primitive)
       end
 
       def self.flag_map
@@ -20,7 +20,7 @@ module DataMapper
         type.flag_map = {}
 
         flags.each_with_index do |flag, i|
-          type.flag_map[2 ** i] = flag
+          type.flag_map[i] = flag
         end
 
         type
@@ -31,13 +31,13 @@ module DataMapper
       end
 
       def self.load(value, property)
+        return [] if value.nil? || value <= 0
+
         begin
           matches = []
 
-          return [] if value.nil? || (value <= 0)
-          0.upto((Math.log(value) / Math.log(2)).ceil) do |i|
-            pow = 2 ** i
-            matches << flag_map[pow] if value & pow == pow
+          0.upto(flag_map.size - 1) do |i|
+            matches << flag_map[i] if value[i] == 1
           end
 
           matches.compact
@@ -48,16 +48,15 @@ module DataMapper
 
       def self.dump(value, property)
         return if value.nil?
-        flags = value.is_a?(Array) ? value : [value]
-        flags.map!{ |f| f.to_sym }
-        flag_map.invert.values_at(*flags.flatten).compact.inject(0) { |sum, i| sum + i }
+        flags = Array(value).map { |flag| flag.to_sym }.flatten
+        flag_map.invert.values_at(*flags).compact.inject(0) { |sum, i| sum += 1 << i }
       end
 
       def self.typecast(value, property)
         case value
-        when nil   then nil
-        when Array then value.map {|v| v.to_sym}
-        else value.to_sym
+          when nil   then nil
+          when Array then value.map {|v| v.to_sym}
+          else value.to_sym
         end
       end
     end # class Flag
