@@ -14,7 +14,7 @@ GEM_NAME = 'dm-sweatshop'
 GEM_VERSION = DataMapper::Sweatshop::VERSION
 GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['randexp', '~>0.1.4']]
 GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.textile LICENSE TODO History.txt ] }
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] }
 
 PROJECT_NAME = 'datamapper'
 PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"

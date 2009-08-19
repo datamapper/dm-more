@@ -1,6 +1,6 @@
-h1. dm-more
+= dm-more
 
-h2. Extra, non-essential parts for DataMapper
+== Extra, non-essential parts for DataMapper
 
 Including
 

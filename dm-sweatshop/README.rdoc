@@ -1,6 +1,6 @@
-h1. dm-sweatshop
+= dm-sweatshop
 
-h2. Overview
+== Overview
 
 dm-sweatshop is a model factory for DataMapper.  It makes it easy & painless to crank out complex pseudo random models -- useful for tests and seed data.  Production Goals:
 
@@ -9,7 +9,7 @@ dm-sweatshop is a model factory for DataMapper.  It makes it easy & painless to 
 * Add context to model patterns, allowing grouping and 
 * Effortlessly generate or fill in associations for creating complex models with few lines of code.
 
-h2. How it works
+== How it works
 
 DataMapper Sweatshop is built around idea of storing attribute hashes associated
 with a particular class. For instance, you can store two attribute hashes named
@@ -36,25 +36,21 @@ Another nice thing is associations. Say we want to have say 20 tags for a
 document or 10 orders for account in tests. DataMapper Sweatshop lets us
 use associations list in attributes hashes described earlier.
 
-h2. Examples
+== Examples
 
 Starting off with a simple user model.
-<pre>
-<code>
+
   class User
     include DataMapper::Resource
-    
+
     property :id, Serial
     property :username, String
     property :email,    String
     property :password, String
   end
-</code>
-</pre>
 
 A fixture for the user model can be defined using the @fixture@ method.
-<pre>
-<code>
+
   User.fixture {{
     :username             => (username = /\w+/.gen),
     :email                => "#{username}@example.com",
@@ -64,8 +60,6 @@ A fixture for the user model can be defined using the @fixture@ method.
     # The /\w+/.gen notation is part of the randexp gem:
     # http://github.com/benburkert/randexp/
   }}
-</code>
-</pre>
 
 Notice the double curly brace (@{{@), a quick little way to pass a block that returns a hash to the fixture method.  This is important because it ensures the data is random when we generate a new instance of the model, by calling the block every time.
   
@@ -78,57 +72,38 @@ attributes, and use and abuse it any way you want. It's just a way to memoize
 attributes set associated with a particular class.
 
 And here's how you generate said model.
-<pre>
-<code>
+
   User.generate
-</code>
-</pre>
 
 That's it.  In fact, it can even be shortened.
-<pre>
-<code>
+
   User.gen
-</code>
-</pre>
 
 But what if we want to use some name for that attributes set? Just pass an
 argument to @fixture@ method like this:
 
-<pre>
-<code>
-Person.fixture(:valid) {{
-  :first_name    => %w(Michael Adam Guiseppe)[rand(3)],
-  :last_name     => %w(Smith Black White)[rand(3)],
-  :email         => "#{/\w{10}/.gen}@somedomain.info",
-  :password_salt => (salt = /\w{20}/.gen),
-  :password_hash => Digest::SHA1.hexdigest("#{salt}@--,-`--secret")
-}}
-</code>
-</pre>
+  Person.fixture(:valid) {{
+    :first_name    => %w(Michael Adam Guiseppe)[rand(3)],
+    :last_name     => %w(Smith Black White)[rand(3)],
+    :email         => "#{/\w{10}/.gen}@somedomain.info",
+    :password_salt => (salt = /\w{20}/.gen),
+    :password_hash => Digest::SHA1.hexdigest("#{salt}@--,-`--secret")
+  }}
 
 Now to a model that has given attributes, use
 
-<pre>
-<code>
-Person.gen(:valid)
-</code>
-</pre>
+  Person.gen(:valid)
 
 @generate@ (or @gen@) method uses @create@ method of DataMapper models. This means that validations are run on the model. There are two other methods you can use to creat data - @make@ to build a model that has not been saved, and @generate!@ to force saving of the model even if it is invalid (it uses @create!@ internally).
 
-<pre>
-<code>
-Person.make(:valid)
-Person.generate!(:invalid) # You can also use #gen!
-</code>
-</pre>
+  Person.make(:valid)
+  Person.generate!(:invalid) # You can also use #gen!
 
 
-h3. Associations
+=== Associations
 
 The real power of sweatshop is generating working associations.
-<pre>
-<code>
+
   DataMapper.setup(:default, "sqlite3::memory:")
   
   class Tweet
@@ -178,13 +153,10 @@ The real power of sweatshop is generating working associations.
   
   # now lets generate 100 users, each with 500 tweets.  Also, the tweet's have 0 to 10 tags!
   users = 10.of {User.gen}
-</code>
-</pre>
+
 
 That's going to generate alot of tags, way more than you would see in the production app.  Let's recycle some already generated tags instead.
 
-<pre>
-<code>
   User.fix {{
     :username => /\w+/.gen,
     :tweets   => 500.of {Tweet.make}
@@ -202,27 +174,20 @@ That's going to generate alot of tags, way more than you would see in the produc
   50.times {Tag.gen}
   
   users = 10.of {User.gen}
-</code>
-</pre>
 
-h3. Contexts
+
+=== Contexts
 
 You can add multiple fixtures to a mode, dm-sweatshop will randomly pick between the available fixtures when it generates a new model.
 
-<pre>
-<code>
   Tweet.fix {{
     # a @reply for some user
     :message  => /\@#{User.pick.name} [:sentence:]/.gen[0..140],
     :tags     => (0..10).of {Tag.pick}
   }}
-</code>
-</pre>
 
 To keep track of all of our new fixtures, we can even give them a context.
 
-<pre>
-<code>
   Tweet.fix(:at_reply) {{
     :message  => /\@#{User.pick.name} [:sentence:]/.gen[0..140],
     :tags     => (0..10).of {Tag.pick}
@@ -232,77 +197,63 @@ To keep track of all of our new fixtures, we can even give them a context.
     :message  => /\@#{(tweet = Tweet.pick(:at_reply)).user.name} [:sentence:]/.gen[0..140],
     :tags     => tweet.tags
   }}
-</code>
-</pre>
 
-h3. Overriding a fixture
+=== Overriding a fixture
 
-Sometimes you will want to change one of your fixtures a little bit.  You can create a new fixture with a whole new context, but this can be overkill.  The other option is to specify attributes in the call to @generate@.
+Sometimes you will want to change one of your fixtures a little bit.  You can create a new fixture with a whole new context, but this can be overkill.  The other option is to specify attributes in the call to <tt>generate</tt>.
 
-<pre>
-<code>
   User.gen(:username => 'datamapper')  #uses 'datamapper' as the user name instead of the randomly generated word
-</code>
-</pre>
 
 This works with contexts too.
 
-<pre>
-<code>
   User.gen(:conversation, :tags => Tag.all)       #a very, very broad conversation
-</code>
-</pre>
 
-h2. Unique values
+== Unique values
 
 Data for fields with a uniqueness constraint (for example, e-mail addresses) can be generated using the @unique@ method. The simplest usage is to guarantee that random data is unique - wrap your generator in a @unique@ block with no parameters, and the block will be repeatedly executed until it generates a unique value (don't worry, it raises after a few tries).
 
 For repeatable data, provide a block with one parameter. An incrementing value will be passed in on each invocation of that block. You can also name a unique block to override the block's identity (yeah that sentence is dense, just see the examples).
 
-<pre><code>include DataMapper::Sweatshop::Unique # Use DataMapper::Sweatshop.unique if you don't want to pollute your namespace
+  include DataMapper::Sweatshop::Unique # Use DataMapper::Sweatshop.unique if you don't want to pollute your namespace
 
-User.fix {{
-  :name  => unique { /\w+/.gen }
-  :email => unique {|x| "person-#{x}@example.com" } 
-}}
+  User.fix {{
+    :name  => unique { /\w+/.gen }
+    :email => unique {|x| "person-#{x}@example.com" }
+  }}
 
-[User.gen.email, User.gen.email]
-# => ["person-0@example.com", "person-1@example.com"]
+  [User.gen.email, User.gen.email]
+  # => ["person-0@example.com", "person-1@example.com"]
 
-names = ['bob', 'tom', 'bob']
-Person.fix {{
-  :name  => (name = names.shift)
-  :email => unique(name) {|x| "#{name}-#{x}@example.com" } 
-}}
+  names = ['bob', 'tom', 'bob']
+  Person.fix {{
+    :name  => (name = names.shift)
+    :email => unique(name) {|x| "#{name}-#{x}@example.com" }
+  }}
 
-[Person.gen.email, Person.gen.email, Person.gen.email]
-# => ["bob-0@example.com", "tom-0@example.com", "bob-1@example.com"]</code></pre>
+  [Person.gen.email, Person.gen.email, Person.gen.email]
+  # => ["bob-0@example.com", "tom-0@example.com", "bob-1@example.com"]
 
-h2. Best Practices
+== Best Practices
 
-h3. Specs
+=== Specs
 
-The suggested way to use dm-sweatshop with test specs is to create a @spec/spec_fixtures.rb@ file, then declare your fixtures in there.  Next, @require@ it in your @spec/spec_helper.rb@ file, after your models have loaded.
+The suggested way to use <tt>dm-sweatshop</tt> with test specs is to create a <tt>spec/spec_fixtures.rb</tt> file, then declare your fixtures in there.  Next, @require@ it in your @spec/spec_helper.rb@ file, after your models have loaded.
 
-<pre>
-<code>
   Merb.start_environment(:testing => true, :adapter => 'runner', :environment => ENV['MERB_ENV'] || 'test')
 
   require 'dm-sweatshop'
   require File.join(File.dirname(__FILE__), 'spec_fixtures')
-</code>
-</pre>
 
-Add the @.generate@ calls in your @before@ setup.  Make sure to clear your tables or @auto_migrate@ your models after each spec!
+Add the <tt>.generate</tt> calls in your <tt>before</tt> setup.  Make sure to clear your tables or <tt>auto_migrate</tt> your models after each spec!
 
-h2. Possible Improvements
+== Possible Improvements
 
-h3. Enforcing Validations
+=== Enforcing Validations
 
 Enforce validations at generation time, before the call to @new@/@create@.
 
-h3. Better Exception Handling
+=== Better Exception Handling
 
-h3. Smarter @pick@
+=== Smarter <tt>pick</tt>
 
 Add multiple contexts to pick, or an ability to _fall back_ if one context has no generated models.

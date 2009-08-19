@@ -1,8 +1,8 @@
-# dm-is-state_machine #
+= dm-is-state_machine
 
 DataMapper plugin that adds state machine functionality to your models.
 
-## Why is this plugin useful? ##
+== Why is this plugin useful?
 
 Your DataMapper resource might benefit from a state machine if it:
 
@@ -14,46 +14,46 @@ And you want a clean, high-level way of describing these modes / behaviors
 and how the resource moves between them.  This plugin allows you to
 declaratively describe the states and transitions involved.
 
-## Installation ##
+== Installation
 
 1. Download dm-more.
 2. Install dm-is-state_machine using the supplied rake files.
 
-## Setting up with Merb ##
+== Setting up with Merb ##
 
 Add this line to your init.rb:
 
-    dependency "dm-is-state_machine"
+  dependency "dm-is-state_machine"
 
 ## Example DataMapper resource (i.e. model) ##
 
-    # /app/models/traffic_light.rb
-    class TrafficLight
-      include DataMapper::Resource
+  # /app/models/traffic_light.rb
+  class TrafficLight
+    include DataMapper::Resource
 
-      property :id, Serial
+    property :id, Serial
 
-      is :state_machine, :initial => :green, :column => :color do
-        state :green
-        state :yellow
-        state :red,    :enter => :red_hook
-        state :broken
+    is :state_machine, :initial => :green, :column => :color do
+      state :green
+      state :yellow
+      state :red,    :enter => :red_hook
+      state :broken
 
-        event :forward do
-          transition :from => :green,  :to => :yellow
-          transition :from => :yellow, :to => :red
-          transition :from => :red,    :to => :green
-        end
-      end
-
-      def red_hook
-        # Do something
+      event :forward do
+        transition :from => :green,  :to => :yellow
+        transition :from => :yellow, :to => :red
+        transition :from => :red,    :to => :green
       end
     end
 
-## What this gives you ##
+    def red_hook
+      # Do something
+    end
+  end
 
-### Explained in words ###
+== What this gives you
+
+=== Explained in words
 
 The above DSL (domain specific language) does these things "behind the scenes":
 
@@ -67,7 +67,7 @@ The above DSL (domain specific language) does these things "behind the scenes":
    it with an invalid state (such as :broken, see above).  After the method
    runs successfully, the state machine will be left in the :to state.
 
-### Explained with some code examples ###
+=== Explained with some code examples
 
     # Somewhere in your controller, perhaps
     light = TrafficLight.new
@@ -85,11 +85,11 @@ The above DSL (domain specific language) does these things "behind the scenes":
       # do something red-related
     end
 
-## Specific examples ##
+== Specific examples
 
 We would also like to hear how *you* are using state machines in your code.
 
-## See also ##
+== See also
 
 Here are some other projects you might want to look at.  Most of them
 are probably intended for ActiveRecord.  They take different approaches,

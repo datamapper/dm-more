@@ -14,7 +14,7 @@ GEM_NAME = 'dm-cli'
 GEM_VERSION = DataMapper::CLI::VERSION
 GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ],
+GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ],
                :executables => %w[ dm ], :bindir => 'bin' }
 
 PROJECT_NAME = 'datamapper'

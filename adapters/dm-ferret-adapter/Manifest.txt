@@ -1,8 +1,8 @@
 .gitignore
-History.txt
+History.rdoc
 LICENSE
 Manifest.txt
-README.txt
+README.rdoc
 Rakefile
 TODO
 bin/ferret

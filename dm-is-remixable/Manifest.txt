@@ -1,7 +1,7 @@
-History.txt
+History.rdoc
 LICENSE
 Manifest.txt
-README.txt
+README.rdoc
 Rakefile
 TODO
 lib/dm-is-remixable.rb

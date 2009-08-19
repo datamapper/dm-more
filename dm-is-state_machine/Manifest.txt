@@ -1,8 +1,7 @@
-History.txt
+History.rdoc
 LICENSE
 Manifest.txt
-README.markdown
-README.txt
+README.rdoc
 Rakefile
 TODO
 lib/dm-is-state_machine.rb

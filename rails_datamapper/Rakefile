@@ -14,7 +14,7 @@ GEM_NAME = 'rails_datamapper'
 GEM_VERSION = Rails::DataMapper::VERSION
 GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
 GEM_CLEAN = %w[ pkg ]
-GEM_EXTRAS = { :has_rdoc => false, :extra_rdoc_files => %w[ README.txt LICENSE TODO History.txt ] }
+GEM_EXTRAS = { :has_rdoc => false, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] }
 
 PROJECT_NAME = 'datamapper'
 PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"

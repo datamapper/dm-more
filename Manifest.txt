@@ -1,9 +1,8 @@
 .gitignore
-History.txt
+History.rdoc
 MIT-LICENSE
 Manifest.txt
-README.textile
-README.txt
+README.rdoc
 Rakefile
 TODO
 lib/dm-more.rb
