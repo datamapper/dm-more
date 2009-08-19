@@ -1,10 +1,6 @@
 require 'dm-serializer/common'
 
-begin
-  require 'json/ext'
-rescue LoadError
-  require 'json/pure'
-end
+require 'json'
 
 module DataMapper
   module Serialize
