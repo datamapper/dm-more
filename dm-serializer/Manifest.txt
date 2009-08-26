@@ -6,6 +6,7 @@ Rakefile
 TODO
 autotest/discover.rb
 autotest/dmserializer_rspec.rb
+benchmarks/to_json.rb
 benchmarks/to_xml.rb
 lib/dm-serializer.rb
 lib/dm-serializer/common.rb
