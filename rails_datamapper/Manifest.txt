@@ -15,5 +15,6 @@ generators/dm_model/templates/unit_test.rb
 generators/rspec_dm_model/rspec_dm_model_generator.rb
 generators/rspec_dm_model/templates/model_spec.rb
 lib/rails_datamapper.rb
+lib/rails_datamapper/session_store.rb
 lib/rails_datamapper/version.rb
 tasks/install.rb
