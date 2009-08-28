@@ -54,6 +54,13 @@ module DataMapper
     end
 
     chainable do
+      def save_self(*)
+        return false unless validation_context_stack.empty? || valid?(current_validation_context)
+        super
+      end
+    end
+
+    chainable do
       def update(attributes = {}, context = default_validation_context)
         validation_context(context) { super(attributes) }
       end
@@ -135,15 +142,6 @@ module DataMapper
         return result
       end
       nil
-    end
-
-    private
-
-    chainable do
-      def save_self(*)
-        return false unless validation_context_stack.empty? || valid?(current_validation_context)
-        super
-      end
     end
 
     module ClassMethods
