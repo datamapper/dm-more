@@ -7,124 +7,123 @@ module DataMapper
     # @since  0.9
     class NumericValidator < GenericValidator
 
-      def initialize(field_name, options={})
-        super
-
-        @options[:integer_only] = false unless @options.key?(:integer_only)
-      end
-
       def call(target)
         value = target.send(field_name)
-        return true if @options[:allow_nil] && value.blank?
+        return true if allow_nil? && value.blank?
 
-        value_string = case value
-          when Float      then value.to_d.to_s('F') # Avoid Scientific Notation in Float to_s
-          when BigDecimal then value.to_s('F')
-          else value.to_s
-        end
+        errors = [
+          integer_only? ? validate_integer(value) : validate_numeric(value)
+        ].compact
 
-        custom_error_message = @options[:message]
-        errors               = []
+        add_errors(target, errors)
 
-        if @options[:integer_only]
-          unless value_string =~ /\A[+-]?\d+\z/
-            errors << ValidationErrors.default_error_message(:not_an_integer, field_name)
-          end
-        else
-          precision = @options[:precision]
-          scale     = @options[:scale]
-
-          # FIXME: if precision and scale are not specified, can we assume that it is an integer?
-          #        probably not, as floating point numbers don't have hard
-          #        defined scale. the scale floats with the length of the
-          #        integral and precision. Ie. if precision = 10 and integral
-          #        portion of the number is 9834 (4 digits), the max scale will
-          #        be 6 (10 - 4). But if the integral length is 1, max scale
-          #        will be (10 - 1) = 9, so 1.234567890.
-          #        In MySQL somehow you can hard-define scale on floats. Not
-          #        quite sure how that works...
-          has_valid_number = if precision && scale
-            # handles both Float when it has scale specified and BigDecimal
-            regexp = if precision > scale && scale > 0
-              /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
-            elsif precision > scale && scale == 0
-              /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
-            elsif precision == scale
-              /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
-            else
-              raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
-            end
-
-            value_string =~ regexp
-          elsif precision && scale.nil?
-            # number of digits before decimal == precision, and the number is x.0. same as scale = 0
-            value_string =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
-          else
-            value_string =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
-          end
-
-          unless has_valid_number
-            errors << ValidationErrors.default_error_message(:not_a_number, field_name)
-          end
-        end
-
-        add_errors(target, errors, custom_error_message)
-
+        # if the number is invalid, skip further tests
         return false if errors.any?
 
-        if gt = @options[:gt]
-          unless value > gt
-            errors << ValidationErrors.default_error_message(:greater_than, field_name, gt)
-          end
-        end
+        errors = [
+          validate_gt(value),
+          validate_lt(value),
+          validate_gte(value),
+          validate_lte(value),
+          validate_eq(value),
+          validate_ne(value),
+        ].compact
 
-        if lt = @options[:lt]
-          unless value < lt
-            errors << ValidationErrors.default_error_message(:less_than, field_name, lt)
-          end
-        end
-
-        if gte = @options[:gte]
-          unless value >= gte
-            errors << ValidationErrors.default_error_message(:greater_than_or_equal_to, field_name, gte)
-          end
-        end
-
-        if lte = @options[:lte]
-          unless value <= lte
-            errors << ValidationErrors.default_error_message(:less_than_or_equal_to, field_name, lte)
-          end
-        end
-
-        if eq = @options[:eq] || @options[:equal] || @options[:equals] || @options[:exactly]
-          unless value == eq
-            errors << ValidationErrors.default_error_message(:equal_to, field_name, eq)
-          end
-        end
-
-        if ne = @options[:ne]
-          unless value != ne
-            errors << ValidationErrors.default_error_message(:not_equal_to, field_name, ne)
-          end
-        end
-
-        add_errors(target, errors, custom_error_message)
+        add_errors(target, errors)
 
         errors.empty?
       end
 
       private
 
-      def add_errors(target, errors, custom_error_message)
+      def allow_nil?
+        options.fetch(:allow_nil, false)
+      end
+
+      def integer_only?
+        options.fetch(:integer_only, false)
+      end
+
+      def value_as_string(value)
+        case value
+          when Float      then value.to_d.to_s('F')  # Avoid Scientific Notation in Float to_s
+          when BigDecimal then value.to_s('F')
+          else value.to_s
+        end
+      end
+
+      def add_errors(target, errors)
         return if errors.empty?
 
-        if custom_error_message
-          add_error(target, custom_error_message, field_name)
+        if options.key?(:message)
+          add_error(target, options[:message], field_name)
         else
           errors.each do |error_message|
             add_error(target, error_message, field_name)
           end
         end
+      end
+
+      def validate_integer(value)
+        unless value_as_string(value) =~ /\A[+-]?\d+\z/
+          ValidationErrors.default_error_message(:not_an_integer, field_name)
+        end
+      end
+
+      def validate_numeric(value)
+        precision = options[:precision]
+        scale     = options[:scale]
+
+        regexp = if precision
+          if scale.nil? || precision > scale && scale == 0
+            /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+          elsif precision > scale
+            /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
+          elsif precision == scale
+            /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
+          else
+            raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
+          end
+        else
+          /\A[+-]?(?:\d+|\d*\.\d+)\z/
+        end
+
+        return if value_as_string(value) =~ regexp
+        ValidationErrors.default_error_message(:not_a_number, field_name)
+      end
+
+      def validate_with_comparison(value, expected, cmp, error_message_name, negated = false)
+        return if expected.nil?
+
+        comparison = value.send(cmp, expected)
+        return if negated ? !comparison : comparison
+
+        ValidationErrors.default_error_message(error_message_name, field_name, expected)
+      end
+
+      def validate_gt(value)
+        validate_with_comparison(value, options[:gt], :>, :greater_than)
+      end
+
+      def validate_lt(value)
+        validate_with_comparison(value, options[:lt], :<, :less_than)
+      end
+
+      def validate_gte(value)
+        validate_with_comparison(value, options[:gte], :>=, :greater_than_or_equal_to)
+      end
+
+      def validate_lte(value)
+        validate_with_comparison(value, options[:lte], :<=, :less_than_or_equal_to)
+      end
+
+      def validate_eq(value)
+        eq = options[:eq] || options[:equal] || options[:equals] || options[:exactly]
+        validate_with_comparison(value, eq, :==, :equal_to)
+      end
+
+      def validate_ne(value)
+        validate_with_comparison(value, options[:ne], :==, :not_equal_to, true)
       end
     end # class NumericValidator
 

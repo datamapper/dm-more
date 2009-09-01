@@ -11,14 +11,14 @@ module DataMapper
       # adds message for validator
       def options_with_message(base_options, property, validator_name)
         options = base_options.clone
-        opts = property.options
-        options[:message] = if opts[:messages] && opts[:messages].respond_to?(:[])
-                              opts[:messages][validator_name]
-                            elsif opts[:message]
-                              opts[:message]
-                            else
-                              nil
-                            end
+        opts    = property.options
+
+        if opts.key?(:messages)
+          options[:message] = opts[:messages][validator_name]
+        elsif opts.key?(:message)
+          options[:message] = opts[:message]
+        end
+
         options
       end
 
