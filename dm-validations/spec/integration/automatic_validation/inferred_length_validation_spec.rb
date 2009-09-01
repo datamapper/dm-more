@@ -32,7 +32,7 @@ describe SailBoat do
     # validates_length is inferred from property's :length option
     it "is invalid" do
       @model.should_not be_valid_for_length_test_1
-      @model.errors.on(:description).should include('Description must be at most 10 characters long')
+      @model.errors.on(:description).should == [ 'Description must be at most 10 characters long' ]
     end
   end
 
@@ -76,7 +76,7 @@ describe SailBoat do
     end
 
     it "has a meaningful error message" do
-      @model.errors.on(:notes).should include('Notes must be between 2 and 10 characters long')
+      @model.errors.on(:notes).should  == [ 'Notes must be between 2 and 10 characters long' ]
     end
   end
 end
@@ -120,7 +120,7 @@ describe DataMapper::Validate::Fixtures::SmsMessage do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:body).should include('Body must be between 1 and 500 characters long')
+      @model.errors.on(:body).should == [ 'Body must be between 1 and 500 characters long' ]
     end
   end
 end

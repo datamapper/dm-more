@@ -18,7 +18,7 @@ describe GitOperation do
     end
 
     it "points to blank name in the error message" do
-      @operation.errors.on(:name).should include('Name must not be blank')
+      @operation.errors.on(:name).should == [ 'Name must not be blank' ]
     end
   end
 end

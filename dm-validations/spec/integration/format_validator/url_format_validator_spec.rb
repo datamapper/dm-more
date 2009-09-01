@@ -27,7 +27,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
       it_should_behave_like "invalid model"
 
       it "has a meaningful error message" do
-        @model.errors.on(:url).should include('Url has an invalid format')
+        @model.errors.on(:url).should == [ 'Url has an invalid format' ]
       end
     end
   end # each

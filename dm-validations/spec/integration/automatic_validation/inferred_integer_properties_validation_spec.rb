@@ -55,7 +55,7 @@ describe "A model with an Integer property" do
     end
 
     it "has a meaningful default error message" do
-      @model.errors.on(:id).should == [ 'Id must be a number greater than or equal to 1' ]
+      @model.errors.on(:id).should == [ 'Id must be greater than or equal to 1' ]
     end
   end
 
@@ -69,7 +69,7 @@ describe "A model with an Integer property" do
     end
 
     it "has a meaningful default error message" do
-      @model.errors.on(:id).should == [ 'Id must be a number less than or equal to 10' ]
+      @model.errors.on(:id).should == [ 'Id must be less than or equal to 10' ]
     end
   end
 

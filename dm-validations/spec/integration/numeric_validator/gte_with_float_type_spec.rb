@@ -33,7 +33,7 @@ describe DataMapper::Validate::Fixtures::BasketballCourt do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:length).should include("Length must be a number greater than or equal to 15.0")
+      @model.errors.on(:length).should == [ 'Length must be greater than or equal to 15.0' ]
     end
   end
 end

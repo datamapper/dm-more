@@ -46,7 +46,7 @@ describe DataMapper::Validate::Fixtures::UDPPacket do
       it_should_behave_like "invalid model"
 
       it "has a meaningful error message" do
-        @model.errors.on(:checksum).should include("Checksum is mandatory when used with IPv6")
+        @model.errors.on(:checksum).should == [ 'Checksum is mandatory when used with IPv6' ]
       end
     end
 
@@ -58,7 +58,7 @@ describe DataMapper::Validate::Fixtures::UDPPacket do
       it_should_behave_like "invalid model"
 
       it "has a meaningful error message" do
-        @model.errors.on(:checksum_algorithm).should include("Checksum is mandatory when used with IPv6")
+        @model.errors.on(:checksum_algorithm).should == [ 'Checksum is mandatory when used with IPv6' ]
       end
     end
   end

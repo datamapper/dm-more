@@ -6,14 +6,14 @@ require __dir__ + 'spec_helper'
 
 describe "reservation with mismatched person name", :shared => true do
   it "has meaningful error message" do
-    @model.errors.on(:person_name).should include("Person name does not match the confirmation")
+    @model.errors.on(:person_name).should == [ 'Person name does not match the confirmation' ]
   end
 end
 
 describe "reservation with mismatched seats number", :shared => true do
   it "has meaningful error message" do
     # Proc gets expanded here
-    @model.errors.on(:number_of_seats).should include("Reservation requires confirmation for number_of_seats")
+    @model.errors.on(:number_of_seats).should == [ 'Reservation requires confirmation for number_of_seats' ]
   end
 end
 

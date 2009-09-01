@@ -55,7 +55,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       it "has a meaningful error message" do
         @model.valid?
-        @model.errors.on(:domain).should include("Domain is already taken")
+        @model.errors.on(:domain).should == [ 'Domain is already taken' ]
       end
     end
 
@@ -95,7 +95,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it "has a meaningful error message" do
-        @model.errors.on(:user_name).should include('User name is already taken')
+        @model.errors.on(:user_name).should == [ 'User name is already taken' ]
       end
     end
 
@@ -110,7 +110,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       end
 
       it "has a meaningful error message" do
-        @model.errors.on(:user_name).should include('User name is already taken')
+        @model.errors.on(:user_name).should == [ 'User name is already taken' ]
       end
     end
   end # describe DataMapper::Validate::Fixtures::User

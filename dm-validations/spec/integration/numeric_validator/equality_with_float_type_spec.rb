@@ -35,7 +35,7 @@ describe DataMapper::Validate::Fixtures::BasketballCourt do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:rim_height).should include("Rim height must be a number equal to 3.05")
+      @model.errors.on(:rim_height).should == [ 'Rim height must be equal to 3.05' ]
     end
   end
 
@@ -59,7 +59,7 @@ describe DataMapper::Validate::Fixtures::BasketballCourt do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:free_throw_line_distance).should include("Free throw line distance must be a number equal to 4.57")
+      @model.errors.on(:free_throw_line_distance).should == [ 'Free throw line distance must be equal to 4.57' ]
     end
   end
 end

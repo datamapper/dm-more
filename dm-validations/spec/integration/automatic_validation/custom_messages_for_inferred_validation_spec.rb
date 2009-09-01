@@ -13,7 +13,7 @@ describe 'Inferred validations' do
     end
     boat = custom_boat.new
     boat.should_not be_valid
-    boat.errors.on(:name).should include('This boat must have name')
+    boat.errors.on(:name).should == [ 'This boat must have name' ]
   end
 
   it "should have correct error messages" do
@@ -30,21 +30,22 @@ describe 'Inferred validations' do
 
     boat = custom_boat.new
     boat.should_not be_valid
-    boat.errors.on(:name).should include("This boat must have name")
-    boat.errors.on(:name).should include("Name must have at least 4 and at most 20 chars")
-    boat.errors.on(:name).should include("Please use only small letters")
+    boat.errors.on(:name).should == [
+      'This boat must have name',
+      'Name must have at least 4 and at most 20 chars',
+      'Please use only small letters',
+    ]
 
     boat.name = "%%"
     boat.should_not be_valid
-    boat.errors.on(:name).should_not include("This boat must have name")
-    boat.errors.on(:name).should include("Name must have at least 4 and at most 20 chars")
-    boat.errors.on(:name).should include("Please use only small letters")
+    boat.errors.on(:name).should == [
+      'Name must have at least 4 and at most 20 chars',
+      'Please use only small letters',
+    ]
 
     boat.name = "%%asd"
     boat.should_not be_valid
-    boat.errors.on(:name).should_not include("This boat must have name")
-    boat.errors.on(:name).should_not include("Name must have at least 4 and at most 20 chars")
-    boat.errors.on(:name).should include("Please use only small letters")
+    boat.errors.on(:name).should == [ 'Please use only small letters' ]
 
     boat.name = "superboat"
     boat.should be_valid

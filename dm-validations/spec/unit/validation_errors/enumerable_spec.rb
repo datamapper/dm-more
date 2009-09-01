@@ -11,13 +11,12 @@ describe DataMapper::Validate::ValidationErrors do
 
   describe "#each" do
     it "iterates over properties and yields error message arrays" do
-      seen = []
-      @model.each do |i|
-        seen << i
+      params = []
+      @model.each do |param|
+        params << param
       end
 
-      seen.should include(["must have valid format"])
-      seen.should include(["can't be blank"])
+      params.should == [ [ 'must have valid format' ], [ "can't be blank" ] ]
     end
   end
 
@@ -27,10 +26,8 @@ describe DataMapper::Validate::ValidationErrors do
       @model.add(:ip_address, "must belong to a local subnet")
     end
     it "maps error message arrays using provided block" do
-      projection = @model.map { |ary| ary.size }
-
-      projection.should include(2)
-      projection.should include(1)
+      projection = @model.map { |ary| ary }
+      projection.should == [ [ 'must have valid format', 'must belong to a local subnet' ], [ "can't be blank" ] ]
     end
   end
 end

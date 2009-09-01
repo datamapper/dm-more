@@ -18,7 +18,7 @@ describe DataMapper::Validate::Fixtures::Jabberwock do
     it_should_behave_like "invalid model"
 
     it "has custom error message" do
-      @model.errors.on(:snickersnack).should include("worble warble")
+      @model.errors.on(:snickersnack).should == [ 'worble warble' ]
     end
   end
 end

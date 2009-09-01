@@ -74,37 +74,37 @@ module DataMapper
 
         if gt = @options[:gt]
           unless value > gt
-            errors << '%s must be a number greater than %s'.t(humanized_field_name, gt)
+            errors << ValidationErrors.default_error_message(:greater_than, field_name, gt)
           end
         end
 
         if lt = @options[:lt]
           unless value < lt
-            errors << '%s must be a number less than %s'.t(humanized_field_name, lt)
+            errors << ValidationErrors.default_error_message(:less_than, field_name, lt)
           end
         end
 
         if gte = @options[:gte]
           unless value >= gte
-            errors << '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte)
+            errors << ValidationErrors.default_error_message(:greater_than_or_equal_to, field_name, gte)
           end
         end
 
         if lte = @options[:lte]
           unless value <= lte
-            errors << '%s must be a number less than or equal to %s'.t(humanized_field_name, lte)
+            errors << ValidationErrors.default_error_message(:less_than_or_equal_to, field_name, lte)
           end
         end
 
         if eq = @options[:eq] || @options[:equal] || @options[:equals] || @options[:exactly]
           unless value == eq
-            errors << '%s must be a number equal to %s'.t(humanized_field_name, eq)
+            errors << ValidationErrors.default_error_message(:equal_to, field_name, eq)
           end
         end
 
         if ne = @options[:ne]
           unless value != ne
-            errors << '%s must be a number not equal to %s'.t(humanized_field_name, ne)
+            errors << ValidationErrors.default_error_message(:not_equal_to, field_name, ne)
           end
         end
 

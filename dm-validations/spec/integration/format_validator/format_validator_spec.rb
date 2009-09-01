@@ -18,7 +18,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
     it_should_behave_like 'invalid model'
 
     it "has meaningful error message on invalid field" do
-      @model.errors.on(:doc_no).should include('Doc no has an invalid format')
+      @model.errors.on(:doc_no).should == [ 'Doc no has an invalid format' ]
     end
   end
 

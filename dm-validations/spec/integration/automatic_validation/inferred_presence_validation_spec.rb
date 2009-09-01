@@ -20,7 +20,7 @@ describe SailBoat do
     # has validates_is_present for name thanks to :nullable => false
     it "is invalid" do
       @model.should_not be_valid_for_presence_test
-      @model.errors.on(:name).should include('Name must not be blank')
+      @model.errors.on(:name).should == [ 'Name must not be blank' ]
     end
   end
 end

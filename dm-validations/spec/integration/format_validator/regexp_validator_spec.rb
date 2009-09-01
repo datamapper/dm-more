@@ -27,7 +27,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
     it_should_behave_like 'invalid model'
 
     it "has a meaningful error message" do
-      @model.errors.on(:code).should include("Code format is invalid")
+      @model.errors.on(:code).should  == [ 'Code format is invalid' ]
     end
   end
 end

@@ -18,7 +18,7 @@ describe SailBoat do
 
     it "is invalid" do
       @model.should_not be_valid_for_primitive_test
-      @model.errors.on(:build_date).should include('Build date must be of type Date')
+      @model.errors.on(:build_date).should == [ 'Build date must be of type Date' ]
     end
   end
 end

@@ -20,7 +20,7 @@ describe DataMapper::Validate::Fixtures::Kayak do
     end
 
     it "has meaningful error message" do
-      @kayak.errors.on(:salesman).should include('Salesman must be absent')
+      @kayak.errors.on(:salesman).should == [ 'Salesman must be absent' ]
     end
   end
 
@@ -83,7 +83,7 @@ describe DataMapper::Validate::Fixtures::Pirogue do
     end
 
     it "has meaningful error message" do
-      @kayak.errors.on(:salesman).should include('Salesman must be absent')
+      @kayak.errors.on(:salesman).should == [ 'Salesman must be absent' ]
     end
   end
 end

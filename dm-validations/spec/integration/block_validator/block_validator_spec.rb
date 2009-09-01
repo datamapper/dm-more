@@ -17,7 +17,7 @@ describe DataMapper::Validate::Fixtures::G3Concert do
     it_should_behave_like "invalid model"
 
     it "uses error messages returned by the validation block" do
-      @model.errors.on(:participants).should include("this G3 is probably yet to take place")
+      @model.errors.on(:participants).should == [ 'this G3 is probably yet to take place' ]
     end
   end
 

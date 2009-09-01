@@ -33,7 +33,7 @@ describe DataMapper::Validate::Fixtures::BasketballCourt do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:three_point_line_distance).should include("Three point line distance must be a number greater than 6.7")
+      @model.errors.on(:three_point_line_distance).should == [ 'Three point line distance must be greater than 6.7' ]
     end
   end
 end

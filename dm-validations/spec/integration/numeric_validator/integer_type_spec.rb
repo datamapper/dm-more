@@ -81,7 +81,7 @@ describe City do
 
     it "has a meaningful error message on for the property" do
       @city.valid?
-      @city.errors.on(:founded_in).should include("Foundation year must be an integer")
+      @city.errors.on(:founded_in).should == [ 'Foundation year must be an integer' ]
     end
   end
 end

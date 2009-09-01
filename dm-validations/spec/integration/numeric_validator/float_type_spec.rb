@@ -90,7 +90,7 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:height).should include("Height must be a number")
+      @model.errors.on(:height).should == [ 'Height must be a number' ]
     end
   end
 end

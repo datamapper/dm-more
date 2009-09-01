@@ -9,7 +9,7 @@ require __dir__ + 'spec_helper'
 
 describe "entity with wrong destination MAC address length", :shared => true do
   it "has error message with range bounds" do
-    @model.errors.on(:destination_mac).should include('Destination mac must be 6 characters long')
+    @model.errors.on(:destination_mac).should == [ 'Destination mac must be 6 characters long' ]
   end
 end
 

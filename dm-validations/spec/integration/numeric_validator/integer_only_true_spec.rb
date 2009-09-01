@@ -86,7 +86,7 @@ describe Country do
 
     it "has a meaningful error message on for the property" do
       @country.valid?
-      @country.errors.on(:area).should include("Please use integers to specify area")
+      @country.errors.on(:area).should == [ 'Please use integers to specify area' ]
     end
   end
 end

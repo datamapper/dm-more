@@ -65,7 +65,7 @@ describe "A model with a non-nullable Boolean property" do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:bool).should include('Bool must not be nil')
+      @model.errors.on(:bool).should == [ 'Bool must not be nil' ]
     end
   end
 end
@@ -101,7 +101,7 @@ describe "A model with a non-nullable paranoid Boolean property" do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:bool).should include('Bool must not be nil')
+      @model.errors.on(:bool).should == [ 'Bool must not be nil' ]
     end
   end
 end

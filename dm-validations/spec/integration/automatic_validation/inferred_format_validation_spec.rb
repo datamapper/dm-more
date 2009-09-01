@@ -30,7 +30,7 @@ describe SailBoat, "with a :format option on a property" do
     end
 
     it "has a meaningful error message" do
-      @model.errors.on(:code).should include('Code has an invalid format')
+      @model.errors.on(:code).should == [ 'Code has an invalid format' ]
     end
   end
 end
