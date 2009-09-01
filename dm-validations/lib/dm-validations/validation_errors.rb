@@ -1,3 +1,5 @@
+require 'extlib/dictionary'
+
 module DataMapper
   module Validate
 
@@ -46,7 +48,7 @@ module DataMapper
 
       def initialize(resource)
         @resource = resource
-        @errors   = {}
+        @errors   = Dictionary.new
       end
 
       # Clear existing validation errors.
