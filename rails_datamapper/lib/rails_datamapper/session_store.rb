@@ -61,4 +61,3 @@ module DataMapperStore
     end
   end
 end
-
