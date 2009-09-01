@@ -11,23 +11,18 @@ module DataMapper
         value = target.send(field_name)
         return true if allow_nil? && value.blank?
 
-        errors = [
-          integer_only? ? validate_integer(value) : validate_numeric(value)
-        ].compact
+        errors = []
+
+        validate_with(integer_only? ? :integer : :numeric, value, errors)
 
         add_errors(target, errors)
 
         # if the number is invalid, skip further tests
         return false if errors.any?
 
-        errors = [
-          validate_gt(value),
-          validate_lt(value),
-          validate_gte(value),
-          validate_lte(value),
-          validate_eq(value),
-          validate_ne(value),
-        ].compact
+        [ :gt, :lt, :gte, :lte, :eq, :ne ].each do |validation_type|
+          validate_with(validation_type, value, errors)
+        end
 
         add_errors(target, errors)
 
@@ -64,13 +59,24 @@ module DataMapper
         end
       end
 
-      def validate_integer(value)
-        unless value_as_string(value) =~ /\A[+-]?\d+\z/
-          ValidationErrors.default_error_message(:not_an_integer, field_name)
-        end
+      def validate_with(validation_type, value, errors)
+        send("validate_#{validation_type}", value, errors)
       end
 
-      def validate_numeric(value)
+      def validate_with_comparison(value, cmp, expected, error_message_name, errors, negated = false)
+        return if expected.nil?
+
+        comparison = value.send(cmp, expected)
+        return if negated ? !comparison : comparison
+
+        errors << ValidationErrors.default_error_message(error_message_name, field_name, expected)
+      end
+
+      def validate_integer(value, errors)
+        validate_with_comparison(value_as_string(value), :=~, /\A[+-]?\d+\z/, :not_an_integer, errors)
+      end
+
+      def validate_numeric(value, errors)
         precision = options[:precision]
         scale     = options[:scale]
 
@@ -88,42 +94,32 @@ module DataMapper
           /\A[+-]?(?:\d+|\d*\.\d+)\z/
         end
 
-        return if value_as_string(value) =~ regexp
-        ValidationErrors.default_error_message(:not_a_number, field_name)
+        validate_with_comparison(value_as_string(value), :=~, regexp, :not_a_number, errors)
       end
 
-      def validate_with_comparison(value, expected, cmp, error_message_name, negated = false)
-        return if expected.nil?
-
-        comparison = value.send(cmp, expected)
-        return if negated ? !comparison : comparison
-
-        ValidationErrors.default_error_message(error_message_name, field_name, expected)
+      def validate_gt(value, errors)
+        validate_with_comparison(value, :>, options[:gt], :greater_than, errors)
       end
 
-      def validate_gt(value)
-        validate_with_comparison(value, options[:gt], :>, :greater_than)
+      def validate_lt(value, errors)
+        validate_with_comparison(value, :<, options[:lt], :less_than, errors)
       end
 
-      def validate_lt(value)
-        validate_with_comparison(value, options[:lt], :<, :less_than)
+      def validate_gte(value, errors)
+        validate_with_comparison(value, :>=, options[:gte], :greater_than_or_equal_to, errors)
       end
 
-      def validate_gte(value)
-        validate_with_comparison(value, options[:gte], :>=, :greater_than_or_equal_to)
+      def validate_lte(value, errors)
+        validate_with_comparison(value, :<=, options[:lte], :less_than_or_equal_to, errors)
       end
 
-      def validate_lte(value)
-        validate_with_comparison(value, options[:lte], :<=, :less_than_or_equal_to)
-      end
-
-      def validate_eq(value)
+      def validate_eq(value, errors)
         eq = options[:eq] || options[:equal] || options[:equals] || options[:exactly]
-        validate_with_comparison(value, eq, :==, :equal_to)
+        validate_with_comparison(value, :==, eq, :equal_to, errors)
       end
 
-      def validate_ne(value)
-        validate_with_comparison(value, options[:ne], :==, :not_equal_to, true)
+      def validate_ne(value, errors)
+        validate_with_comparison(value, :==, options[:ne], :not_equal_to, errors, true)
       end
     end # class NumericValidator
 
