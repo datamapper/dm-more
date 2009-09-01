@@ -50,7 +50,7 @@ module DataMapper
     module Validate
       class ValidationErrors
         def to_yaml(*args)
-          errors.to_yaml(*args)
+          errors.to_hash.to_yaml(*args)
         end
       end
     end
