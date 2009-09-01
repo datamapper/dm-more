@@ -24,7 +24,7 @@ class SailBoat
 
   # this one is not Serial intentionally
   # use Serial in real world apps
-  property :id,            Integer,    :key => true
+  property :id,            Integer,    :key => true, :min => 1, :max => 10
 
   property :name,          String,                                :nullable => false,     :validates       => :presence_test
   property :description,   String,     :length => 10,                                     :validates       => :length_test_1

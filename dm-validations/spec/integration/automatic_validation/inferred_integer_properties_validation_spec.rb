@@ -27,7 +27,7 @@ describe "A model with an Integer property" do
     end
 
     it "has a meaningful default error message" do
-      @model.errors.on(:id).should include('Id must be an integer')
+      @model.errors.on(:id).should == [ 'Id must be an integer' ]
     end
   end
 
@@ -41,7 +41,36 @@ describe "A model with an Integer property" do
     end
 
     it "has a meaningful default error message" do
-      @model.errors.on(:id).should include('Id must be an integer')
+      @model.errors.on(:id).should == [ 'Id must be an integer' ]
     end
   end
+
+  describe "assigned to a too-small integer" do
+    before :all do
+      @model.set(:id => 0)
+    end
+
+    it "is invalid" do
+      @model.should_not be_valid
+    end
+
+    it "has a meaningful default error message" do
+      @model.errors.on(:id).should == [ 'Id must be a number greater than or equal to 1' ]
+    end
+  end
+
+  describe "assigned to a too-large integer" do
+    before :all do
+      @model.set(:id => 11)
+    end
+
+    it "is invalid" do
+      @model.should_not be_valid
+    end
+
+    it "has a meaningful default error message" do
+      @model.errors.on(:id).should == [ 'Id must be a number less than or equal to 10' ]
+    end
+  end
+
 end

@@ -35,7 +35,7 @@ describe DataMapper::Validate::Fixtures::LerneanHydra do
     it_should_behave_like "invalid model"
 
     it "has a meaningful error message" do
-      @model.errors.on(:head_count).should include("Lernean hydra is said to have exactly 9 heads")
+      @model.errors.on(:head_count).should == [ 'Lernean hydra is said to have exactly 9 heads' ]
     end
   end
 end

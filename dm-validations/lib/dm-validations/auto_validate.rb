@@ -162,6 +162,9 @@ module DataMapper
       end
 
       def infer_numeric_validation_for(property, options)
+        options[:gte] = property.min if property.min
+        options[:lte] = property.max if property.max
+
         if Integer == property.type
           options[:integer_only] = true
 

@@ -10,33 +10,30 @@ module DataMapper
       def initialize(field_name, options={})
         super
 
-        @options[:integer_only] = false unless @options.has_key?(:integer_only)
+        @options[:integer_only] = false unless @options.key?(:integer_only)
       end
 
       def call(target)
         value = target.send(field_name)
         return true if @options[:allow_nil] && value.blank?
 
-        value = case value
-          when Float      then BigDecimal.new(value.to_s).to_s('F') # Avoid Scientific Notation in Float to_s
+        value_string = case value
+          when Float      then value.to_d.to_s('F') # Avoid Scientific Notation in Float to_s
           when BigDecimal then value.to_s('F')
           else value.to_s
         end
 
-        error_message = @options[:message]
-        precision     = @options[:precision]
-        scale         = @options[:scale]
-        eq            = @options[:eq] || @options[:equal] || @options[:equals] || @options[:exactly]
-        gt            = @options[:gt]
-        lt            = @options[:lt]
-        ne            = @options[:ne]
-        gte           = @options[:gte]
-        lte           = @options[:lte]
+        custom_error_message = @options[:message]
+        errors               = []
 
         if @options[:integer_only]
-          has_valid_number = true if value =~ /\A[+-]?\d+\z/
-          error_message ||= ValidationErrors.default_error_message(:not_an_integer, field_name)
+          unless value_string =~ /\A[+-]?\d+\z/
+            errors << ValidationErrors.default_error_message(:not_an_integer, field_name)
+          end
         else
+          precision = @options[:precision]
+          scale     = @options[:scale]
+
           # FIXME: if precision and scale are not specified, can we assume that it is an integer?
           #        probably not, as floating point numbers don't have hard
           #        defined scale. the scale floats with the length of the
@@ -46,86 +43,87 @@ module DataMapper
           #        will be (10 - 1) = 9, so 1.234567890.
           #        In MySQL somehow you can hard-define scale on floats. Not
           #        quite sure how that works...
-          if precision && scale
+          has_valid_number = if precision && scale
             # handles both Float when it has scale specified and BigDecimal
-            if precision > scale && scale > 0
-              has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
+            regexp = if precision > scale && scale > 0
+              /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
             elsif precision > scale && scale == 0
-              has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+              /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
             elsif precision == scale
-              has_valid_number = true if value =~ /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
+              /\A[+-]?(?:0(?:\.\d{1,#{scale}})?)\z/
             else
               raise ArgumentError, "Invalid precision #{precision.inspect} and scale #{scale.inspect} for #{field_name} (value: #{value.inspect} #{value.class})"
             end
+
+            value_string =~ regexp
           elsif precision && scale.nil?
-            # for floats, if scale is not set
-
-            # total number of digits is less or equal precision
-            has_valid_number = true if value.gsub(/[^\d]/, '').length <= precision
-
             # number of digits before decimal == precision, and the number is x.0. same as scale = 0
-            has_valid_number = true if value =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
+            value_string =~ /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
           else
-            has_valid_number = true if value =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
+            value_string =~ /\A[+-]?(?:\d+|\d*\.\d+)\z/
           end
-          error_message ||= ValidationErrors.default_error_message(:not_a_number, field_name)
-        end
 
-        comparisons_pass = true
-        if gt
-          unless value.to_f > gt.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number greater than %s'.t(humanized_field_name, gt)
-            add_error(target, comparison_error_message, @field_name)
+          unless has_valid_number
+            errors << ValidationErrors.default_error_message(:not_a_number, field_name)
           end
         end
 
-        if lt
-          unless value.to_f < lt.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number less than %s'.t(humanized_field_name, lt)
-            add_error(target, comparison_error_message, @field_name)
+        add_errors(target, errors, custom_error_message)
+
+        return false if errors.any?
+
+        if gt = @options[:gt]
+          unless value > gt
+            errors << '%s must be a number greater than %s'.t(humanized_field_name, gt)
           end
         end
 
-        if gte
-          unless value.to_f >= gte.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte)
-            add_error(target, comparison_error_message, @field_name)
+        if lt = @options[:lt]
+          unless value < lt
+            errors << '%s must be a number less than %s'.t(humanized_field_name, lt)
           end
         end
 
-        if lte
-          unless value.to_f <= lte.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number less than or equal to %s'.t(humanized_field_name, lte)
-            add_error(target, comparison_error_message, @field_name)
+        if gte = @options[:gte]
+          unless value >= gte
+            errors << '%s must be a number greater than or equal to %s'.t(humanized_field_name, gte)
           end
         end
 
-        if eq
-          unless value.to_f == eq.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number equal to %s'.t(humanized_field_name, eq)
-            add_error(target, comparison_error_message, @field_name)
+        if lte = @options[:lte]
+          unless value <= lte
+            errors << '%s must be a number less than or equal to %s'.t(humanized_field_name, lte)
           end
         end
 
-        if ne
-          unless value.to_f != ne.to_f
-            comparisons_pass         = false
-            comparison_error_message = '%s must be a number not equal to %s'.t(humanized_field_name, ne)
-            add_error(target, comparison_error_message, @field_name)
+        if eq = @options[:eq] || @options[:equal] || @options[:equals] || @options[:exactly]
+          unless value == eq
+            errors << '%s must be a number equal to %s'.t(humanized_field_name, eq)
           end
         end
 
+        if ne = @options[:ne]
+          unless value != ne
+            errors << '%s must be a number not equal to %s'.t(humanized_field_name, ne)
+          end
+        end
 
-        if has_valid_number && comparisons_pass
-          return true
+        add_errors(target, errors, custom_error_message)
+
+        errors.empty?
+      end
+
+      private
+
+      def add_errors(target, errors, custom_error_message)
+        return if errors.empty?
+
+        if custom_error_message
+          add_error(target, custom_error_message, field_name)
         else
-          add_error(target, error_message, @field_name)
-          return false
+          errors.each do |error_message|
+            add_error(target, error_message, field_name)
+          end
         end
       end
     end # class NumericValidator
