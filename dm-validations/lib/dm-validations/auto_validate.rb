@@ -44,8 +44,8 @@ module DataMapper
       #       validates_presence_of validator to be automatically created on
       #       the property
       #
-      #   :size => 20 or :length => 20
-      #       Setting the option :size or :length causes a validates_length_of
+      #   :length => 20
+      #       Setting the option :length causes a validates_length_of
       #       validator to be automatically created on the property. If the
       #       value is a Integer the validation will set :maximum => value if
       #       the value is a Range the validation will set :within => value
@@ -129,12 +129,10 @@ module DataMapper
       end
 
       def infer_length_validation_for(property, options)
-        if [String, DataMapper::Types::Text].include?(property.type)
-          len = property.options.fetch(:length, property.options.fetch(:size, DataMapper::Property::DEFAULT_LENGTH))
-          if len.is_a?(Range)
-            options[:within] = len
-          else
-            options[:maximum] = len
+        if String == property.primitive
+          case length = property.options.fetch(:length, DataMapper::Property::DEFAULT_LENGTH)
+            when Range then options[:within]  = length
+            else            options[:maximum] = length
           end
 
           validates_length property.name, options_with_message(options, property, :length)
