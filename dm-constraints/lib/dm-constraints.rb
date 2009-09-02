@@ -32,8 +32,10 @@ module DataMapper
 
       # TODO: document
       # @api semipublic
-      def one_to_many_options
-        { :constraint => @constraint }
+      chainable do
+        def one_to_many_options
+          super.merge(:constraint => @constraint)
+        end
       end
     end
   end
