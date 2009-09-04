@@ -27,7 +27,13 @@ class Hoe
   end
 end
 
-hoe = Hoe.new(GEM_NAME, GEM_VERSION) do |p|
+# remove the hoe test task
+# (we have our own, with custom spec.opts file reading)
+Hoe.plugins.delete(:test)
+
+Hoe.spec(GEM_NAME) do |p|
+
+  p.version = GEM_VERSION
 
   p.developer(AUTHOR, EMAIL)
 
