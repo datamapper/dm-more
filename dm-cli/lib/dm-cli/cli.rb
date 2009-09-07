@@ -1,6 +1,6 @@
 require "yaml"
 require "irb"
-require Pathname("irb/completion")
+require "irb/completion"
 
 # TODO: error handling for:
 #   missing adapter, host or database

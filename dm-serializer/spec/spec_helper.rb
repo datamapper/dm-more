@@ -1,17 +1,15 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-ROOT = Pathname(__FILE__).dirname.parent
-
 # use local dm-validations if running from dm-more directly
-lib = ROOT.parent / 'dm-validations' / 'lib'
-$LOAD_PATH.unshift(lib) if lib.directory?
+lib = File.join('..', 'dm-validations', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-validations'
 
-$LOAD_PATH.unshift(ROOT / 'lib')
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
 
 require 'dm-serializer'
 
@@ -41,9 +39,9 @@ class SerializerTestHarness
   end
 end
 
-require ROOT / 'spec' / 'lib' / 'serialization_method_shared_spec'
+require 'spec/lib/serialization_method_shared_spec'
 
 # require fixture resources
-Dir[(ROOT / 'spec' / 'fixtures' / '*.rb').to_s].each do |fixture_file|
+Dir.glob("spec/fixtures/*.rb").each do |fixture_file|
   require fixture_file
 end

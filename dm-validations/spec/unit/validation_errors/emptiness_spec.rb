@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
+require 'spec_helper'
 
 describe DataMapper::Validate::ValidationErrors do
   before :all do

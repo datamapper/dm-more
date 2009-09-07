@@ -1,8 +1,8 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'ticket.rb'
+
+  require 'spec/fixtures/ticket'
 
   describe DataMapper::Types::Fixtures::Ticket do
     describe 'that is dumped and then loaded' do

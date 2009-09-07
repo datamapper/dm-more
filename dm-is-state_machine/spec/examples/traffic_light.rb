@@ -46,12 +46,3 @@ class TrafficLight
 end
 
 TrafficLight.auto_migrate!
-
-# ===== Note 1 =====
-#
-# One would expect that these two would be the same:
-#   property :id, Serial
-#   property :id, Serial
-#
-# But on 2008-07-05, the 2nd led to problems with an in-memory SQLite
-# database.

@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
+require 'spec_helper'
 
 module PureRubyObjects
   # notice that it is a pure Ruby class, not a DataMapper resource

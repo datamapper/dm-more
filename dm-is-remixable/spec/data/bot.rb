@@ -1,7 +1,7 @@
-require Pathname(__FILE__).dirname / "viewable"
-require Pathname(__FILE__).dirname / "billable"
-require Pathname(__FILE__).dirname / "addressable"
-require Pathname(__FILE__).dirname / "rating"
+require 'data/viewable'
+require 'data/billable'
+require 'data/addressable'
+require 'data/rating'
 
 class Bot
   include DataMapper::Resource

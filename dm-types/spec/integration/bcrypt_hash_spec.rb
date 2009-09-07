@@ -1,8 +1,8 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'person.rb'
+
+  require 'spec/fixtures/person'
 
   describe DataMapper::Types::Fixtures::Person do
     before :all  do

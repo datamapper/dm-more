@@ -6,7 +6,7 @@ require 'dm-core'
 # Support running specs with 'rake spec' and 'spec'
 $LOAD_PATH.unshift(File.join('lib'))
 
-require 'dm-ar-finders'
+require 'dm-cli'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

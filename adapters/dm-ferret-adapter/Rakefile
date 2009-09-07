@@ -6,7 +6,7 @@ JRUBY   = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform?
 SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-require ROOT + 'lib/ferret_adapter/version'
+require 'ferret_adapter/version'
 
 AUTHOR = 'Bernerd Schaefer'
 EMAIL  = 'bernerd [a] wieck [d] com'

@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 describe DataMapper::Tags do
   it "should add a .has_tags method to models which include DataMapper::Resource" do

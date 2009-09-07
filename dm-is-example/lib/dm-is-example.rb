@@ -1,8 +1,7 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path / 'dm-is-example' / 'is' / 'example.rb'
+require 'dm-is-example/is/example'
 
 module DataMapper
   module Model
     include DataMapper::Is::Example
-  end # module Model
-end # module DataMapper
+  end
+end

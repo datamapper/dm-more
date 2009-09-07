@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
   describe DataMapper::Types::BCryptHash do

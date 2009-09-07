@@ -1,8 +1,8 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'tshirt.rb'
+
+  require 'spec/fixtures/tshirt'
 
   describe DataMapper::Types::Fixtures::TShirt do
     before do

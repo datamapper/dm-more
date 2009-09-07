@@ -1,4 +1,4 @@
-require Pathname(__FILE__).dirname / "rating"
+require 'data/rating'
 
 class Topic
   include DataMapper::Resource

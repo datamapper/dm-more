@@ -1,11 +1,7 @@
 # encoding: utf-8
 
-require 'pathname'
-__dir__ = Pathname(__FILE__).dirname.expand_path
-
-# global first, then local to length validators
-require __dir__.parent.parent + "spec_helper"
-require __dir__ + 'spec_helper'
+require 'spec_helper'
+require 'integration/length_validator/spec_helper'
 
 describe "entity with wrong destination MAC address length", :shared => true do
   it "has error message with range bounds" do

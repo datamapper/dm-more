@@ -5,6 +5,7 @@ README.rdoc
 Rakefile
 TODO
 lib/dm-observer.rb
+lib/dm-observer/observer.rb
 lib/dm-observer/version.rb
 spec/integration/dm-observer_spec.rb
 spec/spec.opts

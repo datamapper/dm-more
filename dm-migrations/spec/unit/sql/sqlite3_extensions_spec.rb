@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + '../../spec_helper'
+require 'spec_helper'
 
 # a dummy class to include the module into
 class Sqlite3Extension

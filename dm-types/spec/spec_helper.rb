@@ -3,42 +3,40 @@
 #       alising and load order even further and it kinda makes
 #       me sad -- MK
 
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-ROOT = Pathname(__FILE__).dirname.parent
-
-# use local dm-validations if running from dm-more directly
-lib = ROOT.parent / 'dm-validations' / 'lib'
-$LOAD_PATH.unshift(lib) if lib.directory?
+# use local dm-validations if running from a typical dev checkout.
+lib = File.join('..', 'dm-validations', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-validations'
 
-require ROOT / 'lib' / 'dm-types'
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
 
-ENV['SQLITE3_SPEC_URI']   ||= 'sqlite3::memory:'
-ENV['MYSQL_SPEC_URI']     ||= 'mysql://localhost/dm_core_test'
-ENV['POSTGRES_SPEC_URI']  ||= 'postgres://postgres@localhost/dm_more_test'
+require 'dm-types'
 
-def setup_adapter(name, default_uri = nil)
+def load_driver(name, default_uri)
+  return false if ENV['ADAPTER'] != name.to_s
+
   begin
-    DataMapper.setup(name, ENV["#{ENV['ADAPTER'].to_s.upcase}_SPEC_URI"] || default_uri)
-    Object.const_set('ADAPTER', ENV['ADAPTER'].to_sym) if name.to_s == ENV['ADAPTER']
+    DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
+    DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
     true
-  rescue Exception => e
-    if name.to_s == ENV['ADAPTER']
-      Object.const_set('ADAPTER', nil)
-      warn "Could not load do_#{name}: #{e}"
-    end
+  rescue LoadError => e
+    warn "Could not load do_#{name}: #{e}"
     false
   end
 end
 
 ENV['ADAPTER'] ||= 'sqlite3'
 
-setup_adapter(:default)
+HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
+HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
+HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
+
 
 DEPENDENCIES = {
   'bcrypt'    => 'bcrypt-ruby',

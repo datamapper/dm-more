@@ -1,12 +1,6 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + '../lib/migration_runner'
+require 'dm-migrations/migration_runner'
 
-require 'fileutils'
-FileUtils.touch(File.join(Dir.pwd, "migration_test.db"))
-
-# DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/migration_test.db")
-DataMapper.setup(:default, "postgres://localhost/migration_test")
-# DataMapper.setup(:default, "mysql://localhost/migration_test")
+DataMapper.setup(:default, "sqlite3::memory")
 
 DataMapper::Logger.new(STDOUT, :debug)
 DataMapper.logger.debug( "Starting Migration" )

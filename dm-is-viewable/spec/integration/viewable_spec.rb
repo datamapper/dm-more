@@ -1,7 +1,10 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
-require Pathname(__FILE__).dirname.expand_path.parent + 'data/location'
-require Pathname(__FILE__).dirname.expand_path.parent + 'data/person'
+require 'spec_helper'
+
+class Array
+  def random
+    self[rand(self.size) + 1]
+  end
+end
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe 'DataMapper::Is::Viewable' do

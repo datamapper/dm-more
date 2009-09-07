@@ -1,10 +1,6 @@
-require 'pathname'
-
-dir = Pathname(__FILE__).dirname.expand_path / 'dm-constraints'
-
-require dir / 'delete_constraint'
-require dir / 'migrations'
-require dir / 'version'
+require 'dm-constraints/delete_constraint'
+require 'dm-constraints/migrations'
+require 'dm-constraints/version'
 
 module DataMapper
   module Associations

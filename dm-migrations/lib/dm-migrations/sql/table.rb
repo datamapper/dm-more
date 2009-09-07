@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'column'
+require 'dm-migrations/sql/column'
 
 module SQL
   class Table

@@ -1,6 +1,5 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
-require Pathname(__FILE__).dirname.expand_path.parent + 'examples/traffic_light'
+require 'spec_helper'
+require 'examples/traffic_light'
 
 describe TrafficLight do
 

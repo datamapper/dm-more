@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent.parent + 'spec_helper'
+require 'spec_helper'
 
 module MachineHelper
   def new_machine(*args)

@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 describe 'factory method for Flag type', :shared => true do
   it 'creates a Class' do

@@ -1,6 +1,4 @@
-require 'pathname'
-require 'yaml'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 describe DataMapper::Serialize, '#to_yaml' do
   #

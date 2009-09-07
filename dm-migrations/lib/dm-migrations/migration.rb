@@ -1,7 +1,6 @@
-require 'pathname'
 require 'benchmark'
 
-require Pathname(__FILE__).dirname.expand_path + 'sql'
+require 'dm-migrations/sql'
 
 module DataMapper
   class DuplicateMigrationNameError < StandardError

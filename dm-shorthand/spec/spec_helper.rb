@@ -1,7 +1,12 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-require Pathname(__FILE__).dirname.parent / 'lib' / 'dm-shorthand'
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
+
+require 'dm-shorthand'
+
+DataMapper.setup :default, "sqlite3::memory:"
+DataMapper.setup :alternative, "sqlite3::memory:"

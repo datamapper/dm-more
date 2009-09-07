@@ -1,10 +1,15 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-require Pathname(__FILE__).dirname.parent / 'lib' / 'dm-is-viewable'
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
+
+require 'dm-is-viewable'
+
+require 'data/location'
+require 'data/person'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
@@ -24,9 +29,3 @@ ENV['ADAPTER'] ||= 'sqlite3'
 HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
-
-class Array
-  def random
-    self[rand(self.size) + 1]
-  end
-end

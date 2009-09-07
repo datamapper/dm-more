@@ -1,8 +1,8 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'network_node.rb'
+
+  require 'spec/fixtures/network_node'
 
   describe DataMapper::Types::Fixtures::NetworkNode do
     describe 'with UUID set as UUID object' do

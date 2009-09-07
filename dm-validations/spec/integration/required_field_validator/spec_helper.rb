@@ -4,5 +4,4 @@
 # DataMapper developers feels strongly against foobars in the spec
 # suite
 
-__dir__ = File.dirname(__FILE__)
-require File.join(__dir__, "shared_examples")
+require 'integration/required_field_validator/shared_examples'

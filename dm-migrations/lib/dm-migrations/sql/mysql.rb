@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'table'
+require 'dm-migrations/sql/table'
 
 module SQL
   module Mysql

@@ -1,8 +1,8 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'software_package.rb'
+
+  require 'spec/fixtures/software_package'
 
   describe DataMapper::Types::Fixtures::SoftwarePackage do
     describe 'with source path at /var/cache/apt/archives/linux-libc-dev_2.6.28-11.40_i386.deb' do

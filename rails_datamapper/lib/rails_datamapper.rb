@@ -1,10 +1,7 @@
 require 'pathname'
 require 'extlib/pathname'
 
-dir = Pathname(__FILE__).dirname / 'rails_datamapper'
-
-require dir / 'version'
-require dir / 'session_store'
+require 'rails_datamapper/session_store'
 
 module Rails
   module DataMapper

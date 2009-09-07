@@ -1,6 +1,5 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
-require Pathname(__FILE__).dirname.parent.expand_path + 'shared/identity_function_group'
+require 'spec_helper'
+require 'shared/identity_function_group'
 
 try_spec do
   describe DataMapper::Types::Json do

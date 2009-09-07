@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + '../spec_helper'
+require 'spec_helper'
 
 describe DataMapper::Validate::GenericValidator do
   describe "when types and fields are equal" do

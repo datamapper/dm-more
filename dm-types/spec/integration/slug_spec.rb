@@ -1,10 +1,10 @@
 # encoding: utf-8
 
-require 'pathname'
-require Pathname(__FILE__).dirname.parent.expand_path + 'spec_helper'
+require 'spec_helper'
 
 try_spec do
-  load ROOT / 'spec' / 'fixtures' / 'article.rb'
+
+  require 'spec/fixtures/article'
 
   describe DataMapper::Types::Fixtures::Article do
     describe "persisted with title and slug set to 'New DataMapper Type'" do

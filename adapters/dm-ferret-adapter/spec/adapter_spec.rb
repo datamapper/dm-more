@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + 'spec_helper'
+require 'spec_helper'
 
 INDEX_PATH = Pathname(__FILE__).dirname.expand_path + 'index'
 

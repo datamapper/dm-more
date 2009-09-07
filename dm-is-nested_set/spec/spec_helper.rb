@@ -1,16 +1,17 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-ROOT = Pathname(__FILE__).dirname.parent
+# use local dm-adjust if running from a typical dev checkout.
+lib = File.join('..', 'dm-adjust', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
+require 'dm-adjust'
 
-# use local dm-adjust if running from dm-more directly
-lib = ROOT.parent / 'dm-adjust' / 'lib'
-$LOAD_PATH.unshift(lib) if lib.directory?
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
 
-require ROOT / 'lib' / 'dm-is-nested_set'
+require 'dm-is-nested_set'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s

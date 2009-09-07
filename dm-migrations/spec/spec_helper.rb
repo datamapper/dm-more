@@ -1,15 +1,13 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-ROOT = Pathname(__FILE__).dirname.parent
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
 
-require ROOT / 'lib' / 'dm-migrations'
-require ROOT / 'lib' / 'migration'
-require ROOT / 'lib' / 'migration_runner'
-require ROOT / 'lib' / 'sql'
+require 'dm-migrations'
+require 'dm-migrations/migration_runner'
 
 ADAPTERS = []
 def load_driver(name, default_uri)
@@ -24,7 +22,7 @@ def load_driver(name, default_uri)
   end
 end
 
-#ENV['ADAPTER'] ||= 'sqlite3'
+ENV['ADAPTER'] ||= 'sqlite3'
 
 load_driver(:sqlite3,  'sqlite3::memory:')
 load_driver(:mysql,    'mysql://localhost/dm_core_test')

@@ -12,7 +12,7 @@ namespace :db do
   # set DIRECTION to migrate down
   desc "Run your system's migrations"
   task :migrate => [:setup_migration_dir] do
-    require File.expand_path(File.join(File.dirname(__FILE__), "lib", "migration_runner.rb"))
+    require 'dm-migrations/migration_runner.rb'
     require File.expand_path(File.join(MIGRATION_DIR, "config.rb"))
 
     Dir[File.join(MIGRATION_DIR, "*.rb")].each { |file| require file }

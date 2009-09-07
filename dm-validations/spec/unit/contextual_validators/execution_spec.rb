@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-require 'pathname'
-
-__dir__ = Pathname(__FILE__).dirname.expand_path
-require __dir__.parent.parent + 'spec_helper'
-require __dir__ + 'spec_helper'
+require 'spec_helper'
+require 'unit/contextual_validators/spec_helper'
 
 describe DataMapper::Validate::ContextualValidators do
   before :all do

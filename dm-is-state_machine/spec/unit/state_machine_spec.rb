@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 describe "StateMachine" do
 
@@ -27,8 +26,3 @@ describe "StateMachine" do
 
   end
 end
-
-# is_state_machine
-# push_state_machine_context(label)
-# pop_state_machine_context
-# state_machine_context?(label)

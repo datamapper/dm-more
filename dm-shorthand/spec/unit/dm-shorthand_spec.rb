@@ -1,16 +1,19 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require 'spec_helper'
 
 describe "Shorthand" do
-  DataMapper.setup :default, "sqlite3:///"
-  DataMapper.setup :alternative, "sqlite3:///"
 
   module DaModule
     class MyModel
       include DataMapper::Resource
 
-      property :a, String, :key => true
-      property :b, String
+      property :id,   Serial
+      property :name, String
     end
+  end
+
+  before(:all) do
+    DataMapper.auto_migrate!(:default)
+    DataMapper.auto_migrate!(:alternative)
   end
 
   it "should define a method with the same name as the class inside the class' module" do

@@ -1,13 +1,11 @@
-dir = Pathname(__FILE__).dirname.expand_path / 'dm-aggregates'
-
-require dir / 'adapters' / 'data_objects_adapter'
-require dir / 'aggregate_functions'
-require dir / 'collection'
-require dir / 'core_ext' / 'symbol'
-require dir / 'model'
-require dir / 'query'
-require dir / 'repository'
-require dir / 'version'
+require 'dm-aggregates/adapters/data_objects_adapter'
+require 'dm-aggregates/aggregate_functions'
+require 'dm-aggregates/collection'
+require 'dm-aggregates/core_ext/symbol'
+require 'dm-aggregates/model'
+require 'dm-aggregates/query'
+require 'dm-aggregates/repository'
+require 'dm-aggregates/version'
 
 module DataMapper
   class Repository

@@ -1,8 +1,5 @@
-require 'pathname'
-__dir__ = Pathname(__FILE__).dirname.expand_path
-
-require __dir__.parent.parent + 'spec_helper'
-require __dir__ + 'spec_helper'
+require 'spec_helper'
+require 'integration/required_field_validator/spec_helper'
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   class ScheduledOperation

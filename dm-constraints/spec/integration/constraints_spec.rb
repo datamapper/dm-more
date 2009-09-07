@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 ADAPTERS.each do |name, connection_uri|
   describe 'DataMapper::Constraints', "(with #{name})" do

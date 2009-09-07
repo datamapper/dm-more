@@ -1,0 +1,5 @@
+require 'dm-migrations/sql/table_creator'
+require 'dm-migrations/sql/table_modifier'
+require 'dm-migrations/sql/sqlite3'
+require 'dm-migrations/sql/mysql'
+require 'dm-migrations/sql/postgresql'

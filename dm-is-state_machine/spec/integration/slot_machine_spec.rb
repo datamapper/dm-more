@@ -1,6 +1,5 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
-require Pathname(__FILE__).dirname.expand_path.parent + 'examples/slot_machine'
+require 'spec_helper'
+require 'examples/slot_machine'
 
 describe SlotMachine do
 

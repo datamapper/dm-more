@@ -1,9 +1,5 @@
-require 'pathname'
-__dir__ = Pathname(__FILE__).dirname.expand_path
-
-# global first, then local to length validators
-require __dir__.parent.parent + "spec_helper"
-require __dir__ + 'spec_helper'
+require 'spec_helper'
+require 'integration/conditional_validation/spec_helper'
 
 describe DataMapper::Validate::Fixtures::UDPPacket do
   before :all do

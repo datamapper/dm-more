@@ -1,19 +1,5 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
-require "dm-types"
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'addressable'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'billable'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'commentable'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'article'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'image'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'user'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'viewable'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'topic'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'rating'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'taggable'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'bot'
-require Pathname(__FILE__).dirname.expand_path.parent / 'data' / 'tag'
 DataMapper.auto_migrate!
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES

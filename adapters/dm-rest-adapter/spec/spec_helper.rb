@@ -1,17 +1,22 @@
 require 'pathname'
-require 'rubygems'
 require 'fakeweb'
 
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
+# use local dm-validations if running from a typical dev checkout.
+lib = File.join('..', 'dm-validations', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
+require 'dm-validations'
+
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
+
+require 'rest_adapter'
+
 ROOT = Pathname(__FILE__).dirname.parent
-
-# use local dm-serializer if running from dm-more directly
-lib = ROOT.parent.parent / 'dm-serializer' / 'lib'
-$LOAD_PATH.unshift(lib) if lib.directory?
-
-require ROOT / 'lib' / 'rest_adapter'
 
 DataMapper.setup(:default, 'rest://admin:secret@localhost:4000/?format=xml')
 

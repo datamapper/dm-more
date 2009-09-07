@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path + '../matchers/migration_matchers'
+require 'spec/matchers/migration_matchers'
 
 require 'spec'
 

@@ -1,17 +1,19 @@
-require 'pathname'
-require 'rubygems'
-
-gem 'dm-core', '0.10.0'
+# use local dm-core if running from a typical dev checkout.
+lib = File.join('..', '..', 'dm-core', 'lib')
+$LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-core'
 
-require Pathname(__FILE__).dirname.parent / 'lib' / 'dm-is-state_machine'
+# Support running specs with 'rake spec' and 'spec'
+$LOAD_PATH.unshift(File.join('lib'))
+
+require 'dm-is-state_machine'
 
 def load_driver(name, default_uri)
   return false if ENV['ADAPTER'] != name.to_s
 
   begin
     DataMapper.setup(name, ENV["#{name.to_s.upcase}_SPEC_URI"] || default_uri)
-    DataMapper::Repository.adapters[:default] = DataMapper::Repository.adapters[name]
+    DataMapper::Repository.adapters[:default] =  DataMapper::Repository.adapters[name]
     true
   rescue LoadError => e
     warn "Could not load do_#{name}: #{e}"

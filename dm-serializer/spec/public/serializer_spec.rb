@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 describe DataMapper::Serialize do
   it "is included into DataMapper::Resource" do

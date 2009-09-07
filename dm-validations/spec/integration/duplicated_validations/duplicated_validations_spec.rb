@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
-require 'pathname'
-__dir__ = Pathname(__FILE__).dirname.expand_path
-
-require __dir__.parent.parent + 'spec_helper'
-require __dir__ + 'spec_helper'
+require 'spec_helper'
+require 'integration/duplicated_validations/spec_helper'
 
 describe DataMapper::Validate::Fixtures::Page do
   before :all do

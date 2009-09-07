@@ -1,5 +1,4 @@
-require 'pathname'
-require Pathname(__FILE__).dirname.expand_path.parent + 'spec_helper'
+require 'spec_helper'
 
 share_examples_for 'A serialization method that also serializes core classes' do
   # This spec ensures that we don't break any serialization methods attached

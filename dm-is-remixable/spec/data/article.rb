@@ -1,10 +1,10 @@
-require Pathname(__FILE__).dirname / "image"
-require Pathname(__FILE__).dirname / "commentable"
-require Pathname(__FILE__).dirname / "viewable"
-require Pathname(__FILE__).dirname / "taggable"
-require Pathname(__FILE__).dirname / "user"
-require Pathname(__FILE__).dirname / "bot"
-require Pathname(__FILE__).dirname / "tag"
+require 'data/image'
+require 'data/commentable'
+require 'data/viewable'
+require 'data/taggable'
+require 'data/user'
+require 'data/bot'
+require 'data/tag'
 
 class Article
   include DataMapper::Resource
