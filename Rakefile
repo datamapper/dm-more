@@ -144,7 +144,7 @@ end
 desc 'Run specs'
 task :spec do
   (GEM_PATHS - %w[ rails_datamapper ]).each do |gem_name|
-    Dir.chdir(gem_name){ rake :spec }
+    Dir.chdir(gem_name){ rake :spec rescue nil }
   end
 end
 
