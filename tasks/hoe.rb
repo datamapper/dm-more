@@ -35,6 +35,9 @@ Hoe.spec(GEM_NAME) do |p|
 
   p.version = GEM_VERSION
 
+  p.readme_file  = 'README.rdoc'
+  p.history_file = 'History.rdoc'
+
   p.developer(AUTHOR, EMAIL)
 
   p.description = PROJECT_DESCRIPTION
