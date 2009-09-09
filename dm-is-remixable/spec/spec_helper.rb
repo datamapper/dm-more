@@ -14,7 +14,7 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib)
 require 'dm-validations'
 
 # Support running specs with 'rake spec' and 'spec'
-$LOAD_PATH.unshift(File.join('lib'))
+$LOAD_PATH.unshift('lib') unless $LOAD_PATH.include?('lib')
 
 require 'dm-is-remixable'
 
