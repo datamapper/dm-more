@@ -27,11 +27,7 @@ describe 'Inferred validations' do
 
     boat = custom_boat.new
     boat.should_not be_valid
-    boat.errors.on(:name).should == [
-      'This boat must have name',
-      'Name must have at least 4 and at most 20 chars',
-      'Please use only small letters',
-    ]
+    boat.errors.on(:name).should == [ 'This boat must have name' ]
 
     boat.name = "%%"
     boat.should_not be_valid

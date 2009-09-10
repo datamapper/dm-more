@@ -85,10 +85,13 @@ module DataMapper
       def auto_generate_validations(property)
         return if disabled_auto_validations? || skip_auto_validation_for?(property)
 
-        # a serial property is allowed to be nil too, because the
-        # value is set by the storage system
-        opts = { :allow_nil => property.nullable? || property.serial? }
-        opts[:context] = property.options[:validates] if property.options.has_key?(:validates)
+        # all auto-validations (aside from presence) should skip
+        # validation when the value is nil
+        opts = { :allow_nil => true }
+
+        if property.options.has_key?(:validates)
+          opts[:context] = property.options[:validates]
+        end
 
         infer_presence_validation_for(property, opts.dup)
         infer_length_validation_for(property, opts.dup)
@@ -122,7 +125,7 @@ module DataMapper
       end
 
       def infer_presence_validation_for(property, options)
-        unless property.nullable? || property.serial?
+        unless allow_nil?(property)
           # validates_present property.name, opts
           validates_present property.name, options_with_message(options, property, :presence)
         end
@@ -180,6 +183,12 @@ module DataMapper
           # it will cause duplicate validation errors
           validates_is_primitive property.name, options_with_message(options, property, :is_primitive) unless property.custom?
         end
+      end
+
+      private
+
+      def allow_nil?(property)
+        property.nullable? || property.serial?
       end
     end # module AutoValidate
   end # module Validate
