@@ -1,4 +1,3 @@
-require 'extlib'
 require 'randexp'
 
 require 'dm-sweatshop/sweatshop'

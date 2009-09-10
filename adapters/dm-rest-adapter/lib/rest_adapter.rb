@@ -1,7 +1,6 @@
 require 'rexml/document'
 
 require 'cgi'  # for CGI.escape
-require 'extlib'
 require 'addressable/uri'
 require 'dm-serializer'
 
