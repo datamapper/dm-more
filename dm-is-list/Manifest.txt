@@ -1,4 +1,4 @@
-History.txt
+History.rdoc
 LICENSE
 Manifest.txt
 README.rdoc
