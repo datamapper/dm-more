@@ -1,14 +1,12 @@
 begin
-
   require 'spec/rake/spectask'
 
   task :default => [ :spec ]
 
   desc 'Run specifications'
   Spec::Rake::SpecTask.new(:spec) do |t|
-
     t.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
-    t.libs << 'lib' << 'spec' # needed for CI rake spec task, duplicated in spec_helper
+    t.libs      << 'lib' << 'spec' # needed for CI rake spec task, duplicated in spec_helper
 
     begin
       require 'rcov'

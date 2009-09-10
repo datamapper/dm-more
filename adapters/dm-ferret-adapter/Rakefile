@@ -1,12 +1,11 @@
 require 'pathname'
-require 'rubygems'
 
 ROOT    = Pathname(__FILE__).dirname.expand_path
 JRUBY   = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform?
 SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
-require 'ferret_adapter/version'
+require ROOT + 'lib/ferret_adapter/version'
 
 AUTHOR = 'Bernerd Schaefer'
 EMAIL  = 'bernerd [a] wieck [d] com'

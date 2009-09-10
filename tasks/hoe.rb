@@ -1,3 +1,4 @@
+gem 'hoe', '~>2.3'
 require 'hoe'
 
 @config_file = "~/.rubyforge/user-config.yml"
