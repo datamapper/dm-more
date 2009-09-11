@@ -143,9 +143,9 @@ end
 
 desc 'Run specs'
 task :spec do
-  (GEM_PATHS - %w[ rails_datamapper ]).each do |gem_name|
-    Dir.chdir(gem_name){ rake :spec rescue nil }
-  end
+  exit 1 unless (GEM_PATHS - %w[ rails_datamapper ]).map do |gem_name|
+    Dir.chdir(gem_name) { rake :spec rescue false }
+  end.all?
 end
 
 %w[ ci clean clobber check_manifest ].each do |command|
