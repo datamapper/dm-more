@@ -1,3 +1,5 @@
+require 'rubygems'
+
 # use local dm-core if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-core', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)

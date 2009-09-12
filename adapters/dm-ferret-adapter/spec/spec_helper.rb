@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'uuidtools'
 
 # use local dm-core if running from a typical dev checkout.

@@ -1,3 +1,5 @@
+require 'rubygems'
+
 # TODO: autovalidation hooks are needed badly,
 #       otherwise plugin devs will have to abuse
 #       alising and load order even further and it kinda makes
