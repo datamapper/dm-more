@@ -40,8 +40,7 @@ if defined?(::CSV)
       result = planet.errors.to_csv.gsub(/[[:space:]]+\n/, "\n").split("\n")
       result.should include("name,#{planet.errors[:name][0]}")
       result.should include("solar_system_id,#{planet.errors[:solar_system_id][0]}")
-      result.should include("solar_system_id,#{planet.errors[:solar_system_id][1]}")
-      result.length.should == 3
+      result.length.should == 2
     end
 
     describe "multiple repositories" do
