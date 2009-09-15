@@ -77,7 +77,7 @@ describe DataMapper::Sweatshop::Unique do
       old = obj.public_methods
       obj.extend(DataMapper::Sweatshop::Unique)
       new = obj.public_methods
-      (new - old).should == ["unique"]
+      (new - old).collect {|x| x.to_s }.should == ["unique"]
     end
   end
 end
