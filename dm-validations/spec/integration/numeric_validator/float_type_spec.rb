@@ -14,7 +14,6 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
     it_should_behave_like "valid model"
   end
 
-
   describe "with height as integer" do
     before :all  do
       @model.height = 198
@@ -23,7 +22,6 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
     it_should_behave_like "valid model"
   end
 
-
   describe "with height as string containing only integers" do
     before :all  do
       @model.height = "198"
@@ -31,7 +29,6 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
 
     it_should_behave_like "valid model"
   end
-
 
   describe "with height as string containing a float" do
     before :all do
@@ -62,7 +59,6 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
     it_should_behave_like "invalid model"
   end
 
-
   describe "with height as string containing random punctuation characters" do
     before :all do
       @height = '$$ * $?'
@@ -75,7 +71,6 @@ describe DataMapper::Validate::Fixtures::BasketballPlayer do
 
     it_should_behave_like "invalid model"
   end
-
 
   describe "with nil height" do
     before :all do

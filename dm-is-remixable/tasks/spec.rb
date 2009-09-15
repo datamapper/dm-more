@@ -16,6 +16,8 @@ begin
       t.rcov_opts << '--sort' << 'coverage' << '--sort-reverse'
     rescue LoadError
       # rcov not installed
+    rescue SyntaxError
+      # rcov syntax invalid
     end
   end
 rescue LoadError
