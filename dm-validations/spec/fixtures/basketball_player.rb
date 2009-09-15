@@ -26,7 +26,8 @@ module DataMapper
         # Validations
         #
 
-        validates_is_number :height, :weight
+        # precision and scale need to be defined for length to be validated
+        validates_is_number :height, :weight, :precision => 10
       end
       BasketballPlayer.auto_migrate!
 

@@ -80,8 +80,8 @@ module DataMapper
         precision = options[:precision]
         scale     = options[:scale]
 
-        regexp = if precision
-          if scale.nil? || precision > scale && scale == 0
+        regexp = if precision && scale
+          if precision > scale && scale == 0
             /\A[+-]?(?:\d{1,#{precision}}(?:\.0)?)\z/
           elsif precision > scale
             /\A[+-]?(?:\d{1,#{precision - scale}}|\d{0,#{precision - scale}}\.\d{1,#{scale}})\z/
