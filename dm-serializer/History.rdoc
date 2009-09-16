@@ -1,4 +1,4 @@
-=== 0.10.0 (unreleased)
+=== 0.10.0 / 2009-10-15
 
   * Support serialization of dm-validation errors collection (#718)
   * Don't require json gem on ruby 1.9 (#776)
@@ -7,7 +7,7 @@
 
 === 0.9.11
 
-  * No changes this version
+* No changes this version
 
 === 0.9.10 / 2009-01-19
 
