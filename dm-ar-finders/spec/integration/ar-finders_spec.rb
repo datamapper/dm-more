@@ -156,67 +156,73 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
       describe ':properties option' do
         it 'should accept an array of symbols' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => [:id, :name]
+          properties = GreenSmoothie.properties
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => properties.map { |property| property.name }
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(2).properties
-          properties.should include(GreenSmoothie.properties[:id])
-          properties.should include(GreenSmoothie.properties[:name])
+          resource = found.first
+          properties.each { |property| property.should be_loaded(resource) }
         end
 
         it 'should accept a single Symbol' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => :id
+          property = GreenSmoothie.properties[:id]
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => property.name
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(1).properties
-          properties.should include(GreenSmoothie.properties[:id])
+          resource = found.first
+
+          property.should be_loaded(resource)
+          GreenSmoothie.properties[:name].should_not be_loaded(resource)
         end
 
         it 'should accept a PropertySet' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => GreenSmoothie.properties
+          properties = GreenSmoothie.properties
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => properties
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(2).properties
-          properties.should include(GreenSmoothie.properties[:id])
-          properties.should include(GreenSmoothie.properties[:name])
+          resource = found.first
+          properties.each { |property| property.should be_loaded(resource) }
         end
 
         it 'should accept a single property' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => GreenSmoothie.properties[:id]
+          property = GreenSmoothie.properties[:id]
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => property
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(1).property
-          properties.first.should == GreenSmoothie.properties[:id]
+          resource = found.first
+
+          property.should be_loaded(resource)
+          GreenSmoothie.properties[:name].should_not be_loaded(resource)
         end
 
         it 'should accept an array of Properties' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => GreenSmoothie.properties.to_a
+          properties = GreenSmoothie.properties.to_a
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => properties
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(2).properties
-          properties.should include(GreenSmoothie.properties[:id])
-          properties.should include(GreenSmoothie.properties[:name])
+          resource = found.first
+          properties.each { |property| property.should be_loaded(resource) }
         end
 
         it 'should use the given properties in preference over those in the SQL query' do
-          found = GreenSmoothie.find_by_sql <<-SQL, :properties => GreenSmoothie.properties
+          properties = GreenSmoothie.properties
+
+          found = GreenSmoothie.find_by_sql <<-SQL, :properties => properties
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          properties = found.first.loaded_properties
-          properties.should have(2).properties
-          properties.should include(GreenSmoothie.properties[:id])
-          properties.should include(GreenSmoothie.properties[:name])
+          resource = found.first
+          properties.each { |property| property.should be_loaded(resource) }
         end
 
         it 'should use the default properties if none are specified' do
@@ -224,7 +230,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
             SELECT id, name FROM green_smoothies LIMIT 1
           SQL
 
-          found.first.loaded_properties.should == GreenSmoothie.properties
+          resource = found.first
+          GreenSmoothie.properties.each { |property| property.should be_loaded(resource) }
         end
       end
     end # find_by_sql
