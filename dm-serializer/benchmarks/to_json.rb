@@ -2,7 +2,7 @@ require "rubygems"
 require 'pathname'
 require 'better-benchmark'
 
-gem 'dm-core', '0.10.0'
+gem 'dm-core', '0.10.1'
 require 'dm-core'
 
 spec_dir_path = Pathname(__FILE__).dirname.expand_path
