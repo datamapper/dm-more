@@ -44,8 +44,8 @@ Hoe.spec(GEM_NAME) do
 
   self.rubyforge_name = PROJECT_NAME if PROJECT_NAME
 
-  clean_globs |= GEM_CLEAN
-  extra_deps  |= GEM_DEPENDENCIES
+  self.clean_globs |= GEM_CLEAN
+  self.extra_deps  |= GEM_DEPENDENCIES
 
   self.spec_extras = GEM_EXTRAS if GEM_EXTRAS
 end
