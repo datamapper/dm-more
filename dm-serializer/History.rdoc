@@ -1,4 +1,4 @@
-=== 0.10.0 / 2009-10-15
+=== 0.10.0 / 2009-09-15
 
   * Support serialization of dm-validation errors collection (#718)
   * Don't require json gem on ruby 1.9 (#776)
