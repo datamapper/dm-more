@@ -89,7 +89,7 @@ module DataMapper
         # validation when the value is nil
         opts = { :allow_nil => true }
 
-        if property.options.has_key?(:validates)
+        if property.options.key?(:validates)
           opts[:context] = property.options[:validates]
         end
 
@@ -98,7 +98,7 @@ module DataMapper
         infer_format_validation_for(property, opts.dup)
         infer_uniqueness_validation_for(property, opts.dup)
         infer_within_validation_for(property, opts.dup)
-        infer_numeric_validation_for(property, opts.dup)
+        infer_type_validation_for(property, opts.dup)
       end # auto_generate_validations
 
       # Checks whether auto validations are currently
@@ -121,50 +121,56 @@ module DataMapper
       # @return [TrueClass, FalseClass]
       #   true for properties with :auto_validation option that has positive value
       def skip_auto_validation_for?(property)
-        property.options.has_key?(:auto_validation) && !property.options[:auto_validation]
+        property.options.key?(:auto_validation) && !property.options[:auto_validation]
       end
 
       def infer_presence_validation_for(property, options)
-        unless allow_nil?(property)
-          # validates_present property.name, opts
-          validates_present property.name, options_with_message(options, property, :presence)
-        end
+        return if allow_nil?(property)
+
+        validates_present property.name, options_with_message(options, property, :presence)
       end
 
       def infer_length_validation_for(property, options)
-        if [ String, DataMapper::Types::Text ].include?(property.type)
-          case length = property.options.fetch(:length, DataMapper::Property::DEFAULT_LENGTH)
-            when Range then options[:within]  = length
-            else            options[:maximum] = length
-          end
+        return unless [ String, DataMapper::Types::Text ].include?(property.type)
 
-          validates_length property.name, options_with_message(options, property, :length)
+        case length = property.options.fetch(:length, DataMapper::Property::DEFAULT_LENGTH)
+          when Range then options[:within]  = length
+          else            options[:maximum] = length
         end
+
+        validates_length property.name, options_with_message(options, property, :length)
       end
 
       def infer_format_validation_for(property, options)
-        if property.options.has_key?(:format)
-          options[:with] = property.options[:format]
-          validates_format property.name, options_with_message(options, property, :format)
-        end
+        return unless property.options.key?(:format)
+
+        options[:with] = property.options[:format]
+
+        validates_format property.name, options_with_message(options, property, :format)
       end
 
       def infer_uniqueness_validation_for(property, options)
-        if property.options.has_key?(:unique)
-          value = property.options[:unique]
-          if value.is_a?(Array) || value.is_a?(Symbol)
-            validates_is_unique property.name, options_with_message({:scope => Array(value)}, property, :is_unique)
-          elsif value.is_a?(TrueClass)
-            validates_is_unique property.name, options_with_message({}, property, :is_unique)
-          end
+        return unless property.options.key?(:unique)
+
+        case value = property.options[:unique]
+          when Array, Symbol
+            options[:scope] = Array(value)
+
+            validates_is_unique property.name, options_with_message(options, property, :is_unique)
+          when TrueClass
+            validates_is_unique property.name, options_with_message(options, property, :is_unique)
         end
       end
 
       def infer_within_validation_for(property, options)
-        validates_within property.name, options_with_message({:set => property.options[:set]}, property, :within) if property.options.has_key?(:set)
+        return unless property.options.key?(:set)
+
+        options[:set] = property.options[:set]
+
+        validates_within property.name, options_with_message(options, property, :within)
       end
 
-      def infer_numeric_validation_for(property, options)
+      def infer_type_validation_for(property, options)
         options[:gte] = property.min if property.min
         options[:lte] = property.max if property.max
 
@@ -177,11 +183,11 @@ module DataMapper
           options[:scale]     = property.scale
 
           validates_is_number property.name, options_with_message(options, property, :is_number)
-        else
+        elsif !property.custom?
           # We only need this in the case we don't already
           # have a numeric validator, because otherwise
           # it will cause duplicate validation errors
-          validates_is_primitive property.name, options_with_message(options, property, :is_primitive) unless property.custom?
+          validates_is_primitive property.name, options_with_message(options, property, :is_primitive)
         end
       end
 
