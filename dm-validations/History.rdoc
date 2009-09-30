@@ -1,3 +1,11 @@
+=== 0.10.1 / 2009-09-30
+
+* 2 minor enhancements:
+
+  * Always pass the base options into the validation methods so that
+    :allow_nil => true is always in effect in auto-validations
+  * Improved active_model compatibility
+
 === 0.10.0 / 2009-09-15
 
 * 3 major enhancements:
