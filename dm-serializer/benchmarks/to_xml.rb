@@ -1,7 +1,7 @@
 require "rubygems"
 require 'pathname'
 
-gem 'dm-core', '0.10.1'
+gem 'dm-core', '0.10.2'
 require 'dm-core'
 
 spec_dir_path = Pathname(__FILE__).dirname.expand_path
