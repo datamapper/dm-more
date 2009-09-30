@@ -38,6 +38,13 @@ module DataMapper
         machine = Data::Machine.new(column, initial)
         @is_state_machine = { :machine => machine }
 
+        class_eval <<-RUBY, __FILE__, __LINE__ + 1
+          def #{column}=(value)
+            value = value.to_s if value.kind_of?(Symbol)
+            attribute_set(#{column.inspect}, value)
+          end
+        RUBY
+
         # ===== Define callbacks =====
         # TODO: define callbacks
         # before :save do
@@ -106,9 +113,9 @@ module DataMapper
         def transition!(event_name)
           machine = model.instance_variable_get(:@is_state_machine)[:machine]
           column = machine.column
-          machine.current_state_name = attribute_get(:"#{column}")
+          machine.current_state_name = send(column)
           machine.fire_event(event_name, self)
-          attribute_set(:"#{column}", machine.current_state_name)
+          send("#{column}=", machine.current_state_name)
         end
 
       end # InstanceMethods
