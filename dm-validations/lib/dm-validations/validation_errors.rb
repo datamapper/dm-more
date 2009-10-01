@@ -48,7 +48,7 @@ module DataMapper
 
       def initialize(resource)
         @resource = resource
-        @errors   = Dictionary.new
+        @errors   = Dictionary.new { |h,k| h[k] = [] }
       end
 
       # Clear existing validation errors.
@@ -84,17 +84,6 @@ module DataMapper
         end
       end
 
-      # Return validation errors for a particular field name or an empty array
-      #
-      # This method is a necessary requirement for active_model compatibility.
-      #
-      # @param [Symbol] field_name the name of the field you want an error for
-      # @return [Array<Array<String>>]
-      #   array of validation errors or empty array, if there are no errors on given field
-      def [](field_name)
-        errors[field_name] ||= []
-      end
-
       # Return validation errors for a particular field_name.
       #
       # @param [Symbol] field_name the name of the field you want an error for
@@ -113,7 +102,7 @@ module DataMapper
       end
 
       def empty?
-        @errors.empty?
+        @errors.all? { |property_name, errors| errors.empty? }
       end
 
       def method_missing(meth, *args, &block)
