@@ -12,7 +12,7 @@ module DataMapper
         error_message = self.options[:message] || ValidationErrors.default_error_message(:absent, field_name)
         add_error(target, error_message, field_name)
 
-        return false
+        false
       end
     end # class AbsentFieldValidator
 

@@ -29,10 +29,10 @@ module DataMapper
       # that is sub-classing this GenericValidator
       #
       def initialize(field_name, options = {})
-        @if_clause     = options.delete(:if)
-        @unless_clause = options.delete(:unless)
-
-        @field_name, @options = field_name, options
+        @field_name           = field_name
+        @options              = options.except(:if, :unless)
+        @if_clause            = options[:if]
+        @unless_clause        = options[:unless]
         @humanized_field_name = Extlib::Inflection.humanize(@field_name)
       end
 
@@ -57,7 +57,7 @@ module DataMapper
       #                         against
       # @return <Boolean> true if valid, otherwise false
       def call(target)
-        raise NotImplementedError, "DataMapper::Validate::GenericValidator::call must be overriden in a subclass"
+        raise NotImplementedError, "#{self.class}#call must be implemented"
       end
 
       # Determines if this validator should be run against the
@@ -68,19 +68,13 @@ module DataMapper
       # @return <Boolean> true if should be run, otherwise false
       def execute?(target)
         if unless_clause = self.unless_clause
-          if unless_clause.is_a?(Symbol)
-            return false if target.send(unless_clause)
-          elsif unless_clause.respond_to?(:call)
-            return false if unless_clause.call(target)
-          end
+          return !target.send(unless_clause) if unless_clause.kind_of?(Symbol)
+          return !unless_clause.call(target) if unless_clause.respond_to?(:call)
         end
 
         if if_clause = self.if_clause
-          if if_clause.is_a?(Symbol)
-            return target.send(if_clause)
-          elsif if_clause.respond_to?(:call)
-            return if_clause.call(target)
-          end
+          return target.send(if_clause) if if_clause.kind_of?(Symbol)
+          return if_clause.call(target) if if_clause.respond_to?(:call)
         end
 
         true

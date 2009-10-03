@@ -33,7 +33,8 @@ module DataMapper
         end
 
         add_error(target, error_message, field_name)
-        return false
+
+        false
       end
 
       def n

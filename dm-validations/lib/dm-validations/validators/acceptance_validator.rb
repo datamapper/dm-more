@@ -17,13 +17,12 @@ module DataMapper
       end
 
       def call(target)
-        unless valid?(target)
-          error_message = @options[:message] || ValidationErrors.default_error_message(:accepted, field_name)
-          add_error(target, error_message, field_name)
-          return false
-        end
+        return true if valid?(target)
 
-        return true
+        error_message = @options[:message] || ValidationErrors.default_error_message(:accepted, field_name)
+        add_error(target, error_message, field_name)
+
+        false
       end
 
       def valid?(target)

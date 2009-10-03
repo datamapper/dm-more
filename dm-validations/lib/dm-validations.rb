@@ -50,15 +50,15 @@ module DataMapper
     end
 
     chainable do
-      def save_self(*)
-        return false unless validation_context_stack.empty? || valid?(current_validation_context)
-        super
+      def update(attributes = {}, context = default_validation_context)
+        validation_context(context) { super(attributes) }
       end
     end
 
     chainable do
-      def update(attributes = {}, context = default_validation_context)
-        validation_context(context) { super(attributes) }
+      def save_self(*)
+        return false unless validation_context_stack.empty? || valid?(current_validation_context)
+        super
       end
     end
 
@@ -121,18 +121,20 @@ module DataMapper
       # Return the set of contextual validators or create a new one
       #
       def validators
-        @validations ||= ContextualValidators.new
+        @validators ||= ContextualValidators.new
       end
+
+      private
 
       # Clean up the argument list and return a opts hash, including the
       # merging of any default opts. Set the context to default if none is
       # provided. Also allow :context to be aliased to :on, :when & group
       #
       def opts_from_validator_args(args, defaults = nil)
-        opts = args.last.kind_of?(Hash) ? args.pop : {}
+        opts = args.last.kind_of?(Hash) ? args.pop.dup : {}
         context = opts.delete(:group) || opts.delete(:on) || opts.delete(:when) || opts.delete(:context) || :default
-        opts[:context] = context
-        opts.merge!(defaults) unless defaults.nil?
+        opts[:context] = Array(context)
+        opts.update(defaults) unless defaults.nil?
         opts
       end
 
@@ -163,21 +165,15 @@ module DataMapper
       #
       # @param [Class] klazz
       #    Validator class, example: DataMapper::Validate::LengthValidator
-      def add_validator_to_context(opts, fields, klazz)
+      def add_validator_to_context(opts, fields, validator_class)
         fields.each do |field|
-          validator = klazz.new(field, opts.dup)
-          if opts[:context].is_a?(Symbol)
-            unless validators.context(opts[:context]).include?(validator)
-              validators.context(opts[:context]) << validator
-              create_context_instance_methods(opts[:context])
-            end
-          elsif opts[:context].is_a?(Array)
-            opts[:context].each do |c|
-              unless validators.context(c).include?(validator)
-                validators.context(c) << validator
-                create_context_instance_methods(c)
-              end
-            end
+          validator = validator_class.new(field, opts.dup)
+
+          opts[:context].each do |context|
+            validator_contexts = validators.context(context)
+            next if validator_contexts.include?(validator)
+            validator_contexts << validator
+            create_context_instance_methods(context)
           end
         end
       end

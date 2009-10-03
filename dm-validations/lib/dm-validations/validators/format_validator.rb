@@ -34,7 +34,7 @@ module DataMapper
 
         valid = case validator
           when Proc   then validator.call(value)
-          when Regexp then (value.is_a?(Fixnum) ? value.to_s : value) =~ validator
+          when Regexp then (value.kind_of?(Numeric) ? value.to_s : value) =~ validator
           else
             raise UnknownValidationFormat, "Can't determine how to validate #{target.class}##{field_name} with #{validator.inspect}"
         end

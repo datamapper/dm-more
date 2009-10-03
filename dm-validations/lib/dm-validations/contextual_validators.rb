@@ -1,4 +1,4 @@
-require "forwardable"
+require 'forwardable'
 
 module DataMapper
   module Validate
@@ -52,18 +52,15 @@ module DataMapper
       # @return [Boolean]
       #   true if all are valid, otherwise false
       def execute(named_context, target)
-        raise(ArgumentError, "validation context #{named_context} doesn't seem to be defined. Known contexts are #{contexts.keys.inspect}") if !named_context || (contexts.length > 0 && !contexts[named_context])
-        target.errors.clear!
-        result = true
-        # note that all? and any? stop iteration on first negative or positive result,
-        # so we really have to use each here to make sure all validators are
-        # executed
-        context(named_context).select { |validator| validator.execute?(target) }.each do |validator|
-          result = false unless validator.call(target)
+        unless contexts.empty? || contexts.key?(named_context)
+          raise ArgumentError, "validation context #{named_context} doesn't seem to be defined. Known contexts are #{contexts.keys.inspect}"
         end
 
+        target.errors.clear!
 
-        result
+        context(named_context).map do |validator|
+          validator.execute?(target) ? validator.call(target) : true
+        end.all?
       end
 
     end # module ContextualValidators
