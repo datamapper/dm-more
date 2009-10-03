@@ -27,13 +27,6 @@ module DataMapper
       # API
       #
 
-      def dump
-        contexts.each_pair do |key, context|
-          puts "Key=#{key} Context: #{context}"
-        end
-      end
-      alias_method :inspect, :dump
-
       # Return an array of validators for a named context
       #
       # @param  [String]

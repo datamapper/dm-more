@@ -89,31 +89,6 @@ module DataMapper
       klass.validators.execute(context, self)
     end
 
-    # Begin a recursive walk of the model checking validity
-    #
-    def all_valid?(context = :default)
-      recursive_valid?(self, context, true)
-    end
-
-    # Do recursive validity checking
-    #
-    def recursive_valid?(target, context, state)
-      valid = state
-      target.instance_variables.each do |ivar|
-        ivar_value = target.instance_variable_get(ivar)
-        if ivar_value.validatable?
-          valid = valid && recursive_valid?(ivar_value, context, valid)
-        elsif ivar_value.respond_to?(:each)
-          ivar_value.each do |item|
-            if item.validatable?
-              valid = valid && recursive_valid?(item, context, valid)
-            end
-          end
-        end
-      end
-      return valid && target.valid?
-    end
-
     def validation_property_value(name)
       respond_to?(name, true) ? send(name) : nil
     end
@@ -126,18 +101,6 @@ module DataMapper
       if respond_to?(:model) && (properties = model.properties(repository.name)) && properties.named?(field_name)
         properties[field_name]
       end
-    end
-
-    def validation_association_keys(name)
-      if model.relationships.has_key?(name)
-        result = []
-        relation = model.relationships[name]
-        relation.child_key.each do |key|
-          result << key.name
-        end
-        return result
-      end
-      nil
     end
 
     module ClassMethods
@@ -178,21 +141,12 @@ module DataMapper
       # if it does not already exist
       #
       def create_context_instance_methods(context)
-        name = "valid_for_#{context.to_s}?"           # valid_for_signup?
-        if !instance_methods.include?(name)
+        name = "valid_for_#{context.to_s}?"
+        unless respond_to?(:resource_method_defined) ? resource_method_defined?(name) : instance_methods.include?(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            def #{name}                               # def valid_for_signup?
-              valid?(#{context.to_sym.inspect})       #   valid?(:signup)
-            end                                       # end
-          RUBY
-        end
-
-        all = "all_valid_for_#{context.to_s}?"        # all_valid_for_signup?
-        if !instance_methods.include?(all)
-          class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            def #{all}                                # def all_valid_for_signup?
-              all_valid?(#{context.to_sym.inspect})   #   all_valid?(:signup)
-            end                                       # end
+            def #{name}                          # def valid_for_signup?
+              valid?(#{context.to_sym.inspect})  #   valid?(:signup)
+            end                                  # end
           RUBY
         end
       end
