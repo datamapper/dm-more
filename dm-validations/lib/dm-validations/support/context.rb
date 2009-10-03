@@ -24,6 +24,7 @@ module DataMapper
       #
       # @api private
       def validation_context(context = default_validation_context)
+        assert_valid_context(context)
         validation_context_stack << context
         begin
           yield
@@ -44,9 +45,46 @@ module DataMapper
       # @api private
       def current_validation_context
         context = validation_context_stack.last
-        model.validators.contexts.key?(context) ? context : :default
+        valid_context?(context) ? context : :default
       end
 
+      # Return the contexts for the model
+      #
+      # @return [Hash]
+      #   the hash of contexts for the model
+      #
+      # @api private
+      def contexts
+        model.validators.contexts
+      end
+
+      # Test if the context is valid for the model
+      #
+      # @param [Symbol] context
+      #   the context to test
+      #
+      # @return [Boolean]
+      #   true if the context is valid for the model
+      #
+      # @api private
+      def valid_context?(context)
+        contexts.empty? || contexts.key?(context)
+      end
+
+      # Assert that the context is valid for this model
+      #
+      # @param [Symbol] context
+      #   the context to test
+      #
+      # @raise [InvalidContextError]
+      #   raised if the context is not valid for this model
+      #
+      # @api private
+      def assert_valid_context(context)
+        unless valid_context?(context)
+          raise InvalidContextError, "#{context} is an invalid context, known contexts are #{contexts.keys.inspect}"
+        end
+      end
     end
 
     include Context

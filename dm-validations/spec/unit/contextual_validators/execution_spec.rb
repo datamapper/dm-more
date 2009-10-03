@@ -15,13 +15,6 @@ describe DataMapper::Validate::ContextualValidators do
       @model.context(:default) << @validator_one << @validator_two
     end
 
-    describe "when context was never referred to before" do
-      it "raises ArgumentError" do
-        lambda { @model.execute(:some_unknown_context, Object.new) }.
-          should raise_error(ArgumentError, /validation context some_unknown_context doesn't seem to be defined/)
-      end
-    end
-
 
     describe "when target satisfies all validators" do
       before :each do
