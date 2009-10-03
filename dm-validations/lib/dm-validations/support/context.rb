@@ -43,7 +43,8 @@ module DataMapper
       # Returns the current validation context or nil if none has been pushed
       # @api private
       def current_validation_context
-        validation_context_stack.last
+        context = validation_context_stack.last
+        model.validators.contexts.key?(context) ? context : :default
       end
 
     end
