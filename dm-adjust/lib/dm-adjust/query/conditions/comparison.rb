@@ -3,7 +3,7 @@ module DataMapper
     module Conditions
       class AbstractOperation
         def each_node
-          operands = self.operands.dup
+          operands = self.operands.to_a
 
           while operand = operands.shift
             if operand.respond_to?(:operands)
