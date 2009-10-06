@@ -68,13 +68,13 @@ module DataMapper
       # @return <Boolean> true if should be run, otherwise false
       def execute?(target)
         if unless_clause = self.unless_clause
-          return !target.send(unless_clause) if unless_clause.kind_of?(Symbol)
-          return !unless_clause.call(target) if unless_clause.respond_to?(:call)
+          return !target.__send__(unless_clause) if unless_clause.kind_of?(Symbol)
+          return !unless_clause.call(target)     if unless_clause.respond_to?(:call)
         end
 
         if if_clause = self.if_clause
-          return target.send(if_clause) if if_clause.kind_of?(Symbol)
-          return if_clause.call(target) if if_clause.respond_to?(:call)
+          return target.__send__(if_clause) if if_clause.kind_of?(Symbol)
+          return if_clause.call(target)     if if_clause.respond_to?(:call)
         end
 
         true

@@ -51,9 +51,9 @@ module DataMapper
           #
           # self.class_eval <<-RUBY, __FILE__, __LINE__ + 1
           #   def #{name}!
-          #     machine.current_state_name = self.send(:"#{column}")
+          #     machine.current_state_name = __send__(:"#{column}")
           #     machine.fire_event(name, self)
-          #     self.send(:"#{column}="), machine.current_state_name
+          #     __send__(:"#{column}="), machine.current_state_name
           #   end
           # RUBY
 

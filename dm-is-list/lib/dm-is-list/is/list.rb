@@ -260,7 +260,7 @@ module DataMapper
           # if a position has been set before save, then insert it at the position and
           # move the other items in the list accordingly, else if no position has been set
           # then set position to bottom of list
-          send(:move_without_saving, position || :lowest)
+          __send__(:move_without_saving, position || :lowest)
 
           # on create, set moved to false so we can move the list item after creating it
           # self.moved = false
@@ -275,13 +275,13 @@ module DataMapper
           if list_scope != original_list_scope
             newpos = position
             detach(original_list_scope) # removing from old list
-            send(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
+            __send__(:move_without_saving, newpos || :lowest) # moving to pos or bottom of new list
           end
 
           #  NOTE:: uncommenting the following creates a large number of extra un-wanted SQL queries
           #  hence the commenting out of it.
           # if attribute_dirty?(:position) && !moved
-          #   send(:move_without_saving, position)
+          #   __send__(:move_without_saving, position)
           # end
           # # on update, clean moved to prepare for the next change
           # self.moved = false

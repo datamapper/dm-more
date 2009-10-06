@@ -106,16 +106,16 @@ module DataMapper
           if hook.respond_to?(:call)
             hook.call(self)
           else
-            self.send(hook)
+            __send__(hook)
           end
         end
 
         def transition!(event_name)
           machine = model.instance_variable_get(:@is_state_machine)[:machine]
           column = machine.column
-          machine.current_state_name = send(column)
+          machine.current_state_name = __send__(column)
           machine.fire_event(event_name, self)
-          send("#{column}=", machine.current_state_name)
+          __send__("#{column}=", machine.current_state_name)
         end
 
       end # InstanceMethods

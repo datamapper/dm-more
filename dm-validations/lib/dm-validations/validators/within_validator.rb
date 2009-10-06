@@ -14,7 +14,7 @@ module DataMapper
       end
 
       def call(target)
-        value = target.send(field_name)
+        value = target.validation_property_value(field_name)
         return true if @options[:allow_nil] && value.blank?
         return true if @options[:set].include?(value)
 

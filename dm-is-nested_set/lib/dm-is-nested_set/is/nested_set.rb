@@ -46,7 +46,7 @@ module DataMapper
         end
 
         before :destroy do
-          send(:detach)
+          __send__(:detach)
         end
 
         after_class_method :inherited do |retval, target|

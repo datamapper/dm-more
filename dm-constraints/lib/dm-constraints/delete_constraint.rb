@@ -100,7 +100,7 @@ module DataMapper
             when :protect
               Array(association).empty?
             when :destroy, :destroy!
-              association.send(constraint)
+              association.__send__(constraint)
             when :set_nil
               Array(association).all? do |resource|
                 resource.update(relationship.inverse => nil)

@@ -8,7 +8,7 @@ module DataMapper
     class NumericValidator < GenericValidator
 
       def call(target)
-        value = target.send(field_name)
+        value = target.validation_property_value(field_name)
         return true if allow_nil? && value.blank?
 
         errors = []

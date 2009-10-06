@@ -25,7 +25,7 @@ module DataMapper
       default_xml_element_name = lambda { Extlib::Inflection.underscore(model.name).tr("/", "-") }
       root = xml.root_node(doc, opts[:element_name] || default_xml_element_name[])
       properties_to_serialize(opts).each do |property|
-        value = send(property.name)
+        value = __send__(property.name)
         attrs = (property.type == String) ? {} : {'type' => property.type.to_s.downcase}
         xml.add_node(root, property.name.to_s, value, attrs)
       end
@@ -33,10 +33,10 @@ module DataMapper
       (opts[:methods] || []).each do |meth|
         if self.respond_to?(meth)
           xml_name = meth.to_s.gsub(/[^a-z0-9_]/, '')
-          value = send(meth)
+          value = __send__(meth)
           unless value.nil?
             if value.respond_to?(:to_xml_document)
-              xml.add_xml(root, value.send(:to_xml_document))
+              xml.add_xml(root, value.__send__(:to_xml_document))
             else
               xml.add_node(root, xml_name, value.to_s)
             end
@@ -60,7 +60,7 @@ module DataMapper
       default_collection_element_name = lambda {Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")}
       root = xml.root_node(doc, opts[:collection_element_name] || default_collection_element_name[], {'type' => 'array'})
       self.each do |item|
-        item.send(:to_xml_document, opts, doc)
+        item.__send__(:to_xml_document, opts, doc)
       end
       doc
     end

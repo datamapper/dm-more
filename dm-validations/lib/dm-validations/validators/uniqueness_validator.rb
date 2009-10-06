@@ -16,7 +16,7 @@ module DataMapper
       end
 
       def call(target)
-        value = target.send(field_name)
+        value = target.validation_property_value(field_name)
 
         return true if @options[:allow_nil] && value.blank?
 
@@ -25,7 +25,7 @@ module DataMapper
           field_name => value,
         }
 
-        Array(@options[:scope]).each { |subject| opts[subject] = target.send(subject) }
+        Array(@options[:scope]).each { |subject| opts[subject] = target.__send__(subject) }
 
         resource = DataMapper.repository(target.repository.name) { target.model.first(opts) }
 

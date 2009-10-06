@@ -15,13 +15,13 @@ module DataMapper
       propset = properties_to_serialize(options)
 
       propset.each do |property|
-        result[property.name] = send(property.name)
+        result[property.name] = __send__(property.name)
       end
 
       # add methods
       (options[:methods] || []).each do |meth|
         if self.respond_to?(meth)
-          result[meth] = send(meth)
+          result[meth] = __send__(meth)
         end
       end
 

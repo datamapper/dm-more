@@ -17,13 +17,13 @@ module DataMapper
       YAML::quick_emit(object_id,emitter) do |out|
         out.map(nil,to_yaml_style) do |map|
           properties_to_serialize(opts).each do |property|
-            value = send(property.name.to_sym)
+            value = __send__(property.name.to_sym)
             map.add(property.name, value.is_a?(Class) ? value.to_s : value)
           end
           # add methods
           (opts[:methods] || []).each do |meth|
-            if self.respond_to?(meth)
-              map.add(meth.to_sym, send(meth))
+            if respond_to?(meth)
+              map.add(meth.to_sym, __send__(meth))
             end
           end
           (instance_variable_get("@yaml_addes") || []).each do |k,v|

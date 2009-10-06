@@ -9,11 +9,11 @@ module DataMapper
 
       def initialize(field_name, options={})
         super
-        @options[:method] = @field_name unless @options.has_key?(:method)
+        @options[:method] = @field_name unless @options.key?(:method)
       end
 
       def call(target)
-        result, message = target.send(@options[:method])
+        result, message = target.__send__(@options[:method])
         add_error(target, message, field_name) unless result
         result
       end

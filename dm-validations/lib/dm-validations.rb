@@ -90,7 +90,7 @@ module DataMapper
     end
 
     def validation_property_value(name)
-      respond_to?(name, true) ? send(name) : nil
+      __send__(name) if respond_to?(name, true)
     end
 
     # Get the corresponding Resource property, if it exists.
