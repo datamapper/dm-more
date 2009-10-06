@@ -3,9 +3,7 @@ require 'json'
 module DataMapper
   module Types
     class Json < DataMapper::Type
-      primitive String
-      length    65535
-      lazy      true
+      primitive Text
 
       def self.load(value, property)
         if value.nil?

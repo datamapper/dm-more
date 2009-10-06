@@ -3,9 +3,7 @@ require 'yaml'
 module DataMapper
   module Types
     class Yaml < DataMapper::Type
-      primitive String
-      length    65535
-      lazy      true
+      primitive Text
 
       def self.load(value, property)
         if value.nil?

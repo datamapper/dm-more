@@ -9,7 +9,6 @@ module DataMapper
   module Types
     class Csv < DataMapper::Type
       primitive Text
-      lazy      true
 
       def self.load(value, property)
         case value
