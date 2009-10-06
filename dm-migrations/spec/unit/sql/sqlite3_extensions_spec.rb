@@ -43,7 +43,7 @@ describe "SQLite3 Extensions" do
       @cs1 = mock('Column Struct')
       @cs2 = mock('Column Struct')
       @adapter = mock('adapter')
-      @adapter.stub!(:query_table).with('users').and_return([@cs1, @cs2])
+      @adapter.stub!(:table_info).with('users').and_return([@cs1, @cs2])
 
       @col1 = mock('SQLite3 Column')
       @col2 = mock('SQLite3 Column')
@@ -52,7 +52,7 @@ describe "SQLite3 Extensions" do
     it 'should initialize columns by querying the table' do
       SQL::Sqlite3::Column.should_receive(:new).with(@cs1).and_return(@col1)
       SQL::Sqlite3::Column.should_receive(:new).with(@cs2).and_return(@col2)
-      @adapter.should_receive(:query_table).with('users').and_return([@cs1,@cs2])
+      @adapter.should_receive(:table_info).with('users').and_return([@cs1,@cs2])
       SQL::Sqlite3::Table.new(@adapter, 'users')
     end
 

@@ -58,8 +58,8 @@ module Spec
         @@migrations.select { |m| m.name.to_s == migration_name }.first
       end
 
-      def query(sql)
-        this_migration.adapter.query(sql)
+      def select(sql)
+        this_migration.adapter.select(sql)
       end
 
       def table(table_name)

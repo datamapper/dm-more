@@ -48,10 +48,10 @@ module SQL
       end
 
       def query_column_constraints
-        @adapter.query(
+        @adapter.select(
           "SELECT * FROM information_schema.table_constraints WHERE table_name='#{@name}' AND table_schema=current_schema()"
         ).each do |table_constraint|
-          @adapter.query(
+          @adapter.select(
             "SELECT * FROM information_schema.constraint_column_usage WHERE constraint_name='#{table_constraint.constraint_name}' AND table_schema=current_schema()"
           ).each do |constrained_column|
             @columns.each do |column|
