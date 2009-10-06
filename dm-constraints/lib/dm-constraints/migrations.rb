@@ -46,7 +46,7 @@ module DataMapper
             AND "constraint_name" = ?
           SQL
 
-          query(statement, schema_name, storage_name, constraint_name).first > 0
+          select(statement, schema_name, storage_name, constraint_name).first > 0
         end
 
         ##

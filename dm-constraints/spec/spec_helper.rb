@@ -18,7 +18,7 @@ def load_driver(name, default_uri)
 
     # test the connection if possible
     if adapter.respond_to?(:query)
-      adapter.query('SELECT 1')
+      adapter.select('SELECT 1')
     end
 
     ADAPTERS[name] = connection_string
