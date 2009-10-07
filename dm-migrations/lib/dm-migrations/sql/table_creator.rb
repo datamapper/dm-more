@@ -76,7 +76,7 @@ module SQL
           primitive = type_class.respond_to?(:primitive) ? type_class.primitive : type_class
           options   = @adapter.class.type_map[primitive].dup
 
-          if type_class.respond_to?(:options)
+          if type_class.respond_to?(:options) && type_class.options.kind_of?(options.class)
             options.update(type_class.options)
           end
 
