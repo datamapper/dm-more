@@ -72,19 +72,11 @@ module DataMapper
             alias #{singular}_collection= #{singular}_list=
 
             def update_#{association}
-              remove_tags = self.frozen_#{singular}_list.to_s.split(',') - self.#{singular}_list
-              tags        = self.#{association}
-
-              tags.all(:name => remove_tags).each do |tag|
-                tags.delete(tag)
+              self.#{association} = self.#{singular}_list.map do |name|
+                Tag.first_or_new(:name => name)
               end
 
-              self.#{singular}_list.each do |name|
-                tag = Tag.first_or_new(:name => name)
-                tags << tag unless tags.include?(tag)
-              end
-
-              self.frozen_#{singular}_list = tags.map { |tag| tag.name }.join(',')
+              self.frozen_#{singular}_list = #{singular}_collection
             end
 
             ##
