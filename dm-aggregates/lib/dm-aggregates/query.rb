@@ -15,7 +15,7 @@ module DataMapper
         operators.each do |operator|
           target = operator.target
 
-          unless target == :all || target.kind_of?(Property) && target.model == model && @properties.include?(target)
+          unless target == :all || @properties.include?(target)
             raise ArgumentError, "+options[:fields]+ entry #{target.inspect} does not map to a property in #{model}"
           end
         end
