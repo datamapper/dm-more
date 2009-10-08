@@ -35,7 +35,7 @@ module DataMapper
           assert_kind_of 'property', property_by_name(property_name), Property
         end
 
-        aggregate(query.merge(:fields => [ property_name ? property_name.count : :all.count ]))
+        aggregate(query.merge(:fields => [ property_name ? property_name.count : :all.count ])).to_i
       end
 
       # Get the lowest value of a property
@@ -174,7 +174,8 @@ module DataMapper
           raise ArgumentError, 'property name must not be nil'
         end
 
-        type = property_by_name(name).type
+        property = property_by_name(name)
+        type     = property.custom? ? property.primitive : property.type
 
         unless types.include?(type)
           raise ArgumentError, "#{name} must be #{types * ' or '}, but was #{type}"
