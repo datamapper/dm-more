@@ -139,17 +139,17 @@ module DataMapperRest
       field_to_property = model.properties(name).map { |p| [ p.field, p ] }.to_hash
       element_name      = element_name(model)
 
-      doc.elements.collect("/#{element_name.pluralize}/#{element_name}") do |entity_element|
+      doc.elements.collect("/#{resource_name(model)}/#{element_name}") do |entity_element|
         record_from_rexml(entity_element, field_to_property)
       end
     end
 
     def element_name(model)
-      Extlib::Inflection.underscore(model.name)
+      model.storage_name(self.name).singular
     end
 
     def resource_name(model)
-      Extlib::Inflection.underscore(model.name).pluralize
+      model.storage_name(self.name)
     end
 
     def update_with_response(resource, response)

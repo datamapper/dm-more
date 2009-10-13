@@ -139,6 +139,35 @@ describe DataMapper::Adapters::RestAdapter do
         @response.should == [ { 'id' => 1, 'created_at' => DateTime.parse('2009-05-17T22:38:42-07:00'), 'title' => 'DataMapper', 'author' => 'Dan Kubb' } ]
       end
     end
+
+    describe 'with a non-standard model <=> storage_name relationship' do
+      before :all do
+        body = <<-XML.compress_lines
+          <books>
+            <book>
+              <id type='datamapper::types::serial'>1</id>
+              <created_at type='datetime'>2009-05-17T22:38:42-07:00</created_at>
+              <title>DataMapper</title>
+              <author>Dan Kubb</author>
+            </book>
+          </books>
+        XML
+
+        headers = { 'Content-Length' => body.respond_to?(:bytesize) ? body.bytesize : body.size }
+
+        FakeWeb.register_uri(:get, 'http://admin:secret@localhost:4000/books.xml', :status => 200, :headers => headers, :body => body)
+      end
+
+      before :all do
+        @query = DifficultBook.all.query
+
+        @response = @adapter.read(@query)
+      end
+
+      it 'should return an Array with the matching Records' do
+        @response.should == [ { 'id' => 1, 'created_at' => DateTime.parse('2009-05-17T22:38:42-07:00'), 'title' => 'DataMapper', 'author' => 'Dan Kubb' } ]
+      end
+    end
   end
 
   describe '#update' do
