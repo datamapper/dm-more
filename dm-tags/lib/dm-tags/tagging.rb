@@ -8,10 +8,6 @@ class Tagging
 
   belongs_to :tag
 
-  if respond_to?(:validates_present)
-    validates_present :taggable_type, :taggable_id
-  end
-
   def taggable
     taggable_type.get!(taggable_id)
   end

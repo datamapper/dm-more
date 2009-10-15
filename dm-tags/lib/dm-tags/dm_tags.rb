@@ -16,11 +16,9 @@ module DataMapper
       # Class Methods
       def tagged_with(string, options = {})
         tag = Tag.first(:name => string)
-        conditions = {}
-        conditions['taggings.tag_id'] = tag.id
-        conditions['taggings.tag_context'] = options.delete(:on) if options[:on]
-        conditions.merge!(options)
-        all(conditions)
+        conditions = { 'taggings.tag_id' => tag.kind_of?(Tag) ? tag.id : nil }
+        conditions['taggings.tag_context'] = options.delete(:on) if options.key?(:on)
+        all(conditions.update(options))
       end
 
       def taggable?
