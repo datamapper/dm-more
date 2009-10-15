@@ -1,8 +1,8 @@
 module DataMapper
   module Model
 
-    def adjust(attributes = {}, reload = false)
-      raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
+    def adjust(*args)
+      all.adjust(*args)
     end
 
     ##
@@ -14,8 +14,8 @@ module DataMapper
     #
     # @param attributes <Hash> A hash of attributes to adjust, and their adjustment
     # @public
-    def adjust!(attributes,reload=false)
-      all.adjust!(attributes,reload)
+    def adjust!(*args)
+      all.adjust!(*args)
     end
   end # Model
 end # DataMapper

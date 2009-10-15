@@ -1,7 +1,9 @@
 module DataMapper
   module Adapters
     class DataObjectsAdapter < AbstractAdapter
-      def adjust(attributes, query)
+      def adjust(attributes, collection)
+        query = collection.query
+
         # TODO: if the query contains any links, a limit or an offset
         # use a subselect to get the rows to be updated
 
@@ -19,7 +21,7 @@ module DataMapper
 
         bind_values.concat(conditions_bind_values)
 
-        execute(statement, *bind_values)
+        execute(statement, *bind_values).affected_rows
       end
 
       module SQL
