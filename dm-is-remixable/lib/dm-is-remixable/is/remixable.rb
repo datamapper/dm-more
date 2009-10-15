@@ -68,6 +68,8 @@ module DataMapper
       # ==== Description
       #   Methods available to all DataMapper::Resources
       module RemixerClassMethods
+        include Extlib::Assertions
+
         def self.included(base);end;
 
         def is_remixable?
@@ -135,13 +137,19 @@ module DataMapper
         #   => This would create user_id and commentor_id as the
         #
         def remix(cardinality, remixable, options={})
+          assert_kind_of 'remixable', Symbol, String, Module
+
           #A map for remixable names to Remixed Models
           @remixables = {} if @remixables.nil?
 
           # Allow nested modules to be remixable to better support using dm-is-remixable in gems
           # Example (from my upcoming dm-is-rateable gem)
           # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
-          remixable_module = Object.full_const_get(Extlib::Inflection.classify(remixable))
+          remixable_module = case remixable
+            when Symbol then Object.full_const_get(Extlib::Inflection.classify(remixable))
+            when String then Object.full_const_get(remixable)
+            when Module then remixable
+          end
 
           unless remixable_module.is_remixable?
             raise Exception, "#{remixable_module} is not remixable"
@@ -154,14 +162,14 @@ module DataMapper
 
           #Merge defaults/options
           options = {
-            :as         => nil,
-            :model => Extlib::Inflection.classify(self.name.snake_case + "_" + remixable_module.suffix.pluralize),
-            :for        => nil,
-            :on         => nil,
-            :unique     => false,
-            :via        => nil,
-            :connect    => false
-          }.merge(options)
+            :as      => nil,
+            :model   => Extlib::Inflection.classify(self.name.snake_case + '_' + remixable_module.suffix.pluralize),
+            :for     => nil,
+            :on      => nil,
+            :unique  => false,
+            :via     => nil,
+            :connect => false
+          }.update(options)
 
           #Make sure the class hasn't been remixed already
           unless Object.full_const_defined?(Extlib::Inflection.classify(options[:model]))
