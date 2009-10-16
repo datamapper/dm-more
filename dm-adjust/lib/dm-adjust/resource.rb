@@ -1,23 +1,23 @@
 module DataMapper
   module Resource
     def adjust(attributes = {}, reload = false)
-      raise NotImplementedError, 'adjust *with* validations has not be written yet, try adjust!'
+      collection_for_self.adjust(*args)
     end
 
-    def adjust!(attributes = {}, reload = false)
-      return true if attributes.empty?
+    def adjust!(*args)
+      collection_for_self.adjust!(*args)
+    end
 
+    private
+
+    def adjust_attributes(attributes)
       adjust_attributes = {}
 
       model.properties(repository.name).values_at(*attributes.keys).each do |property|
-        adjust_attributes[property] = attributes[property.name] if property
+        adjust_attributes[property] = attributes[property.name]
       end
 
-      repository.adapter.adjust(adjust_attributes, query)
-
-      collection.reload(:fields => adjust_attributes.keys) if reload
-
-      true
+      adjust_attributes
     end
   end # Resource
 end # DataMapper

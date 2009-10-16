@@ -11,6 +11,7 @@ lib/rest_adapter/exceptions.rb
 lib/rest_adapter/formats.rb
 lib/rest_adapter/version.rb
 spec/fixtures/book.rb
+spec/fixtures/difficult_book.rb
 spec/semipublic/connection_spec.rb
 spec/semipublic/rest_adapter_spec.rb
 spec/spec.opts
