@@ -28,7 +28,6 @@ gem_paths = %w[
   dm-migrations
   dm-observer
   dm-querizer
-  dm-shorthand
   dm-sweatshop
   dm-tags
   dm-timestamps
