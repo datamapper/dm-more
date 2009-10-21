@@ -27,7 +27,6 @@ gem_paths = %w[
   dm-is-versioned
   dm-migrations
   dm-observer
-  dm-querizer
   dm-sweatshop
   dm-tags
   dm-timestamps
