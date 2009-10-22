@@ -40,7 +40,7 @@ shared_examples_for 'It Has Setup Resources' do
 
     @birth_time = Time.now
     @birth_at   = @birth_time.to_datetime
-    @birth_on   = @birth_time.to_date
+    @birth_on   = @birth_time.send(:to_date)
 
     @chuck = Knight.create(:name => 'Chuck')
     @larry = Knight.create(:name => 'Larry')
