@@ -7,10 +7,6 @@ describe SlotMachine do
     @sm = SlotMachine.new
   end
 
-  it "should have an 'id' column" do
-    @sm.attributes.should have_key(:id)
-  end
-
   it "should have a 'mode' column" do
     @sm.attributes.should have_key(:mode)
   end

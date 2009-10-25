@@ -5,11 +5,6 @@ describe Tag do
     @tag = Tag.new
   end
 
-  it "should have id and name properties" do
-    @tag.attributes.should have_key(:id)
-    @tag.attributes.should have_key(:name)
-  end
-
   it "should have many Taggings" do
     Tag.relationships.should have_key(:taggings)
   end

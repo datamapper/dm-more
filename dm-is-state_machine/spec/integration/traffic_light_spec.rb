@@ -7,10 +7,6 @@ describe TrafficLight do
     @t = TrafficLight.new
   end
 
-  it "should have an 'id' column" do
-    @t.attributes.should have_key(:id)
-  end
-
   it "should have a 'color' column" do
     @t.attributes.should have_key(:color)
   end
