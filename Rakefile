@@ -5,6 +5,11 @@ require 'fileutils'
 require 'lib/dm-more/version'
 include FileUtils
 
+ROOT    = Pathname(__FILE__).dirname.expand_path
+JRUBY   = RUBY_PLATFORM =~ /java/
+WINDOWS = Gem.win_platform?
+SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
+
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
 gem_paths = %w[
@@ -34,18 +39,13 @@ gem_paths = %w[
 ]
 
 # skip installing ferret on Ruby 1.9 until the gem is fixed
-if RUBY_VERSION >= '1.9.0'
+if RUBY_VERSION >= '1.9.0' || JRUBY || WINDOWS
   gem_paths -= %w[ adapters/dm-ferret-adapter ]
 end
 
 GEM_PATHS = gem_paths.freeze
 
 gems = GEM_PATHS.map { |p| File.basename(p) }
-
-ROOT    = Pathname(__FILE__).dirname.expand_path
-JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform?
-SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 AUTHOR = 'Dan Kubb'
 EMAIL  = 'dan.kubb [a] gmail [d] com'
@@ -90,7 +90,7 @@ end
 desc 'Install the dm-more gems'
 task :install_gems => :build_gems do
   GEM_PATHS.each do |dir|
-    Dir.chdir(dir){ rake 'install; true' }
+    Dir.chdir(dir){ rake 'install' }
   end
 end
 
@@ -148,7 +148,7 @@ end
 %w[ ci clean clobber check_manifest ].each do |command|
   task command do
     GEM_PATHS.each do |gem_name|
-      Dir.chdir(gem_name){ rake "#{command}; true" }
+      Dir.chdir(gem_name){ rake "#{command}" }
     end
   end
 end

@@ -47,5 +47,7 @@ Hoe.spec(GEM_NAME) do
   self.clean_globs |= GEM_CLEAN
   self.extra_deps  |= GEM_DEPENDENCIES
 
+  self.need_tar     = false
+
   self.spec_extras = GEM_EXTRAS if GEM_EXTRAS
 end
