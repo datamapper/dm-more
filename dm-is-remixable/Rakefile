@@ -2,7 +2,7 @@ require 'pathname'
 
 ROOT    = Pathname(__FILE__).dirname.expand_path
 JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform?
+WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
 SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 require ROOT + 'lib/dm-is-remixable/is/version'
