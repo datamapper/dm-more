@@ -8,7 +8,7 @@ include FileUtils
 ROOT    = Pathname(__FILE__).dirname.expand_path
 JRUBY   = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
+SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
