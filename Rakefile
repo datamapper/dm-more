@@ -7,8 +7,8 @@ include FileUtils
 
 ROOT    = Pathname(__FILE__).dirname.expand_path
 JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform?
-SUDO    = (WINDOWS || JRUBY) ? '' : ('sudo' unless ENV['SUDOLESS'])
+WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
+SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
@@ -68,7 +68,7 @@ end
 
 desc "Install #{GEM_NAME} #{GEM_VERSION}"
 task :install => [ :install_gems, :package ] do
-  sudo_gem "install pkg/#{GEM_NAME}-#{GEM_VERSION} --no-update-sources"
+  sudo_gem "install pkg/#{GEM_NAME}-#{GEM_VERSION}"
 end
 
 desc "Uninstall #{GEM_NAME} #{GEM_VERSION}"
