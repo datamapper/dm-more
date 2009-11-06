@@ -141,7 +141,7 @@ shared_examples_for 'An Aggregatable Class' do
 
       it 'should provide the lowest value of a DateTime property' do
         @dragons.min(:birth_at).should be_kind_of(DateTime)
-        @dragons.min(:birth_at).should == @birth_at
+        @dragons.min(:birth_at).to_s.should == @birth_at.to_s
       end
 
       it 'should provide the lowest value of a Date property' do
@@ -151,7 +151,7 @@ shared_examples_for 'An Aggregatable Class' do
 
       it 'should provide the lowest value of a Time property' do
         @dragons.min(:birth_time).should be_kind_of(Time)
-        @dragons.min(:birth_time).should == @birth_time
+        @dragons.min(:birth_time).to_s.should == @birth_time.to_s
       end
 
       it 'should provide the lowest value when conditions provided' do
@@ -186,7 +186,7 @@ shared_examples_for 'An Aggregatable Class' do
 
       it 'should provide the highest value of a DateTime property' do
         @dragons.min(:birth_at).should be_kind_of(DateTime)
-        @dragons.min(:birth_at).should == @birth_at
+        @dragons.min(:birth_at).to_s.should == @birth_at.to_s
       end
 
       it 'should provide the highest value of a Date property' do
@@ -196,7 +196,7 @@ shared_examples_for 'An Aggregatable Class' do
 
       it 'should provide the highest value of a Time property' do
         @dragons.min(:birth_time).should be_kind_of(Time)
-        @dragons.min(:birth_time).should == @birth_time
+        @dragons.min(:birth_time).to_s.should == @birth_time.to_s
       end
 
       it 'should provide the highest value when conditions provided' do

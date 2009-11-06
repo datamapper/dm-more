@@ -1,6 +1,8 @@
 module DataMapper
   module Aggregates
     module Functions
+      include Extlib::Assertions
+
       # Count results (given the conditions)
       #
       # @example the count of all friends
