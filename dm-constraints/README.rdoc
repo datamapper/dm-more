@@ -42,9 +42,13 @@ end
 class Articles
   has n, :tags, :through => Resource, :constraint => :destroy
 end
+
 class Tags
   has n, :articles, :through => Resource, :constraint => :destroy
 end
+
+# Intermediary constraints for relationships using :through => Resource
+# are automatically inherited from the M:M relationship.
 
 # 1:1 Example
 class Farmer

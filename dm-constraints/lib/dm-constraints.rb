@@ -57,6 +57,8 @@ module DataMapper
         end
       RUBY
     end
+
+    Model.append_inclusions self
   end
 
   module Migrations

@@ -8,7 +8,6 @@ ADAPTERS.each do |name, connection_uri|
 
       class ::Article
         include DataMapper::Resource
-        include DataMapper::Constraints
 
         property :id,      Serial
         property :title,   String, :nullable => false
@@ -21,7 +20,6 @@ ADAPTERS.each do |name, connection_uri|
 
       class ::Author
         include DataMapper::Resource
-        include DataMapper::Constraints
 
         property :first_name, String, :key => true
         property :last_name,  String, :key => true
@@ -32,7 +30,6 @@ ADAPTERS.each do |name, connection_uri|
 
       class ::Comment
         include DataMapper::Resource
-        include DataMapper::Constraints
 
         property :id,   Serial
         property :body, Text
@@ -45,7 +42,6 @@ ADAPTERS.each do |name, connection_uri|
       # on the other end
       class ::Revision
         include DataMapper::Resource
-        include DataMapper::Constraints
 
         property :id,   Serial
         property :text, String
