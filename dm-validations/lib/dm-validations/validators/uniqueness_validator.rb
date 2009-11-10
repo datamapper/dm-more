@@ -12,13 +12,21 @@ module DataMapper
         assert_kind_of 'scope', options[:scope], Array, Symbol if options.has_key?(:scope)
         super
 
-        @options[:allow_nil] = true unless @options.include?(:allow_nil)
+        set_optional_by_default
       end
 
       def call(target)
-        value = target.validation_property_value(field_name)
+        return true if valid?(target)
 
-        return true if @options[:allow_nil] && value.blank?
+        error_message = @options[:message] || ValidationErrors.default_error_message(:taken, field_name)
+        add_error(target, error_message, field_name)
+
+        false
+      end
+
+      def valid?(target)
+        value = target.validation_property_value(field_name)
+        return true if optional?(value)
 
         opts = {
           :fields    => target.model.key,
@@ -30,12 +38,8 @@ module DataMapper
         resource = DataMapper.repository(target.repository.name) { target.model.first(opts) }
 
         return true if resource.nil?
-        return true if target.saved? && resource.key == target.key
 
-        error_message = @options[:message] || ValidationErrors.default_error_message(:taken, field_name)
-        add_error(target, error_message, field_name)
-
-        false
+        target.saved? && resource.key == target.key
       end
     end # class UniquenessValidator
 

@@ -9,7 +9,7 @@ module DataMapper
 
       def call(target)
         value = target.validation_property_value(field_name)
-        return true if allow_nil? && value.blank?
+        return true if optional?(value)
 
         errors = []
 
@@ -30,10 +30,6 @@ module DataMapper
       end
 
       private
-
-      def allow_nil?
-        options.fetch(:allow_nil, false)
-      end
 
       def integer_only?
         options.fetch(:integer_only, false)
@@ -130,6 +126,12 @@ module DataMapper
       # @details
       #
       # Options are:
+      #
+      # :allow_nil => true | false
+      #   true if number can be nil, false if not
+      #
+      # :allow_blank => true | false
+      #   true if number can be blank, false if not
       #
       # :message => "Error message for %s"
       #   Custom error message, also can be a callable object that takes

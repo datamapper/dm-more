@@ -28,7 +28,7 @@ module DataMapper
         # Validations
         #
 
-        validates_is_confirmed :person_name,     :allow_nil => false
+        validates_is_confirmed :person_name,     :allow_nil => false, :allow_blank => false
         validates_is_confirmed :number_of_seats, :confirm => :seats_confirmation, :message => Proc.new { |resource, property|
           '%s requires confirmation for %s' % [Extlib::Inflection.demodulize(resource.model.name), property.name]
         }

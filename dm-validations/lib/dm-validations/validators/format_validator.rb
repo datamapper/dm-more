@@ -20,31 +20,37 @@ module DataMapper
       def initialize(field_name, options = {})
         super
 
-        @options[:allow_nil] = true unless @options.include?(:allow_nil)
+        set_optional_by_default
       end
 
       def call(target)
+        return true if valid?(target)
+
         value = target.validation_property_value(field_name)
-        return true if @options[:allow_nil] && value.blank?
+
+        error_message = @options[:message] || ValidationErrors.default_error_message(:invalid, field_name)
+        add_error(target, error_message.try_call(humanized_field_name, value), field_name)
+
+        false
+      end
+
+      private
+
+      def valid?(target)
+        value = target.validation_property_value(field_name)
+        return true if optional?(value)
 
         validation = @options[:as] || @options[:with]
 
         raise "No such predefined format '#{validation}'" if validation.is_a?(Symbol) && !FORMATS.has_key?(validation)
         validator = validation.is_a?(Symbol) ? FORMATS[validation][0] : validation
 
-        valid = case validator
+        case validator
           when Proc   then validator.call(value)
           when Regexp then (value.kind_of?(Numeric) ? value.to_s : value) =~ validator
           else
             raise UnknownValidationFormat, "Can't determine how to validate #{target.class}##{field_name} with #{validator.inspect}"
         end
-
-        return true if valid
-
-        error_message = @options[:message] || ValidationErrors.default_error_message(:invalid, field_name)
-        add_error(target, error_message.try_call(humanized_field_name, value), field_name)
-
-        false
       end
     end # class FormatValidator
 
@@ -58,6 +64,7 @@ module DataMapper
       # via a Proc or Regexp passed to the the :as or :with options.
       #
       # @option :allow_nil<Boolean>         true/false (default is true)
+      # @option :allow_blank<Boolean>       true/false (default is true)
       # @option :as<Format, Proc, Regexp>   the pre-defined format, Proc or Regexp to validate against
       # @option :with<Format, Proc, Regexp> an alias for :as
       #

@@ -10,8 +10,10 @@ module DataMapper
 
       def initialize(field_name, options = {})
         super
+
+        set_optional_by_default
+
         @confirm_field_name  = (options[:confirm] || "#{field_name}_confirmation").to_sym
-        @options[:allow_nil] = true unless @options.has_key?(:allow_nil)
       end
 
       def call(target)
@@ -23,19 +25,19 @@ module DataMapper
         false
       end
 
+      private
+
       def valid?(target)
-        field_value = target.validation_property_value(field_name)
-        return true if @options[:allow_nil] && field_value.blank?
-        return false if !@options[:allow_nil] && field_value.blank?
+        value = target.validation_property_value(field_name)
+        return true if optional?(value)
 
         if target.model.properties.named?(field_name)
           return true unless target.attribute_dirty?(field_name)
         end
 
         confirm_value = target.instance_variable_get("@#{@confirm_field_name}")
-        field_value == confirm_value
+        value == confirm_value
       end
-
     end # class ConfirmationValidator
 
     module ValidatesIsConfirmed
@@ -46,9 +48,10 @@ module DataMapper
       # password, for which you use both password and password_confirmation
       # attributes.
       #
-      # @option :allow_nil<Boolean> true/false (default is true)
-      # @option :confirm<Symbol>    the attribute that you want to validate
-      #                             against (default is firstattr_confirmation)
+      # @option :allow_nil<Boolean>   true/false (default is true)
+      # @option :allow_blank<Boolean> true/false (default is true)
+      # @option :confirm<Symbol>      the attribute that you want to validate
+      #                               against (default is firstattr_confirmation)
       #
       # @example [Usage]
       #   require 'dm-validations'

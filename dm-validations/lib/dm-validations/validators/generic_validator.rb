@@ -80,6 +80,26 @@ module DataMapper
         true
       end
 
+      # Set the default value for allow_nil and allow_blank
+      #
+      # @param [Boolean] default value
+      # @return <undefined>
+      def set_optional_by_default(default = true)
+        [ :allow_nil, :allow_blank ].each do |key|
+          @options[key] = true unless options.key?(key)
+        end
+      end
+
+      # Test the value to see if it is blank or nil, and if it is allowed
+      #
+      # @param <Object> value to test
+      # @return <Boolean> true if blank/nil is allowed, and the value is blank/nil
+      def optional?(value)
+        return true if @options[:allow_nil]   && value.nil?
+        return true if @options[:allow_blank] && value.blank?
+        false
+      end
+
       # Returns true if validators are equal
       #
       # Note that this intentionally do

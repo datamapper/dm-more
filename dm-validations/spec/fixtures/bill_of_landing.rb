@@ -32,7 +32,7 @@ module DataMapper
         }
 
         validates_format :email, :as => :email_address
-        validates_format :url, :as => :url, :allow_nil => false
+        validates_format :url, :as => :url, :allow_nil => false, :allow_blank => false
 
         validates_format :username, :with => /[a-z]/, :message => 'Username must have at least one letter', :allow_nil => true
         validates_format :code,     :with => /\d{5,6}/, :message => 'Code format is invalid'

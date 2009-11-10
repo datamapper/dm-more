@@ -43,7 +43,7 @@ module DataMapper
       # @api semipublic
       def call(target)
         value = target.validation_property_value(field_name)
-        return true if allow_nil? && value.blank?
+        return true if optional?(value)
 
         return true unless error_message = error_message_for(value)
 
@@ -53,16 +53,6 @@ module DataMapper
       end
 
       private
-
-      # Return if the validation allows nil values
-      #
-      # @return [Boolean]
-      #   true if the validation allows nil, false if not
-      #
-      # @api private
-      def allow_nil?
-        options.fetch(:allow_nil, false)
-      end
 
       # Return the error messages for the value if it is invalid
       #
@@ -172,6 +162,7 @@ module DataMapper
       # you specify).
       #
       # @option :allow_nil<Boolean> true/false (default is true)
+      # @option :allow_blank<Boolean> true/false (default is true)
       # @option :minimum    ensures that the attribute's length is greater than
       #   or equal to the supplied value
       # @option :min        alias for :minimum
