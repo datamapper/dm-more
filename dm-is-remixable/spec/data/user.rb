@@ -8,8 +8,8 @@ class User
   include DataMapper::Resource
 
   property :id, Serial
-  property :first_name, String, :nullable => false,  :length=> 2..50
-  property :last_name, String, :nullable => false, :length => 2..50
+  property :first_name, String, :required => true,  :length=> 2..50
+  property :last_name, String, :required => true, :length => 2..50
 
   remix n, :viewables
   remix n, :billables, :model => "Account"

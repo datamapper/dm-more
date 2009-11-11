@@ -9,7 +9,7 @@ describe DataMapper::Model do
     property :name, String
     property :price, Integer
 
-    belongs_to :order, :nullable => true
+    belongs_to :order, :required => false
     validates_present :price
   end
 

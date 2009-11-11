@@ -41,7 +41,7 @@ module DataMapper
           case name
             when *TIMESTAMP_PROPERTIES.keys
               type = TIMESTAMP_PROPERTIES[name].first
-              property name, type, :nullable => false, :auto_validation => false
+              property name, type, :required => true, :auto_validation => false
             when :at
               timestamps(:created_at, :updated_at)
             when :on

@@ -49,8 +49,8 @@ module DataMapperStore
 
     property :id,         Serial
     property :session_id, String,   :unique_index => true
-    property :data,       Text,     :nullable => false, :default => ::Base64.encode64(Marshal.dump({}))
-    property :updated_at, DateTime, :nullable => true, :index => true
+    property :data,       Text,     :required => true, :default => ::Base64.encode64(Marshal.dump({}))
+    property :updated_at, DateTime, :required => false, :index => true
 
     def data=(data)
       attribute_set(:data, ::Base64.encode64(Marshal.dump(data)))

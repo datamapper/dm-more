@@ -14,8 +14,8 @@ module My
         # properties
 
         property :id, Serial
-        property :user_id, Integer, :nullable => false
-        property :rating,  Integer, :nullable => false, :default => 0
+        property :user_id, Integer, :required => true
+        property :rating,  Integer, :required => true, :default => 0
 
         module ClassMethods
 

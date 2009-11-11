@@ -988,7 +988,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
         property :id,    Serial
         property :title, String
-        property :position, Integer, :nullable => false, :unique_index => :position
+        property :position, Integer, :required => true, :unique_index => :position
         property :client_id, Integer, :unique_index => :position
 
         belongs_to :client

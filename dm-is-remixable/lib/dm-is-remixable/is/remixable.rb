@@ -298,7 +298,7 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
           self.has cardinality, (options[:as] || options[:table_name]).to_sym, :model => model.name
-          model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :min => 0, :nullable => false
+          model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :min => 0, :required => true
           model.belongs_to belongs_to_name(self.name)
         end
 

@@ -115,10 +115,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           property :id,         Serial
           property :name,       String
-          property :created_at, DateTime, :nullable => false, :auto_validation => false
-          property :created_on, Date,     :nullable => false, :auto_validation => false
-          property :updated_at, DateTime, :nullable => false, :auto_validation => false
-          property :updated_on, Date,     :nullable => false, :auto_validation => false
+          property :created_at, DateTime, :required => true, :auto_validation => false
+          property :created_on, Date,     :required => true, :auto_validation => false
+          property :updated_at, DateTime, :required => true, :auto_validation => false
+          property :updated_on, Date,     :required => true, :auto_validation => false
 
           auto_migrate!
         end

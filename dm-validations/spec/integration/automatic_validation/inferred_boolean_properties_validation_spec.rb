@@ -33,7 +33,7 @@ end
 
 
 
-describe "A model with a non-nullable Boolean property" do
+describe "A model with a required Boolean property" do
   before :all do
     @model = HasNotNullableBoolean.new(:id => 1)
   end
@@ -69,7 +69,7 @@ end
 
 
 
-describe "A model with a non-nullable paranoid Boolean property" do
+describe "A model with a required paranoid Boolean property" do
   before :all do
     @model = HasNotNullableParanoidBoolean.new(:id => 1)
   end

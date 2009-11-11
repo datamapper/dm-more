@@ -39,8 +39,8 @@ module DataMapper
       # @details [Triggers]
       #   Triggers that generate validator creation
       #
-      #   :nullable => false
-      #       Setting the option :nullable to false causes a
+      #   :required => true
+      #       Setting the option :required to true causes a
       #       validates_presence_of validator to be automatically created on
       #       the property
       #
@@ -194,7 +194,7 @@ module DataMapper
       private
 
       def allow_nil?(property)
-        property.nullable? || property.serial?
+        property.allow_nil? || property.serial?
       end
     end # module AutoValidate
   end # module Validate

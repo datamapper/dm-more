@@ -2,5 +2,5 @@ class Tag
   include DataMapper::Resource
 
   property :id, Serial
-  property :name, String, :unique => true, :nullable => false
+  property :name, String, :unique => true, :required => true
 end

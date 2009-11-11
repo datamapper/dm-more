@@ -19,7 +19,7 @@ shared_examples_for 'It Has Setup Resources' do
       property :birth_on,          Date
       property :birth_time,        Time
 
-      belongs_to :knight, :nullable => true
+      belongs_to :knight, :required => false
     end
 
     # A more complex example, with BigDecimal and Float properties
@@ -29,7 +29,7 @@ shared_examples_for 'It Has Setup Resources' do
       include DataMapper::Resource
 
       property :id,                  Serial
-      property :name,                String,     :nullable => false
+      property :name,                String,     :required => true
       property :population,          Integer
       property :birth_rate,          Float,      :precision => 4,  :scale => 2
       property :gold_reserve_tonnes, Float,      :precision => 6,  :scale => 2

@@ -17,14 +17,14 @@ module DataMapper
         #
 
         property :id,   Serial, :key      => true
-        property :body, Text,   :nullable => false
+        property :body, Text,   :required => true
 
         #
         # Validations
         #
 
         # duplicates inferred validation for body (caused by
-        # :nullable => false)
+        # :required => true)
         validates_present :body
       end
     end # Fixtures

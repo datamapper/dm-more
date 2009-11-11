@@ -26,13 +26,13 @@ class SailBoat
   # use Serial in real world apps
   property :id,            Integer,    :key => true, :min => 1, :max => 10
 
-  property :name,          String,                                :nullable => false,     :validates       => :presence_test
+  property :name,          String,                                :required => true,     :validates       => :presence_test
   property :description,   String,     :length => 10,                                     :validates       => :length_test_1
   property :notes,         String,     :length => 2..10,                                  :validates       => :length_test_2
   property :no_validation, String,                                                        :auto_validation => false
-  property :salesman,      String,                                :nullable => false,     :validates       => [:multi_context_1, :multi_context_2]
+  property :salesman,      String,                                :required => true,     :validates       => [:multi_context_1, :multi_context_2]
   property :code,          String,     :format => Proc.new { |code| code =~ /A\d{4}\z/ }, :validates       => :format_test
-  property :allow_nil,     String,     :length => 5..10,          :nullable => true,      :validates       => :nil_test
+  property :allow_nil,     String,     :length => 5..10,          :required => false,      :validates       => :nil_test
   property :build_date,    Date,                                                          :validates       => :primitive_test
   property :float,         Float,      :precision => 2, :scale => 1
   property :big_decimal,   BigDecimal, :precision => 2, :scale => 1
@@ -46,7 +46,7 @@ class HasNullableBoolean
   # this one is not Serial intentionally
   # use Serial in real world apps
   property :id,   Integer, :key => true
-  property :bool, Boolean # :nullable => true by default
+  property :bool, Boolean # :required => false by default
 
   include TypecastBypassSetter
 end
@@ -57,7 +57,7 @@ class HasNotNullableBoolean
   # this one is not Serial intentionally
   # use Serial in real world apps
   property :id,   Integer, :key => true
-  property :bool, Boolean, :nullable => false
+  property :bool, Boolean, :required => true
 
   include TypecastBypassSetter
 end
@@ -68,7 +68,7 @@ class HasNotNullableParanoidBoolean
   # this one is not Serial intentionally
   # use Serial in real world apps
   property :id,   Integer,         :key => true
-  property :bool, ParanoidBoolean, :nullable => false
+  property :bool, ParanoidBoolean, :required => true
 
   include TypecastBypassSetter
 end

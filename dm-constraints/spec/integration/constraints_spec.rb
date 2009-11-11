@@ -10,7 +10,7 @@ ADAPTERS.each do |name, connection_uri|
         include DataMapper::Resource
 
         property :id,      Serial
-        property :title,   String, :nullable => false
+        property :title,   String, :required => true
         property :content, Text
 
         has 1, :revision
@@ -53,12 +53,12 @@ ADAPTERS.each do |name, connection_uri|
     describe 'create related objects' do
       before :all do
         class ::Comment
-          belongs_to :article, :nullable => true
-          belongs_to :author,  :nullable => true
+          belongs_to :article, :required => false
+          belongs_to :author,  :required => false
         end
 
         class ::Revision
-          belongs_to :article, :nullable => true
+          belongs_to :article, :required => false
         end
       end
 
@@ -406,12 +406,12 @@ ADAPTERS.each do |name, connection_uri|
           end
 
           class ::Comment
-            belongs_to :article, :nullable => true
-            belongs_to :author,  :nullable => true
+            belongs_to :article, :required => false
+            belongs_to :author,  :required => false
           end
 
           class ::Revision
-            belongs_to :article, :nullable => true
+            belongs_to :article, :required => false
           end
         end
 
@@ -555,7 +555,7 @@ ADAPTERS.each do |name, connection_uri|
         # M:M relationships results in a join table composed of composite (composed of two parts)
         # primary key.
         # Setting a portion of this primary key is not possible for two reasons:
-        # 1. the columns are defined as :nullable => false
+        # 1. the columns are defined as :required => true
         # 2. there could be duplicate rows if more than one of either of the types
         #   was deleted while being associated to the same type on the other side of the relationshp
         #   Given

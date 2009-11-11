@@ -16,7 +16,7 @@ module DataMapper
         #
 
         property :id,   Serial
-        property :name, String, :nullable => false
+        property :name, String, :required => true
 
         property :starts_at, DateTime
         property :ends_at,   DateTime

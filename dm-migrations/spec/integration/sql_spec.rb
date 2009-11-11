@@ -19,7 +19,7 @@ ADAPTERS.each do |adapter|
       before do
         @creator = DataMapper::Migration::TableCreator.new(repository(adapter).adapter, :people) do
           column :id,          DataMapper::Types::Serial
-          column :name,        'VARCHAR(50)', :nullable => false
+          column :name,        'VARCHAR(50)', :allow_nil => false
           column :long_string, String, :size => 200
         end
       end
@@ -58,7 +58,7 @@ ADAPTERS.each do |adapter|
         col.instance_eval("@type").should include("200")
       end
 
-      it "should generate a NOT NULL column when :nullable is false" do
+      it "should generate a NOT NULL column when :allow_nil is false" do
         @creator.instance_eval("@columns")[1].type.should match(/NOT NULL/)
       end
 

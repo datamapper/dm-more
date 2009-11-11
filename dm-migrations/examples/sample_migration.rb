@@ -21,7 +21,7 @@ end
 migration 2, :add_dob_to_people do
   up do
     modify_table :people do
-      add_column :dob, DateTime, :nullable? => true
+      add_column :dob, DateTime, :allow_nil => true
     end
   end
 

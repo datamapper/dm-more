@@ -82,7 +82,7 @@ class Cow
   property :breed,     String
 
   has n, :baby_cows, :model => 'Cow'
-  belongs_to :mother_cow, :model => 'Cow', :nullable => true
+  belongs_to :mother_cow, :model => 'Cow', :required => false
 end
 
 DataMapper.auto_migrate!

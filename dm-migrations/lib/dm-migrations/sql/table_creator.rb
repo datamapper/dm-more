@@ -64,8 +64,14 @@ module SQL
       def build_type(type_class)
         schema = { :name => @name, :quote_column_name => quoted_name }.merge(@opts)
 
-        unless schema.key?(:nullable)
-          schema[:nullable] = !schema[:not_null]
+        [ :nullable, :nullable? ].each do |option|
+          next if (value = schema.delete(option)).nil?
+          warn "#{option.inspect} is deprecated, use :allow_nil instead"
+          schema[:allow_nil] = value unless schema.key?(:allow_nil)
+        end
+
+        unless schema.key?(:allow_nil)
+          schema[:allow_nil] = !schema[:not_null]
         end
 
         schema[:length] ||= schema.delete(:size) if schema.key?(:size)

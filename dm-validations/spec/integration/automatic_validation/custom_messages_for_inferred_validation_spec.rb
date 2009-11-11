@@ -6,7 +6,7 @@ describe 'Inferred validations' do
     custom_boat = Class.new do
       include DataMapper::Resource
       property :id,   DataMapper::Types::Serial
-      property :name, String,  :nullable => false, :message => "This boat must have name"
+      property :name, String,  :required => true, :message => "This boat must have name"
     end
     boat = custom_boat.new
     boat.should_not be_valid
@@ -17,7 +17,7 @@ describe 'Inferred validations' do
     custom_boat = Class.new do
       include DataMapper::Resource
       property :id,   DataMapper::Types::Serial
-      property :name, String,  :nullable => false, :length => 5..20, :format => /^[a-z]+$/,
+      property :name, String,  :required => true, :length => 5..20, :format => /^[a-z]+$/,
                :messages => {
                  :presence => "This boat must have name",
                  :length => "Name must have at least 4 and at most 20 chars",
