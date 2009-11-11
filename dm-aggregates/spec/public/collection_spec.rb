@@ -54,5 +54,53 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         end
       end
     end
+
+    describe 'with collections created with Set operations' do
+      before do
+        @collection = @dragons.all(:name => 'George') | @dragons.all(:name => 'Puff')
+      end
+
+      describe '#size' do
+        subject { @collection.size }
+
+        it { should == 2 }
+      end
+
+      describe '#count' do
+        subject { @collection.count }
+
+        it { should == 2 }
+      end
+
+      describe '#min' do
+        subject { @collection.min(:toes_on_claw) }
+
+        it { should == 3 }
+      end
+
+      describe '#max' do
+        subject { @collection.max(:toes_on_claw) }
+
+        it { should == 4 }
+      end
+
+      describe '#avg' do
+        subject { @collection.avg(:toes_on_claw) }
+
+        it { should == 3.5 }
+      end
+
+      describe '#sum' do
+        subject { @collection.sum(:toes_on_claw) }
+
+        it { should == 7 }
+      end
+
+      describe '#aggregate' do
+        subject { @collection.aggregate(:all.count, :name.count, :toes_on_claw.min, :toes_on_claw.max, :toes_on_claw.avg, :toes_on_claw.sum)}
+
+        it { should == [ 2, 2, 3, 4, 3.5, 7 ] }
+      end
+    end
   end
 end
