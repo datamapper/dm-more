@@ -95,9 +95,25 @@ module DataMapper
       # @param <Object> value to test
       # @return <Boolean> true if blank/nil is allowed, and the value is blank/nil
       def optional?(value)
-        return true if @options[:allow_nil]   && value.nil?
-        return true if @options[:allow_blank] && value.blank?
+        return allow_nil?(value)   if value.nil?
+        return allow_blank?(value) if value.blank?
         false
+      end
+
+      # Test if the value is nil and is allowed
+      #
+      # @param <Object> value to test
+      # @return <Boolean> true if nil is allowed and value is nil
+      def allow_nil?(value)
+        @options[:allow_nil] if value.nil?
+      end
+
+      # Test if the value is blank and is allowed
+      #
+      # @param <Object> value to test
+      # @return <Boolean> true if blank is allowed and value is blank
+      def allow_blank?(value)
+        @options[:allow_blank] if value.blank?
       end
 
       # Returns true if validators are equal
