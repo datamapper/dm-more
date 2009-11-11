@@ -41,7 +41,7 @@ module DataMapper
       #
       #   :required => true
       #       Setting the option :required to true causes a
-      #       validates_presence_of validator to be automatically created on
+      #       validates_present validator to be automatically created on
       #       the property
       #
       #   :length => 20
