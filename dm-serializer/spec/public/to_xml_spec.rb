@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 {
-  'REXML'  => nil,
-  'LibXML' => 'libxml',
-  'Nokogiri' => 'nokogiri'
-}.each do |lib, file_to_require|
+  'REXML'    => [],
+  'LibXML'   => [ 'libxml-ruby', 'libxml'   ],
+  'Nokogiri' => [ 'nokogiri',    'nokogiri' ],
+}.each do |lib, (gem_name, file_to_require)|
   begin
     require file_to_require if file_to_require
   rescue LoadError
-    warn "[WARNING] Cannot require '#{file_to_require}', not running #to_xml specs for #{lib}"
+    warn "[WARNING] Cannot find gem '#{gem_name}', not running #to_xml specs for #{lib}"
     next
   end
 
