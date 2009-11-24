@@ -1,24 +1,31 @@
-require 'pathname'
+require 'rubygems'
+require 'rake'
 
-ROOT    = Pathname(__FILE__).dirname.expand_path
-JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
+FileList['tasks/**/*.rake'].each { |task| load task }
 
-require ROOT + 'lib/dm-is-tree/is/version'
+begin
+  require 'jeweler'
 
-AUTHOR = 'Timothy Bennett'
-EMAIL  = 'leapord729 [a] comcast.net'
-GEM_NAME = 'dm-is-tree'
-GEM_VERSION = DataMapper::Is::Tree::VERSION
-GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
-GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] }
+  Jeweler::Tasks.new do |gem|
+    gem.name        = 'dm-is-tree'
+    gem.summary     = 'DataMapper plugin allowing the creation of tree structures from data models'
+    gem.description = gem.summary
+    gem.email       = 'leapord729 [a] comcast.net'
+    gem.homepage    = 'http://github.com/datamapper/dm-more/tree/master/%s' % gem.name
+    gem.authors     = [ 'Timothy Bennett' ]
 
-PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin allowing the creation of tree structures from data models'
+    gem.rubyforge_project = 'datamapper'
 
-[ ROOT, ROOT.parent ].each do |dir|
-  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+    gem.add_dependency 'dm-core', '~>0.10.2'
+
+    gem.add_development_dependency 'rspec', '>= 1.2.9'
+    gem.add_development_dependency 'yard',  '>= 0.4.0'
+  end
+
+  Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = 'yardoc'
+  end
+rescue LoadError
+  puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end

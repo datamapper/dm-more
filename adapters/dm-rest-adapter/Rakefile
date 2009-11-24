@@ -1,24 +1,32 @@
-require 'pathname'
+require 'rubygems'
+require 'rake'
 
-ROOT    = Pathname(__FILE__).dirname.expand_path
-JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
+FileList['tasks/**/*.rake'].each { |task| load task }
 
-require ROOT + 'lib/rest_adapter/version'
+begin
+  require 'jeweler'
 
-AUTHOR = 'Scott Burton @ Joyent Inc'
-EMAIL  = 'scott.burton [a] joyent [d] com'
-GEM_NAME = 'dm-rest-adapter'
-GEM_VERSION = DataMapperRest::VERSION
-GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['dm-serializer', GEM_VERSION]]
-GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] }
+  Jeweler::Tasks.new do |gem|
+    gem.name        = 'dm-rest-adapter'
+    gem.summary     = 'REST Adapter for DataMapper'
+    gem.description = gem.summary
+    gem.email       = 'scott.burton [a] joyent [d] com'
+    gem.homepage    = 'http://github.com/datamapper/dm-more/tree/master/adapters/%s' % gem.name
+    gem.authors     = [ 'Scott Burton @ Joyent Inc' ]
 
-PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/adapters/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'REST Adapter for DataMapper'
+    gem.rubyforge_project = 'datamapper'
 
-[ ROOT, ROOT.parent.parent ].each do |dir|
-  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+    gem.add_dependency 'dm-core',       '~>0.10.2'
+    gem.add_dependency 'dm-serializer', '~>0.10.2'
+
+    gem.add_development_dependency 'rspec', '>= 1.2.9'
+    gem.add_development_dependency 'yard',  '>= 0.4.0'
+  end
+
+  Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = 'yardoc'
+  end
+rescue LoadError
+  puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end

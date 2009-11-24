@@ -6,7 +6,7 @@ dm-sweatshop is a model factory for DataMapper.  It makes it easy & painless to 
 
 * Easy generation of random models with data that fits the application domain.
 * Simple syntax for declaring and generating model patterns.
-* Add context to model patterns, allowing grouping and 
+* Add context to model patterns, allowing grouping and
 * Effortlessly generate or fill in associations for creating complex models with few lines of code.
 
 == How it works
@@ -56,13 +56,13 @@ A fixture for the user model can be defined using the @fixture@ method.
     :email                => "#{username}@example.com",
     :password             => (password = /\w+/.gen),
     :pasword_confirmation => password
-    
+
     # The /\w+/.gen notation is part of the randexp gem:
     # http://github.com/benburkert/randexp/
   }}
 
 Notice the double curly brace (@{{@), a quick little way to pass a block that returns a hash to the fixture method.  This is important because it ensures the data is random when we generate a new instance of the model, by calling the block every time.
-  
+
 Code snippet above stores a Proc that returns attributes hash in model map for
 class User. Since you did not explicitly specify fixture name, default name is
 used (99+% of the cases it is :default).
@@ -105,10 +105,10 @@ Now to a model that has given attributes, use
 The real power of sweatshop is generating working associations.
 
   DataMapper.setup(:default, "sqlite3::memory:")
-  
+
   class Tweet
     include DataMapper::Resource
-    
+
     property :id, Serial
     property :message,  String, :length => 140
     property :user_id,  Integer
@@ -116,7 +116,7 @@ The real power of sweatshop is generating working associations.
     belongs_to :user
     has n, :tags, :through => Resource
   end
-  
+
   class Tag
     include DataMapper::Resource
 
@@ -125,13 +125,13 @@ The real power of sweatshop is generating working associations.
 
     has n, :tweets, :through => Resource
   end
-  
+
   class User
     include DataMapper::Resource
-    
+
     property :id, Serial
     property :username, String
-    
+
     has n, :tweets
   end
 
@@ -141,7 +141,7 @@ The real power of sweatshop is generating working associations.
     :username => /\w+/.gen,
     :tweets   => 500.of {Tweet.make}
   }}
-  
+
   Tweet.fix {{
     :message => /[:sentence:]/.gen[0..140],
     :tags    => (0..10).of {Tag.make}
@@ -150,7 +150,7 @@ The real power of sweatshop is generating working associations.
   Tag.fix {{
     :name => /\w+/.gen
   }}
-  
+
   # now lets generate 100 users, each with 500 tweets.  Also, the tweet's have 0 to 10 tags!
   users = 10.of {User.gen}
 
@@ -161,18 +161,18 @@ That's going to generate alot of tags, way more than you would see in the produc
     :username => /\w+/.gen,
     :tweets   => 500.of {Tweet.make}
   }}
-  
+
   Tweet.fix {{
     :message => /[:sentence:]/.gen[0..140],
     :tags    => (0..10).of {Tag.pick}           #lets pick, not make this time
   }}
-  
+
   Tag.fix {{
     :name => /\w+/.gen
   }}
-  
+
   50.times {Tag.gen}
-  
+
   users = 10.of {User.gen}
 
 
@@ -192,7 +192,7 @@ To keep track of all of our new fixtures, we can even give them a context.
     :message  => /\@#{User.pick.name} [:sentence:]/.gen[0..140],
     :tags     => (0..10).of {Tag.pick}
   }}
-  
+
   Tweet.fix(:conversation) {{
     :message  => /\@#{(tweet = Tweet.pick(:at_reply)).user.name} [:sentence:]/.gen[0..140],
     :tags     => tweet.tags

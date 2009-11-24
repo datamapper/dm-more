@@ -2,7 +2,6 @@ require 'pathname'
 require 'spec/rake/spectask'
 require 'rake/rdoctask'
 require 'fileutils'
-require 'lib/dm-more/version'
 include FileUtils
 
 ROOT    = Pathname(__FILE__).dirname.expand_path
@@ -50,7 +49,7 @@ gems = GEM_PATHS.map { |p| File.basename(p) }
 AUTHOR = 'Dan Kubb'
 EMAIL  = 'dan.kubb [a] gmail [d] com'
 GEM_NAME = 'dm-more'
-GEM_VERSION = DataMapper::More::VERSION
+GEM_VERSION = ROOT.join('VERSION').read
 GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], *gems.map { |g| [g, GEM_VERSION] }]
 GEM_CLEAN = %w[ **/.DS_Store} *.db doc/rdoc .config **/{coverage,log,pkg} cache lib/dm-more.rb ]
 GEM_EXTRAS = { :has_rdoc => false }
@@ -62,48 +61,18 @@ PROJECT_SUMMARY = 'An Object/Relational Mapper for Ruby'
 
 Pathname.glob(ROOT.join('tasks/**/*.rb').to_s).each { |f| require f }
 
-def sudo_gem(cmd)
-  sh "#{SUDO} #{RUBY} -S gem #{cmd}", :verbose => false
-end
-
 desc "Install #{GEM_NAME} #{GEM_VERSION}"
-task :install => [ :install_gems, :package ] do
-  sudo_gem "install pkg/#{GEM_NAME}-#{GEM_VERSION}"
-end
-
-desc "Uninstall #{GEM_NAME} #{GEM_VERSION}"
-task :uninstall => [ :uninstall_gems, :clobber ] do
-  sudo_gem "uninstall #{GEM_NAME} -v#{GEM_VERSION} -Ix"
-end
-
-def rake(cmd)
-  sh "#{RUBY} -S rake #{cmd}", :verbose => false
-end
-
-desc "Build #{GEM_NAME} #{GEM_VERSION}"
-task :build_gems do
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir){ rake 'gem' }
-  end
-end
-
-desc 'Install the dm-more gems'
-task :install_gems => :build_gems do
+task :install do
   GEM_PATHS.each do |dir|
     Dir.chdir(dir){ rake 'install' }
   end
 end
 
-desc 'Uninstall the dm-more gems'
-task :uninstall_gems do
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir){ rake 'uninstall; true' }
-  end
+def rake(cmd)
+  sh "#{RUBY} -S rake #{cmd}", :verbose => true
 end
 
-task :package => %w[ lib/dm-more.rb ]
-
-task 'lib/dm-more.rb' do
+task :package do
   mkdir_p 'lib'
   File.open('lib/dm-more.rb', 'w+') do |file|
     file.puts '### AUTOMATICALLY GENERATED.  DO NOT EDIT.'
@@ -118,7 +87,7 @@ task 'lib/dm-more.rb' do
   end
 end
 
-task :bundle => [ :package, :build_gems ] do
+task :bundle => [ :package ] do
   mkdir_p 'bundle'
   cp "pkg/dm-more-#{GEM_VERSION}.gem", 'bundle'
   GEM_PATHS.each do |gem|
@@ -141,39 +110,8 @@ end
 desc 'Run specs'
 task :spec do
   exit 1 unless (GEM_PATHS - %w[ rails_datamapper ]).map do |gem_name|
-    Dir.chdir(gem_name) { rake :spec rescue false }
+    Dir.chdir(gem_name) { rake 'spec' }
   end.all?
-end
-
-%w[ ci clean clobber check_manifest ].each do |command|
-  task command do
-    GEM_PATHS.each do |gem_name|
-      Dir.chdir(gem_name){ rake "#{command}" }
-    end
-  end
-end
-
-task :update_manifest do
-  GEM_PATHS.each do |gem_name|
-    Dir.chdir(gem_name){ rake 'check_manifest | patch; true' }
-  end
-end
-
-namespace :dm do
-  desc 'Run specifications'
-  task :specs do
-    Spec::Rake::SpecTask.new(:spec) do |t|
-      Dir['**/Rakefile'].each do |rakefile|
-        # don't run in the top level dir or in the pkg dir
-        unless rakefile == 'Rakefile' || rakefile =~ /^pkg/
-          # running chdir in a block runs the task in specified dir, then returns to previous dir.
-          Dir.chdir(File.join(File.dirname(__FILE__), File.dirname(rakefile))) do
-            raise "Broken specs in #{rakefile}" unless system 'rake'
-          end
-        end
-      end
-    end
-  end
 end
 
 task :default => :spec

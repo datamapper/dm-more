@@ -1,25 +1,32 @@
-require 'pathname'
+require 'rubygems'
+require 'rake'
 
-ROOT    = Pathname(__FILE__).dirname.expand_path
-JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
+FileList['tasks/**/*.rake'].each { |task| load task }
 
-require ROOT + 'lib/ferret_adapter/version'
+begin
+  require 'jeweler'
 
-AUTHOR = 'Bernerd Schaefer'
-EMAIL  = 'bernerd [a] wieck [d] com'
-GEM_NAME = 'dm-ferret-adapter'
-GEM_VERSION = DataMapper::FerretAdapter::VERSION
-GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], ['ferret', '~>0.11.6']]
-GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] } #,
-#               :executables => %w[ ferret ], :bindir => 'bin' }  # FIXME: should this be enabled?
+  Jeweler::Tasks.new do |gem|
+    gem.name        = 'dm-ferret-adapter'
+    gem.summary     = 'Ferret Adapter for DataMapper'
+    gem.description = gem.summary
+    gem.email       = 'bernerd [a] wieck [d] com'
+    gem.homepage    = 'http://github.com/datamapper/dm-more/tree/master/adapters/%s' % gem.name
+    gem.authors     = [ 'Bernerd Schaefer' ]
 
-PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/sam/dm-more/tree/master/adapters/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'Ferret Adapter for DataMapper'
+    gem.rubyforge_project = 'datamapper'
 
-[ ROOT, ROOT.parent.parent ].each do |dir|
-  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+    gem.add_dependency 'dm-core', '~>0.10.2'
+    gem.add_dependency 'ferret',  '~>0.11.6'
+
+    gem.add_development_dependency 'rspec', '>= 1.2.9'
+    gem.add_development_dependency 'yard',  '>= 0.4.0'
+  end
+
+  Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = 'yardoc'
+  end
+rescue LoadError
+  puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end

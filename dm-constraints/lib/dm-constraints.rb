@@ -1,6 +1,5 @@
 require 'dm-constraints/delete_constraint'
 require 'dm-constraints/migrations'
-require 'dm-constraints/version'
 
 module DataMapper
   module Associations

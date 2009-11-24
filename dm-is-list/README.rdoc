@@ -165,7 +165,7 @@ The most SQL query efficient way of changing the positions is:
 
   items.each{ |item| item.update(:position => sort_order.index(item.id) + 1) }   # remember the +1 since array's are indexed from 0
 
-  
+
 The above code will result in something like these queries.
 
   # SELECT "id", "title", "position", "user_id" FROM "todos" WHERE "user_id" = 1 ORDER BY "position"

@@ -1,6 +1,0 @@
-#!/bin/sh
-
-for gemdir in dm-*; do
-  echo "Removing $gemdir gem"
-  gem uninstall $gemdir
-done

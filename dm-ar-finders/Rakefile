@@ -1,24 +1,31 @@
-require 'pathname'
+require 'rubygems'
+require 'rake'
 
-ROOT    = Pathname(__FILE__).dirname.expand_path
-JRUBY   = RUBY_PLATFORM =~ /java/
-WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
+FileList['tasks/**/*.rake'].each { |task| load task }
 
-require ROOT + 'lib/dm-ar-finders/version'
+begin
+  require 'jeweler'
 
-AUTHOR = 'John W Higgins'
-EMAIL  = 'john [a] wishVPS [d] com'
-GEM_NAME = 'dm-ar-finders'
-GEM_VERSION = DataMapper::ARFinders::VERSION
-GEM_DEPENDENCIES = [['dm-core', GEM_VERSION]]
-GEM_CLEAN = %w[ log pkg coverage ]
-GEM_EXTRAS = { :has_rdoc => true, :extra_rdoc_files => %w[ README.rdoc LICENSE TODO History.rdoc ] }
+  Jeweler::Tasks.new do |gem|
+    gem.name        = 'dm-ar-finders'
+    gem.summary     = 'DataMapper plugin providing ActiveRecord-style finders'
+    gem.description = gem.summary
+    gem.email       = 'john [a] wishVPS [d] com'
+    gem.homepage    = 'http://github.com/datamapper/dm-more/tree/master/%s' % gem.name
+    gem.authors     = [ 'John W Higgins' ]
 
-PROJECT_NAME = 'datamapper'
-PROJECT_URL  = "http://github.com/datamapper/dm-more/tree/master/#{GEM_NAME}"
-PROJECT_DESCRIPTION = PROJECT_SUMMARY = 'DataMapper plugin providing ActiveRecord-style finders'
+    gem.rubyforge_project = 'datamapper'
 
-[ ROOT, ROOT.parent ].each do |dir|
-  Pathname.glob(dir.join('tasks/**/*.rb').to_s).each { |f| require f }
+    gem.add_dependency 'dm-core', '~>0.10.2'
+
+    gem.add_development_dependency 'rspec', '>= 1.2.9'
+    gem.add_development_dependency 'yard',  '>= 0.4.0'
+  end
+
+  Jeweler::GemcutterTasks.new
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = 'yardoc'
+  end
+rescue LoadError
+  puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end
