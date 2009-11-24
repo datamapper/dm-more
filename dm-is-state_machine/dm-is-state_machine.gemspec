@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["David James"]
-  s.date = %q{2009-11-23}
+  s.date = %q{2009-11-24}
   s.description = %q{DataMapper plugin for creating state machines}
   s.email = %q{djwonk [a] collectiveinsight [d] net}
   s.extra_rdoc_files = [
@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.rdoc",
      "Rakefile",
+     "VERSION",
+     "dm-is-state_machine.gemspec",
      "lib/dm-is-state_machine.rb",
      "lib/dm-is-state_machine/is/data/event.rb",
      "lib/dm-is-state_machine/is/data/machine.rb",
@@ -38,6 +40,7 @@ Gem::Specification.new do |s|
      "spec/integration/invalid_transitions_spec.rb",
      "spec/integration/slot_machine_spec.rb",
      "spec/integration/traffic_light_spec.rb",
+     "spec/rcov.opts",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "spec/unit/data/event_spec.rb",
@@ -45,7 +48,12 @@ Gem::Specification.new do |s|
      "spec/unit/data/state_spec.rb",
      "spec/unit/dsl/event_dsl_spec.rb",
      "spec/unit/dsl/state_dsl_spec.rb",
-     "spec/unit/state_machine_spec.rb"
+     "spec/unit/state_machine_spec.rb",
+     "tasks/ci.rake",
+     "tasks/metrics.rake",
+     "tasks/spec.rake",
+     "tasks/yard.rake",
+     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/datamapper/dm-more/tree/master/dm-is-state_machine}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -60,17 +68,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_development_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_development_dependency(%q<yard>, ["~> 0.4.0"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_dependency(%q<yard>, ["~> 0.4.0"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-    s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<yard>, [">= 0.4.0"])
+    s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+    s.add_dependency(%q<yard>, ["~> 0.4.0"])
   end
 end
 

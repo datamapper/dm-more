@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John W Higgins"]
-  s.date = %q{2009-11-23}
+  s.date = %q{2009-11-24}
   s.description = %q{DataMapper plugin providing ActiveRecord-style finders}
   s.email = %q{john [a] wishVPS [d] com}
   s.extra_rdoc_files = [
@@ -20,10 +20,18 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.rdoc",
      "Rakefile",
+     "VERSION",
+     "dm-ar-finders.gemspec",
      "lib/dm-ar-finders.rb",
      "spec/integration/ar-finders_spec.rb",
+     "spec/rcov.opts",
      "spec/spec.opts",
-     "spec/spec_helper.rb"
+     "spec/spec_helper.rb",
+     "tasks/ci.rake",
+     "tasks/metrics.rake",
+     "tasks/spec.rake",
+     "tasks/yard.rake",
+     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/datamapper/dm-more/tree/master/dm-ar-finders}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -38,17 +46,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_development_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_development_dependency(%q<yard>, ["~> 0.4.0"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_dependency(%q<yard>, ["~> 0.4.0"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-    s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<yard>, [">= 0.4.0"])
+    s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+    s.add_dependency(%q<yard>, ["~> 0.4.0"])
   end
 end
 
