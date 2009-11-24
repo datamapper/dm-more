@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tom Malone"]
-  s.date = %q{2009-11-23}
+  s.date = %q{2009-11-24}
   s.description = %q{Rails Plugin for DataMapper}
   s.email = %q{tomjmalone [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.rdoc",
      "Rakefile",
+     "VERSION",
      "datamapper.rake",
      "generators/dm_install/dm_install_generator.rb",
      "generators/dm_install/templates/datamapper.rake",
@@ -31,7 +32,10 @@ Gem::Specification.new do |s|
      "generators/rspec_dm_model/rspec_dm_model_generator.rb",
      "generators/rspec_dm_model/templates/model_spec.rb",
      "lib/rails_datamapper.rb",
-     "lib/rails_datamapper/session_store.rb"
+     "lib/rails_datamapper/session_store.rb",
+     "rails_datamapper.gemspec",
+     "tasks/yard.rake",
+     "tasks/yardstick.rake"
   ]
   s.homepage = %q{http://github.com/datamapper/dm-more/tree/master/rails_datamapper}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -46,17 +50,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_development_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_development_dependency(%q<yard>, ["~> 0.4.0"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-      s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<yard>, [">= 0.4.0"])
+      s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_dependency(%q<yard>, ["~> 0.4.0"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
-    s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<yard>, [">= 0.4.0"])
+    s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+    s.add_dependency(%q<yard>, ["~> 0.4.0"])
   end
 end
 
