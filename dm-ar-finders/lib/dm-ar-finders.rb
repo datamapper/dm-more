@@ -1,5 +1,20 @@
 module DataMapper
   module Model
+    # Lookup the resource by the primary key
+    #
+    # @param [Integer] id
+    #   the primary key value for the resource
+    #
+    # @return [Resource]
+    #   the resource that was found
+    # @return [nil]
+    #   nil if no resource was found
+    #
+    # @api public
+    def find(id)
+      get(id)
+    end
+
     # Find resources by providing your own SQL query or DataMapper::Query
     # instance.
     #

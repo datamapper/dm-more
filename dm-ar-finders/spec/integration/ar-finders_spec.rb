@@ -46,6 +46,32 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     ###
 
+    describe '#find' do
+      describe 'with a valid key' do
+        before :all do
+          @resource = GreenSmoothie.create(:name => 'Banana')
+        end
+
+        subject { GreenSmoothie.find(@resource.id) }
+
+        it { should == @resource }
+      end
+
+      describe 'with an unknown key' do
+        subject { GreenSmoothie.find(0) }
+
+        it { should be_nil }
+      end
+
+      describe 'with no arguments' do
+        subject { GreenSmoothie.find }
+
+        it 'should raise an exception' do
+          method(:subject).should raise_error(ArgumentError)
+        end
+      end
+    end
+
     describe '#find_by_sql' do
       before(:each) do
         DataMapper.repository(:default) do
