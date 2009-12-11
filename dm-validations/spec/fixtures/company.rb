@@ -61,8 +61,6 @@ module DataMapper
         validates_present :title, :message => "Product company must have a name"
         validates_present :flagship_product
       end
-      ProductCompany.auto_migrate!
-
 
       class Product
         #

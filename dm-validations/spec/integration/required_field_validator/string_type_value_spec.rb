@@ -4,15 +4,19 @@ require 'integration/required_field_validator/spec_helper'
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   # keep in mind any ScmOperation has a default value for brand property
   # so it is used
-  describe GitOperation do
-    before :each do
+  describe 'GitOperation' do
+    before :all do
+      GitOperation.auto_migrate!
+    end
+
+    before do
       @operation = GitOperation.new(:network_connection => true,
                                     :clean_working_copy => true,
                                     :message            => "I did it! I did it!! Hell yeah!!!")
     end
 
     describe "without explicitly specified committer name" do
-      before :each do
+      before do
         # no specific actions for this case! yay!
       end
 
@@ -32,10 +36,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # tested in
         @operation.committer_name.should == "Just another Ruby hacker"
       end
-    end # describe "without explicitly specified committer name"
+    end
 
     describe "WITH explicitly specified committer name" do
-      before :each do
+      before do
         @operation.committer_name = "Core Team Guy"
       end
 
@@ -55,12 +59,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # tested in
         @operation.committer_name.should == "Core Team Guy"
       end
-    end # describe "with explicitly specified committer name"
+    end
 
 
 
     describe "without explicitly specified author name" do
-      before :each do
+      before do
         # no specific actions for this case! yay!
       end
 
@@ -78,10 +82,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "has default value set" do
         @operation.author_name.should == "Just another Ruby hacker"
       end
-    end # describe "without explicitly specified author name"
+    end
 
     describe "WITH explicitly specified author name" do
-      before :each do
+      before do
         @operation.author_name = "Random contributor"
       end
 
@@ -97,10 +101,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "has value set" do
         @operation.author_name.should == "Random contributor"
       end
-    end # describe "with explicitly specified author name"
+    end
 
     describe "with empty committer name" do
-      before(:each) do
+      before do
         @operation.committer_name = ""
       end
 
@@ -126,11 +130,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "with empty committer field"
+    end
 
 
     describe "with empty author name" do
-      before(:each) do
+      before do
         @operation.author_name = ""
       end
 
@@ -156,6 +160,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "with empty author field"
-  end # describe GitOperation
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+    end
+  end
+end

@@ -10,8 +10,10 @@ describe "entity with wrong destination MAC address length", :shared => true do
 end
 
 
-describe DataMapper::Validate::Fixtures::EthernetFrame do
+describe 'DataMapper::Validate::Fixtures::EthernetFrame' do
   before :all do
+    DataMapper::Validate::Fixtures::EthernetFrame.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::EthernetFrame.valid_instance
     @model.link_support_fragmentation = false
   end

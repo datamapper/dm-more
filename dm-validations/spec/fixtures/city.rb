@@ -22,4 +22,3 @@ class City
 
   validates_is_number :founded_in, :message => "Foundation year must be an integer"
 end
-City.auto_migrate!

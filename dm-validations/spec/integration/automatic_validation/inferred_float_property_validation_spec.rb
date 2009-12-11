@@ -5,6 +5,8 @@ require 'integration/automatic_validation/spec_helper'
 { :float => Float, :big_decimal => BigDecimal }.each do |column, type|
   describe "#{type} property" do
     before :all do
+      SailBoat.auto_migrate!
+
       @model = SailBoat.new(:id => 1)
     end
 

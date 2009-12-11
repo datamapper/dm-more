@@ -33,14 +33,14 @@ module PureRubyObjects
   end
 end
 
-describe PureRubyObjects::Country do
-  before :each do
+describe 'PureRubyObjects::Country' do
+  before do
     # Powerset says so
     @model = PureRubyObjects::Country.new("Italy", 58_147_733)
   end
 
   describe "without name" do
-    before :each do
+    before do
       @model.name = nil
     end
 
@@ -54,7 +54,7 @@ describe PureRubyObjects::Country do
 
 
   describe "without name and without population information" do
-    before :each do
+    before do
       @model.name       = nil
       @model.population = nil
     end
@@ -75,7 +75,7 @@ describe PureRubyObjects::Country do
 
 
   describe "with name and without population information" do
-    before :each do
+    before do
       @model.population = nil
     end
 
@@ -99,7 +99,7 @@ describe PureRubyObjects::Country do
 
 
   describe "with a 2 characters long name" do
-    before :each do
+    before do
       @model.name = "It"
       @model.valid?
     end

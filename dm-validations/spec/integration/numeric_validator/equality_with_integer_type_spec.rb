@@ -1,7 +1,11 @@
 require 'spec_helper'
 require 'integration/numeric_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::LerneanHydra do
+describe 'DataMapper::Validate::Fixtures::LerneanHydra' do
+  before :all do
+    DataMapper::Validate::Fixtures::LerneanHydra.auto_migrate!
+  end
+
   describe "with valid set of attributes" do
     before :all do
       @model = DataMapper::Validate::Fixtures::LerneanHydra.valid_instance

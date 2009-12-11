@@ -20,17 +20,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :local_repo_revision_num
   end
-  HgCommit.auto_migrate!
 
+  describe 'HgCommit' do
+    before :all do
+      HgCommit.auto_migrate!
+    end
 
-  describe HgCommit do
-    before :each do
+    before do
       @operation = HgCommit.new(:local_repo_revision_num => 90, :name => "ci")
       @operation.should be_valid
     end
 
     describe "with local revision number = 0" do
-      before(:each) do
+      before do
         @operation.local_repo_revision_num = 0
       end
 
@@ -38,34 +40,34 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @operation.should be_valid
       end
-    end # describe "with local revision number = 0"
+    end
 
 
 
     describe "with local revision number = 100" do
-      before(:each) do
+      before do
         @operation.local_repo_revision_num = 100
       end
 
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with local revision number = 100"
+    end
 
 
     describe "with local revision number = 100.0 (float!)" do
-      before(:each) do
+      before do
         @operation.local_repo_revision_num = 100.0
       end
 
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with local revision number = 100.0 (float!)"
+    end
 
 
     describe "with local revision number = -1100" do
-      before(:each) do
+      before do
         # presence validator does not care
         @operation.local_repo_revision_num = -1100
       end
@@ -73,11 +75,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with local revision number = -1100"
+    end
 
 
     describe "with local revision number = nil" do
-      before(:each) do
+      before do
         @operation.local_repo_revision_num = nil
       end
 
@@ -90,6 +92,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.local_repo_revision_num = 100
         @operation.should be_valid
       end
-    end # describe "with local revision number = nil"
-  end # describe HgCommit
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+    end
+  end
+end

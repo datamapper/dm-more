@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/automatic_validation/spec_helper'
 
-describe SailBoat do
+describe 'SailBoat' do
   before :all do
+    SailBoat.auto_migrate!
+
     @model = SailBoat.new(:id => 1)
     @model.should be_valid_for_primitive_test
   end

@@ -7,8 +7,10 @@ describe "barcode with invalid code length", :shared => true do
   end
 end
 
-describe ::DataMapper::Validate::Fixtures::Barcode do
+describe 'DataMapper::Validate::Fixtures::Barcode' do
   before :all do
+    DataMapper::Validate::Fixtures::Barcode.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::Barcode.valid_instance
   end
 

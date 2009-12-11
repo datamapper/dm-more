@@ -1,7 +1,9 @@
 require 'spec_helper'
 
-describe DataMapper::Validate::Fixtures::ServiceCompany do
+describe 'DataMapper::Validate::Fixtures::ServiceCompany' do
   before :all do
+    DataMapper::Validate::Fixtures::ServiceCompany.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::ServiceCompany.new(:title => "Monsters, Inc.", :area_of_expertise => "Little children's nightmares")
     @model.valid?
   end
@@ -33,8 +35,10 @@ end
 
 
 
-describe DataMapper::Validate::Fixtures::ProductCompany do
+describe 'DataMapper::Validate::Fixtures::ProductCompany' do
   before :all do
+    DataMapper::Validate::Fixtures::ProductCompany.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::ProductCompany.new(:title => "Apple", :flagship_product => "Macintosh")
     @model.valid?
   end

@@ -22,18 +22,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :at
   end
-  ScheduledOperation.auto_migrate!
 
+  describe 'ScheduledOperation' do
+    before :all do
+      ScheduledOperation.auto_migrate!
+    end
 
-  describe ScheduledOperation do
-    before :each do
+    before do
       @operation = ScheduledOperation.new(:at => DateTime.civil(2008, 06, 07, 15, 00, 00))
       @operation.should be_valid
     end
 
 
     describe "with on = nil" do
-      before(:each) do
+      before do
         @operation.at = nil
       end
 
@@ -46,11 +48,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.at = Date.new(2008, 12, 31)
         @operation.should be_valid
       end
-    end # describe "with on = nil"
+    end
 
 
     describe "with on = valid date" do
-      before(:each) do
+      before do
         @operation.at = 0.0
       end
 
@@ -58,12 +60,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @operation.should be_valid
       end
-    end # describe "with on = 0.0"
+    end
 
 
 
     describe "with on = 0" do
-      before(:each) do
+      before do
         @operation.at = 0
       end
 
@@ -71,34 +73,34 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @operation.should be_valid
       end
-    end # describe "with on = 0"
+    end
 
 
 
     describe "with on = 100" do
-      before(:each) do
+      before do
         @operation.at = 100
       end
 
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with on = 100"
+    end
 
 
     describe "with on = 100.0" do
-      before(:each) do
+      before do
         @operation.at = 100.0
       end
 
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with on = 100.0"
+    end
 
 
     describe "with on = -1100" do
-      before(:each) do
+      before do
         # presence validator does not care
         @operation.at = -1100
       end
@@ -106,11 +108,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with on = -1100"
+    end
 
 
     describe "with on = -1100.5" do
-      before(:each) do
+      before do
         # presence validator does not care
         @operation.at = -1100.5
       end
@@ -118,6 +120,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @operation.should be_valid
       end
-    end # describe "with on = -1100.5"
-  end # describe ScheduledOperation
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+    end
+  end
+end

@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/automatic_validation/spec_helper'
 
-describe SailBoat do
+describe 'SailBoat' do
   before :all do
+    SailBoat.auto_migrate!
+
     @model      = SailBoat.new(:id => 1)
     @model.should be_valid_for_length_test_1
   end
@@ -78,8 +80,10 @@ end
 
 
 
-describe DataMapper::Validate::Fixtures::SmsMessage do
+describe 'DataMapper::Validate::Fixtures::SmsMessage' do
   before :all do
+    DataMapper::Validate::Fixtures::SmsMessage.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::SmsMessage.new(:id => 10)
   end
 

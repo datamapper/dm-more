@@ -61,14 +61,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
 
 
-  describe Album do
-    before :each do
+  describe 'Album' do
+    before :all do
+      Artist.auto_migrate!
+      Album.auto_migrate!
+    end
+
+    before do
       @artist = Artist.create(:name => "Oceanlab")
       @album  = @artist.albums.new(:name => "Sirens of the sea")
     end
 
     describe 'with a missing artist' do
-      before :each do
+      before do
         @album.artist = nil
       end
 
@@ -83,7 +88,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     end
 
     describe 'with specified artist and name' do
-      before :each do
+      before do
         # no op
       end
 

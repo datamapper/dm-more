@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/conditional_validation/spec_helper'
 
-describe DataMapper::Validate::Fixtures::UDPPacket do
+describe 'DataMapper::Validate::Fixtures::UDPPacket' do
   before :all do
+    DataMapper::Validate::Fixtures::UDPPacket.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::UDPPacket.new
   end
 

@@ -27,17 +27,19 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :percent
   end
-  CpuConsumption.auto_migrate!
 
+  describe 'CpuConsumption' do
+    before :all do
+      CpuConsumption.auto_migrate!
+    end
 
-  describe CpuConsumption do
-    before :each do
+    before do
       @metric = CpuConsumption.new(:percent => 20.0)
       @metric.should be_valid
     end
 
     describe "with percentage = 0.0" do
-      before(:each) do
+      before do
         @metric.percent = 0.0
       end
 
@@ -45,12 +47,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @metric.should be_valid
       end
-    end # describe "with percentage = 0.0"
+    end
 
 
 
     describe "with percentage = 0" do
-      before(:each) do
+      before do
         @metric.percent = 0
       end
 
@@ -58,34 +60,34 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @metric.should be_valid
       end
-    end # describe "with percentage = 0"
+    end
 
 
 
     describe "with percentage = 100" do
-      before(:each) do
+      before do
         @metric.percent = 100
       end
 
       it "IS valid" do
         @metric.should be_valid
       end
-    end # describe "with percentage = 100"
+    end
 
 
     describe "with percentage = 100.0" do
-      before(:each) do
+      before do
         @metric.percent = 100.0
       end
 
       it "IS valid" do
         @metric.should be_valid
       end
-    end # describe "with percentage = 100.0"
+    end
 
 
     describe "with percentage = -1100" do
-      before(:each) do
+      before do
         # presence validator does not care
         @metric.percent = -1100
       end
@@ -93,11 +95,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @metric.should be_valid
       end
-    end # describe "with percentage = -1100"
+    end
 
 
     describe "with percentage = -1100.5" do
-      before(:each) do
+      before do
         # presence validator does not care
         @metric.percent = -1100.5
       end
@@ -105,11 +107,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @metric.should be_valid
       end
-    end # describe "with percentage = -1100.5"
+    end
 
 
     describe "with percentage = nil" do
-      before(:each) do
+      before do
         @metric.percent = nil
       end
 
@@ -122,6 +124,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @metric.percent = 100
         @metric.should be_valid
       end
-    end # describe "with percentage = nil"
-  end # describe CpuConsumption
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+    end
+  end
+end

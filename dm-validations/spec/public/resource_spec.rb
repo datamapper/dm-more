@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DataMapper::Resource do
+describe 'DataMapper::Resource' do
   before :all do
     DataMapper::Validate::Fixtures::Barcode.auto_migrate!
 
@@ -34,10 +34,9 @@ describe DataMapper::Resource do
 
     describe 'when provided invalid attributes and a context' do
       before :all do
-        # remove data from previous spec runs
-        ::DataMapper::Validate::Fixtures::Organisation.all.destroy!
-        ::DataMapper::Validate::Fixtures::Department.all.destroy!
-        ::DataMapper::Validate::Fixtures::User.all.destroy!
+        DataMapper::Validate::Fixtures::Organisation.auto_migrate!
+        DataMapper::Validate::Fixtures::Department.auto_migrate!
+        DataMapper::Validate::Fixtures::User.auto_migrate!
 
         organization = DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
         dept         = DataMapper::Validate::Fixtures::Department.create(:name => 'accounting')

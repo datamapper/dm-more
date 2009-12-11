@@ -3,8 +3,10 @@
 require 'spec_helper'
 require 'integration/duplicated_validations/spec_helper'
 
-describe DataMapper::Validate::Fixtures::Page do
+describe 'DataMapper::Validate::Fixtures::Page' do
   before :all do
+    DataMapper::Validate::Fixtures::Page.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::Page.new(:id => 1024)
   end
 

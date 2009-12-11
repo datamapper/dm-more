@@ -12,8 +12,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :domain, String, :unique_index => true
 
           validates_is_unique :domain, :allow_nil => true
-
-          auto_migrate!
         end
 
         class Department
@@ -23,8 +21,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :name, String, :unique_index => true
 
           validates_is_unique :name
-
-          auto_migrate!
         end
 
         class User
@@ -38,8 +34,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
           validates_is_unique :user_name, :when => :signing_up_for_department_account,   :scope => [:department]
           validates_is_unique :user_name, :when => :signing_up_for_organization_account, :scope => [:organisation]
-
-          auto_migrate!
         end
       end
     end

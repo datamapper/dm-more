@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/automatic_validation/spec_helper'
 
-describe SailBoat, "with a :format option on a property" do
+describe 'SailBoat', "with a :format option on a property" do
   before :all do
+    SailBoat.auto_migrate!
+
     @model = SailBoat.new
     @model.should be_valid_for_format_test
   end

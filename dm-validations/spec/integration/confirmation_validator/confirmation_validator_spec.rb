@@ -15,8 +15,10 @@ describe "reservation with mismatched seats number", :shared => true do
 end
 
 
-describe DataMapper::Validate::Fixtures::Reservation do
+describe 'DataMapper::Validate::Fixtures::Reservation' do
   before :all do
+    DataMapper::Validate::Fixtures::Reservation.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::Reservation.new(:person_name                  => "Tyler Durden",
                                                              :person_name_confirmation     => "Tyler Durden",
                                                              :number_of_seats              => 2,

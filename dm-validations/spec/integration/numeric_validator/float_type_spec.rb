@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/numeric_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::BasketballPlayer do
+describe 'DataMapper::Validate::Fixtures::BasketballPlayer' do
   before :all  do
+    DataMapper::Validate::Fixtures::BasketballPlayer.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::BasketballPlayer.new(:name => "Michael Jordan", :height => 198.1, :weight => 97.2)
   end
 

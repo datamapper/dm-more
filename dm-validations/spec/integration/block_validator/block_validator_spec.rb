@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'integration/block_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::G3Concert do
+describe 'DataMapper::Validate::Fixtures::G3Concert' do
   before :all do
     @model = DataMapper::Validate::Fixtures::G3Concert.new(:year => 2004, :participants => "Joe Satriani, Steve Vai, Yngwie Malmsteen", :city => "Denver")
     @model.should be_valid

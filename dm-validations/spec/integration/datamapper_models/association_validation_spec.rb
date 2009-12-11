@@ -1,7 +1,10 @@
 require 'spec_helper'
 
-describe DataMapper::Validate::Fixtures::Product do
+describe 'DataMapper::Validate::Fixtures::Product' do
   before :all do
+    DataMapper::Validate::Fixtures::ProductCompany.auto_migrate!
+    DataMapper::Validate::Fixtures::Product.auto_migrate!
+
     @parent = DataMapper::Validate::Fixtures::ProductCompany.create(:title => "Apple", :flagship_product => "Macintosh")
     @parent.should be_valid
 

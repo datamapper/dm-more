@@ -22,18 +22,20 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :on
   end
-  Holiday.auto_migrate!
 
+  describe 'Holiday' do
+    before :all do
+      Holiday.auto_migrate!
+    end
 
-  describe Holiday do
-    before :each do
+    before do
       @ny09 = Holiday.new(:on => Date.new(2008, 12, 31))
       @ny09.should be_valid
     end
 
 
     describe "with on = nil" do
-      before(:each) do
+      before do
         @ny09.on = nil
       end
 
@@ -46,11 +48,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @ny09.on = Date.new(2008, 12, 31)
         @ny09.should be_valid
       end
-    end # describe "with on = nil"
+    end
 
 
     describe "with on = valid date" do
-      before(:each) do
+      before do
         @ny09.on = 0.0
       end
 
@@ -58,12 +60,12 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @ny09.should be_valid
       end
-    end # describe "with on = 0.0"
+    end
 
 
 
     describe "with on = 0" do
-      before(:each) do
+      before do
         @ny09.on = 0
       end
 
@@ -71,34 +73,34 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         # yes, presence validator does not care
         @ny09.should be_valid
       end
-    end # describe "with on = 0"
+    end
 
 
 
     describe "with on = 100" do
-      before(:each) do
+      before do
         @ny09.on = 100
       end
 
       it "IS valid" do
         @ny09.should be_valid
       end
-    end # describe "with on = 100"
+    end
 
 
     describe "with on = 100.0" do
-      before(:each) do
+      before do
         @ny09.on = 100.0
       end
 
       it "IS valid" do
         @ny09.should be_valid
       end
-    end # describe "with on = 100.0"
+    end
 
 
     describe "with on = -1100" do
-      before(:each) do
+      before do
         # presence validator does not care
         @ny09.on = -1100
       end
@@ -106,11 +108,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @ny09.should be_valid
       end
-    end # describe "with on = -1100"
+    end
 
 
     describe "with on = -1100.5" do
-      before(:each) do
+      before do
         # presence validator does not care
         @ny09.on = -1100.5
       end
@@ -118,6 +120,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "IS valid" do
         @ny09.should be_valid
       end
-    end # describe "with on = -1100.5"
-  end # describe Holiday
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+    end
+  end
+end

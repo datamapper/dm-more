@@ -22,4 +22,3 @@ class Country
 
   validates_is_number :area, :message => "Please use integers to specify area"
 end
-Country.auto_migrate!

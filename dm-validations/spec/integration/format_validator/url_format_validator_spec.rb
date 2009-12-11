@@ -1,7 +1,11 @@
 require 'spec_helper'
 require 'integration/format_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::BillOfLading do
+describe 'DataMapper::Validate::Fixtures::BillOfLading' do
+  before :all do
+    DataMapper::Validate::Fixtures::BillOfLading.auto_migrate!
+  end
+
   def valid_attributes
     { :id => 1, :doc_no => 'A1234', :email => 'user@example.com', :url => 'http://example.com' }
   end
@@ -26,7 +30,7 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
         @model.errors.on(:url).should == [ 'Url has an invalid format' ]
       end
     end
-  end # each
+  end
 
 
   [ 'http://apple.com',
@@ -59,5 +63,5 @@ describe DataMapper::Validate::Fixtures::BillOfLading do
 
      it_should_behave_like "valid model"
    end
- end # each
-end # describe DataMapper::Validate::Fixtures::BillOfLading
+ end
+end

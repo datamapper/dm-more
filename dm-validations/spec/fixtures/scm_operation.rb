@@ -33,8 +33,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :name
   end
-  ScmOperation.auto_migrate!
-
 
   class SubversionOperation < ScmOperation
     #
@@ -43,9 +41,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
     validates_present :network_connection, :when => [:committing, :log_viewing]
   end
-
-  SubversionOperation.auto_migrate!
-
 
   class GitOperation < ScmOperation
     #
@@ -61,7 +56,4 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     }
     validates_present :clean_working_copy, :when => :pulling
   end
-
-
-  GitOperation.auto_migrate!
 end

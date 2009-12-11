@@ -3,6 +3,8 @@ require 'integration/automatic_validation/spec_helper'
 
 describe "A model with an Integer property" do
   before :all do
+    SailBoat.auto_migrate!
+
     @model = SailBoat.new
   end
 

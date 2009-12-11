@@ -4,15 +4,19 @@ require 'integration/required_field_validator/spec_helper'
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   # keep in mind any ScmOperation has a default value for brand property
   # so it is used
-  describe GitOperation do
-    before :each do
+  describe 'GitOperation' do
+    before :all do
+      GitOperation.auto_migrate!
+    end
+
+    before do
       @operation = GitOperation.new(:network_connection => true,
                                     :clean_working_copy => true,
                                     :message            => "I did it! I did it!! Hell yeah!!!")
     end
 
     describe "without operation name" do
-      before(:each) do
+      before do
         @operation.name = nil
       end
       it_should_behave_like "unnamed SCM operation"
@@ -21,7 +25,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
 
 
     describe "without network connection" do
-      before(:each) do
+      before do
         # now note that false make sense from readability
         # point of view but is incorrect from validator
         # point of view ;)
@@ -48,10 +52,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "without network connection"
+    end
 
     describe "with a network connection" do
-      before(:each) do
+      before do
         @operation.network_connection = false
       end
 
@@ -70,11 +74,11 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "with a network connection"
+    end
 
 
     describe "WITHOUT a clean working copy" do
-      before(:each) do
+      before do
         @operation.clean_working_copy = nil
       end
 
@@ -93,10 +97,10 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "without network connection"
+    end
 
     describe "with a clean working copy" do
-      before(:each) do
+      before do
         @operation.clean_working_copy = true
       end
 
@@ -115,25 +119,27 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       it "is not valid in default context" do
         @operation.should_not be_valid
       end
-    end # describe "with a network connection"
-  end # describe GitOperation
+    end
+  end
 
 
-  describe SubversionOperation do
-    before(:each) do
+  describe 'SubversionOperation' do
+    before do
+      SubversionOperation.auto_migrate!
+
       @operation = SubversionOperation.new :name    => "ci", :network_connection => true,
                                            :message => "v1.5.8", :clean_working_copy => true
     end
 
     describe "without operation name" do
-      before(:each) do
+      before do
         @operation.name = nil
       end
       it_should_behave_like "unnamed SCM operation"
     end
 
     describe "without network connection" do
-      before(:each) do
+      before do
         @operation.network_connection = nil
       end
 
@@ -141,6 +147,6 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         @operation.should_not be_valid_for_committing
         @operation.should_not be_valid_for_log_viewing
       end
-    end # describe "without network connection"
+    end
   end
-end # if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
+end

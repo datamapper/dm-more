@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/numeric_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::BasketballCourt do
+describe 'DataMapper::Validate::Fixtures::BasketballCourt' do
   before :all do
+    DataMapper::Validate::Fixtures::BasketballCourt.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::BasketballCourt.valid_instance
     @model.valid?
   end

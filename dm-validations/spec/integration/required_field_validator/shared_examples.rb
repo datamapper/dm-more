@@ -1,10 +1,12 @@
-describe GitOperation do
-  before :each do
+describe 'GitOperation' do
+  before do
+    GitOperation.auto_migrate!
+
     @operation = GitOperation.new
   end
 
   describe "unnamed SCM operation", :shared => true do
-    before :each do
+    before do
       @operation.name = nil
       @operation.valid?
     end

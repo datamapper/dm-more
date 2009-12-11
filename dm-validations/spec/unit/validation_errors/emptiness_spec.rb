@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'spec_helper'
 
-describe DataMapper::Validate::ValidationErrors do
+describe 'DataMapper::Validate::ValidationErrors' do
   before :all do
     @model = DataMapper::Validate::ValidationErrors.new(Object.new)
   end

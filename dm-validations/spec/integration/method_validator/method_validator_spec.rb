@@ -210,8 +210,10 @@ describe "Haskell" do
 end
 
 
-describe DataMapper::Validate::Fixtures::Event do
+describe 'DataMapper::Validate::Fixtures::Event' do
   before :all do
+    DataMapper::Validate::Fixtures::Event.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::Event.new(:name => "Fools day 2009")
   end
 

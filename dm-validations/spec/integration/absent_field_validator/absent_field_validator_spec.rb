@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/absent_field_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::Kayak do
+describe 'DataMapper::Validate::Fixtures::Kayak' do
   before :all do
+    DataMapper::Validate::Fixtures::Kayak.auto_migrate!
+
     @kayak = DataMapper::Validate::Fixtures::Kayak.new
     @kayak.should be_valid_for_sale
   end
@@ -68,8 +70,10 @@ describe DataMapper::Validate::Fixtures::Kayak do
 end
 
 
-describe DataMapper::Validate::Fixtures::Pirogue do
+describe 'DataMapper::Validate::Fixtures::Pirogue' do
   before :all do
+    DataMapper::Validate::Fixtures::Pirogue.auto_migrate!
+
     @kayak = DataMapper::Validate::Fixtures::Pirogue.new
     @kayak.should_not be_valid_for_sale
   end

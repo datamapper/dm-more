@@ -1,13 +1,15 @@
 require 'spec_helper'
 require 'integration/numeric_validator/spec_helper'
 
-describe City do
-  before(:each) do
+describe 'City' do
+  before do
+    City.auto_migrate!
+
     @city = City.new(:name => "Tokyo", :founded_in => 1603)
   end
 
   describe "with foundation year as integer" do
-    before(:each) do
+    before do
       # no op in this case
     end
 
@@ -18,7 +20,7 @@ describe City do
 
 
   describe "with foundation year as integer" do
-    before(:each) do
+    before do
       @city.founded_in = 1603
     end
 
@@ -29,7 +31,7 @@ describe City do
 
 
   describe "with foundation year as string containing only integers" do
-    before(:each) do
+    before do
       @city.founded_in = "1603"
     end
 
@@ -40,7 +42,7 @@ describe City do
 
 
   describe "with foundation year as string containing a float" do
-    before(:each) do
+    before do
       @city.founded_in = "1603.6"
     end
 
@@ -51,7 +53,7 @@ describe City do
 
 
   describe "with foundation year as string that is not an integer or float" do
-    before(:each) do
+    before do
       @string = "founded-in=1603"
 
       @city.founded_in = @string
@@ -68,7 +70,7 @@ describe City do
 
 
   describe "with unknown foundation date" do
-    before(:each) do
+    before do
       @city.founded_in = nil
     end
 

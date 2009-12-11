@@ -1,8 +1,10 @@
 require 'spec_helper'
 require 'integration/length_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::Jabberwock do
+describe 'DataMapper::Validate::Fixtures::Jabberwock' do
   before :all do
+    DataMapper::Validate::Fixtures::Jabberwock.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::Jabberwock.new
   end
 

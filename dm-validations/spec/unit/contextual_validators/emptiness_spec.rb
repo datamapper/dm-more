@@ -2,7 +2,7 @@
 require 'spec_helper'
 require 'unit/contextual_validators/spec_helper'
 
-describe DataMapper::Validate::ContextualValidators do
+describe 'DataMapper::Validate::ContextualValidators' do
   before :all do
     @model = DataMapper::Validate::ContextualValidators.new
   end

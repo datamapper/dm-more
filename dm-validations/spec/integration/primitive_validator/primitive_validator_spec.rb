@@ -1,10 +1,12 @@
 require 'spec_helper'
 require 'integration/primitive_validator/spec_helper'
 
-describe DataMapper::Validate::Fixtures::MemoryObject do
+describe 'DataMapper::Validate::Fixtures::MemoryObject' do
   include DataMapper::Validate::Fixtures
 
   before :all do
+    DataMapper::Validate::Fixtures::MemoryObject.auto_migrate!
+
     @model = DataMapper::Validate::Fixtures::MemoryObject.new
   end
 
