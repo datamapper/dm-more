@@ -104,7 +104,9 @@ desc "Release #{gem_spec.name}"
 task :release => [ :gem ] do
   gem_paths.each do |dir|
     Dir.chdir(dir) { rake 'release' }
-    puts "rake release in #{dir}"
+
+    # workaround Jeweler bug
+    system 'git status'
   end
 
   sh "#{RUBY} -S gem push gem/dm-more-#{gem_spec.version}.gem"
