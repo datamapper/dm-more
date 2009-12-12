@@ -111,7 +111,7 @@ task :release => [ :gem ] do
     system 'git status >/dev/null'
   end
 
-  sh "#{RUBY} -S gem push gem/dm-more-#{gem_spec.version}.gem"
+  sh "#{RUBY} -S gem push pkg/dm-more-#{gem_spec.version}.gem"
 end
 
 desc 'Run specs'
