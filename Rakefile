@@ -1,13 +1,12 @@
 require 'pathname'
 require 'spec/rake/spectask'
 require 'rake/rdoctask'
+require 'rake/gempackagetask'
 require 'fileutils'
 include FileUtils
 
-ROOT    = Pathname(__FILE__).dirname.expand_path
 JRUBY   = RUBY_PLATFORM =~ /java/
 WINDOWS = Gem.win_platform? || (JRUBY && ENV_JAVA['os.name'] =~ /windows/i)
-SUDO    = WINDOWS ? '' : ('sudo' unless ENV['SUDOLESS'])
 
 ## ORDER IS IMPORTANT
 # gems may depend on other member gems of dm-more
@@ -38,41 +37,55 @@ gem_paths = %w[
 ]
 
 # skip installing ferret on Ruby 1.9 until the gem is fixed
-if RUBY_VERSION >= '1.9.0' || JRUBY || WINDOWS
+if JRUBY || WINDOWS
   gem_paths -= %w[ adapters/dm-ferret-adapter ]
 end
 
-GEM_PATHS = gem_paths.freeze
+gems = gem_paths.map { |gem_path| File.basename(gem_path) }
 
-gems = GEM_PATHS.map { |p| File.basename(p) }
+gem_spec = Gem::Specification.new do |gem|
+  gem.name        = 'dm-more'
+  gem.summary     = 'DataMapper Plugins'
+  gem.description = gem.summary
+  gem.email       = 'dan.kubb [a] gmail [d] com'
+  gem.homepage    = 'http://github.com/datamapper/dm-more/'
+  gem.authors     = [ 'Dan Kubb' ]
 
-AUTHOR = 'Dan Kubb'
-EMAIL  = 'dan.kubb [a] gmail [d] com'
-GEM_NAME = 'dm-more'
-GEM_VERSION = ROOT.join('VERSION').read
-GEM_DEPENDENCIES = [['dm-core', GEM_VERSION], *gems.map { |g| [g, GEM_VERSION] }]
-GEM_CLEAN = %w[ **/.DS_Store} *.db doc/rdoc .config **/{coverage,log,pkg} cache lib/dm-more.rb ]
-GEM_EXTRAS = { :has_rdoc => false }
+  gem.version = File.read('VERSION').chomp
 
-PROJECT_NAME = 'datamapper'
-PROJECT_URL  = 'http://github.com/datamapper/dm-more/tree/master'
-PROJECT_DESCRIPTION = 'Faster, Better, Simpler.'
-PROJECT_SUMMARY = 'An Object/Relational Mapper for Ruby'
+  gem.rubyforge_project = 'datamapper'
 
-Pathname.glob(ROOT.join('tasks/**/*.rb').to_s).each { |f| require f }
+  gem.add_dependency 'dm-core', '~> 0.10.2'
 
-desc "Install #{GEM_NAME} #{GEM_VERSION}"
-task :install do
-  GEM_PATHS.each do |dir|
-    Dir.chdir(dir){ rake 'install' }
+  gems.each do |gem_name|
+    gem.add_dependency File.basename(gem_name), '~> 0.10.2'
   end
+
+  gem.add_development_dependency 'rspec', '~> 1.2.9'
+  gem.add_development_dependency 'yard',  '~> 0.4.0'
+
+  gem.require_path = 'lib'
+  gem.files        = %w[ LICENSE README.rdoc lib/dm-more.rb ]
 end
+
+Rake::GemPackageTask.new(gem_spec) do |package|
+  package.gem_spec = gem_spec
+end
+
+FileList['tasks/**/*.rake'].each { |task| import task }
 
 def rake(cmd)
   sh "#{RUBY} -S rake #{cmd}", :verbose => true
 end
 
-task :package do
+desc "Install #{gem_spec.name}"
+task :install do
+  gem_paths.each do |dir|
+    Dir.chdir(dir) { rake 'install' }
+  end
+end
+
+file 'lib/dm-more.rb' do
   mkdir_p 'lib'
   File.open('lib/dm-more.rb', 'w+') do |file|
     file.puts '### AUTOMATICALLY GENERATED.  DO NOT EDIT.'
@@ -87,29 +100,19 @@ task :package do
   end
 end
 
-task :bundle => [ :package ] do
-  mkdir_p 'bundle'
-  cp "pkg/dm-more-#{GEM_VERSION}.gem", 'bundle'
-  GEM_PATHS.each do |gem|
-    File.open("#{gem}/Rakefile") do |rakefile|
-      rakefile.read.detect {|l| l =~ /^VERSION\s*=\s*'(.*)'$/ }
-      cp "#{gem}/pkg/#{File.basename(gem)}-#{$1}.gem", 'bundle'
-    end
-  end
-end
-
-# NOTE: this task must be named release_all, and not release
-desc "Release #{GEM_NAME} #{GEM_VERSION}"
-task :release_all do
-  sh 'rake release'
-  GEM_PATHS.each do |dir|
+desc "Release #{gem_spec.name}"
+task :release => [ :gem ] do
+  gem_paths.each do |dir|
     Dir.chdir(dir) { rake 'release' }
+    puts "rake release in #{dir}"
   end
+
+  sh "#{RUBY} -S gem push gem/dm-more-#{gem_spec.version}.gem"
 end
 
 desc 'Run specs'
 task :spec do
-  exit 1 unless (GEM_PATHS - %w[ rails_datamapper ]).map do |gem_name|
+  exit 1 unless (gem_paths - %w[ rails_datamapper ]).map do |gem_name|
     Dir.chdir(gem_name) { rake 'spec' }
   end.all?
 end
