@@ -105,8 +105,10 @@ task :release => [ :gem ] do
   gem_paths.each do |dir|
     Dir.chdir(dir) { rake 'release' }
 
-    # workaround Jeweler bug
-    system 'git status'
+    # workaround Jeweler bug.  it was identifying the repo as
+    # in a dirty state, but it is not.  running git status clears
+    # the dirty state.
+    system 'git status >/dev/null'
   end
 
   sh "#{RUBY} -S gem push gem/dm-more-#{gem_spec.version}.gem"
