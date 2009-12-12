@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bernerd Schaefer"]
-  s.date = %q{2009-11-24}
+  s.date = %q{2009-12-11}
   s.description = %q{A DataMapper plugin for searching}
   s.email = %q{bernerd [a] wieck [d] com}
   s.extra_rdoc_files = [

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/person'
+  require './spec/fixtures/person'
 
   describe DataMapper::Types::Fixtures::Person do
     before :all do

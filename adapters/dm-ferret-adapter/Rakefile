@@ -20,8 +20,9 @@ begin
     gem.add_dependency 'dm-core', '~> 0.10.2'
     gem.add_dependency 'ferret',  '~> 0.11.6'
 
-    gem.add_development_dependency 'rspec', '~> 1.2.9'
-    gem.add_development_dependency 'yard',  '~> 0.4.0'
+    gem.add_development_dependency 'rspec',     '~> 1.2.9'
+    gem.add_development_dependency 'uuidtools', '~> 2.1.1'
+    gem.add_development_dependency 'yard',      '~> 0.4.0'
   end
 
   Jeweler::GemcutterTasks.new

@@ -41,9 +41,9 @@ class SerializerTestHarness
   end
 end
 
-require 'spec/lib/serialization_method_shared_spec'
+require './spec/lib/serialization_method_shared_spec'
 
 # require fixture resources
-Dir.glob("spec/fixtures/*.rb").each do |fixture_file|
+Dir.glob('./spec/fixtures/*.rb').each do |fixture_file|
   require fixture_file
 end

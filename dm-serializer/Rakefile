@@ -18,10 +18,13 @@ begin
     gem.rubyforge_project = 'datamapper'
 
     gem.add_dependency 'dm-core',   '~> 0.10.2'
+    gem.add_dependency 'fastercsv', '~> 1.5.0'
     gem.add_dependency 'json_pure', '~> 1.2.0'
 
-    gem.add_development_dependency 'rspec', '~> 1.2.9'
-    gem.add_development_dependency 'yard',  '~> 0.4.0'
+    #gem.add_development_dependency 'libxml-ruby', '~> 1.1.3'  # not available on JRuby
+    gem.add_development_dependency 'nokogiri',    '~> 1.4.1'
+    gem.add_development_dependency 'rspec',       '~> 1.2.9'
+    gem.add_development_dependency 'yard',        '~> 0.4.0'
   end
 
   Jeweler::GemcutterTasks.new

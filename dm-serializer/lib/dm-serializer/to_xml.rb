@@ -12,7 +12,6 @@ module DataMapper
       xml.output(to_xml_document(opts)).to_s
     end
 
-    protected
     # This method requires certain methods to be implemented in the individual
     # serializer library subclasses:
     # new_document
@@ -36,7 +35,7 @@ module DataMapper
           value = __send__(meth)
           unless value.nil?
             if value.respond_to?(:to_xml_document)
-              xml.add_xml(root, value.__send__(:to_xml_document))
+              xml.add_xml(root, value.to_xml_document)
             else
               xml.add_node(root, xml_name, value.to_s)
             end
@@ -52,15 +51,13 @@ module DataMapper
       to_xml_document(opts).to_s
     end
 
-    protected
-
     def to_xml_document(opts = {})
       xml = DataMapper::Serialize::XMLSerializers::SERIALIZER
       doc = xml.new_document
       default_collection_element_name = lambda {Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")}
       root = xml.root_node(doc, opts[:collection_element_name] || default_collection_element_name[], {'type' => 'array'})
       self.each do |item|
-        item.__send__(:to_xml_document, opts, doc)
+        item.to_xml_document(opts, doc)
       end
       doc
     end
@@ -73,8 +70,6 @@ module DataMapper
         def to_xml(opts = {})
           to_xml_document(opts).to_s
         end
-
-        protected
 
         def to_xml_document(opts = {})
           xml = DataMapper::Serialize::XMLSerializers::SERIALIZER

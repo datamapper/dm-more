@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Sindre Aarsaether"]
-  s.date = %q{2009-11-24}
+  s.date = %q{2009-12-11}
   s.description = %q{DataMapper plugin allowing the creation of nested sets from data models}
   s.email = %q{sindre [a] identu [d] no}
   s.extra_rdoc_files = [

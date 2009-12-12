@@ -2,7 +2,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/software_package'
+  require './spec/fixtures/software_package'
 
   describe DataMapper::Types::Fixtures::SoftwarePackage do
     describe 'with source path at /var/cache/apt/archives/linux-libc-dev_2.6.28-11.40_i386.deb' do

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/ticket'
+  require './spec/fixtures/ticket'
 
   describe DataMapper::Types::Fixtures::Ticket do
     describe 'that is dumped and then loaded' do

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/article'
+  require './spec/fixtures/article'
 
   describe DataMapper::Types::Fixtures::Article do
     describe "persisted with title and slug set to 'New DataMapper Type'" do

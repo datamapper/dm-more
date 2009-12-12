@@ -12,7 +12,7 @@ end
 
 try_spec do
 
-  require 'spec/fixtures/network_node'
+  require './spec/fixtures/network_node'
 
   describe DataMapper::Types::Fixtures::NetworkNode do
     before :all do

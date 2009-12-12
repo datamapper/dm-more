@@ -34,7 +34,7 @@ describe DataMapper::Is::Tree do
 
   it "should create an alias of class method first_root called root (ActiveRecord compatability)" do
     Category.is :tree
-    Category.method(:first_root).should == Category.method(:root)
+    Category.method(:root).should be_kind_of(Method)
   end
 
   it "should create an instance method called ancestors" do

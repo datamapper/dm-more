@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bernerd Schaefer"]
-  s.date = %q{2009-11-24}
+  s.date = %q{2009-12-11}
   s.description = %q{Ferret Adapter for DataMapper}
   s.email = %q{bernerd [a] wieck [d] com}
   s.extra_rdoc_files = [
@@ -54,17 +54,20 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<dm-core>, ["~> 0.10.2"])
       s.add_runtime_dependency(%q<ferret>, ["~> 0.11.6"])
       s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_development_dependency(%q<uuidtools>, ["~> 2.1.1"])
       s.add_development_dependency(%q<yard>, ["~> 0.4.0"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
       s.add_dependency(%q<ferret>, ["~> 0.11.6"])
       s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
       s.add_dependency(%q<yard>, ["~> 0.4.0"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.2"])
     s.add_dependency(%q<ferret>, ["~> 0.11.6"])
     s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+    s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
     s.add_dependency(%q<yard>, ["~> 0.4.0"])
   end
 end

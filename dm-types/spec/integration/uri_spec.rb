@@ -2,7 +2,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/bookmark'
+  require './spec/fixtures/bookmark'
 
   describe DataMapper::Types::Fixtures::Bookmark do
     describe 'without URI' do

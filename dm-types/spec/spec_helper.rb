@@ -41,11 +41,7 @@ HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_tes
 
 
 DEPENDENCIES = {
-  'bcrypt'    => 'bcrypt-ruby',
-  'fastercsv' => 'fastercsv',
-  'json'      => 'json',
-  'stringex'  => 'stringex',
-  'uuidtools' => 'uuidtools',
+  'bcrypt' => 'bcrypt-ruby',
 }
 
 def try_spec

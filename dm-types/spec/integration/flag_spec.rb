@@ -2,7 +2,7 @@ require 'spec_helper'
 
 try_spec do
 
-  require 'spec/fixtures/tshirt'
+  require './spec/fixtures/tshirt'
 
   describe DataMapper::Types::Fixtures::TShirt do
     before do
