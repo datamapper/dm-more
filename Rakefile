@@ -101,9 +101,9 @@ end
 # NOTE: this task must be named release_all, and not release
 desc "Release #{GEM_NAME} #{GEM_VERSION}"
 task :release_all do
-  sh "rake release VERSION=#{GEM_VERSION}"
+  sh 'rake release'
   GEM_PATHS.each do |dir|
-    Dir.chdir(dir) { rake "release VERSION=#{GEM_VERSION}" }
+    Dir.chdir(dir) { rake 'release' }
   end
 end
 
