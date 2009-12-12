@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'rake'
 
-FileList['tasks/**/*.rake'].each { |task| load task }
-
 begin
   gem 'jeweler', '~> 1.4'
   require 'jeweler'
@@ -24,9 +22,8 @@ begin
   end
 
   Jeweler::GemcutterTasks.new
-  Jeweler::RubyforgeTasks.new do |rubyforge|
-    rubyforge.doc_task = 'yardoc'
-  end
+
+  FileList['tasks/**/*.rake'].each { |task| import task }
 rescue LoadError
   puts 'Jeweler (or a dependency) not available. Install it with: gem install jeweler'
 end
