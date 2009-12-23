@@ -15,7 +15,6 @@ begin
 
     gem.rubyforge_project = 'datamapper'
 
-    gem.add_dependency 'bcrypt-ruby', '~> 2.1.2'
     gem.add_dependency 'dm-core',     '~> 0.10.2'
     gem.add_dependency 'fastercsv',   '~> 1.5.0'
     gem.add_dependency 'json_pure',   '~> 1.2.0'
