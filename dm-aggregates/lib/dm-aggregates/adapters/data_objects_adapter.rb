@@ -72,24 +72,24 @@ module DataMapper
           RUBY
         end
 
-        def property_to_column_name_with_operator(property, qualify, qualifier = nil)
+        def property_to_column_name_with_operator(property, qualify)
           case property
             when DataMapper::Query::Operator
-              aggregate_field_statement(property.operator, property.target, qualify, qualifier)
+              aggregate_field_statement(property.operator, property.target, qualify)
 
             when Property, DataMapper::Query::Path
-              property_to_column_name_without_operator(property, qualify, qualifier)
+              property_to_column_name_without_operator(property, qualify)
 
             else
               raise ArgumentError, "+property+ must be a DataMapper::Query::Operator, a DataMapper::Property or a Query::Path, but was a #{property.class} (#{property.inspect})"
           end
         end
 
-        def aggregate_field_statement(aggregate_function, property, qualify, qualifier)
+        def aggregate_field_statement(aggregate_function, property, qualify)
           column_name = if aggregate_function == :count && property == :all
             '*'
           else
-            property_to_column_name(property, qualify, qualifier)
+            property_to_column_name(property, qualify)
           end
 
           function_name = case aggregate_function
