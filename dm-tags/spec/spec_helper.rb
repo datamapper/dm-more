@@ -34,7 +34,6 @@ HAS_SQLITE3  = load_driver(:sqlite3,  'sqlite3::memory:')
 HAS_MYSQL    = load_driver(:mysql,    'mysql://localhost/dm_core_test')
 HAS_POSTGRES = load_driver(:postgres, 'postgres://postgres@localhost/dm_core_test')
 
-
 Spec::Runner.configure do |config|
   config.before do
     Object.send(:remove_const, :TaggedModel) if defined?(TaggedModel)

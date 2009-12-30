@@ -63,7 +63,7 @@ module DataMapper
             before :save, :update_#{association}
 
             def #{singular}_list
-              @#{singular}_list ||= self.#{association}.map { |tag| tag.name }
+              @#{singular}_list ||= #{association}.map { |tag| tag.name }
             end
 
             def #{singular}_list=(string)
@@ -73,7 +73,7 @@ module DataMapper
             alias #{singular}_collection= #{singular}_list=
 
             def update_#{association}
-              self.#{association} = self.#{singular}_list.map do |name|
+              self.#{association} = #{singular}_list.map do |name|
                 Tag.first_or_new(:name => name)
               end
 
@@ -84,7 +84,7 @@ module DataMapper
             # Helper methods to make setting tags easier
             #
             def #{singular}_collection
-              self.#{association}.map { |tag| tag.name }.join(', ')
+              #{association}.map { |tag| tag.name }.join(', ')
             end
 
             ##
@@ -92,8 +92,7 @@ module DataMapper
             #
             def add_#{singular}(string)
               tag_names = string.to_s.split(',').map { |name| name.gsub(/[^\\w\\s_-]/i, '').strip }
-              tag_names.concat(self.#{singular}_list)
-              @#{singular}_list = tag_names.uniq.sort
+              @#{singular}_list = tag_names.concat(#{singular}_list).uniq.sort
             end
           RUBY
         end
