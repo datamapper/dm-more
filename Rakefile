@@ -55,10 +55,10 @@ gem_spec = Gem::Specification.new do |gem|
 
   gem.rubyforge_project = 'datamapper'
 
-  gem.add_dependency 'dm-core', '~> 0.10.2'
+  gem.add_dependency 'dm-core', '~> 0.10.3'
 
   gems.each do |gem_name|
-    gem.add_dependency File.basename(gem_name), '~> 0.10.2'
+    gem.add_dependency File.basename(gem_name), '~> 0.10.3'
   end
 
   gem.add_development_dependency 'rspec', '~> 1.2.9'
