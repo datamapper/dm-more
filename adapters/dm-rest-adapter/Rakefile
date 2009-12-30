@@ -20,7 +20,7 @@ begin
 
     gem.add_development_dependency 'fakeweb', '~> 1.2.7'
     gem.add_development_dependency 'rspec',   '~> 1.2.9'
-    gem.add_development_dependency 'yard',    '~> 0.4.0'
+    gem.add_development_dependency 'yard',    '~> 0.5'
   end
 
   Jeweler::GemcutterTasks.new

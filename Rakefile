@@ -62,7 +62,7 @@ gem_spec = Gem::Specification.new do |gem|
   end
 
   gem.add_development_dependency 'rspec', '~> 1.2.9'
-  gem.add_development_dependency 'yard',  '~> 0.4.0'
+  gem.add_development_dependency 'yard',  '~> 0.5'
 
   gem.require_path = 'lib'
   gem.files        = %w[ LICENSE README.rdoc lib/dm-more.rb ]
