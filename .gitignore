@@ -24,5 +24,4 @@ log
 
 ## PROJECT::SPECIFIC
 
-bundle/
-lib/dm-more.rb
+lib
