@@ -37,7 +37,7 @@ gem_paths = %w[
 ]
 
 # skip installing ferret on Ruby 1.9 until the gem is fixed
-if JRUBY || WINDOWS
+if JRUBY || WINDOWS || RUBY_VERSION < '1.9'
   gem_paths -= %w[ adapters/dm-ferret-adapter ]
 end
 
