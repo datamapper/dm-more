@@ -12,9 +12,9 @@ module SQL
     end
 
     def recreate_database
-      execute "DROP DATABASE #{db_name}"
-      execute "CREATE DATABASE #{db_name}"
-      execute "USE #{db_name}"
+      execute "DROP DATABASE #{schema_name}"
+      execute "CREATE DATABASE #{schema_name}"
+      execute "USE #{schema_name}"
     end
 
     def supports_serial?
