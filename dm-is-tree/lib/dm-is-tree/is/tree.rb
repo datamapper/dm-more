@@ -74,7 +74,7 @@ module DataMapper
         assc_options = { :model => options[:model], :child_key => Array(options[:child_key]) }
         has_n_options = options[:order] ? { :order => Array(options[:order]) }.merge(assc_options) : assc_options
 
-        belongs_to :parent, assc_options
+        belongs_to :parent, assc_options.merge(:required => false)
         has n, :children, has_n_options
 
         class << self
