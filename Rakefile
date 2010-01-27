@@ -116,7 +116,7 @@ end
 
 desc 'Run specs'
 task :spec do
-  exit 1 unless (gem_paths - %w[ rails_datamapper dm-serializer ]).map do |gem_name|
+  exit 1 unless (gem_paths - %w[ rails_datamapper ]).map do |gem_name|
     Dir.chdir(gem_name) { rake 'spec' }
   end.all?
 end
