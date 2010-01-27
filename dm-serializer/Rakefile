@@ -21,7 +21,7 @@ begin
 
     #gem.add_development_dependency 'libxml-ruby', '~> 1.1.3'  # not available on JRuby
     gem.add_development_dependency 'nokogiri',    '~> 1.4.1'
-    gem.add_development_dependency 'rspec',       '~> 1.2.9'
+    gem.add_development_dependency 'rspec',       '~> 1.3'
     gem.add_development_dependency 'yard',        '~> 0.5'
   end
 

@@ -18,7 +18,7 @@ begin
     gem.add_dependency 'dm-core', '~> 0.10.3'
     gem.add_dependency 'ferret',  '~> 0.11.6'
 
-    gem.add_development_dependency 'rspec',     '~> 1.2.9'
+    gem.add_development_dependency 'rspec',     '~> 1.3'
     gem.add_development_dependency 'uuidtools', '~> 2.1.1'
     gem.add_development_dependency 'yard',      '~> 0.5'
   end

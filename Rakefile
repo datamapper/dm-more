@@ -61,7 +61,7 @@ gem_spec = Gem::Specification.new do |gem|
     gem.add_dependency File.basename(gem_name), '~> 0.10.3'
   end
 
-  gem.add_development_dependency 'rspec', '~> 1.2.9'
+  gem.add_development_dependency 'rspec', '~> 1.3'
   gem.add_development_dependency 'yard',  '~> 0.5'
 
   gem.require_path = 'lib'
@@ -116,7 +116,7 @@ end
 
 desc 'Run specs'
 task :spec do
-  exit 1 unless (gem_paths - %w[ rails_datamapper ]).map do |gem_name|
+  exit 1 unless (gem_paths - %w[ rails_datamapper dm-serializer ]).map do |gem_name|
     Dir.chdir(gem_name) { rake 'spec' }
   end.all?
 end

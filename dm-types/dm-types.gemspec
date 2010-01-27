@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dan Kubb"]
-  s.date = %q{2009-12-29}
+  s.date = %q{2010-01-27}
   s.description = %q{DataMapper plugin providing extra data types}
   s.email = %q{dan.kubb [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -94,7 +94,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<json_pure>, ["~> 1.2.0"])
       s.add_runtime_dependency(%q<uuidtools>, ["~> 2.1.1"])
       s.add_runtime_dependency(%q<stringex>, ["~> 1.1.0"])
-      s.add_development_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_development_dependency(%q<rspec>, ["~> 1.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.5"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.3"])
@@ -102,7 +102,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<json_pure>, ["~> 1.2.0"])
       s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
       s.add_dependency(%q<stringex>, ["~> 1.1.0"])
-      s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+      s.add_dependency(%q<rspec>, ["~> 1.3"])
       s.add_dependency(%q<yard>, ["~> 0.5"])
     end
   else
@@ -111,7 +111,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<json_pure>, ["~> 1.2.0"])
     s.add_dependency(%q<uuidtools>, ["~> 2.1.1"])
     s.add_dependency(%q<stringex>, ["~> 1.1.0"])
-    s.add_dependency(%q<rspec>, ["~> 1.2.9"])
+    s.add_dependency(%q<rspec>, ["~> 1.3"])
     s.add_dependency(%q<yard>, ["~> 0.5"])
   end
 end
