@@ -64,4 +64,42 @@ describe 'DataMapper::Resource' do
       end
     end
   end
+
+  describe '#save' do
+    before :all do
+      @resource.code = 'a' * 10
+      @resource.save
+    end
+
+    describe 'on a new resource' do
+      it 'should call valid? once' do
+        @resource.valid_hook_call_count.should == 1
+      end
+    end
+
+    describe 'on a saved, non-dirty resource' do
+      before :all do
+        # reload the resource
+        @resource = @resource.model.get(*@resource.key)
+        @resource.save
+      end
+
+      it 'should not call valid?' do
+        @resource.valid_hook_call_count.should be_nil
+      end
+    end
+
+    describe 'on a saved, dirty resource' do
+      before :all do
+        # reload the resource
+        @resource = @resource.model.get(*@resource.key)
+        @resource.code = 'b' * 10
+        @resource.save
+      end
+
+      it 'should call valid? once' do
+        @resource.valid_hook_call_count.should == 1
+      end
+    end
+  end
 end
