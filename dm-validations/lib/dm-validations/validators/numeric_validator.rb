@@ -62,6 +62,13 @@ module DataMapper
       def validate_with_comparison(value, cmp, expected, error_message_name, errors, negated = false)
         return if expected.nil?
 
+        # XXX: workaround for jruby. This is needed because the jruby
+        # compiler optimizes a bit too far with magic variables like $~.
+        # the value.send line sends $~. Inserting this line makes sure the
+        # jruby compiler does not optimise here.
+        # see http://jira.codehaus.org/browse/JRUBY-3765
+        $~ = nil if RUBY_PLATFORM[/java/]
+
         comparison = value.send(cmp, expected)
         return if negated ? !comparison : comparison
 
