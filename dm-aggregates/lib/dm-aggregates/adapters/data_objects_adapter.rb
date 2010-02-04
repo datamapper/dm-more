@@ -27,7 +27,7 @@ module DataMapper
                 if field.respond_to?(:operator)
                   send(field.operator, field.target, value)
                 else
-                  field.typecast(value)
+                  field.load(value)
                 end
               end
 
@@ -48,19 +48,19 @@ module DataMapper
       end
 
       def min(property, value)
-        property.typecast(value)
+        property.load(value)
       end
 
       def max(property, value)
-        property.typecast(value)
+        property.load(value)
       end
 
       def avg(property, value)
-        property.type == Integer ? value.to_f : property.typecast(value)
+        property.type == Integer ? value.to_f : property.load(value)
       end
 
       def sum(property, value)
-        property.typecast(value)
+        property.load(value)
       end
 
       module SQL
