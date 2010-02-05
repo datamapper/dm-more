@@ -6,6 +6,7 @@ require Pathname(__FILE__).dirname.expand_path + ".." + 'formats/url'
 
 module DataMapper
   module Validate
+    class UnknownValidationFormat < ::ArgumentError; end
 
     ##
     #
