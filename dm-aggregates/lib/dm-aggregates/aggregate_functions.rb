@@ -156,9 +156,26 @@ module DataMapper
         query[:fields] ||= []
         query[:fields]  |= args
         query[:fields].map! { |f| normalize_field(f) }
-        query[:order]  ||= query[:fields].select { |p| p.kind_of?(Property) }
 
         raise ArgumentError, 'query[:fields] must not be empty' if query[:fields].empty?
+
+        unless query.key?(:order)
+          # the current collection/model is already sorted by attributes
+          # and since we are projecting away some of the attributes,
+          # and then performing aggregate functions on the remainder,
+          # we need to honor the existing order, as if it were already
+          # materialized, and we are looping over the rows in order.
+
+          directions = direction_map
+
+          query[:order] = []
+
+          # use the current query order for each property if available
+          query[:fields].each do |property|
+            next unless property.kind_of?(Property)
+            query[:order] << directions.fetch(property, property)
+          end
+        end
 
         query = scoped_query(query)
 
@@ -201,6 +218,14 @@ module DataMapper
           when Property
             field
         end
+      end
+
+      def direction_map
+        direction_map = {}
+        self.query.order.each do |direction|
+          direction_map[direction.target] = direction
+        end
+        direction_map
       end
     end
   end

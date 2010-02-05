@@ -102,5 +102,15 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         it { should == [ 2, 2, 3, 4, 3.5, 7 ] }
       end
     end
+
+    describe 'with the order reversed by the grouping field' do
+      before do
+        @dragons = Dragon.all(:order => [ :birth_at.desc ])
+      end
+
+      it 'should display the results in reverse order' do
+        @dragons.aggregate(:birth_at, :all.count).should == Dragon.aggregate(:birth_at, :all.count).reverse
+      end
+    end
   end
 end
