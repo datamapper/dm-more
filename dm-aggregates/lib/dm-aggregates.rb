@@ -1,3 +1,5 @@
+require 'dm-core'
+
 require 'dm-aggregates/adapters/data_objects_adapter'
 require 'dm-aggregates/aggregate_functions'
 require 'dm-aggregates/collection'
