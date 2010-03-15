@@ -1,3 +1,5 @@
+require 'dm-core'
+
 module DataMapper
   module Timestamps
     TIMESTAMP_PROPERTIES = {
