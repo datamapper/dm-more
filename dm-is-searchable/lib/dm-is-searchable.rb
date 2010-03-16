@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'dm-is-searchable/is/searchable'
 
 module DataMapper

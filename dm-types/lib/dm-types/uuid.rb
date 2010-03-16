@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'uuidtools'  # must be ~>2.0
 
 module DataMapper

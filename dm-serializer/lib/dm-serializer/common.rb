@@ -1,3 +1,5 @@
+require 'dm-core'
+
 module DataMapper
   module Serialize
     # Returns propreties to serialize based on :only or :exclude arrays, if provided

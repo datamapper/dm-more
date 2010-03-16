@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'dm-is-versioned/is/versioned'
 
 # Include the plugin in Resource

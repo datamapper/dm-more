@@ -1,3 +1,5 @@
+require 'dm-core'
+
 require 'dm-validations/exceptions'
 require 'dm-validations/validation_errors'
 require 'dm-validations/contextual_validators'

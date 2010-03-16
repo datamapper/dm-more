@@ -1,6 +1,7 @@
 require 'pathname'
 require 'extlib/pathname'
 
+require 'dm-core'
 require 'rails_datamapper/session_store'
 
 module Rails

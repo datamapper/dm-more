@@ -1,3 +1,5 @@
+require 'dm-core'
+
 module DataMapper
   module Types
     class Flag < Type

@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'stringex'
 
 module DataMapper

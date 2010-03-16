@@ -1,3 +1,5 @@
+require 'dm-core'
+
 require 'dm-constraints/delete_constraint'
 require 'dm-constraints/migrations'
 

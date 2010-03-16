@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'randexp'
 
 require 'dm-sweatshop/sweatshop'

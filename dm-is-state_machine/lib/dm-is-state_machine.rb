@@ -1,3 +1,5 @@
+require 'dm-core'
+
 require 'dm-is-state_machine/is/state_machine'
 require 'dm-is-state_machine/is/data/event'
 require 'dm-is-state_machine/is/data/machine'

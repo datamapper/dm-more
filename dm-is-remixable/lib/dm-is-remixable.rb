@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'dm-is-remixable/is/remixable'
 
 module DataMapper

@@ -2,6 +2,8 @@ require 'rexml/document'
 
 require 'cgi'  # for CGI.escape
 require 'addressable/uri'
+
+require 'dm-core'
 require 'dm-serializer'
 
 require 'rest_adapter/adapter'

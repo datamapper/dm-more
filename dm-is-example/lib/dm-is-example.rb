@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'dm-is-example/is/example'
 
 module DataMapper

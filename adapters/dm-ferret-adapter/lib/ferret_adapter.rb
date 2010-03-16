@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'ferret'
 
 require 'ferret_adapter/adapter'

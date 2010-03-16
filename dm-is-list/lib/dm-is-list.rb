@@ -1,3 +1,4 @@
+require 'dm-core'
 require 'dm-adjust'
 require 'dm-is-list/is/list'
 

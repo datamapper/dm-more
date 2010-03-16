@@ -1,4 +1,5 @@
 require 'ipaddr'
+require 'dm-core'
 
 module DataMapper
   module Types

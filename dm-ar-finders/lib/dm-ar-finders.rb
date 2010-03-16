@@ -1,3 +1,5 @@
+require 'dm-core'
+
 module DataMapper
   module Model
     # Lookup the resource by the primary key
