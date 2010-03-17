@@ -5,17 +5,14 @@ require 'fakeweb'
 # use local dm-core if running from a typical dev checkout.
 lib = File.join('..', '..', '..', 'dm-core', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
-require 'dm-core'
 
 # use local dm-validations if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-validations', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
-require 'dm-validations'
 
 # use local dm-serializer if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-serializer', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
-require 'dm-serializer'
 
 # Support running specs with 'rake spec' and 'spec'
 $LOAD_PATH.unshift('lib') unless $LOAD_PATH.include?('lib')

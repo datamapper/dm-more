@@ -3,12 +3,10 @@ require 'rubygems'
 # Use local dm-core if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-core', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
-require 'dm-core'
 
 # Use local dm-validations if running from a typical dev checkout.
 lib = File.join('..', 'dm-validations', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
-require 'dm-validations'
 
 # Support running specs with 'rake spec' and 'spec'
 $LOAD_PATH.unshift('lib') unless $LOAD_PATH.include?('lib')
