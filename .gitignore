@@ -25,3 +25,8 @@ log
 ## PROJECT::SPECIFIC
 
 lib
+
+## BUNDLER
+**/.bundle
+**/**/.bundle
+
