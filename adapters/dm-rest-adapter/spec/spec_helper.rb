@@ -9,6 +9,7 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib)
 # use local dm-validations if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-validations', 'lib')
 $LOAD_PATH.unshift(lib) if File.directory?(lib)
+require 'dm-validations'
 
 # use local dm-serializer if running from a typical dev checkout.
 lib = File.join('..', '..', 'dm-serializer', 'lib')

@@ -1,5 +1,3 @@
-require 'extlib/dictionary'
-
 module DataMapper
   module Validate
 
@@ -40,7 +38,7 @@ module DataMapper
       cattr_writer :default_error_messages
 
       def self.default_error_message(key, field, *values)
-        field = Extlib::Inflection.humanize(field)
+        field = ActiveSupport::Inflector.humanize(field)
         @@default_error_messages[key] % [field, *values].flatten
       end
 
@@ -48,7 +46,7 @@ module DataMapper
 
       def initialize(resource)
         @resource = resource
-        @errors   = Dictionary.new { |h,k| h[k] = [] }
+        @errors   = ActiveSupport::OrderedHash.new { |h,k| h[k] = [] }
       end
 
       # Clear existing validation errors.

@@ -1,3 +1,9 @@
+begin
+  require 'active_support/core_ext/class/inheritable_reader'
+rescue LoadError
+  require 'extlib/class'
+end
+
 module DataMapper
   class Sweatshop
     module Unique

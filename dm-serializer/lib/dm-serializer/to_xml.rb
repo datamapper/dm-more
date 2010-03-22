@@ -21,7 +21,7 @@ module DataMapper
     def to_xml_document(opts={}, doc = nil)
       xml = XMLSerializers::SERIALIZER
       doc ||= xml.new_document
-      default_xml_element_name = lambda { Extlib::Inflection.underscore(model.name).tr("/", "-") }
+      default_xml_element_name = lambda { ActiveSupport::Inflector.underscore(model.name).tr("/", "-") }
       root = xml.root_node(doc, opts[:element_name] || default_xml_element_name[])
       properties_to_serialize(opts).each do |property|
         value = __send__(property.name)
@@ -54,7 +54,7 @@ module DataMapper
     def to_xml_document(opts = {})
       xml = DataMapper::Serialize::XMLSerializers::SERIALIZER
       doc = xml.new_document
-      default_collection_element_name = lambda {Extlib::Inflection.pluralize(Extlib::Inflection.underscore(self.model.to_s)).tr("/", "-")}
+      default_collection_element_name = lambda {ActiveSupport::Inflector.pluralize(ActiveSupport::Inflector.underscore(self.model.to_s)).tr("/", "-")}
       root = xml.root_node(doc, opts[:collection_element_name] || default_collection_element_name[], {'type' => 'array'})
       self.each do |item|
         item.to_xml_document(opts, doc)

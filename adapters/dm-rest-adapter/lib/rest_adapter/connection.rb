@@ -1,10 +1,18 @@
 require 'net/http'
 
+begin
+  require 'active_support/inflector'
+rescue LoadError
+  require 'extlib/inflection'
+  module ActiveSupport
+    Inflector = Extlib::Inflection unless defined?(Inflector)
+  end
+end
+
 module DataMapperRest
   # Somewhat stolen from ActiveResource
   # TODO: Support https?
   class Connection
-    include Extlib
     attr_accessor :uri, :format
 
     def initialize(uri, format)
@@ -32,7 +40,7 @@ module DataMapperRest
 
       def run_verb(verb, data = nil)
         request do |http|
-          klass = Net::HTTP.find_const(Inflection.camelize(verb))
+          klass = Net::HTTP.find_const(ActiveSupport::Inflector.camelize(verb))
           request = klass.new(@uri.to_s, @format.header)
           request.basic_auth(@uri.user, @uri.password) if @uri.user && @uri.password
           result = http.request(request, data)

@@ -1,3 +1,12 @@
+begin
+  require 'active_support/ordered_hash'
+rescue LoadError
+  require 'extlib/dictionary'
+  module ActiveSupport
+    OrderedHash = Dictionary unless defined?(OrderedHash)
+  end
+end
+
 require 'dm-core'
 
 module DataMapper

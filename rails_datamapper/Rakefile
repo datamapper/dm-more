@@ -16,6 +16,7 @@ begin
     gem.rubyforge_project = 'datamapper'
 
     gem.add_dependency 'dm-core', '~> 0.10.3'
+    gem.add_dependency 'rails',   '~> 2.3.5'
 
     gem.add_development_dependency 'rspec', '~> 1.3'
     gem.add_development_dependency 'yard',  '~> 0.5'

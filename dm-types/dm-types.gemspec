@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Dan Kubb"]
-  s.date = %q{2010-01-27}
+  s.date = %q{2010-03-20}
   s.description = %q{DataMapper plugin providing extra data types}
   s.email = %q{dan.kubb [a] gmail [d] com}
   s.extra_rdoc_files = [
@@ -81,7 +81,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{datamapper}
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{DataMapper plugin providing extra data types}
 
   if s.respond_to? :specification_version then
@@ -96,6 +96,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<stringex>, ["~> 1.1.0"])
       s.add_development_dependency(%q<rspec>, ["~> 1.3"])
       s.add_development_dependency(%q<yard>, ["~> 0.5"])
+      s.add_development_dependency(%q<dm-validations>, ["~> 0.10.3"])
     else
       s.add_dependency(%q<dm-core>, ["~> 0.10.3"])
       s.add_dependency(%q<fastercsv>, ["~> 1.5.0"])
@@ -104,6 +105,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<stringex>, ["~> 1.1.0"])
       s.add_dependency(%q<rspec>, ["~> 1.3"])
       s.add_dependency(%q<yard>, ["~> 0.5"])
+      s.add_dependency(%q<dm-validations>, ["~> 0.10.3"])
     end
   else
     s.add_dependency(%q<dm-core>, ["~> 0.10.3"])
@@ -113,6 +115,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<stringex>, ["~> 1.1.0"])
     s.add_dependency(%q<rspec>, ["~> 1.3"])
     s.add_dependency(%q<yard>, ["~> 0.5"])
+    s.add_dependency(%q<dm-validations>, ["~> 0.10.3"])
   end
 end
 

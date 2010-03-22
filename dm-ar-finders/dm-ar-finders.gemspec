@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John W Higgins"]
-  s.date = %q{2010-01-27}
+  s.date = %q{2010-03-20}
   s.description = %q{DataMapper plugin providing ActiveRecord-style finders}
   s.email = %q{john [a] wishVPS [d] com}
   s.extra_rdoc_files = [
@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{datamapper}
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{DataMapper plugin providing ActiveRecord-style finders}
 
   if s.respond_to? :specification_version then

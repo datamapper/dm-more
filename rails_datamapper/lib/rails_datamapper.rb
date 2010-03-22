@@ -1,7 +1,6 @@
 require 'pathname'
 require 'extlib/pathname'
 
-require 'dm-core'
 require 'rails_datamapper/session_store'
 
 module Rails
@@ -19,7 +18,7 @@ module Rails
     private
 
       def config_file
-        Rails.root / 'config' / 'database.yml'
+        File.expand_path('config/database.yml', Rails.root)
       end
 
       def full_config

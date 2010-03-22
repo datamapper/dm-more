@@ -52,7 +52,7 @@ module DataMapper
 
         associations.each do |association|
           association = association.to_s
-          singular    = association.singular
+          singular    = association.singularize
 
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             property :frozen_#{singular}_list, Text

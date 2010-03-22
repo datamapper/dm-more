@@ -6,7 +6,7 @@ require 'dm-constraints/migrations'
 module DataMapper
   module Associations
     class OneToMany::Relationship
-      include Extlib::Hook
+      include DataMapper::Hook
       include Constraints::DeleteConstraint
 
       OPTIONS << :constraint

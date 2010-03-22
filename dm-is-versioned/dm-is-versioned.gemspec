@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Bernerd Schaefer"]
-  s.date = %q{2010-01-27}
+  s.date = %q{2010-03-20}
   s.description = %q{DataMapper plugin enabling simple versioning of models}
   s.email = %q{bernerd [a] wieck [d] com}
   s.extra_rdoc_files = [
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{datamapper}
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{DataMapper plugin enabling simple versioning of models}
 
   if s.respond_to? :specification_version then

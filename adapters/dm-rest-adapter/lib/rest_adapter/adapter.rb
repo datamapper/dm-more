@@ -145,7 +145,7 @@ module DataMapperRest
     end
 
     def element_name(model)
-      model.storage_name(self.name).singular
+      model.storage_name(self.name).singularize
     end
 
     def resource_name(model)

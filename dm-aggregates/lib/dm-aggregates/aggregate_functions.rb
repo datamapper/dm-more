@@ -1,7 +1,7 @@
 module DataMapper
   module Aggregates
     module Functions
-      include Extlib::Assertions
+      include DataMapper::Assertions
 
       # Count results (given the conditions)
       #

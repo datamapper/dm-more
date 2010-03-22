@@ -1,3 +1,5 @@
+require 'dm-core'
+
 module DataMapper
   # Observers allow you to add callback hooks to DataMapper::Resource objects
   # in a separate class. This is great for separating out logic that is not

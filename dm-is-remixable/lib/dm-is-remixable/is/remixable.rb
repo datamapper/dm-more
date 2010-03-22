@@ -1,3 +1,16 @@
+require 'dm-core'
+
+begin
+  require 'active_support/inflector'
+rescue LoadError
+  require 'extlib/inflection'
+  class String
+    def underscore
+      Extlib::Inflection.underscore(self)
+    end
+  end
+end
+
 # reopen sam/extlib/lib/extlib/object.rb
 class Object
 
@@ -6,8 +19,6 @@ class Object
   end
 
 end
-
-Extlib::Inflection.rule 'ess', 'esses'
 
 module DataMapper
   module Is
@@ -57,7 +68,7 @@ module DataMapper
         @is_remixable = true
 
         # support clean suffixes for nested modules
-        default_suffix = Extlib::Inflection.demodulize(self.name).singular.snake_case
+        default_suffix = ActiveSupport::Inflector.demodulize(self.name).singularize.underscore
         suffix(options.delete(:suffix) || default_suffix)
       end
 
@@ -68,7 +79,7 @@ module DataMapper
       # ==== Description
       #   Methods available to all DataMapper::Resources
       module RemixerClassMethods
-        include Extlib::Assertions
+        include DataMapper::Assertions
 
         def self.included(base);end;
 
@@ -146,7 +157,7 @@ module DataMapper
           # Example (from my upcoming dm-is-rateable gem)
           # remix n, "DataMapper::Is::Rateable::Rating", :as => :ratings
           remixable_module = case remixable
-            when Symbol then Object.full_const_get(Extlib::Inflection.classify(remixable))
+            when Symbol then Object.full_const_get(ActiveSupport::Inflector.classify(remixable))
             when String then Object.full_const_get(remixable)
             when Module then remixable
           end
@@ -163,7 +174,7 @@ module DataMapper
           #Merge defaults/options
           options = {
             :as      => nil,
-            :model   => Extlib::Inflection.classify(self.name.snake_case + '_' + remixable_module.suffix.pluralize),
+            :model   => ActiveSupport::Inflector.classify(self.name.underscore + '_' + remixable_module.suffix.pluralize),
             :for     => nil,
             :on      => nil,
             :unique  => false,
@@ -172,10 +183,10 @@ module DataMapper
           }.update(options)
 
           #Make sure the class hasn't been remixed already
-          unless Object.full_const_defined?(Extlib::Inflection.classify(options[:model]))
+          unless Object.full_const_defined?(ActiveSupport::Inflector.classify(options[:model]))
 
             #Storage name of our remixed model
-            options[:table_name] = Extlib::Inflection.tableize(options[:model])
+            options[:table_name] = ActiveSupport::Inflector.tableize(options[:model])
 
             #Other model to mix with in case of M:M through Remixable
             options[:other_model] = options[:for] || options[:on]
@@ -185,8 +196,8 @@ module DataMapper
 
             # map the remixable to the remixed model
             # since this will be used from 'enhance api' i think it makes perfect sense to
-            # always refer to a remixable by its demodulized snake_cased constant name
-            remixable_key = Extlib::Inflection.demodulize(remixable_module.name).snake_case.to_sym
+            # always refer to a remixable by its demodulized underscored constant name
+            remixable_key = ActiveSupport::Inflector.demodulize(remixable_module.name).underscore.to_sym
             populate_remixables_mapping(model, options.merge(:remixable_key => remixable_key))
 
             # attach RemixerClassMethods and RemixerInstanceMethods to remixer if defined by remixee
@@ -253,12 +264,12 @@ module DataMapper
         #       belongs_to :tag
         #     end
         def enhance(remixable,remixable_model=nil, &block)
-          # always use innermost singular snake_cased constant name
-          remixable_name = remixable.to_s.singular.snake_case.to_sym
+          # always use innermost singular underscored constant name
+          remixable_name = remixable.to_s.singularize.underscore.to_sym
           class_name = if remixable_model.nil?
             @remixables[remixable_name].keys.first
           else
-            Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
+            ActiveSupport::Inflector.demodulize(remixable_model.to_s).underscore.to_sym
           end
 
           model = @remixables[remixable_name][class_name][:model] unless @remixables[remixable_name][class_name].nil?
@@ -282,7 +293,7 @@ module DataMapper
           key = options[:remixable_key]
           accessor_name = options[:as] ? options[:as] : options[:table_name]
           @remixables[key] ||= {}
-          model_key = Extlib::Inflection.demodulize(remixable_model.to_s).snake_case.to_sym
+          model_key = ActiveSupport::Inflector.demodulize(remixable_model.to_s).underscore.to_sym
           @remixables[key][model_key] ||= {}
           @remixables[key][model_key][:reader] ||= accessor_name.to_sym
           @remixables[key][model_key][:writer] ||= "#{accessor_name}=".to_sym
@@ -298,7 +309,7 @@ module DataMapper
         #   options     <Hash> options hash
         def remix_one_to_many(cardinality, model, options)
           self.has cardinality, (options[:as] || options[:table_name]).to_sym, :model => model.name
-          model.property Extlib::Inflection.foreign_key(self.name).intern, Integer, :min => 0, :required => true
+          model.property ActiveSupport::Inflector.foreign_key(self.name).intern, Integer, :min => 0, :required => true
           model.belongs_to belongs_to_name(self.name)
         end
 
@@ -310,7 +321,7 @@ module DataMapper
         #   model       <Class> remixed model that 'self' is relating through
         #   options     <Hash> options hash
         def remix_many_to_many(cardinality, model, options)
-          options[:other_model] = Object.full_const_get(Extlib::Inflection.classify(options[:other_model]))
+          options[:other_model] = Object.full_const_get(ActiveSupport::Inflector.classify(options[:other_model]))
 
           #TODO if options[:unique] the two *_id's need to be a unique composite key, maybe even
           # attach a validates_is_unique if the validator is included.
@@ -325,8 +336,8 @@ module DataMapper
             model.belongs_to belongs_to_name(options[:other_model].name)
             if options[:connect]
               remixed = options[:as]
-              remixed ||= options[:other_model].to_s.snake_case
-              self.has cardinality, (options[:for] || options[:on]).snake_case.pluralize.to_sym, :through => remixed.to_sym
+              remixed ||= options[:other_model].to_s.underscore
+              self.has cardinality, (options[:for] || options[:on]).underscore.pluralize.to_sym, :through => remixed.to_sym
             end
           else
             raise Exception, "options[:via] must be specified when Remixing a module between two of the same class" unless options[:via]
@@ -386,7 +397,7 @@ module DataMapper
         end
 
         def belongs_to_name(class_name)
-          class_name.to_const_path.gsub(/\//, '_').to_sym
+          class_name.underscore.gsub(/\//, '_').to_sym
         end
 
       end # RemixerClassMethods
@@ -435,4 +446,9 @@ module DataMapper
 
     end # Example
   end # Is
+
+  module Model
+    include DataMapper::Is::Remixable
+  end
+
 end # DataMapper

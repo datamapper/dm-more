@@ -8,6 +8,12 @@ require 'dm-aggregates/model'
 require 'dm-aggregates/query'
 require 'dm-aggregates/repository'
 
+begin
+  require 'active_support/core_ext/time/conversions'
+rescue LoadError
+  require 'extlib/time'
+end
+
 module DataMapper
   class Repository
     include Aggregates::Repository

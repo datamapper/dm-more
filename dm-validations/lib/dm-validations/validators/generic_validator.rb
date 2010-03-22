@@ -33,7 +33,7 @@ module DataMapper
         @options              = options.except(:if, :unless)
         @if_clause            = options[:if]
         @unless_clause        = options[:unless]
-        @humanized_field_name = Extlib::Inflection.humanize(@field_name)
+        @humanized_field_name = ActiveSupport::Inflector.humanize(@field_name)
       end
 
       # Add an error message to a target resource. If the error corresponds to a

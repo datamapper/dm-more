@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'rake'
-
 begin
   gem 'jeweler', '~> 1.4'
   require 'jeweler'
