@@ -43,6 +43,9 @@ end
 
 gems = gem_paths.map { |gem_path| File.basename(gem_path) }
 
+excluded_gems = ENV['EXCLUDE'] ? ENV['EXCLUDE'].split(',') : []
+gem_paths     = gem_paths - excluded_gems
+
 gem_spec = Gem::Specification.new do |gem|
   gem.name        = 'dm-more'
   gem.summary     = 'DataMapper Plugins'
@@ -74,14 +77,43 @@ end
 
 FileList['tasks/**/*.rake'].each { |task| import task }
 
-def rake(cmd)
-  sh "#{RUBY} -S rake #{cmd}", :verbose => true
+def rake(cmd, bundle_exec = false)
+  sh "#{bundle_exec ? 'bundle exec ' : ''}#{RUBY} -S rake #{cmd}", :verbose => true
+end
+
+def bundle(cmd)
+  sh "bundle #{cmd}", :verbose => true
 end
 
 desc "Install #{gem_spec.name}"
 task :install do
   gem_paths.each do |dir|
-    Dir.chdir(dir) { rake 'install' }
+    Dir.chdir(dir) { rake 'install', true }
+  end
+end
+
+desc "Generate gemspecs for all gems in #{gem_spec.name}"
+task :gemspec do
+  gem_paths.each do |dir|
+    Dir.chdir(dir) { rake 'gemspec', true }
+  end
+end
+
+namespace :bundle do
+  desc "Runs 'bundle install --without quality' for all gems in #{gem_spec.name} (suitable for spec runs)"
+  task :install do
+    gem_paths.each do |dir|
+      Dir.chdir(dir) { bundle 'install --without quality' }
+    end
+  end
+
+  namespace :install do
+    desc "Runs 'bundle install' for all gems in #{gem_spec.name}"
+    task :quality do
+      gem_paths.each do |dir|
+        Dir.chdir(dir) { bundle 'install' }
+      end
+    end
   end
 end
 
@@ -89,7 +121,7 @@ file 'lib/dm-more.rb' do
   mkdir_p 'lib'
   File.open('lib/dm-more.rb', 'w+') do |file|
     file.puts '### AUTOMATICALLY GENERATED.  DO NOT EDIT.'
-    (gems - %w[ dm-gen ]).each do |gem|
+    gems.each do |gem|
       lib = if '-adapter' == gem[-8..-1]
         gem.split('-')[1..-1].join('_')
       else
@@ -103,7 +135,7 @@ end
 desc "Release #{gem_spec.name}"
 task :release => [ :gem ] do
   gem_paths.each do |dir|
-    Dir.chdir(dir) { rake 'release' }
+    Dir.chdir(dir) { rake 'release', true }
 
     # workaround Jeweler bug.  it was identifying the repo as
     # in a dirty state, but it is not.  running git status clears
@@ -117,7 +149,7 @@ end
 desc 'Run specs'
 task :spec do
   exit 1 unless (gem_paths - %w[ rails_datamapper ]).map do |gem_name|
-    Dir.chdir(gem_name) { rake 'spec' }
+    Dir.chdir(gem_name) { rake 'spec', true }
   end.all?
 end
 
