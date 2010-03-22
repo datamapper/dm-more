@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Cory O'Daniel"]
-  s.date = %q{2010-03-20}
+  s.date = %q{2010-03-22}
   s.description = %q{dm-is-remixable allow you to create reusable data functionality}
   s.email = %q{dm-is-remixable [a] coryodaniel [d] com}
   s.extra_rdoc_files = [
@@ -17,7 +17,8 @@ Gem::Specification.new do |s|
      "README.rdoc"
   ]
   s.files = [
-    "LICENSE",
+    "Gemfile",
+     "LICENSE",
      "README.rdoc",
      "Rakefile",
      "VERSION",
