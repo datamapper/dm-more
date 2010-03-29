@@ -59,6 +59,7 @@ require 'dm-validations/support/object'
 
 module DataMapper
   module Validate
+
     Model.append_inclusions self
 
     extend Chainable
@@ -159,6 +160,13 @@ module DataMapper
       #
       def validators
         @validators ||= ContextualValidators.new
+      end
+
+      def inherited(base)
+        super
+        validators.contexts.each do |context, validators|
+          base.validators.context(context).concat(validators)
+        end
       end
 
       private
