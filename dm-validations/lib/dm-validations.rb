@@ -206,7 +206,7 @@ module DataMapper
       #
       # @param [Array<Symbol>] fields
       #    Fields given to validation macro, example:
-      #    [:first_name, :last_name] in validates_present :first_name, :last_name
+      #    [:first_name, :last_name] in validates_presence_of :first_name, :last_name
       #
       # @param [Class] klazz
       #    Validator class, example: DataMapper::Validate::LengthValidator

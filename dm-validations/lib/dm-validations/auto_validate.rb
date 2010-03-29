@@ -41,7 +41,7 @@ module DataMapper
       #
       #   :required => true
       #       Setting the option :required to true causes a
-      #       validates_present validator to be automatically created on
+      #       validates_presence_of validator to be automatically created on
       #       the property
       #
       #   :length => 20
@@ -59,12 +59,12 @@ module DataMapper
       #       validator to be automatically created on the property
       #
       #   Integer type
-      #       Using a Integer type causes a validates_is_number
+      #       Using a Integer type causes a validates_numericality_of
       #       validator to be created for the property.  integer_only
       #       is set to true
       #
       #   BigDecimal or Float type
-      #       Using a Integer type causes a validates_is_number
+      #       Using a Integer type causes a validates_numericality_of
       #       validator to be created for the property.  integer_only
       #       is set to false, and precision/scale match the property
       #
@@ -127,7 +127,7 @@ module DataMapper
       def infer_presence_validation_for(property, options)
         return if skip_presence_validation?(property)
 
-        validates_present property.name, options_with_message(options, property, :presence)
+        validates_presence_of property.name, options_with_message(options, property, :presence)
       end
 
       def infer_length_validation_for(property, options)
@@ -138,7 +138,7 @@ module DataMapper
           else            options[:maximum] = length
         end
 
-        validates_length property.name, options_with_message(options, property, :length)
+        validates_length_of property.name, options_with_message(options, property, :length)
       end
 
       def infer_format_validation_for(property, options)
@@ -146,7 +146,7 @@ module DataMapper
 
         options[:with] = property.options[:format]
 
-        validates_format property.name, options_with_message(options, property, :format)
+        validates_format_of property.name, options_with_message(options, property, :format)
       end
 
       def infer_uniqueness_validation_for(property, options)
@@ -156,9 +156,9 @@ module DataMapper
           when Array, Symbol
             options[:scope] = Array(value)
 
-            validates_is_unique property.name, options_with_message(options, property, :is_unique)
+            validates_uniqueness_of property.name, options_with_message(options, property, :is_unique)
           when TrueClass
-            validates_is_unique property.name, options_with_message(options, property, :is_unique)
+            validates_uniqueness_of property.name, options_with_message(options, property, :is_unique)
         end
       end
 
@@ -177,12 +177,12 @@ module DataMapper
         if Integer == property.type
           options[:integer_only] = true
 
-          validates_is_number property.name, options_with_message(options, property, :is_number)
+          validates_numericality_of property.name, options_with_message(options, property, :is_number)
         elsif BigDecimal == property.type || Float == property.type
           options[:precision] = property.precision
           options[:scale]     = property.scale
 
-          validates_is_number property.name, options_with_message(options, property, :is_number)
+          validates_numericality_of property.name, options_with_message(options, property, :is_number)
         elsif !property.custom?
           # We only need this in the case we don't already
           # have a numeric validator, because otherwise

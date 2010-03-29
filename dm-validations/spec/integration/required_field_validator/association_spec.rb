@@ -26,7 +26,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :name
+    validates_presence_of :name
   end
 
   class Album
@@ -54,7 +54,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :name, :artist
+    validates_presence_of :name, :artist
   end
   Artist.auto_migrate!
   Album.auto_migrate!

@@ -32,7 +32,7 @@ module DataMapper
       private
 
       def integer_only?
-        options.fetch(:integer_only, false)
+        options[:only_integer] || options.fetch(:integer_only, false)
       end
 
       def value_as_string(value)
@@ -101,32 +101,33 @@ module DataMapper
       end
 
       def validate_gt(value, errors)
-        validate_with_comparison(value, :>, options[:gt], :greater_than, errors)
+        validate_with_comparison(value, :>, options[:gt] || options[:greater_than], :greater_than, errors)
       end
 
       def validate_lt(value, errors)
-        validate_with_comparison(value, :<, options[:lt], :less_than, errors)
+        validate_with_comparison(value, :<, options[:lt] || options[:less_than], :less_than, errors)
       end
 
       def validate_gte(value, errors)
-        validate_with_comparison(value, :>=, options[:gte], :greater_than_or_equal_to, errors)
+        validate_with_comparison(value, :>=, options[:gte] || options[:greater_than_or_equal_to], :greater_than_or_equal_to, errors)
       end
 
       def validate_lte(value, errors)
-        validate_with_comparison(value, :<=, options[:lte], :less_than_or_equal_to, errors)
+        validate_with_comparison(value, :<=, options[:lte] || options[:less_than_or_equal_to], :less_than_or_equal_to, errors)
       end
 
       def validate_eq(value, errors)
-        eq = options[:eq] || options[:equal] || options[:equals] || options[:exactly]
+        eq = options[:eq] || options[:equal] || options[:equals] || options[:exactly] || options[:equal_to]
         validate_with_comparison(value, :==, eq, :equal_to, errors)
       end
 
       def validate_ne(value, errors)
-        validate_with_comparison(value, :==, options[:ne], :not_equal_to, errors, true)
+        validate_with_comparison(value, :==, options[:ne] || options[:not_equal_to], :not_equal_to, errors, true)
       end
     end # class NumericValidator
 
     module ValidatesIsNumber
+      extend Deprecate
 
       # Validate whether a field is numeric
       #
@@ -170,10 +171,13 @@ module DataMapper
       #
       # :integer_only => true
       #   Use to restrict allowed values to integers
-      def validates_is_number(*fields)
+      #
+      def validates_numericality_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
       end
+
+      deprecate :validates_is_number, :validates_numericality_of
 
     end # module ValidatesIsNumber
   end # module Validate

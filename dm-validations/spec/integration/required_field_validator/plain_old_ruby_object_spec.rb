@@ -8,7 +8,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
         extend DataMapper::Validate::ClassMethods
         include DataMapper::Validate
         attr_accessor :accessor
-        validates_present :here, :empty, :nil, :accessor
+        validates_presence_of :here, :empty, :nil, :accessor
         def here;  "here" end
         def empty; ""     end
         def nil;   nil    end

@@ -22,7 +22,7 @@ module DataMapper
         # Validations
         #
 
-        validates_length :code, :max => 10
+        validates_length_of :code, :max => 10
 
         def self.valid_instance
           new(:code => "3600029145")

@@ -23,9 +23,9 @@ module DataMapper
         # Validations
         #
 
-        validates_length :name,   :within => 1..50
-        validates_length :code,   :is => 3
-        validates_length :symbol, :is => 1
+        validates_length_of :name,   :within => 1..50
+        validates_length_of :code,   :is => 3
+        validates_length_of :symbol, :is => 1
 
         def self.valid_instance(overrides = {})
           defaults = {

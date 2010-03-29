@@ -18,7 +18,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :local_repo_revision_num
+    validates_presence_of :local_repo_revision_num
   end
 
   describe 'HgCommit' do

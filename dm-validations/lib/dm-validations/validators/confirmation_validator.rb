@@ -41,6 +41,7 @@ module DataMapper
     end # class ConfirmationValidator
 
     module ValidatesIsConfirmed
+      extend Deprecate
 
       ##
       # Validates that the given attribute is confirmed by another attribute.
@@ -64,18 +65,20 @@ module DataMapper
       #     attr_accessor :password_confirmation
       #     attr_accessor :email_repeated
       #
-      #     validates_is_confirmed :password
-      #     validates_is_confirmed :email, :confirm => :email_repeated
+      #     validates_confirmation_of :password
+      #     validates_confirmation_of :email, :confirm => :email_repeated
       #
       #     # a call to valid? will return false unless:
       #     # password == password_confirmation
       #     # and
       #     # email == email_repeated
       #
-      def validates_is_confirmed(*fields)
+      def validates_confirmation_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)
       end
+
+      deprecate :validates_is_confirmed, :validates_confirmation_of
 
     end # module ValidatesIsConfirmed
   end # module Validate

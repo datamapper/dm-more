@@ -32,11 +32,11 @@ module DataMapper
         # Validations
         #
 
-        validates_length :destination_mac, :source_mac, :equals => 6
-        validates_length :ether_type, :equals => 2
-        validates_length :payload, :min => 46, :max => 1500, :unless => :link_support_fragmentation
+        validates_length_of :destination_mac, :source_mac, :equals => 6
+        validates_length_of :ether_type, :equals => 2
+        validates_length_of :payload, :min => 46, :max => 1500, :unless => :link_support_fragmentation
         # :is is alias for :equal
-        validates_length :crc, :is => 4
+        validates_length_of :crc, :is => 4
 
         def self.valid_instance
           # these are obvisouly not bits, and not in hexadecimal

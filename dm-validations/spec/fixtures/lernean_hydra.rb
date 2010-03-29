@@ -24,7 +24,7 @@ module DataMapper
         # Validations
         #
 
-        validates_is_number :head_count, :eq => 9, :message => "Lernean hydra is said to have exactly 9 heads"
+        validates_numericality_of :head_count, :eq => 9, :message => "Lernean hydra is said to have exactly 9 heads"
 
         def self.valid_instance(overrides = {})
           defaults = {

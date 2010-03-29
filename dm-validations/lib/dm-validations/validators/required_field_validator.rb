@@ -43,6 +43,7 @@ module DataMapper
     end # class RequiredFieldValidator
 
     module ValidatesPresent
+      extend Deprecate
 
       ##
       # Validates that the specified attribute is present.
@@ -66,16 +67,18 @@ module DataMapper
       #     property :another_required, String
       #     property :yet_again, String
       #
-      #     validates_present :required_attribute
-      #     validates_present :another_required, :yet_again
+      #     validates_presence_of :required_attribute
+      #     validates_presence_of :another_required, :yet_again
       #
       #     # a call to valid? will return false unless
       #     # all three attributes are !blank?
       #   end
-      def validates_present(*fields)
+      def validates_presence_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::RequiredFieldValidator)
       end
+
+      deprecate :validates_present, :validates_presence_of
 
     end # module ValidatesPresent
   end # module Validate

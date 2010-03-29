@@ -20,7 +20,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :on
+    validates_presence_of :on
   end
 
   describe 'Holiday' do

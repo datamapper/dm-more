@@ -32,14 +32,14 @@ module DataMapper
         #
 
         # obviously these are all metrics
-        validates_is_number :length, :gte => 15.0,  :lte => 15.24
-        validates_is_number :width,  :gte => 25.28, :lte => 28.65
+        validates_numericality_of :length, :gte => 15.0,  :lte => 15.24
+        validates_numericality_of :width,  :gte => 25.28, :lte => 28.65
 
         # 3 pt line distance may use :gte and :lte, but for
         # sake of spec example we make it up a little
-        validates_is_number :three_point_line_distance, :gt => 6.7, :lt => 7.24
-        validates_is_number :free_throw_line_distance,  :equals => 4.57
-        validates_is_number :rim_height,                :eq     => 3.05
+        validates_numericality_of :three_point_line_distance, :gt => 6.7, :lt => 7.24
+        validates_numericality_of :free_throw_line_distance,  :equals => 4.57
+        validates_numericality_of :rim_height,                :eq     => 3.05
 
         def self.valid_instance(overrides = {})
           defaults = {

@@ -20,5 +20,5 @@ class Country
   # Validations
   #
 
-  validates_is_number :area, :message => "Please use integers to specify area"
+  validates_numericality_of :area, :message => "Please use integers to specify area"
 end

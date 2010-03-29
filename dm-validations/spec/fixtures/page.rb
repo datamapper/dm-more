@@ -25,7 +25,7 @@ module DataMapper
 
         # duplicates inferred validation for body (caused by
         # :required => true)
-        validates_present :body
+        validates_presence_of :body
       end
     end # Fixtures
   end # Validate

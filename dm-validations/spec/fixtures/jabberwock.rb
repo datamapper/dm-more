@@ -20,7 +20,7 @@ module DataMapper
         # Validations
         #
 
-        validates_length :snickersnack, :within => 3..40, :message => "worble warble"
+        validates_length_of :snickersnack, :within => 3..40, :message => "worble warble"
       end # Jabberwock
     end
   end

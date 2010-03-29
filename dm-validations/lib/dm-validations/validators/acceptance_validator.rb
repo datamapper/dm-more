@@ -35,6 +35,7 @@ module DataMapper
     end # class AcceptanceValidator
 
     module ValidatesIsAccepted
+      extend Deprecate
 
       ##
       # Validates that the attributes's value is in the set of accepted values.
@@ -52,18 +53,20 @@ module DataMapper
       #
       #     property :license_agreement_accepted, String
       #     property :terms_accepted, String
-      #     validates_is_accepted :license_agreement, :accept => "1"
-      #     validates_is_accepted :terms_accepted, :allow_nil => false
+      #     validates_acceptance_of :license_agreement, :accept => "1"
+      #     validates_acceptance_of :terms_accepted, :allow_nil => false
       #
       #     # a call to valid? will return false unless:
       #     # license_agreement is nil or "1"
       #     # and
       #     # terms_accepted is one of ["1", 1, "true", true, "t"]
       #
-      def validates_is_accepted(*fields)
+      def validates_acceptance_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::AcceptanceValidator)
       end
+
+      deprecate :validates_is_accepted, :validates_acceptance_of
 
     end # module ValidatesIsAccepted
   end # module Validate

@@ -19,7 +19,7 @@ module DataMapper
         # Validations
         #
 
-        validates_length :name, :min => 3
+        validates_length_of :name, :min => 3
       end
     end
   end

@@ -24,9 +24,9 @@ module DataMapper
         # Validations
         #
 
-        validates_is_accepted :user_agreement, :allow_nil => false
-        validates_is_accepted :newsletter_signup
-        validates_is_accepted :privacy_agreement, :accept => %w(agreed accept), :message => "You must accept this agreement in order to proceed"
+        validates_acceptance_of :user_agreement, :allow_nil => false
+        validates_acceptance_of :newsletter_signup
+        validates_acceptance_of :privacy_agreement, :accept => %w(agreed accept), :message => "You must accept this agreement in order to proceed"
       end # BetaTesterAccount
     end
   end

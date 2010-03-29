@@ -57,6 +57,7 @@ module DataMapper
 
 
     module ValidatesFormat
+      extend Deprecate
 
       ##
       # Validates that the attribute is in the specified format. You may use the
@@ -82,18 +83,20 @@ module DataMapper
       #     property :email, String
       #     property :zip_code, String
       #
-      #     validates_format :email, :as => :email_address
-      #     validates_format :zip_code, :with => /^\d{5}$/
+      #     validates_format_of :email, :as => :email_address
+      #     validates_format_of :zip_code, :with => /^\d{5}$/
       #
       #     # a call to valid? will return false unless:
       #     # email is formatted like an email address
       #     # and
       #     # zip_code is a string of 5 digits
       #
-      def validates_format(*fields)
+      def validates_format_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
       end
+
+      deprecate :validates_format, :validates_format_of
 
     end # module ValidatesFormat
   end # module Validate

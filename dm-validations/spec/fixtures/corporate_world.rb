@@ -11,7 +11,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :name, String
           property :domain, String, :unique_index => true
 
-          validates_is_unique :domain, :allow_nil => true
+          validates_uniqueness_of :domain, :allow_nil => true
         end
 
         class Department
@@ -20,7 +20,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           property :id, Serial
           property :name, String, :unique_index => true
 
-          validates_is_unique :name
+          validates_uniqueness_of :name
         end
 
         class User
@@ -32,8 +32,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
           belongs_to :organisation
           belongs_to :department
 
-          validates_is_unique :user_name, :when => :signing_up_for_department_account,   :scope => [:department]
-          validates_is_unique :user_name, :when => :signing_up_for_organization_account, :scope => [:organisation]
+          validates_uniqueness_of :user_name, :when => :signing_up_for_department_account,   :scope => [:department]
+          validates_uniqueness_of :user_name, :when => :signing_up_for_organization_account, :scope => [:organisation]
         end
       end
     end

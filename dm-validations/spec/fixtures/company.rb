@@ -23,7 +23,7 @@ module DataMapper
         # Validations
         #
 
-        validates_present :title, :message => "Company name is a required field"
+        validates_presence_of :title, :message => "Company name is a required field"
 
       end
 
@@ -41,7 +41,7 @@ module DataMapper
         # Validations
         #
 
-        validates_present :area_of_expertise
+        validates_presence_of :area_of_expertise
       end
 
       class ProductCompany < Company
@@ -58,8 +58,8 @@ module DataMapper
         # Validations
         #
 
-        validates_present :title, :message => "Product company must have a name"
-        validates_present :flagship_product
+        validates_presence_of :title, :message => "Product company must have a name"
+        validates_presence_of :flagship_product
       end
 
       class Product
@@ -86,7 +86,7 @@ module DataMapper
         # Validations
         #
 
-        validates_present :company
+        validates_presence_of :company
       end
     end
   end

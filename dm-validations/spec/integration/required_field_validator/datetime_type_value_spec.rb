@@ -20,7 +20,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :at
+    validates_presence_of :at
   end
 
   describe 'ScheduledOperation' do

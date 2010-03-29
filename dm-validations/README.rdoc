@@ -24,7 +24,7 @@ class ProgrammingLanguage
   # Validations
   #
 
-  validates_present :name
+  validates_presence_of :name
   validates_with_method :ensure_allows_optional_parentheses,     :when => [:implementing_a_dsl]
   validates_with_method :ensure_allows_manual_memory_management, :when => [:doing_system_programming]
 end
@@ -35,8 +35,8 @@ There are two primary ways to implement validations for your models:
 
 1) Placing validation methods with properties as params in your class
    definitions like:
-   - validates_length :name
-   - validates_length [:name, :description]
+   - validates_length_of :name
+   - validates_length_of [:name, :description]
 
 2) Using auto-validations, please see DataMapper::Validate::AutoValidate
 
@@ -48,7 +48,7 @@ An example class with validations declared:
     include DataMapper::Resource
 
     property :name, String
-    validates_length :name
+    validates_length_of :name
   end
 
 See all of the DataMapper::Validate module's XYZValidator(s) to learn about the
@@ -112,7 +112,7 @@ class ProgrammingLanguage
   # Validations
   #
 
-  validates_present :name
+  validates_presence_of :name
   validates_with_method :ensure_allows_optional_parentheses,     :when => [:implementing_a_dsl]
   validates_with_method :ensure_allows_manual_memory_management, :when => [:doing_system_programming]
 end
@@ -155,8 +155,8 @@ class Book
   #
 
   # used in all contexts, including default
-  validates_present :name,         :when => [:default, :sending_to_print]
-  validates_present :agreed_title, :when => [:sending_to_print]
+  validates_presence_of :name,         :when => [:default, :sending_to_print]
+  validates_presence_of :agreed_title, :when => [:sending_to_print]
 
   validates_with_block :toc, :when => [:sending_to_print] do
     if self.finished_toc

@@ -25,7 +25,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :percent
+    validates_presence_of :percent
   end
 
   describe 'CpuConsumption' do

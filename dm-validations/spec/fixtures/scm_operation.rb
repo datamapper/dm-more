@@ -31,7 +31,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :name
+    validates_presence_of :name
   end
 
   class SubversionOperation < ScmOperation
@@ -39,7 +39,7 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :network_connection, :when => [:committing, :log_viewing]
+    validates_presence_of :network_connection, :when => [:committing, :log_viewing]
   end
 
   class GitOperation < ScmOperation
@@ -47,13 +47,13 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
     # Validations
     #
 
-    validates_present :author_name, :committer_name, :when => :committing
+    validates_presence_of :author_name, :committer_name, :when => :committing
 
-    validates_present :message,            :when => :committing
-    validates_present :network_connection, :when => [:pushing, :pulling], :message => {
+    validates_presence_of :message,            :when => :committing
+    validates_presence_of :network_connection, :when => [:pushing, :pulling], :message => {
       :pushing => "though git is advanced, it cannot push without network connectivity",
       :pulling => "you must have network connectivity to pull from others"
     }
-    validates_present :clean_working_copy, :when => :pulling
+    validates_presence_of :clean_working_copy, :when => :pulling
   end
 end

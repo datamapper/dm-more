@@ -26,7 +26,7 @@ describe 'SailBoat' do
       @model.description = 'ABCDEFGHIJK' #11
     end
 
-    # validates_length is inferred from property's :length option
+    # validates_length_of is inferred from property's :length option
     it "is invalid" do
       @model.should_not be_valid_for_length_test_1
       @model.errors.on(:description).should == [ 'Description must be at most 10 characters long' ]
@@ -39,7 +39,7 @@ describe 'SailBoat' do
       @model.description = 'ABCDEFGHI' # 9
     end
 
-    # validates_length is inferred from property's :length option
+    # validates_length_of is inferred from property's :length option
     it_should_behave_like "valid model"
   end
 

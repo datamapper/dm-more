@@ -20,5 +20,5 @@ class City
   # Validations
   #
 
-  validates_is_number :founded_in, :message => "Foundation year must be an integer"
+  validates_numericality_of :founded_in, :message => "Foundation year must be an integer"
 end
