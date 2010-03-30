@@ -5,7 +5,7 @@ module DataMapper
     #
     # @author Guy van den Berg
     # @since  0.9
-    class NumericValidator < GenericValidator
+    class NumericalityValidator < GenericValidator
 
       def call(target)
         value = target.validation_property_value(field_name)
@@ -124,9 +124,9 @@ module DataMapper
       def validate_ne(value, errors)
         validate_with_comparison(value, :==, options[:ne] || options[:not_equal_to], :not_equal_to, errors, true)
       end
-    end # class NumericValidator
+    end # class NumericalityValidator
 
-    module ValidatesIsNumber
+    module ValidatesNumericality
       extend Deprecate
 
       # Validate whether a field is numeric
@@ -174,7 +174,7 @@ module DataMapper
       #
       def validates_numericality_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::NumericValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validate::NumericalityValidator)
       end
 
       deprecate :validates_is_number, :validates_numericality_of

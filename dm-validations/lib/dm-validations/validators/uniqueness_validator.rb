@@ -43,7 +43,7 @@ module DataMapper
       end
     end # class UniquenessValidator
 
-    module ValidatesIsUnique
+    module ValidatesUniqueness
       extend Deprecate
 
       # Validate the uniqueness of a field

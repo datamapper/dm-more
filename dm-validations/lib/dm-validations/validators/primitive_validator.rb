@@ -5,7 +5,7 @@ module DataMapper
     #
     # @author Dirkjan Bussink
     # @since  0.9
-    class PrimitiveValidator < GenericValidator
+    class PrimitiveTypeValidator < GenericValidator
       def call(target)
         value    = target.validation_property_value(field_name)
         property = target.validation_property(field_name)
@@ -24,9 +24,9 @@ module DataMapper
         ValidationErrors.default_error_message(:primitive, field_name, property.primitive)
       end
 
-    end # class PrimitiveValidator
+    end # class PrimitiveTypeValidator
 
-    module ValidatesIsPrimitive
+    module ValidatesPrimitiveType
 
       extend Deprecate
 
@@ -49,7 +49,7 @@ module DataMapper
       #   end
       def validates_primitive_type_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::PrimitiveValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validate::PrimitiveTypeValidator)
       end
 
       deprecate :validates_is_primitive, :validates_primitive_type_of

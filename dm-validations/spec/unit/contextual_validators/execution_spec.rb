@@ -9,7 +9,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
   describe "#execute(name, target)" do
     before do
-      @validator_one = DataMapper::Validate::RequiredFieldValidator.new(:name)
+      @validator_one = DataMapper::Validate::PresenceValidator.new(:name)
       @validator_two = DataMapper::Validate::WithinValidator.new(:operating_system, :set => ["Mac OS X", "Linux", "FreeBSD", "Solaris"])
 
       @model.context(:default) << @validator_one << @validator_two

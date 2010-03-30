@@ -5,7 +5,7 @@ module DataMapper
     #
     # @author Guy van den Berg
     # @since  0.9
-    class RequiredFieldValidator < GenericValidator
+    class PresenceValidator < GenericValidator
       def call(target)
         value = target.validation_property_value(field_name)
         property = target.validation_property(field_name)
@@ -40,9 +40,9 @@ module DataMapper
         property ? property.primitive == TrueClass : false
       end
 
-    end # class RequiredFieldValidator
+    end # class PresenceValidator
 
-    module ValidatesPresent
+    module ValidatesPresence
       extend Deprecate
 
       ##
@@ -75,7 +75,7 @@ module DataMapper
       #   end
       def validates_presence_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::RequiredFieldValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validate::PresenceValidator)
       end
 
       deprecate :validates_present, :validates_presence_of

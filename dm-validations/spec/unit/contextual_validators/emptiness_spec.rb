@@ -27,7 +27,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
   describe "after a context being added" do
     before :all do
-      @model.context(:default) << DataMapper::Validate::RequiredFieldValidator.new(:toc, :when => [:publishing])
+      @model.context(:default) << DataMapper::Validate::PresenceValidator.new(:toc, :when => [:publishing])
     end
 
     it "is no longer empty" do
@@ -38,7 +38,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
   describe "when cleared" do
     before :all do
-      @model.context(:default) << DataMapper::Validate::RequiredFieldValidator.new(:toc, :when => [:publishing])
+      @model.context(:default) << DataMapper::Validate::PresenceValidator.new(:toc, :when => [:publishing])
       @model.should_not be_empty
       @model.clear!
     end

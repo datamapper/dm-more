@@ -5,7 +5,7 @@ module DataMapper
     #
     # @author Guy van den Berg
     # @since  0.9
-    class AbsentFieldValidator < GenericValidator
+    class AbsenceValidator < GenericValidator
       def call(target)
         return true if target.validation_property_value(field_name).blank?
 
@@ -14,9 +14,9 @@ module DataMapper
 
         false
       end
-    end # class AbsentFieldValidator
+    end # class AbsenceValidator
 
-    module ValidatesAbsent
+    module ValidatesAbsence
 
       extend Deprecate
 
@@ -47,7 +47,7 @@ module DataMapper
       #
       def validates_absence_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::AbsentFieldValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validate::AbsenceValidator)
       end
 
       deprecate :validates_absent, :validates_absence_of

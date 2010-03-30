@@ -142,18 +142,18 @@ module DataMapper
     end
 
     module ClassMethods
-      include DataMapper::Validate::ValidatesPresent
-      include DataMapper::Validate::ValidatesAbsent
-      include DataMapper::Validate::ValidatesIsConfirmed
-      include DataMapper::Validate::ValidatesIsPrimitive
-      include DataMapper::Validate::ValidatesIsAccepted
+      include DataMapper::Validate::ValidatesPresence
+      include DataMapper::Validate::ValidatesAbsence
+      include DataMapper::Validate::ValidatesConfirmation
+      include DataMapper::Validate::ValidatesPrimitiveType
+      include DataMapper::Validate::ValidatesAcceptance
       include DataMapper::Validate::ValidatesFormat
       include DataMapper::Validate::ValidatesLength
       include DataMapper::Validate::ValidatesWithin
-      include DataMapper::Validate::ValidatesIsNumber
+      include DataMapper::Validate::ValidatesNumericality
       include DataMapper::Validate::ValidatesWithMethod
       include DataMapper::Validate::ValidatesWithBlock
-      include DataMapper::Validate::ValidatesIsUnique
+      include DataMapper::Validate::ValidatesUniqueness
       include DataMapper::Validate::AutoValidate
 
       # Return the set of contextual validators or create a new one

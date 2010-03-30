@@ -34,7 +34,7 @@ module DataMapper
       end
     end # class AcceptanceValidator
 
-    module ValidatesIsAccepted
+    module ValidatesAcceptance
       extend Deprecate
 
       ##

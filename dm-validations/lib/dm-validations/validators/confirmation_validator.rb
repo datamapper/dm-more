@@ -40,7 +40,7 @@ module DataMapper
       end
     end # class ConfirmationValidator
 
-    module ValidatesIsConfirmed
+    module ValidatesConfirmation
       extend Deprecate
 
       ##
