@@ -21,7 +21,7 @@ module DataMapper
         # Validations
         #
 
-        validates_absent :salesman, :on => :sale
+        validates_absence_of :salesman, :on => :sale
       end
     end
   end

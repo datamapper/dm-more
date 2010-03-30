@@ -18,6 +18,8 @@ module DataMapper
 
     module ValidatesAbsent
 
+      extend Deprecate
+
       ##
       # Validates that the specified attribute is "blank" via the attribute's
       # #blank? method.
@@ -36,17 +38,19 @@ module DataMapper
       #     property :another_unwanted, String
       #     property :yet_again, String
       #
-      #     validates_absent :unwanted_attribute
-      #     validates_absent :another_unwanted, :yet_again
+      #     validates_absence_of :unwanted_attribute
+      #     validates_absence_of :another_unwanted, :yet_again
       #
       #     # a call to valid? will return false unless
       #     # all three attributes are blank
       #   end
       #
-      def validates_absent(*fields)
+      def validates_absence_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::AbsentFieldValidator)
       end
+
+      deprecate :validates_absent, :validates_absence_of
 
     end # module ValidatesAbsent
   end # module Validate

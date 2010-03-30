@@ -22,8 +22,8 @@ module DataMapper
         # Validations
         #
 
-        validates_is_primitive :marked
-        validates_is_primitive :color
+        validates_primitive_type_of :marked
+        validates_primitive_type_of :color
       end
     end
   end

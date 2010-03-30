@@ -28,6 +28,8 @@ module DataMapper
 
     module ValidatesIsPrimitive
 
+      extend Deprecate
+
       ##
       # Validates that the specified attribute is of the correct primitive type.
       #
@@ -39,16 +41,18 @@ module DataMapper
       #
       #     property :birth_date, Date
       #
-      #     validates_is_primitive :birth_date
+      #     validates_primitive_type_of :birth_date
       #
       #     # a call to valid? will return false unless
       #     # the birth_date is something that can be properly
       #     # casted into a Date object.
       #   end
-      def validates_is_primitive(*fields)
+      def validates_primitive_type_of(*fields)
         opts = opts_from_validator_args(fields)
         add_validator_to_context(opts, fields, DataMapper::Validate::PrimitiveValidator)
       end
+
+      deprecate :validates_is_primitive, :validates_primitive_type_of
 
     end # module ValidatesPresent
   end # module Validate

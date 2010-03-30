@@ -187,7 +187,7 @@ module DataMapper
           # We only need this in the case we don't already
           # have a numeric validator, because otherwise
           # it will cause duplicate validation errors
-          validates_is_primitive property.name, options_with_message(options, property, :is_primitive)
+          validates_primitive_type_of property.name, options_with_message(options, property, :is_primitive)
         end
       end
 
