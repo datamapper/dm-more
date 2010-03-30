@@ -368,7 +368,7 @@ module DataMapper
           # Get instance methods and the :default context validator
           model.send(:include,remixable)
 
-          if DataMapper.const_defined?('Validate')
+          if DataMapper.const_defined?('Validations')
 
             # Port over any other validation contexts to this model.  Skip the
             # default context since it has already been included above.

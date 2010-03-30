@@ -5,8 +5,8 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   describe "A plain old Ruby object (not a DM resource)" do
     before do
       class PlainClass
-        extend DataMapper::Validate::ClassMethods
-        include DataMapper::Validate
+        extend DataMapper::Validations::ClassMethods
+        include DataMapper::Validations
         attr_accessor :accessor
         validates_presence_of :here, :empty, :nil, :accessor
         def here;  "here" end

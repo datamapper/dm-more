@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
 
       class UDPPacket
@@ -45,5 +45,5 @@ module DataMapper
       end
 
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

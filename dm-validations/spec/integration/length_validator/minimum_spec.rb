@@ -7,11 +7,11 @@ describe "entity with a name shorter than 2 characters", :shared => true do
   end
 end
 
-describe 'DataMapper::Validate::Fixtures::Mittelschnauzer' do
+describe 'DataMapper::Validations::Fixtures::Mittelschnauzer' do
   before :all do
-    DataMapper::Validate::Fixtures::Mittelschnauzer.auto_migrate!
+    DataMapper::Validations::Fixtures::Mittelschnauzer.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::Mittelschnauzer.valid_instance
+    @model = DataMapper::Validations::Fixtures::Mittelschnauzer.valid_instance
   end
 
   it_should_behave_like "valid model"

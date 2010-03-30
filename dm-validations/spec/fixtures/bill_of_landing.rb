@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class BillOfLading
         #
@@ -38,5 +38,5 @@ module DataMapper
         validates_format_of :code,     :with => /\d{5,6}/, :message => 'Code format is invalid'
       end
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

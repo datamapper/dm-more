@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'integration/conditional_validation/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::UDPPacket' do
+describe 'DataMapper::Validations::Fixtures::UDPPacket' do
   before :all do
-    DataMapper::Validate::Fixtures::UDPPacket.auto_migrate!
+    DataMapper::Validations::Fixtures::UDPPacket.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::UDPPacket.new
+    @model = DataMapper::Validations::Fixtures::UDPPacket.new
   end
 
   describe "that is transported encapsulated into IPv4 packet" do

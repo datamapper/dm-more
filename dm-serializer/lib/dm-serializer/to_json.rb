@@ -80,7 +80,7 @@ module DataMapper
 
   if Serialize::Support.dm_validations_loaded?
 
-    module Validate
+    module Validations
       class ValidationErrors
         def to_json(*args)
           errors.to_hash.to_json

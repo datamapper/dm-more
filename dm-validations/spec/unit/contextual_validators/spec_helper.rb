@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
 
       class PieceOfSoftware
@@ -9,7 +9,7 @@ module DataMapper
         # Behaviors
         #
 
-        include DataMapper::Validate
+        include DataMapper::Validations
 
         #
         # Attributes
@@ -33,5 +33,5 @@ module DataMapper
       end
 
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

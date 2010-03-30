@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'integration/format_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BillOfLading' do
+describe 'DataMapper::Validations::Fixtures::BillOfLading' do
   before :all do
-    DataMapper::Validate::Fixtures::BillOfLading.auto_migrate!
+    DataMapper::Validations::Fixtures::BillOfLading.auto_migrate!
   end
 
   def valid_attributes
@@ -26,7 +26,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
     describe "with email value of #{email} (RFC2822 compliant)" do
       before :all do
-        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:email => email))
+        @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:email => email))
       end
 
       it_should_behave_like "valid model"
@@ -43,7 +43,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
         'J. P. \'s-Gravezande, a.k.a. The Hacker!@example.com'].each do |email|
     describe "with email value of #{email} (non RFC2822 compliant)" do
       before :all do
-        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:email => email))
+        @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:email => email))
       end
 
       it_should_behave_like "invalid model"
@@ -65,7 +65,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
             'http://www.example.com',
            ]
 
-    bol = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.except(:url))
+    bol = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.except(:url))
     bol.should_not be_valid
     bol.errors.on(:url).should == [ 'Url has an invalid format' ]
 
@@ -85,7 +85,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe 'with a regexp' do
     before do
-      @bol = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes)
+      @bol = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes)
       @bol.should be_valid
     end
 

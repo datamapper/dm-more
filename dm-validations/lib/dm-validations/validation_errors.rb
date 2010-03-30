@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -85,7 +85,7 @@ module DataMapper
       # Return validation errors for a particular field_name.
       #
       # @param [Symbol] field_name the name of the field you want an error for
-      # @return [Array<DataMapper::Validate::Error>]
+      # @return [Array<DataMapper::Validations::Error>]
       #   array of validation errors or empty array, if there are no errors on given field
       def on(field_name)
         errors_for_field = errors[field_name]
@@ -113,5 +113,5 @@ module DataMapper
       end
 
     end # class ValidationErrors
-  end # module Validate
+  end # module Validations
 end # module DataMapper

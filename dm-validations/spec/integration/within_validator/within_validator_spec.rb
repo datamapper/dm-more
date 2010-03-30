@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'integration/within_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::PhoneNumber' do
+describe 'DataMapper::Validations::Fixtures::PhoneNumber' do
   before :all do
-    DataMapper::Validate::Fixtures::PhoneNumber.auto_migrate!
+    DataMapper::Validations::Fixtures::PhoneNumber.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::PhoneNumber.new(:type_of_number => 'cell')
+    @model = DataMapper::Validations::Fixtures::PhoneNumber.new(:type_of_number => 'cell')
     @model.should be_valid
   end
 
@@ -51,11 +51,11 @@ end
 
 
 
-describe 'DataMapper::Validate::Fixtures::MathematicalFunction' do
+describe 'DataMapper::Validations::Fixtures::MathematicalFunction' do
   before :all do
-    DataMapper::Validate::Fixtures::MathematicalFunction.auto_migrate!
+    DataMapper::Validations::Fixtures::MathematicalFunction.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::MathematicalFunction.new(:input => 2, :output => -2)
+    @model = DataMapper::Validations::Fixtures::MathematicalFunction.new(:input => 2, :output => -2)
     @model.should be_valid
   end
 

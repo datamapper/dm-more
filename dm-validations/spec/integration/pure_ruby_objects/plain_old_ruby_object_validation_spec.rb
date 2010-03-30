@@ -7,7 +7,7 @@ module PureRubyObjects
     # Behaviors
     #
 
-    include DataMapper::Validate
+    include DataMapper::Validations
 
     #
     # Validations

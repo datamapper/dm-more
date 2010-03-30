@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
 
       # see http://datamapper.lighthouseapp.com/projects/20609/tickets/671
@@ -28,5 +28,5 @@ module DataMapper
         validates_presence_of :body
       end
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

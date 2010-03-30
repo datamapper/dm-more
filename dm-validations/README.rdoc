@@ -4,7 +4,7 @@ classes.
 == Setup
 DataMapper validation capabilities are automatically available for DataMapper
 resources when you require dm-validations' into your application. For
-pure Ruby classes, require 'dm-validations' and then include DataMapper::Validate
+pure Ruby classes, require 'dm-validations' and then include DataMapper::Validations
 module like so:
 
 class ProgrammingLanguage
@@ -12,7 +12,7 @@ class ProgrammingLanguage
   # Behaviors
   #
 
-  include ::DataMapper::Validate
+  include ::DataMapper::Validations
 
   #
   # Accessors
@@ -38,7 +38,7 @@ There are two primary ways to implement validations for your models:
    - validates_length_of :name
    - validates_length_of [:name, :description]
 
-2) Using auto-validations, please see DataMapper::Validate::AutoValidate
+2) Using auto-validations, please see DataMapper::Validations::AutoValidations
 
 An example class with validations declared:
 
@@ -68,7 +68,7 @@ its true/false result for the entire walk.
 
 == Working with Validation Errors
 If your validators find errors in your model, they will populate the
-DataMapper::Validate::ValidationErrors object that is available through each of
+DataMapper::Validations::ValidationErrors object that is available through each of
 your models via calls to your model's errors method.
 
 For example:
@@ -82,7 +82,7 @@ For example:
     end
   end
 
-See DataMapper::Validate::ValidationErrors for all you can do with your model's
+See DataMapper::Validations::ValidationErrors for all you can do with your model's
 errors method.
 
 == Contextual Validations
@@ -100,7 +100,7 @@ class ProgrammingLanguage
   # Behaviors
   #
 
-  include ::DataMapper::Validate
+  include ::DataMapper::Validations
 
   #
   # Accessors

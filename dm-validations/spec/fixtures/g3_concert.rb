@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class G3Concert
         #
         # Bahaviors
         #
 
-        include ::DataMapper::Validate
+        include ::DataMapper::Validations
 
         #
         # Attributes
@@ -53,5 +53,5 @@ module DataMapper
         end
       end # G3Concert
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

@@ -32,7 +32,7 @@ module DataMapper
 
     class Support
       def self.dm_validations_loaded?
-        DataMapper.const_defined?("Validate")
+        DataMapper.const_defined?("Validations")
       end
     end
   end

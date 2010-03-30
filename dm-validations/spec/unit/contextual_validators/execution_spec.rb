@@ -2,15 +2,15 @@
 require 'spec_helper'
 require 'unit/contextual_validators/spec_helper'
 
-describe 'DataMapper::Validate::ContextualValidators' do
+describe 'DataMapper::Validations::ContextualValidators' do
   before :all do
-    @model = DataMapper::Validate::ContextualValidators.new
+    @model = DataMapper::Validations::ContextualValidators.new
   end
 
   describe "#execute(name, target)" do
     before do
-      @validator_one = DataMapper::Validate::PresenceValidator.new(:name)
-      @validator_two = DataMapper::Validate::WithinValidator.new(:operating_system, :set => ["Mac OS X", "Linux", "FreeBSD", "Solaris"])
+      @validator_one = DataMapper::Validations::PresenceValidator.new(:name)
+      @validator_two = DataMapper::Validations::WithinValidator.new(:operating_system, :set => ["Mac OS X", "Linux", "FreeBSD", "Solaris"])
 
       @model.context(:default) << @validator_one << @validator_two
     end
@@ -18,7 +18,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
     describe "when target satisfies all validators" do
       before do
-        @target = DataMapper::Validate::Fixtures::PieceOfSoftware.new(:name => 'gcc', :operating_system => "Mac OS X")
+        @target = DataMapper::Validations::Fixtures::PieceOfSoftware.new(:name => 'gcc', :operating_system => "Mac OS X")
         @validator_one.call(@target).should be_true
         @validator_two.call(@target).should be_true
 
@@ -33,7 +33,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
     describe "when target does not satisfy all validators" do
       before do
-        @target = DataMapper::Validate::Fixtures::PieceOfSoftware.new(:name => 'Skitch', :operating_system => "Haiku")
+        @target = DataMapper::Validations::Fixtures::PieceOfSoftware.new(:name => 'Skitch', :operating_system => "Haiku")
         @validator_one.call(@target).should be_true
         @validator_two.call(@target).should be_false
 

@@ -4,8 +4,8 @@ module DataMapper
     OPTIONS << :message << :messages << :set
   end
 
-  module Validate
-    module AutoValidate
+  module Validations
+    module AutoValidations
       @disable_auto_validations = false
 
       # adds message for validator
@@ -196,6 +196,6 @@ module DataMapper
       def skip_presence_validation?(property)
         property.allow_blank? || property.serial?
       end
-    end # module AutoValidate
-  end # module Validate
+    end # module AutoValidations
+  end # module Validations
 end # module DataMapper

@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -50,11 +50,11 @@ module DataMapper
       #
       def validates_uniqueness_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::UniquenessValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::UniquenessValidator)
       end
 
       deprecate :validates_is_unique, :validates_uniqueness_of
 
     end # module ValidatesIsUnique
-  end # module Validate
+  end # module Validations
 end # module DataMapper

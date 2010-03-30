@@ -39,7 +39,7 @@ module DataMapper
 
   if Serialize::Support.dm_validations_loaded?
 
-    module Validate
+    module Validations
       class ValidationErrors
         def to_csv(writer = '')
           CSV.generate(writer) do |csv|

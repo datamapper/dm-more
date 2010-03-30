@@ -5,7 +5,7 @@ require Pathname(__FILE__).dirname.expand_path + ".." + 'formats/email'
 require Pathname(__FILE__).dirname.expand_path + ".." + 'formats/url'
 
 module DataMapper
-  module Validate
+  module Validations
     class UnknownValidationFormat < ::ArgumentError; end
 
     ##
@@ -15,8 +15,8 @@ module DataMapper
     class FormatValidator < GenericValidator
 
       FORMATS = {}
-      include DataMapper::Validate::Format::Email
-      include DataMapper::Validate::Format::Url
+      include DataMapper::Validations::Format::Email
+      include DataMapper::Validations::Format::Url
 
       def initialize(field_name, options = {})
         super
@@ -71,8 +71,8 @@ module DataMapper
       # @option :with<Format, Proc, Regexp> an alias for :as
       #
       # @details [Pre-defined Formats]
-      #   :email_address (format is specified in DataMapper::Validate::Format::Email)
-      #   :url (format is specified in DataMapper::Validate::Format::Url)
+      #   :email_address (format is specified in DataMapper::Validations::Format::Email)
+      #   :url (format is specified in DataMapper::Validations::Format::Url)
       #
       # @example [Usage]
       #   require 'dm-validations'
@@ -93,11 +93,11 @@ module DataMapper
       #
       def validates_format_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::FormatValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::FormatValidator)
       end
 
       deprecate :validates_format, :validates_format_of
 
     end # module ValidatesFormat
-  end # module Validate
+  end # module Validations
 end # module DataMapper

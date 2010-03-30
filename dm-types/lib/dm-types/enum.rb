@@ -55,7 +55,7 @@ module DataMapper
       end
 
       def self.bind(property)
-        if defined?(::DataMapper::Validate)
+        if defined?(::DataMapper::Validations)
           model = property.model
 
           unless model.skip_auto_validation_for?(property)

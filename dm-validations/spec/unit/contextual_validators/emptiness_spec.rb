@@ -2,9 +2,9 @@
 require 'spec_helper'
 require 'unit/contextual_validators/spec_helper'
 
-describe 'DataMapper::Validate::ContextualValidators' do
+describe 'DataMapper::Validations::ContextualValidators' do
   before :all do
-    @model = DataMapper::Validate::ContextualValidators.new
+    @model = DataMapper::Validations::ContextualValidators.new
   end
 
   describe "initially" do
@@ -27,7 +27,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
   describe "after a context being added" do
     before :all do
-      @model.context(:default) << DataMapper::Validate::PresenceValidator.new(:toc, :when => [:publishing])
+      @model.context(:default) << DataMapper::Validations::PresenceValidator.new(:toc, :when => [:publishing])
     end
 
     it "is no longer empty" do
@@ -38,7 +38,7 @@ describe 'DataMapper::Validate::ContextualValidators' do
 
   describe "when cleared" do
     before :all do
-      @model.context(:default) << DataMapper::Validate::PresenceValidator.new(:toc, :when => [:publishing])
+      @model.context(:default) << DataMapper::Validations::PresenceValidator.new(:toc, :when => [:publishing])
       @model.should_not be_empty
       @model.clear!
     end

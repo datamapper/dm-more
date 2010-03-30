@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'integration/format_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BillOfLading' do
+describe 'DataMapper::Validations::Fixtures::BillOfLading' do
   before :all do
-    DataMapper::Validate::Fixtures::BillOfLading.auto_migrate!
+    DataMapper::Validations::Fixtures::BillOfLading.auto_migrate!
   end
 
   def valid_attributes
@@ -21,7 +21,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
     "http://localhost:4000", "http://localhost" ].each do |uri|
     describe "with URL of #{uri}" do
       before :all do
-        @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
+        @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
       end
 
       it_should_behave_like "invalid model"
@@ -58,7 +58,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
   ].each do |uri|
    describe "with URL of #{uri}" do
      before :all do
-       @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
+       @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:url => uri))
      end
 
      it_should_behave_like "valid model"

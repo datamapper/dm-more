@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class Barcode
         attr_accessor :valid_hook_call_count

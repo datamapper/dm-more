@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -174,11 +174,11 @@ module DataMapper
       #
       def validates_numericality_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::NumericalityValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::NumericalityValidator)
       end
 
       deprecate :validates_is_number, :validates_numericality_of
 
     end # module ValidatesIsNumber
-  end # module Validate
+  end # module Validations
 end # module DataMapper

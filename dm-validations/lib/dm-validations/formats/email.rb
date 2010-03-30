@@ -1,12 +1,12 @@
 # encoding: binary
 
 module DataMapper
-  module Validate
+  module Validations
     module Format
       module Email
 
         def self.included(base)
-          DataMapper::Validate::FormatValidator::FORMATS.merge!(
+          DataMapper::Validations::FormatValidator::FORMATS.merge!(
             :email_address => [ EmailAddress, lambda { |field, value| '%s is not a valid email address'.t(value) }]
           )
         end
@@ -39,5 +39,5 @@ module DataMapper
 
       end # module Email
     end # module Format
-  end # module Validate
+  end # module Validations
 end # module DataMapper

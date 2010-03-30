@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'integration/acceptance_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BetaTesterAccount' do
+describe 'DataMapper::Validations::Fixtures::BetaTesterAccount' do
   before :all do
-    DataMapper::Validate::Fixtures::BetaTesterAccount.auto_migrate!
+    DataMapper::Validations::Fixtures::BetaTesterAccount.auto_migrate!
   end
 
   before do
-    @model = DataMapper::Validate::Fixtures::BetaTesterAccount.new(:user_agreement    => true,
+    @model = DataMapper::Validations::Fixtures::BetaTesterAccount.new(:user_agreement    => true,
                                                                    :newsletter_signup => nil,
                                                                    :privacy_agreement => "accept")
     @model.should be_valid

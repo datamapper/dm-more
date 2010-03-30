@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       # If you think that this particular fixture class
       # and assumptions made below are full of bullshit
@@ -15,7 +15,7 @@ module DataMapper
         # Behaviors
         #
 
-        include ::DataMapper::Validate
+        include ::DataMapper::Validations
 
         #
         # Attributes
@@ -79,5 +79,5 @@ module DataMapper
         end
       end # ProgrammingLanguage
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

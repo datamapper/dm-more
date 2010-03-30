@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 module DataMapper
-  module Validate
+  module Validations
 
     # All validators extend this base class. Validators must:
     #
@@ -145,5 +145,5 @@ module DataMapper
 
       alias to_s inspect
     end # class GenericValidator
-  end # module Validate
+  end # module Validations
 end # module DataMapper

@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
     class LengthValidator < GenericValidator
 
       # Initialize a length validator
@@ -198,11 +198,11 @@ module DataMapper
       #
       def validates_length_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::LengthValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::LengthValidator)
       end
 
       deprecate :validates_length, :validates_length_of
 
     end # module ValidatesLength
-  end # module Validate
+  end # module Validations
 end # module DataMapper

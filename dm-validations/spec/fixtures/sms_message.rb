@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
 
       class SmsMessage

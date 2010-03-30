@@ -1,7 +1,7 @@
 require 'forwardable'
 
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -31,7 +31,7 @@ module DataMapper
       #
       # @param  [String]
       #   Context name for which return validators
-      # @return [Array<DataMapper::Validate::GenericValidator>]
+      # @return [Array<DataMapper::Validations::GenericValidator>]
       #   An array of validators
       def context(name)
         contexts[name] ||= []
@@ -60,5 +60,5 @@ module DataMapper
       end
 
     end # module ContextualValidators
-  end # module Validate
+  end # module Validations
 end # module DataMapper

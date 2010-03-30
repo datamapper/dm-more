@@ -58,7 +58,7 @@ require 'dm-validations/support/context'
 require 'dm-validations/support/object'
 
 module DataMapper
-  module Validate
+  module Validations
 
     Model.append_inclusions self
 
@@ -142,19 +142,19 @@ module DataMapper
     end
 
     module ClassMethods
-      include DataMapper::Validate::ValidatesPresence
-      include DataMapper::Validate::ValidatesAbsence
-      include DataMapper::Validate::ValidatesConfirmation
-      include DataMapper::Validate::ValidatesPrimitiveType
-      include DataMapper::Validate::ValidatesAcceptance
-      include DataMapper::Validate::ValidatesFormat
-      include DataMapper::Validate::ValidatesLength
-      include DataMapper::Validate::ValidatesWithin
-      include DataMapper::Validate::ValidatesNumericality
-      include DataMapper::Validate::ValidatesWithMethod
-      include DataMapper::Validate::ValidatesWithBlock
-      include DataMapper::Validate::ValidatesUniqueness
-      include DataMapper::Validate::AutoValidate
+      include DataMapper::Validations::ValidatesPresence
+      include DataMapper::Validations::ValidatesAbsence
+      include DataMapper::Validations::ValidatesConfirmation
+      include DataMapper::Validations::ValidatesPrimitiveType
+      include DataMapper::Validations::ValidatesAcceptance
+      include DataMapper::Validations::ValidatesFormat
+      include DataMapper::Validations::ValidatesLength
+      include DataMapper::Validations::ValidatesWithin
+      include DataMapper::Validations::ValidatesNumericality
+      include DataMapper::Validations::ValidatesWithMethod
+      include DataMapper::Validations::ValidatesWithBlock
+      include DataMapper::Validations::ValidatesUniqueness
+      include DataMapper::Validations::AutoValidations
 
       # Return the set of contextual validators or create a new one
       #
@@ -209,7 +209,7 @@ module DataMapper
       #    [:first_name, :last_name] in validates_presence_of :first_name, :last_name
       #
       # @param [Class] klazz
-      #    Validator class, example: DataMapper::Validate::LengthValidator
+      #    Validator class, example: DataMapper::Validations::LengthValidator
       def add_validator_to_context(opts, fields, validator_class)
         fields.each do |field|
           validator = validator_class.new(field, opts.dup)
@@ -223,5 +223,10 @@ module DataMapper
         end
       end
     end # module ClassMethods
-  end # module Validate
+  end # module Validations
+
+  # Provide a const alias for backward compatibility with plugins
+  # This is scheduled to go away though, definitely before 1.0
+  Validate = Validations
+
 end # module DataMapper

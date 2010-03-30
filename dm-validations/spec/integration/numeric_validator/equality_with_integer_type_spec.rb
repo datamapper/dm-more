@@ -1,14 +1,14 @@
 require 'spec_helper'
 require 'integration/numeric_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::LerneanHydra' do
+describe 'DataMapper::Validations::Fixtures::LerneanHydra' do
   before :all do
-    DataMapper::Validate::Fixtures::LerneanHydra.auto_migrate!
+    DataMapper::Validations::Fixtures::LerneanHydra.auto_migrate!
   end
 
   describe "with valid set of attributes" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::LerneanHydra.valid_instance
+      @model = DataMapper::Validations::Fixtures::LerneanHydra.valid_instance
       @model.valid?
     end
 
@@ -18,7 +18,7 @@ describe 'DataMapper::Validate::Fixtures::LerneanHydra' do
 
   describe "with 9 heads" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::LerneanHydra.valid_instance(:head_count => 9)
+      @model = DataMapper::Validations::Fixtures::LerneanHydra.valid_instance(:head_count => 9)
       @model.valid?
     end
 
@@ -28,7 +28,7 @@ describe 'DataMapper::Validate::Fixtures::LerneanHydra' do
 
   describe "with only 3 heads" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::LerneanHydra.valid_instance(:head_count => 3)
+      @model = DataMapper::Validations::Fixtures::LerneanHydra.valid_instance(:head_count => 3)
       @model.valid?
     end
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -75,11 +75,11 @@ module DataMapper
       #
       def validates_confirmation_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::ConfirmationValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::ConfirmationValidator)
       end
 
       deprecate :validates_is_confirmed, :validates_confirmation_of
 
     end # module ValidatesIsConfirmed
-  end # module Validate
+  end # module Validations
 end # module DataMapper

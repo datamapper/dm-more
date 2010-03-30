@@ -2,7 +2,7 @@
 
 if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
   module DataMapper
-    module Validate
+    module Validations
       module Fixtures
         class Organisation
           include DataMapper::Resource

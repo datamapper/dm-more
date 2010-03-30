@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::Product' do
+describe 'DataMapper::Validations::Fixtures::Product' do
   before :all do
-    DataMapper::Validate::Fixtures::ProductCompany.auto_migrate!
-    DataMapper::Validate::Fixtures::Product.auto_migrate!
+    DataMapper::Validations::Fixtures::ProductCompany.auto_migrate!
+    DataMapper::Validations::Fixtures::Product.auto_migrate!
 
-    @parent = DataMapper::Validate::Fixtures::ProductCompany.create(:title => "Apple", :flagship_product => "Macintosh")
+    @parent = DataMapper::Validations::Fixtures::ProductCompany.create(:title => "Apple", :flagship_product => "Macintosh")
     @parent.should be_valid
 
-    @model  = DataMapper::Validate::Fixtures::Product.new(:name => "MacBook Pro", :company => @parent)
+    @model  = DataMapper::Validations::Fixtures::Product.new(:name => "MacBook Pro", :company => @parent)
     @model.should be_valid
   end
 

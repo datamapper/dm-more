@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -75,11 +75,11 @@ module DataMapper
       #   end
       def validates_presence_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::PresenceValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::PresenceValidator)
       end
 
       deprecate :validates_present, :validates_presence_of
 
     end # module ValidatesPresent
-  end # module Validate
+  end # module Validations
 end # module DataMapper

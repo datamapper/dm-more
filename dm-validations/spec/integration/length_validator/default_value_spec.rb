@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'integration/length_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BoatDock' do
+describe 'DataMapper::Validations::Fixtures::BoatDock' do
   before :all do
-    DataMapper::Validate::Fixtures::BoatDock.auto_migrate!
+    DataMapper::Validations::Fixtures::BoatDock.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::BoatDock.new
+    @model = DataMapper::Validations::Fixtures::BoatDock.new
   end
 
   describe "with default values that are valid" do

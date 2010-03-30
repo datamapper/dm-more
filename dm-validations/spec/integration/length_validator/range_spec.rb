@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'integration/length_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::EthernetFrame' do
+describe 'DataMapper::Validations::Fixtures::EthernetFrame' do
   before :all do
-    DataMapper::Validate::Fixtures::EthernetFrame.auto_migrate!
+    DataMapper::Validations::Fixtures::EthernetFrame.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::EthernetFrame.valid_instance
+    @model = DataMapper::Validations::Fixtures::EthernetFrame.valid_instance
     @model.link_support_fragmentation = false
   end
 

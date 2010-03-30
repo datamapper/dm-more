@@ -1,12 +1,12 @@
 # encoding: utf-8
 
 module DataMapper
-  module Validate
+  module Validations
     module Format
       module Url
 
         def self.included(base)
-          DataMapper::Validate::FormatValidator::FORMATS.merge!(
+          DataMapper::Validations::FormatValidator::FORMATS.merge!(
             :url => [ Url, lambda { |field, value| '%s is not a valid URL'.t(value) }]
           )
         end
@@ -18,5 +18,5 @@ module DataMapper
 
       end # module Url
     end # module Format
-  end # module Validate
+  end # module Validations
 end # module DataMapper

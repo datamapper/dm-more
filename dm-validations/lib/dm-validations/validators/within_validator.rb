@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -48,9 +48,9 @@ module DataMapper
       #
       def validates_within(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::WithinValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::WithinValidator)
       end
 
     end # module ValidatesWithin
-  end # module Validate
+  end # module Validations
 end # module DataMapper

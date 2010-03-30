@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class PhoneNumber
         #
@@ -24,5 +24,5 @@ module DataMapper
         validates_within :type_of_number, :set => %w(home work cell), :message => "Should be one of: home, cell or work"
       end # PhoneNumber
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

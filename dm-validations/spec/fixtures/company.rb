@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class Company
         #
@@ -80,7 +80,7 @@ module DataMapper
         # Associations
         #
 
-        belongs_to :company, :model => DataMapper::Validate::Fixtures::ProductCompany
+        belongs_to :company, :model => DataMapper::Validations::Fixtures::ProductCompany
 
         #
         # Validations

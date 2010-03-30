@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'integration/primitive_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::MemoryObject' do
-  include DataMapper::Validate::Fixtures
+describe 'DataMapper::Validations::Fixtures::MemoryObject' do
+  include DataMapper::Validations::Fixtures
 
   before :all do
-    DataMapper::Validate::Fixtures::MemoryObject.auto_migrate!
+    DataMapper::Validations::Fixtures::MemoryObject.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::MemoryObject.new
+    @model = DataMapper::Validations::Fixtures::MemoryObject.new
   end
 
   describe "with color given as a string" do

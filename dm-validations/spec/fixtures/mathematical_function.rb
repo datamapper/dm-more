@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class MathematicalFunction
         #
@@ -30,5 +30,5 @@ module DataMapper
         validates_within :output, :set => (-n..0), :message => "Negative values or zero only, please"
       end # MathematicalFunction
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

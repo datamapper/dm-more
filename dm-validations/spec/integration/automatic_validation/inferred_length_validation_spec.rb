@@ -80,11 +80,11 @@ end
 
 
 
-describe 'DataMapper::Validate::Fixtures::SmsMessage' do
+describe 'DataMapper::Validations::Fixtures::SmsMessage' do
   before :all do
-    DataMapper::Validate::Fixtures::SmsMessage.auto_migrate!
+    DataMapper::Validations::Fixtures::SmsMessage.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::SmsMessage.new(:id => 10)
+    @model = DataMapper::Validations::Fixtures::SmsMessage.new(:id => 10)
   end
 
   describe "with 2 character long note" do

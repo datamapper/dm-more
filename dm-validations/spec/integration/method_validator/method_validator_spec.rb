@@ -75,7 +75,7 @@ end
 
 describe "C" do
   before :all do
-    @model = ::DataMapper::Validate::Fixtures::ProgrammingLanguage.new(:name                                     => "C",
+    @model = ::DataMapper::Validations::Fixtures::ProgrammingLanguage.new(:name                                     => "C",
                                                                        :allows_system_calls                      => true,
                                                                        :allows_manual_memory_management          => true,
                                                                        :approved_by_linus                        => true,
@@ -98,7 +98,7 @@ end
 
 describe "C++" do
   before :all do
-    @model = ::DataMapper::Validate::Fixtures::ProgrammingLanguage.new(:name                                     => "C++",
+    @model = ::DataMapper::Validations::Fixtures::ProgrammingLanguage.new(:name                                     => "C++",
                                                                        :allows_system_calls                      => true,
                                                                        :allows_manual_memory_management          => true,
                                                                        :approved_by_linus                        => false,
@@ -125,7 +125,7 @@ end
 
 describe "Ruby" do
   before :all do
-    @model = ::DataMapper::Validate::Fixtures::ProgrammingLanguage.new(:name                                     => "Ruby",
+    @model = ::DataMapper::Validations::Fixtures::ProgrammingLanguage.new(:name                                     => "Ruby",
                                                                        # well, C extensions do not really count
                                                                        :allows_system_calls                      => false,
                                                                        :allows_manual_memory_management          => false,
@@ -153,7 +153,7 @@ end
 
 describe "Scala" do
   before :all do
-    @model = ::DataMapper::Validate::Fixtures::ProgrammingLanguage.new(:name                                     => "Scala",
+    @model = ::DataMapper::Validations::Fixtures::ProgrammingLanguage.new(:name                                     => "Scala",
                                                                        :allows_system_calls                      => false,
                                                                        :allows_manual_memory_management          => false,
                                                                        :approved_by_linus                        => false,
@@ -181,7 +181,7 @@ end
 
 describe "Haskell" do
   before :all do
-    @model = ::DataMapper::Validate::Fixtures::ProgrammingLanguage.new(:name                                     => "Haskell",
+    @model = ::DataMapper::Validations::Fixtures::ProgrammingLanguage.new(:name                                     => "Haskell",
                                                                        :allows_system_calls                      => false,
                                                                        :allows_manual_memory_management          => false,
                                                                        :approved_by_linus                        => false,
@@ -210,11 +210,11 @@ describe "Haskell" do
 end
 
 
-describe 'DataMapper::Validate::Fixtures::Event' do
+describe 'DataMapper::Validations::Fixtures::Event' do
   before :all do
-    DataMapper::Validate::Fixtures::Event.auto_migrate!
+    DataMapper::Validations::Fixtures::Event.auto_migrate!
 
-    @model = DataMapper::Validate::Fixtures::Event.new(:name => "Fools day 2009")
+    @model = DataMapper::Validations::Fixtures::Event.new(:name => "Fools day 2009")
   end
 
   describe "with start time before end time" do

@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'integration/format_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BillOfLading' do
+describe 'DataMapper::Validations::Fixtures::BillOfLading' do
   before :all do
-    DataMapper::Validate::Fixtures::BillOfLading.auto_migrate!
+    DataMapper::Validations::Fixtures::BillOfLading.auto_migrate!
   end
 
   def valid_attributes
@@ -12,7 +12,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with doc no with value of 'BAD CODE :)'" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'BAD CODE :)'))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'BAD CODE :)'))
     end
 
     it_should_behave_like 'invalid model'
@@ -24,7 +24,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with doc no with value of 'A1234'" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'A1234'))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'A1234'))
     end
 
     it_should_behave_like 'valid model'
@@ -32,7 +32,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with doc no with value of 'B123456X12'" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'B123456X12'))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:doc_no => 'B123456X12'))
     end
 
     it_should_behave_like 'valid model'
@@ -40,7 +40,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with missing url" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.except(:url))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.except(:url))
     end
 
     it_should_behave_like 'invalid model'
@@ -48,7 +48,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with blank name" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:username => ''))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:username => ''))
     end
 
     it_should_behave_like 'valid model'
@@ -56,7 +56,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with blank email" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:email => ''))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:email => ''))
     end
 
     it_should_behave_like 'valid model'

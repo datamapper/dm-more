@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module DataMapper
-  module Validate
+  module Validations
     module Fixtures
       class BasketballPlayer
         #
@@ -30,5 +30,5 @@ module DataMapper
         validates_numericality_of :height, :weight, :precision => 10
       end
     end # Fixtures
-  end # Validate
+  end # Validations
 end # DataMapper

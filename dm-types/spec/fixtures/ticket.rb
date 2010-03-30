@@ -7,7 +7,7 @@ module DataMapper
         #
 
         include DataMapper::Resource
-        include DataMapper::Validate
+        include DataMapper::Validations
 
         #
         # Properties

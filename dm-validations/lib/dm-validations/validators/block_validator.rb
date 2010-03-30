@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -52,9 +52,9 @@ module DataMapper
         define_method(method_name, block)
         opts = opts_from_validator_args(fields)
         opts[:method] = method_name
-        add_validator_to_context(opts, fields.empty? ? [method_name] : fields, DataMapper::Validate::MethodValidator)
+        add_validator_to_context(opts, fields.empty? ? [method_name] : fields, DataMapper::Validations::MethodValidator)
       end
 
     end # module ValidatesWithMethod
-  end # module Validate
+  end # module Validations
 end # module DataMapper

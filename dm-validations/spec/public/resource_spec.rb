@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe 'DataMapper::Resource' do
   before :all do
-    DataMapper::Validate::Fixtures::Barcode.auto_migrate!
+    DataMapper::Validations::Fixtures::Barcode.auto_migrate!
 
-    @resource = DataMapper::Validate::Fixtures::Barcode.new
+    @resource = DataMapper::Validations::Fixtures::Barcode.new
   end
 
   describe '#update' do
@@ -34,12 +34,12 @@ describe 'DataMapper::Resource' do
 
     describe 'when provided invalid attributes and a context' do
       before :all do
-        DataMapper::Validate::Fixtures::Organisation.auto_migrate!
-        DataMapper::Validate::Fixtures::Department.auto_migrate!
-        DataMapper::Validate::Fixtures::User.auto_migrate!
+        DataMapper::Validations::Fixtures::Organisation.auto_migrate!
+        DataMapper::Validations::Fixtures::Department.auto_migrate!
+        DataMapper::Validations::Fixtures::User.auto_migrate!
 
-        organization = DataMapper::Validate::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
-        dept         = DataMapper::Validate::Fixtures::Department.create(:name => 'accounting')
+        organization = DataMapper::Validations::Fixtures::Organisation.create(:name => 'Org 101', :domain => '101')
+        dept         = DataMapper::Validations::Fixtures::Department.create(:name => 'accounting')
 
         attributes = {
           :organisation => organization,
@@ -48,9 +48,9 @@ describe 'DataMapper::Resource' do
         }
 
         # create a record that will be a dupe when User#update is executed below
-        DataMapper::Validate::Fixtures::User.create(attributes).should be_saved
+        DataMapper::Validations::Fixtures::User.create(attributes).should be_saved
 
-        @resource = DataMapper::Validate::Fixtures::User.create(attributes.merge(:user_name => 'other'))
+        @resource = DataMapper::Validations::Fixtures::User.create(attributes.merge(:user_name => 'other'))
 
         @response = @resource.update(attributes, :signing_up_for_department_account)
       end

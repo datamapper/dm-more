@@ -1,5 +1,5 @@
 module DataMapper
-  module Validate
+  module Validations
 
     ##
     #
@@ -49,11 +49,11 @@ module DataMapper
       #   end
       def validates_primitive_type_of(*fields)
         opts = opts_from_validator_args(fields)
-        add_validator_to_context(opts, fields, DataMapper::Validate::PrimitiveTypeValidator)
+        add_validator_to_context(opts, fields, DataMapper::Validations::PrimitiveTypeValidator)
       end
 
       deprecate :validates_is_primitive, :validates_primitive_type_of
 
     end # module ValidatesPresent
-  end # module Validate
+  end # module Validations
 end # module DataMapper

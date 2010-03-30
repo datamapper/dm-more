@@ -1,9 +1,9 @@
 require 'spec_helper'
 require 'integration/format_validator/spec_helper'
 
-describe 'DataMapper::Validate::Fixtures::BillOfLading' do
+describe 'DataMapper::Validations::Fixtures::BillOfLading' do
   before :all do
-    DataMapper::Validate::Fixtures::BillOfLading.auto_migrate!
+    DataMapper::Validations::Fixtures::BillOfLading.auto_migrate!
   end
 
   def valid_attributes
@@ -12,7 +12,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with code of 123456" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:code => '123456'))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:code => '123456'))
     end
 
     it_should_behave_like 'valid model'
@@ -21,7 +21,7 @@ describe 'DataMapper::Validate::Fixtures::BillOfLading' do
 
   describe "with code of 12" do
     before :all do
-      @model = DataMapper::Validate::Fixtures::BillOfLading.new(valid_attributes.merge(:code => '12'))
+      @model = DataMapper::Validations::Fixtures::BillOfLading.new(valid_attributes.merge(:code => '12'))
     end
 
     it_should_behave_like 'invalid model'
