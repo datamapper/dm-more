@@ -10,7 +10,7 @@ describe DataMapper::Model do
     property :price, Integer
 
     belongs_to :order, :required => false
-    validates_present :price
+    validates_presence_of :price
   end
 
   class Wonket < Widget
