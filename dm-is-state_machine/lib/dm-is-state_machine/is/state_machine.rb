@@ -68,6 +68,13 @@ module DataMapper
         pop_state_machine_context
       end
 
+      def inherited(base)
+        super
+        base.class_eval do
+          @is_state_machine = superclass.instance_variable_get(:@is_state_machine)
+        end
+      end
+
       protected
 
       def push_state_machine_context(label)
