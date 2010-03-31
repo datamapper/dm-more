@@ -405,7 +405,7 @@ module DataMapper
 
         def clone_hooks(remixable, model)
           # event name is by default :create, :destroy etc
-          remixable.instance_hooks.map do |event_name, hooks|
+          remixable.instance_hooks.each do |event_name, hooks|
             [:after, :before].each do |callback|
               hooks[callback].each do |hook|
                 model.send(callback, event_name, hook[:name])

@@ -135,8 +135,9 @@ if HAS_SQLITE3 || HAS_MYSQL || HAS_POSTGRES
       article = Article.new
       article.pics = (@pic = ArticleImage.new)
 
-      @pic.should_receive(:run_hook_method).once
-      article.save
+      expect {
+        article.save
+      }.to change(@pic, :hook_method_called?).from(false).to(true)
     end
 
     it "should copy validation contexts from the Remixable Module to the Remixed Model" do

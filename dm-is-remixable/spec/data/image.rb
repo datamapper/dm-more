@@ -7,9 +7,14 @@ module Image
   property :description,  String
   property :path,         String
 
-  after :save, :run_hook_method
+  after :save, :hook_method
 
-  def run_hook_method
+  def hook_method
+    @hook_method = true
+  end
+
+  def hook_method_called?
+    defined?(@hook_method) ? true : false
   end
 
   # These methods will be available to the class remixing this module
