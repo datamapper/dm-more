@@ -53,13 +53,13 @@ group :runtime do
   # (which probably is not going to happen anytime soon).
   #
 
-if ENV['EXTLIB']
-  gem 'extlib',        '~> 0.9.15',      :git => 'git://github.com/datamapper/extlib.git'
-else
-  gem 'activesupport', '~> 3.0.0.beta1', :git => 'git://github.com/rails/rails.git', :require => nil
-end
-  gem 'dm-core',       '~> 0.10.3',      :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
+  if ENV['EXTLIB']
+    gem 'extlib',        '~> 0.9.15',      :git => 'git://github.com/datamapper/extlib.git'
+  else
+    gem 'activesupport', '~> 3.0.0.beta1', :git => 'git://github.com/rails/rails.git', :require => nil
+  end
 
+  gem 'dm-core', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
 end
 
 group :development do
@@ -77,8 +77,8 @@ group :development do
 end
 
 group :quality do
-  gem 'yardstick',      '~> 0.1'
-  gem 'metric_fu',      '~> 1.3'
-  gem 'reek',           '~> 1.2.7'
-  gem 'roodi',          '~> 2.1'
+  gem 'yardstick', '~> 0.1'
+  gem 'metric_fu', '~> 1.3'
+  gem 'reek',      '~> 1.2.7'
+  gem 'roodi',     '~> 2.1'
 end

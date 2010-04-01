@@ -53,35 +53,34 @@ group :runtime do
   # (which probably is not going to happen anytime soon).
   #
 
-if ENV['EXTLIB']
-  gem 'extlib',        '~> 0.9.15',      :git => 'git://github.com/datamapper/extlib.git'
-else
-  gem 'activesupport', '~> 3.0.0.beta1', :git => 'git://github.com/rails/rails.git', :require => nil
-end
-  gem 'dm-core',       '~> 0.10.3',      :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
+  if ENV['EXTLIB']
+    gem 'extlib',        '~> 0.9.15',      :git => 'git://github.com/datamapper/extlib.git'
+  else
+    gem 'activesupport', '~> 3.0.0.beta1', :git => 'git://github.com/rails/rails.git', :require => nil
+  end
 
-  gem 'fastercsv',     '~> 1.5.0'
-  gem 'json_pure',     '~> 1.2.0'
-  gem 'uuidtools',     '~> 2.1.1'
-  gem 'stringex',      '~> 1.1.0'
-
+  gem 'dm-core',   '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
+  gem 'fastercsv', '~> 1.5.0'
+  gem 'json_pure', '~> 1.2.0'
+  gem 'uuidtools', '~> 2.1.1'
+  gem 'stringex',  '~> 1.1.0'
 end
 
 group :development do
-  gem 'rake',           '~> 0.8.7'
-  gem 'rspec',          '~> 1.3'
-  gem 'yard',           '~> 0.5'
-  gem 'rcov',           '~> 0.9.7'
-  gem 'jeweler',        '~> 1.4'
-  gem 'data_objects',   '~> 0.10.1'
-  gem 'do_sqlite3',     '~> 0.10.1'
-  gem 'do_mysql',       '~> 0.10.1'
-  gem 'do_postgres',    '~> 0.10.1'
+  gem 'rake',         '~> 0.8.7'
+  gem 'rspec',        '~> 1.3'
+  gem 'yard',         '~> 0.5'
+  gem 'rcov',         '~> 0.9.7'
+  gem 'jeweler',      '~> 1.4'
+  gem 'data_objects', '~> 0.10.1'
+  gem 'do_sqlite3',   '~> 0.10.1'
+  gem 'do_mysql',     '~> 0.10.1'
+  gem 'do_postgres',  '~> 0.10.1'
 end
 
 group :quality do
-  gem 'yardstick',      '~> 0.1'
-  gem 'metric_fu',      '~> 1.3'
-  gem 'reek',           '~> 1.2.7'
-  gem 'roodi',          '~> 2.1'
+  gem 'yardstick', '~> 0.1'
+  gem 'metric_fu', '~> 1.3'
+  gem 'reek',      '~> 1.2.7'
+  gem 'roodi',     '~> 2.1'
 end
