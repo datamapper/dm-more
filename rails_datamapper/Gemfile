@@ -58,7 +58,7 @@ group :runtime do
   end
 
   gem 'rails',   '~> 2.3.5'
-  gem 'dm-core', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'master'
+  gem 'dm-core', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git'
 end
 
 group :development do
