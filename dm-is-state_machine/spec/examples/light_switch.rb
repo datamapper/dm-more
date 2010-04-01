@@ -2,11 +2,11 @@ class LightSwitch
   include DataMapper::Resource
   property :id,   Serial
   property :type, Discriminator
- 
+
   is :state_machine, :initial => :off do
     state :off
     state :on, :enter => :on_hook
-  
+
     event :switch do
       transition :from => :on, :to => :off
       transition :from => :off, :to => :on

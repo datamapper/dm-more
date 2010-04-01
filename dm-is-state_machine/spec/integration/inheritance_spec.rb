@@ -5,7 +5,7 @@ describe 'Inherited state machine' do
 
   it 'should not explode' do
     dimmer = Dimmer.new
-    lambda { dimmer.switch! }.should_not raise_error(NoMethodError)    
+    lambda { dimmer.switch! }.should_not raise_error(NoMethodError)
   end
 
 end
