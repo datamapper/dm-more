@@ -59,8 +59,8 @@ group :runtime do
     gem 'activesupport', '~> 3.0.0.beta2', :git => 'git://github.com/rails/rails.git', :require => nil
   end
 
-  gem 'dm-core',   '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
-  gem 'dm-adjust', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'next'
+  gem 'dm-core',   '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'master'
+  gem 'dm-adjust', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'master'
 end
 
 group :development do

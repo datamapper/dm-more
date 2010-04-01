@@ -59,7 +59,7 @@ group :runtime do
     gem 'activesupport', '~> 3.0.0.beta2', :git => 'git://github.com/rails/rails.git', :require => nil
   end
 
-  gem 'dm-core', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'next'
+  gem 'dm-core', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-core.git', :branch => 'master'
 end
 
 group :development do
@@ -72,8 +72,8 @@ group :development do
   gem 'do_sqlite3',     '~> 0.10.1'
   gem 'do_mysql',       '~> 0.10.1'
   gem 'do_postgres',    '~> 0.10.1'
-  gem 'dm-types',       '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'next'
-  gem 'dm-validations', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'next'
+  gem 'dm-types',       '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'master'
+  gem 'dm-validations', '~> 0.10.3', :git => 'git://github.com/datamapper/dm-more.git', :branch => 'master'
 end
 
 group :quality do
