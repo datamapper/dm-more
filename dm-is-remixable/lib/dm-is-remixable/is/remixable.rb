@@ -404,6 +404,8 @@ module DataMapper
       private
 
         def clone_hooks(remixable, model)
+          remixable.__send__(:copy_hooks, model)
+
           # event name is by default :create, :destroy etc
           remixable.instance_hooks.each do |event_name, hooks|
             [:after, :before].each do |callback|
