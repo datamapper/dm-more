@@ -30,7 +30,7 @@ module DataMapper
     def set_timestamps
       TIMESTAMP_PROPERTIES.each do |name,(_type,proc)|
         if property = properties[name]
-          property.set(self, proc.call(self, property))
+          __send__("#{property.name}=", proc.call(self, property))
         end
       end
     end
