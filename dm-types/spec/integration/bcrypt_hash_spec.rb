@@ -37,5 +37,9 @@ try_spec do
     it 'uses cost of BCrypt::Engine::DEFAULT_COST' do
       @resource.password.cost.should == BCrypt::Engine::DEFAULT_COST
     end
+
+    it 'allows Bcrypt::Password#hash to be an Integer' do
+      @resource.password.hash.should be_kind_of(Integer)
+    end
   end
 end
