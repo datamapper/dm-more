@@ -13,7 +13,11 @@ tmtags
 ## VIM
 *.swp
 
+## Rubinius
+*.rbc
+
 ## PROJECT::GENERAL
+*.gem
 coverage
 rdoc
 pkg
@@ -21,13 +25,12 @@ tmp
 doc
 log
 .yardoc
-
-## PROJECT::SPECIFIC
-
-lib
-**/*.gem
+measurements
 
 ## BUNDLER
-**/.bundle
-**/**/.bundle
+.bundle
+Gemfile.{local,lock}
 
+## PROJECT::SPECIFIC
+lib
+**/*.gem
