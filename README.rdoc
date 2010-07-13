@@ -1,16 +1,27 @@
 = dm-more
 
-== Extra, non-essential parts for DataMapper
+== This repository is no longer active!
 
-Including
+All the plugins are now located in their own repositories:
 
-  * Migrations
-  * Validations
-  * Serializers
-  * A Command-Line Interface
-  * Timestamps
-  * Types
-  * ActiveRecord-style finders
-  * Adapters for your favorite repository or database type
-  * Integration with your favorite web frameworks
-  * Observers for watching resources.
+* http://github.com/datamapper/dm-adjust
+* http://github.com/datamapper/dm-aggregates
+* http://github.com/datamapper/dm-ar-finders
+* http://github.com/datamapper/dm-cli
+* http://github.com/datamapper/dm-constraints
+* http://github.com/datamapper/dm-is-list
+* http://github.com/datamapper/dm-is-nested_set
+* http://github.com/datamapper/dm-is-remixable
+* http://github.com/datamapper/dm-is-searchable
+* http://github.com/datamapper/dm-is-state_machine
+* http://github.com/datamapper/dm-is-tree
+* http://github.com/datamapper/dm-is-versioned
+* http://github.com/datamapper/dm-migrations
+* http://github.com/datamapper/dm-observer
+* http://github.com/datamapper/dm-serializer
+* http://github.com/datamapper/dm-sweatshop
+* http://github.com/datamapper/dm-tags
+* http://github.com/datamapper/dm-timestamps
+* http://github.com/datamapper/dm-types
+* http://github.com/datamapper/dm-validations
+* http://github.com/datamapper/rails_datamapper
