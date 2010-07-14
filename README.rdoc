@@ -25,3 +25,5 @@ All the plugins are now located in their own repositories:
 * http://github.com/datamapper/dm-types
 * http://github.com/datamapper/dm-validations
 * http://github.com/datamapper/rails_datamapper
+* http://github.com/datamapper/dm-ferret-adapter
+* http://github.com/datamapper/dm-rest-adapter
